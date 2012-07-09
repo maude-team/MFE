@@ -444,36 +444,101 @@ mod MFE-TOOL is
     if not parseModExp(T) in domain of MNReg .
 endm
 
+
 mod MFE-CONTROLLER is
+  inc LOOP-MODE .
   inc MFE-PUBLIC-MESSAGES .
   inc DATABASE-HANDLING .
   inc MFE-HELP .
   inc MFE-TOOL .
+  pr META-MFE-SIGN .
   pr MFE-TEXT-STYLE .
+
+  subsort Configuration < State .
 
   ---- The MFE control class is declared as a subclass of Full Maude (Database)
   sort Controller .
   subsort Controller < DatabaseClass .
   op Controller : -> Controller . 
   
-  pr QID .
-  pr CONFIGURATION .
-  
-  ---- Oids for the tools' brokers 
-  ---- add a new constant for a new tool
-  ops mfe crc chc mtt scc itp eqe ertp : -> Oid . 
+---a  pr QID .
+---a  pr CONFIGURATION .
 
+  ---- Oids for the MFE
+  op mfe : -> Oid .   
   op current-tool :_ : Oid -> Attribute [ctor gather (&)] .
 
+  var  Conf         : Configuration .
   var  X@Controller : Controller .
-  vars O O' : Oid .
+  vars DB DB'       : Database .
+  vars ME ME'       : ModuleExpression .
+  vars O O'         : Oid .
+  var  QI           : Qid .
+  var  TL           : TermList .
   var  Atts : AttributeSet .
-  vars QIL QIL' : QidList .
+  vars QIL QIL' QIL'' QIL''' : QidList .
   var  TS : Map{ToolName, Oid} .
   var  Ct : Constant .
   var  TN : ToolName .
   var  MN : ModuleName .
   var  B : Bool .
+
+  ---- INPUT PARSING
+  op wait-answer : QidList QidList -> Msg [ctor] .
+  ---- if the input parses in the grammar of FM plus the general MFE command,
+  ---- the input is directly handled by Full Maude (and hte Controller object) 
+  crl [in] :
+    [QI QIL, 
+     < O : X@Controller | db : DB, input : nilTermList, Atts >
+     Conf, 
+     QIL']
+    => [nil, 
+        < O : X@Controller | db : DB, input : getTerm(RP:ResultPair), Atts >
+        Conf, 
+        QIL'] 
+    if RP:ResultPair := metaParse(MFE-GRAMMAR, QI QIL, '@Input@) .
+  ---- If it cannot be handled by the Controller object, the input is passed 
+  ---- to the current tool. If no current tool an error message is generated. 
+  ---- To avoid reparsing, the result of the parsing is saved, and if the 
+  ---- current tool cannot handle the input either the saved message is printed out.
+  ---- The wait-answer message keeps the input and the corresponding error message. 
+  ---- A to O' from O : input(QI QIL) message is sent to the current tool. 
+  ---- And a input-parsed(QI QIL, B) message is expected from the current tool. 
+  ---- B == true means that the tool was able to parse it. A false means that it wasn't.
+  crl [in] :
+    [QI QIL, 
+     < O : X@Controller | input : nilTermList, output : nil, current-tool : O', Atts >
+     Conf, 
+     QIL']
+    => [nil, 
+        < O : X@Controller | input : nilTermList, output : nil, current-tool : O', Atts >
+        if O' == null-oid or O' == O
+        then to O from O : input-parsed(QI QIL, false)
+        else to O' from O : input(QI QIL)
+        fi 
+        wait-answer(QI QIL, 
+          ('\r 'Warning: 
+           printSyntaxError(metaParse(MFE-GRAMMAR, QI QIL, '@Input@), QI QIL) 
+           '\n '\r 'Error: '\o 'No 'parse 'for 'input. '\n))
+        Conf, 
+        QIL'] 
+    if not metaParse(MFE-GRAMMAR, QI QIL, '@Input@) :: ResultPair .
+  rl [in] :
+    < O : X@Controller | Atts >
+    (to O from O' : input-parsed(QIL, true))
+    wait-answer(QIL, QIL')
+    => < O : X@Controller | Atts > .
+  rl [in] :
+    [QIL', 
+     < O : X@Controller | output : nil, Atts >
+     (to O from O' : input-parsed(QIL, false))
+     wait-answer(QIL, QIL''')
+     Conf, 
+     QIL'']
+    => [QIL', 
+        < O : X@Controller | output : QIL''', Atts >
+        Conf, 
+        QIL''] .
 
   rl [select-tool] :
     < O : X@Controller | 
@@ -534,7 +599,29 @@ mod MFE-CONTROLLER is
        then (to O from O' : output(mfe-success('The 'functional 'part 'of 'module eMetaPrettyPrint(MN) 'is 'terminating. '\n)))
        else (to O from O' : output(mfe-success('The 'module eMetaPrettyPrint(MN) 'is 'terminating. '\n))) 
        fi .
+  rl [out] :
+    [QIL, 
+     < O : X@Controller | db : DB, input : TL, output : (QI QIL'), default : ME, Atts >
+     Conf, 
+     QIL'']
+    => [QIL, 
+        < O : X@Controller | db : DB, input : TL, output : nil, default : ME, Atts >
+        Conf, 
+        (QI QIL' QIL'')] .
+  rl [out] :
+    [QIL, 
+     < O : X@Controller | Atts >
+     (to O from O' : output(QIL')) 
+     Conf,
+     QIL'']
+    => [QIL, 
+        < O : X@Controller | Atts >
+        Conf, 
+        QIL'' QIL'] .
+
+
 endm 
+
 
 --------------------------------------------------------------------------------
 --- 3BOOL
@@ -3133,8 +3220,6 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due 
   subsort ConstantSet < AtomicITPTermSet .     ---- to declararions coming from SCC and ITP
 
-  subsort Configuration < State .
-
   op init : -> System .
 
   vars Atts Atts' Atts'' : AttributeSet .
@@ -3175,6 +3260,10 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   var  EqS : EquationSet .
   var  RlS : RuleSet .
 
+  ---- Oids for the tools' brokers 
+  ---- add a new constant for a new tool
+  ops mfe crc chc mtt scc itp eqe ertp : -> Oid . 
+
   op TOOLS : -> Map{ToolName, Oid} .
   eq TOOLS = ("MFE" |-> mfe, "CRC" |-> crc, "ChC" |-> chc, "ITP" |-> itp, "SCC" |-> scc, "MTT" |-> mtt, "EqE" |-> eqe, "ERTP" |-> ertp) .
   
@@ -3197,82 +3286,6 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
           init-ertp(TOOLS),
          nil ] .
 
-  ---- INPUT PARSING
-  op wait-answer : QidList QidList -> Msg [ctor] .
-  ---- if the input parses in the grammar of FM plus the general MFE command,
-  ---- the input is directly handled by Full Maude (and hte Controller object) 
-  crl [in] :
-    [QI QIL, 
-     < O : X@Controller | db : DB, input : nilTermList, Atts >
-     Conf, 
-     QIL']
-    => [nil, 
-        < O : X@Controller | db : DB, input : getTerm(RP:ResultPair), Atts >
-        Conf, 
-        QIL'] 
-    if RP:ResultPair := metaParse(MFE-GRAMMAR, QI QIL, '@Input@) .
-  ---- If it cannot be handled by the Controller object, the input is passed 
-  ---- to the current tool. If no current tool an error message is generated. 
-  ---- To avoid reparsing, the result of the parsing is saved, and if the 
-  ---- current tool cannot handle the input either the saved message is printed out.
-  ---- The wait-answer message keeps the input and the corresponding error message. 
-  ---- A to O' from O : input(QI QIL) message is sent to the current tool. 
-  ---- And a input-parsed(QI QIL, B) message is expected from the current tool. 
-  ---- B == true means that the tool was able to parse it. A false means that it wasn't.
-  crl [in] :
-    [QI QIL, 
-     < O : X@Controller | input : nilTermList, output : nil, current-tool : O', Atts >
-     Conf, 
-     QIL']
-    => [nil, 
-        < O : X@Controller | input : nilTermList, output : nil, current-tool : O', Atts >
-        if O' == null-oid or O' == O
-        then to O from O : input-parsed(QI QIL, false)
-        else to O' from O : input(QI QIL)
-        fi 
-        wait-answer(QI QIL, 
-          ('\r 'Warning: 
-           printSyntaxError(metaParse(MFE-GRAMMAR, QI QIL, '@Input@), QI QIL) 
-           '\n '\r 'Error: '\o 'No 'parse 'for 'input. '\n))
-        Conf, 
-        QIL'] 
-    if not metaParse(MFE-GRAMMAR, QI QIL, '@Input@) :: ResultPair .
-  rl [in] :
-    < O : X@Controller | Atts >
-    (to O from O' : input-parsed(QIL, true))
-    wait-answer(QIL, QIL')
-    => < O : X@Controller | Atts > .
-  rl [in] :
-    [QIL', 
-     < O : X@Controller | output : nil, Atts >
-     (to O from O' : input-parsed(QIL, false))
-     wait-answer(QIL, QIL''')
-     Conf, 
-     QIL'']
-    => [QIL', 
-        < O : X@Controller | output : QIL''', Atts >
-        Conf, 
-        QIL''] .
-
-  rl [out] :
-    [QIL, 
-     < O : X@Controller | db : DB, input : TL, output : (QI QIL'), default : ME, Atts >
-     Conf, 
-     QIL'']
-    => [QIL, 
-        < O : X@Controller | db : DB, input : TL, output : nil, default : ME, Atts >
-        Conf, 
-        (QI QIL' QIL'')] .
-  rl [out] :
-    [QIL, 
-     < O : X@Controller | Atts >
-     (to O from O' : output(QIL')) 
-     Conf,
-     QIL'']
-    => [QIL, 
-        < O : X@Controller | Atts >
-        Conf, 
-        QIL'' QIL'] .
 endm
 
 set print conceal on .
