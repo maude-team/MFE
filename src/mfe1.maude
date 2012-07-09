@@ -461,9 +461,6 @@ mod MFE-CONTROLLER is
   subsort Controller < DatabaseClass .
   op Controller : -> Controller . 
   
----a  pr QID .
----a  pr CONFIGURATION .
-
   ---- Oids for the MFE
   op mfe : -> Oid .   
   op current-tool :_ : Oid -> Attribute [ctor gather (&)] .
