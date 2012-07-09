@@ -3219,47 +3219,9 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
 
   op init : -> System .
 
-  vars Atts Atts' Atts'' : AttributeSet .
-  vars Cond Cd : Condition .
-  var  Conf : Configuration .
-  vars DB DB' : Database .
-  var  X@Controller  : Controller .
-  var  Form : Formula .
-  vars ME ME' : ModuleExpression .
-  var  Cmd : Input .
-  vars MsgCnts : MsgContents .
-  vars M CmdMod Mod Mod' : Module .
-  vars N N' : Nat .
-  var  NeQIL : NeQidList .
-  var  PS : ProofState .
-  vars From To O O' O'' O''' O4 O5 : Oid .
-  vars QI L L' : Qid .
-  var  ITPMap : Map{Oid,String} .
-  vars Msg QIL QIL' QIL'' QIL''' : QidList .
-  vars RP RP' : ResultPair .
-  vars Sr S : Sort .
-  vars Name Name' Id Id' : String .
-  vars T T' : Term .
-  var  TL : TermList .
-  var  Reg CPReg MAReg : Map{String, String} .
-  var  CPS : CritPairSet .
-  var  CP : CritPair .
-  var  MAS : MembAssertSet .
-  var  MA : MembAssert .
-  var  CPStat : CPStatus .
-  var  MAStat : MAStatus .
-  vars B B' B'' : Bool .
-  var  MN : ModuleName .
-  var  SS : SortSet .
-  var  SSDS : SubsortDeclSet .
-  var  OPS : OpDeclSet .
-  var  MbS : MembAxSet .
-  var  EqS : EquationSet .
-  var  RlS : RuleSet .
-
   ---- Oids for the tools' brokers 
   ---- add a new constant for a new tool
-  ops mfe crc chc mtt scc itp eqe ertp : -> Oid . 
+  ops crc chc mtt scc itp eqe ertp : -> Oid . 
 
   op TOOLS : -> Map{ToolName, Oid} .
   eq TOOLS = ("MFE" |-> mfe, "CRC" |-> crc, "ChC" |-> chc, "ITP" |-> itp, "SCC" |-> scc, "MTT" |-> mtt, "EqE" |-> eqe, "ERTP" |-> ertp) .
