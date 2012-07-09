@@ -1,0 +1,12 @@
+(set include BOOL off .)
+
+(fmod EQ-NAT2 is
+  protecting NAT2 .
+  protecting BOOL-OPS .
+  op _=EQ=_ : Nat2 Nat2 -> Bool [comm] .
+  eq _=EQ=_(0,s_(X-0:Nat2)) = false .
+  eq _=EQ=_(X-4:Nat2,X-4:Nat2) = true .
+  eq _=EQ=_(s_(X-1:Nat2),s_(X-2:Nat2)) = _and_(_=EQ=_(X-1:Nat2,
+    X-2:Nat2),true) .
+  eq _=EQ=_(s_(X-3:Nat2),X-3:Nat2) = false .
+endfm)

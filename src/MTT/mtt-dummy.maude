@@ -1,0 +1,131 @@
+--- load full-maude25a.maude .
+
+fmod MTT-BANNER is
+  pr STRING .
+  op mtt-banner : -> String .
+  eq mtt-banner = "Termination Tool - Dummy" .
+endfm
+
+fmod MTT-HELP is
+  pr EXT-QID-LIST .
+  pr MTT-BANNER .
+  ops mtt-help : -> QidList .
+  eq mtt-help =
+      string2qidList("Commands available from the") '\n '\n
+      '\t '\t string2qidList(mtt-banner) '\n '\n
+      '\s '\s '`( '\! 'check 'termination '\o '<module> '. '`) '\n
+      '\s '\s '`( '\! 'MTT 'help '\o '. '`) '\n
+      '\s '\s '`( '\! 'MTT 'show 'state '\o '. '`) '\n
+      '\s '\s '`( '\! 'MTT 'trust '\o '<module-name> '. '`) .
+endfm
+
+-------------------
+--- MTT Signature
+-------------------
+fmod MTT-SIGN is
+  including FULL-MAUDE-SIGN .
+
+  op MTT help . : -> @Command@ .
+  op check termination_. : @ModExp@ -> @Command@ .
+  op MTT show state . : -> @Command@ .
+  op MTT trust_. : @ModExp@ -> @Command@ .
+endfm
+
+fmod META-MTT-SIGN is
+  inc META-LEVEL .
+  pr META-FULL-MAUDE-SIGN .
+  pr UNIT .
+
+  op MTT-GRAMMAR : -> FModule .
+  eq MTT-GRAMMAR 
+    = addImports((including 'MTT-SIGN .), GRAMMAR) .
+endfm
+
+---(
+view Oid from TRIV to CONFIGURATION is
+  sort Elt to Oid .
+endv
+---)
+
+mod MTT is
+  pr DATABASE-HANDLING .
+  pr MAP{ModuleName, Oid} .
+  pr META-MTT-SIGN .
+  pr MTT-HELP .
+
+  ----
+  ---- Objects
+  ----
+  --- class identifiers
+  op MTT : -> Cid [ctor] .              --- MTT instances' class
+  op MTTBroker : -> Cid [ctor] .        --- MTT Broker class
+  --- object identifiers
+  op mtt : Nat -> Oid [ctor] .          --- MTT instances' objectId
+  --- object attributes
+  op mtt-count :_ : Nat -> Attribute [ctor] .                --- number of mtt instances created
+  op mtt-from :_ : Oid -> Attribute [ctor] .                 --- oid of the requester
+  op mtt-mod :_ : Module -> Attribute [ctor] .               --- name of the module to be checked
+  op mtt-mod-name :_ : ModuleName -> Attribute [ctor] .      --- name of the module to be checked
+  op mtt-red :_ : Map{ModuleName, Oid} -> Attribute [ctor] . --- map of modules and mtt instances
+  op mtt-status :_ : MTTCheckStatus -> Attribute [ctor] .     --- TODO now it is just a message
+  sort MTTCheckStatus .
+  ops unchecked trusted : -> MTTCheckStatus [ctor] .
+
+  ----
+  ---- Messages
+  ----
+  sort MTTMsgBody .
+  op to_from_:_ : Oid Oid MTTMsgBody -> Msg [ctor] .
+  op mtt-output : QidList -> MTTMsgBody [ctor] .
+  op mtt-cmd : Term -> MTTMsgBody [ctor] .
+  op mtt-mod-checked : ModuleName -> MTTMsgBody [ctor] .
+  op mtt-trust-mods : ModuleName -> MTTMsgBody [ctor] .
+  op mtt-show-state : -> MTTMsgBody [ctor] .
+
+  var  Atts Atts'  : AttributeSet .
+  var  Conf        : Configuration .
+  var  MN          : ModuleName .
+  var  Sta         : MTTCheckStatus .
+  var  N           : Nat .
+  vars O O' O'' O3 : Oid .
+  var  T           : Term .
+
+  op mtt-show-state : Configuration -> QidList .
+  eq mtt-show-state(< O : MTT | mtt-mod-name : MN, mtt-status : Sta, Atts > Conf)
+   = mtt-show-state(Conf) 'Termination 'check 'for eMetaPrettyPrint(MN) ': 
+     if Sta == unchecked
+       then 'unchecked
+       else 'trusted
+     fi '\n .
+  eq mtt-show-state(Conf) = nil [owise] .
+
+  op mtt-trust : Configuration ModuleName Oid -> Configuration .
+  eq mtt-trust(< O : MTT | mtt-mod-name : MN, mtt-status : unchecked, mtt-from : O', Atts > Conf, MN, O'')
+   = mtt-trust(< O : MTT | mtt-mod-name : MN, mtt-status : trusted, mtt-from : O', Atts > 
+               (to O' from O'' : mtt-mod-checked(MN)) Conf, MN, O'') .
+  eq mtt-trust(Conf, MN, O) = Conf [owise] .
+
+ crl [mtt-dummy-check] :
+     < O : MTTBroker | mtt-count : N, Atts >
+     (to O from O' : mtt-cmd('check`termination_.[T]))
+  => < O : MTTBroker | mtt-count : s(N), Atts >
+     < mtt(N) : MTT | mtt-mod-name : MN, mtt-from : O', mtt-status : unchecked >
+  if MN := parseModExp(T) .
+
+ crl [mtt-trust-local] :
+     < O : MTTBroker | Atts > to O from O' : mtt-cmd('MTT`trust_.[T])
+  => < O : MTTBroker | Atts > to O from O' : mtt-trust-mods(MN)
+  if MN := parseModExp(T) .
+
+  rl [mtt-show-state] :
+     < O : MTTBroker | mtt-count : N, Atts > (to O from O' : mtt-cmd('MTT`show`state`..@Command@))
+  => < O : MTTBroker | mtt-count : N, Atts > 
+     if N == 0 
+       then (to O' from O : mtt-output('There 'is 'nothing 'to 'show!))
+       else (to O from O' : mtt-show-state)
+     fi .
+
+  rl [mtt-show-help] :
+     < O : MTTBroker | mtt-count : N, Atts > (to O from O' : mtt-cmd('MTT`help`..@Command@))
+  => < O : MTTBroker | mtt-count : N, Atts > (to O' from O : mtt-output(mtt-help)) .
+endm

@@ -1,0 +1,34 @@
+---- Maude ITP 2.0 Tutorial, by J. Hendrix, J. Meseguer, and R. Sasse
+---- associativity of append
+
+fmod LIST-of-NAT is 
+  protecting NAT .
+  sort List .
+  op nil : -> List [ctor] .
+  op cons : Nat List -> List [ctor] .
+  op append : List List -> List .
+  var N : Nat .
+  vars L L' : List .
+  eq append(nil, L) = L .
+  eq append(cons(N, L), L') = cons(N, append(L, L')) .
+endfm
+
+select MFE .
+---a loop init .
+
+(new-goal list-append-assocA :
+  LIST-of-NAT |-
+    A{L:List ; L':List ; L'':List}
+      ((append(append(L, L'), L''))
+        = (append(L, append(L', L'')))) .)
+
+(ind* on L:List .)
+
+(new-goal list-append-assocB :
+  LIST-of-NAT |-
+    A{L:List ; L':List ; L'':List}
+      ((append(append(L, L'), L''))
+        = (append(L, append(L', L'')))) .)
+
+
+(ind* on L:List .)

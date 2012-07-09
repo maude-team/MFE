@@ -1,0 +1,447 @@
+fth ACU-SET is
+  sorts Elt Set .
+  subsort Elt < Set .
+  op none : -> Set [ctor].
+  op _;_ : Set Set -> Set [ctor assoc comm id: none].
+endfth
+
+fmod EXT-SET-OPS{X :: ACU-SET} is
+  pr NAT .
+
+  var E : X$Elt .
+  var N : Nat .
+  var S S' : X$Set .
+
+  --- Remove subsort declarations in second set from firt.
+  op _\_ : X$Set X$Set -> X$Set .
+  eq (E ; S) \ (E ; S') = S \ (E ; S') .
+  eq S \ S' = S [owise].
+
+  --- Returns cardinality of EquationSet.
+  op |_| : X$Set -> Nat .
+  eq | S | = $card(S, 0) .
+
+  --- Implementation of |_| above.
+  op $card : X$Set Nat -> Nat .
+  eq $card(E ; E ; S, N) = $card(E ; S, N) .
+  eq $card(E ; S, N) = $card(S, s N) [owise].
+  eq $card(none, N) = N .
+endfm
+
+view SubsortDeclSet from ACU-SET to META-MODULE is
+  sort Elt to SubsortDecl .
+  sort Set to SubsortDeclSet .
+  op _;_ to __ .
+endv
+
+view ITPOpDeclSet from ACU-SET to META-MODULE is
+  sort Elt to OpDecl .
+  sort Set to OpDeclSet .
+  op _;_ to __ .
+endv
+
+view Equation&EquationSet from ACU-SET to META-MODULE is
+  sort Elt to Equation .
+  sort Set to EquationSet .
+  op _;_ to __ .
+endv
+
+view ITPMembAxSet from ACU-SET to META-MODULE is
+  sort Elt to MembAx .
+  sort Set to MembAxSet .
+  op _;_ to __ .
+endv
+
+fmod ITP-EXT-MOD is
+  pr CONVERSION .
+  pr META-LEVEL .
+  pr EXT-DECL .
+  pr ITP-AUXILIARY-FUNCTIONS .
+  pr EXT-SET-OPS{SubsortDeclSet} .
+  pr EXT-SET-OPS{ITPOpDeclSet} .
+  pr EXT-SET-OPS{Equation&EquationSet} .
+  pr EXT-SET-OPS{ITPMembAxSet} .
+
+  sort OpFindResult .
+  subsort OpDecl < OpFindResult .
+  op notFound : -> OpFindResult [ctor].
+
+  var AS AS' : AttrSet .
+  var B : Bool .
+  var EqC EqC' : EqCondition .
+  var Eq : Equation .
+  var Eqs Eqs' : EquationSet .
+  var FMod : FModule .
+  var GT GT' : GroundTerm .
+  var H H' : Header .
+  var IL IL' : ImportList .
+  var Mb : MembAx .
+  var Mbs Mbs' : MembAxSet .
+  var M : Module .
+  var N : Nat .
+  var Op : OpDecl .
+  var Ops Ops' : OpDeclSet .
+  var Q Q' : Qid .
+  var S S' : Sort .
+  var SS : SortSet .
+  var ST : String .
+  var SSDS : SubsortDeclSet .
+  var T T' : Term .
+  var Tp Tp' Tp1 Tp2 : Type .
+  var TpL TpL' : TypeList .
+
+  --- Returns true if attribute set should be considered an axiom.
+  op isAx? : AttrSet ~> Bool .
+  eq isAx?(metadata(ST) AS) = find(ST, "|cat:ax|", 0) :: Nat .
+  eq isAx?(AS) = true [owise].
+
+  --- Returns true if attribute set should be considered a hypothesis.
+  op is-hyp? : AttrSet ~> Bool .
+  eq is-hyp?(metadata(ST) AS) = find(ST, "|cat:hyp|", 0) :: Nat .
+  eq is-hyp?(AS) = false [owise].
+
+  --- Creates a list of terms for a list of types.
+  op typeVars : TypeList Nat ~> TermList .
+  eq typeVars(Tp TpL, N)
+   = qid("X" + string(N, 10) + ":" + string(Tp)), typeVars(TpL, s N) .
+  eq typeVars(nil, N) = empty .
+
+  --- Operator getters.
+  op qid : OpDecl -> Qid .
+  eq qid(op Q : TpL -> Tp [AS].) = Q .
+
+  op argTypes : OpDecl -> TypeList .
+  eq argTypes(op Q : TpL -> Tp [AS].) = TpL .
+
+  op resultType : OpDecl -> Type .
+  eq resultType(op Q : TpL -> Tp [AS].) = Tp .
+
+  op attrSet : OpDecl -> AttrSet .
+  eq attrSet(op Q : TpL -> Tp [AS].) = AS .
+
+  op isConstant : OpDecl -> Bool .
+  eq isConstant(Op) = (argTypes(Op) == nil) .
+
+  --- Returns a term corresponding to left-hand side of membership that op
+  --- declaration would represent.
+  op term : OpDecl -> Term .
+  eq term(op Q : nil -> Tp [AS].) = qid(string(Q) + "." + string(Tp)) .
+  eq term(op Q : TpL -> Tp [AS].) = Q[typeVars(TpL, 0)] [owise].
+
+  op isCtor? : OpDecl -> Bool .
+  eq isCtor?(op Q : TpL -> Tp [ctor AS].) = true .
+  eq isCtor?(op Q : TpL -> Tp [AS].) = false [owise].
+
+  --- Membership getters.
+
+  --- Returns term of left-hand side of membership.
+  op term : MembAx -> Term .
+  eq term(mb  T : S [AS].) = T .
+  eq term(cmb T : S if EqC [AS].) = T .
+
+  --- Returns sort of membership.
+  op sort : MembAx -> Sort .
+  eq sort(mb  T : S [AS].) = S .
+  eq sort(cmb T : S if EqC [AS].) = S .
+
+  --- Returns condition of membership.
+  op condition : MembAx -> EqCondition .
+  eq condition(mb  T : S [AS].) = nil .
+  eq condition(cmb T : S if EqC [AS].) = EqC .
+
+  --- Returns attributes of membership.
+  op attrSet : MembAx -> AttrSet .
+  eq attrSet(mb  T : S [AS].) = AS .
+  eq attrSet(cmb T : S if EqC [AS].) = AS .
+
+  --- Sets attribute set for membership.
+  op setAttrSet : AttrSet MembAx -> MembAx .
+  eq setAttrSet(AS, mb T : S [AS'].) = (mb T : S [AS].) .
+  eq setAttrSet(AS, cmb T : S if EqC [AS'].) = (cmb T : S if EqC [AS].) .
+
+  --- Creates a new membership from its four components.
+  op newMb : Term Sort EqCondition AttrSet -> MembAx .
+  eq newMb(T, S, nil, AS) = (mb T : S [AS].) .
+  eq newMb(T, S, EqC, AS) = (cmb T : S if EqC [AS].) [owise].
+
+  --- Returns left-hand side of equation.
+  op lhs : Equation -> Term .
+  eq lhs(eq  T = T'[AS].) = T .
+  eq lhs(ceq T = T' if EqC [AS].) = T .
+
+  --- Returns right-hand side of equation.
+  op rhs : Equation -> Term .
+  eq rhs(eq  T = T' [AS].) = T' .
+  eq rhs(ceq T = T' if EqC [AS].) = T' .
+
+  --- Returns condition of equation.
+  op condition : Equation -> EqCondition .
+  eq condition(eq  T = T' [AS].) = nil .
+  eq condition(ceq T = T' if EqC [AS].) = EqC .
+
+  --- Returns attribute set of equation.
+  op attrSet : Equation -> AttrSet .
+  eq attrSet(eq  T = T' [AS].) = AS .
+  eq attrSet(ceq T = T' if EqC [AS].) = AS .
+
+  --- Creates a new equation from its four components.
+  op newEq : Term Term EqCondition AttrSet -> Equation .
+  eq newEq(T, T', nil, AS) = (eq T = T' [AS].) .
+  eq newEq(T, T', EqC, AS) = (ceq T = T' if EqC [AS].) [owise].
+
+  --- Sets attribute set for equation.
+  op setAttrSet : AttrSet Equation -> Equation .
+  eq setAttrSet(AS, eq T = T' [AS'].) = (eq T = T' [AS].) .
+  eq setAttrSet(AS, ceq T = T' if EqC [AS'].) = (ceq T = T' if EqC [AS].) .
+
+  --- Sets label in attribute set.
+  op set-label : Qid AttrSet -> AttrSet .
+  eq set-label(Q, label(Q') AS) = label(Q) AS .
+  eq set-label(Q, AS) = label(Q) AS [owise].
+
+  --- Sets label of equation.
+  op set-label : Qid Equation -> Equation .
+  eq set-label(Q, Eq) = setAttrSet(set-label(Q, attrSet(Eq)), Eq) .
+
+  --- Sets label of membership.
+  op set-label : Qid MembAx -> MembAx .
+  eq set-label(Q, Mb) = setAttrSet(set-label(Q, attrSet(Mb)), Mb) .
+
+  --- Returns all unconditional ground equations in set.
+  --- extension: this must be extended to the conditional case
+  op getGroundEqs : EquationSet -> EquationSet .
+  eq getGroundEqs(eq GT = GT' [AS] . Eqs)
+   = (eq GT = GT' [AS] .)  getGroundEqs(Eqs) .
+  eq getGroundEqs(Eqs) = none [owise].
+
+  --- Returns an operator with given inputs and output in module.
+  op find-op : Qid TypeList Type Module -> OpFindResult .
+  ceq find-op(Q, TpL, Tp, M)
+    = (op Q : TpL' -> Tp' [AS].)
+   if (op Q : TpL' -> Tp' [AS].) Ops := getOps(M)
+   /\ sameKind(M, Tp, Tp')
+   /\ sameKinds(M, TpL, TpL') .
+  eq find-op(Q, TpL, Tp, M) = notFound [owise].
+
+  --- Returns equations in set with given label.
+  op find-eq : Qid EquationSet -> EquationSet .
+  eq find-eq(Q, eq T = T' [label(Q) AS]. Eqs)
+   = (eq T = T' [label(Q) AS].) find-eq(Q, Eqs) .
+  eq find-eq(Q, ceq T = T' if EqC [label(Q) AS]. Eqs)
+   = (ceq T = T' if EqC [label(Q) AS].) find-eq(Q, Eqs) .
+  eq find-eq(Q, Eqs) = none [owise].
+
+  --- Returns equations in set with given label.
+  op find-mb : Qid MembAxSet -> MembAxSet .
+  eq find-mb(Q, mb T : S [label(Q) AS]. Mbs)
+   = (mb T : S [label(Q) AS].) find-mb(Q, Mbs) .
+  eq find-mb(Q, cmb T : S if EqC [label(Q) AS]. Mbs)
+   = (cmb T : S if EqC [label(Q) AS].) find-mb(Q, Mbs) .
+  eq find-mb(Q, Mbs) = none [owise].
+
+  --- Returns true if attribute set does not contain nonexec.
+  op is-enabled? : AttrSet -> Bool .
+  eq is-enabled?(nonexec AS) = false .
+  eq is-enabled?(AS) = true [owise].
+
+  --- Updates attributed set to have or not have nonexec based on Boolean.
+  op set-enabled : Bool AttrSet -> AttrSet .
+  eq set-enabled(true, nonexec AS) = AS .
+  eq set-enabled(true, AS) = AS [owise].
+  eq set-enabled(false, nonexec AS) = nonexec AS .
+  eq set-enabled(false, AS) = nonexec AS [owise].
+
+  --- Sets executability of equation.
+  op set-enabled : Bool Equation -> Equation .
+  eq set-enabled(B, Eq) = setAttrSet(set-enabled(B, attrSet(Eq)), Eq) .
+
+  --- Sets executability of membership.
+  op set-enabled : Bool MembAx -> MembAx .
+  eq set-enabled(B, Mb) = setAttrSet(set-enabled(B, attrSet(Mb)), Mb) .
+
+  --- Returns a copy of the equation set where every equation with the given
+  --- label has been made executable.
+  op set-enabled : Bool Qid EquationSet -> EquationSet .
+  eq set-enabled(B, Q, eq T = T' [label(Q) AS]. Eqs)
+   = (eq T = T' [set-enabled(B, label(Q) AS)].)
+     set-enabled(B, Q, Eqs) .
+  eq set-enabled(B, Q, ceq T = T' if EqC [label(Q) AS]. Eqs)
+   = (ceq T = T' if EqC [set-enabled(B, label(Q) AS)].)
+     set-enabled(B, Q, Eqs) .
+  eq set-enabled(B, Q, Eqs) = Eqs [owise].
+
+  --- Returns a copy of the membership set where every membership with the
+  --- given label has been made executable.
+  op set-enabled : Bool Qid MembAxSet -> MembAxSet .
+  eq set-enabled(B, Q, mb T : S [label(Q) AS]. Mbs)
+   = (mb T : S [set-enabled(B, label(Q) AS)].)
+     set-enabled(B, Q, Mbs) .
+  eq set-enabled(B, Q, cmb T : S if EqC [label(Q) AS]. Mbs)
+   = (cmb T : S if EqC [set-enabled(B, label(Q) AS)].)
+     set-enabled(B, Q, Mbs) .
+  eq set-enabled(B, Q, Mbs) = Mbs [owise].
+
+  --- Sets name of module.
+  op setName : Header FModule -> FModule .
+  eq setName(H', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H' is IL sorts SS . SSDS Ops Mbs Eqs endfm .
+
+  --- Sets imports to module.
+  op setImports : ImportList FModule -> FModule .
+  eq setImports(IL', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is IL' sorts SS . SSDS Ops Mbs Eqs endfm .
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Commented out as it is dead-code
+**************************************************************
+***(
+  --- Add imports to module.
+  op addImports : ImportList FModule -> FModule .
+  eq addImports(IL', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is (IL IL') sorts SS . SSDS Ops Mbs Eqs endfm .
+***)
+
+  --- Sets operators in module.
+  op setOps : OpDeclSet FModule -> FModule .
+  eq setOps(Ops', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is IL sorts SS . SSDS Ops' Mbs Eqs endfm .
+
+  --- Add operators to module.
+  op addOpsITP : OpDeclSet FModule -> FModule .
+  eq addOpsITP(Ops', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is IL sorts SS . SSDS (Ops Ops') Mbs Eqs endfm .
+  --- Sets equations in module.
+  op setEqs : EquationSet FModule -> FModule .
+  eq setEqs(Eqs', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is IL sorts SS . SSDS Ops Mbs Eqs' endfm .
+
+  --- Add equations to module.
+  op addEqsITP : EquationSet FModule -> FModule .
+  eq addEqsITP(Eqs, FMod) = setEqs(getEqs(FMod) Eqs, FMod) .
+
+  --- Sets memberships in module.
+  op setMbs : MembAxSet FModule -> FModule .
+  eq setMbs(Mbs', fmod H is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = fmod H is IL sorts SS . SSDS Ops Mbs' Eqs endfm .
+
+  --- Adds memberships to module.
+  op addMbsITP : MembAxSet FModule -> FModule .
+  eq addMbsITP(Mbs, FMod) = setMbs(getMbs(FMod) Mbs, FMod) .
+
+  --- Adds condition to front of condition of each membership in set.
+  op prepend-cond : EqCondition MembAxSet -> MembAxSet .
+  eq prepend-cond(EqC, Mb Mbs)
+   = newMb(term(Mb), sort(Mb), EqC /\ condition(Mb), attrSet(Mb))
+     prepend-cond(EqC, Mbs) .
+  eq prepend-cond(EqC, (none).MembAxSet) = none .
+
+  --- Adds condition to end of condition of each membership in set.
+  op append-cond : EqCondition MembAxSet -> MembAxSet .
+  eq append-cond(EqC, Mb Mbs)
+   = newMb(term(Mb), sort(Mb), condition(Mb) /\ EqC, attrSet(Mb))
+     append-cond(EqC, Mbs) .
+  eq append-cond(EqC, (none).MembAxSet) = none .
+
+  --- Adds condition to front of condition of each equation in set.
+  op prepend-cond : EqCondition EquationSet -> EquationSet .
+  eq prepend-cond(EqC, Eq Eqs)
+   = newEq(lhs(Eq), rhs(Eq), EqC /\ condition(Eq), attrSet(Eq))
+     prepend-cond(EqC, Eqs) .
+  eq prepend-cond(EqC, (none).EquationSet) = none .
+
+  --- Adds condition to end of condition of each equation in set.
+  op append-cond : EqCondition EquationSet -> EquationSet .
+  eq append-cond(EqC, Eq Eqs)
+   = newEq(lhs(Eq), rhs(Eq), condition(Eq) /\ EqC, attrSet(Eq))
+     append-cond(EqC, Eqs) .
+  eq append-cond(EqC, (none).EquationSet) = none .
+
+  --- Returns equations in sets that are hypotheses.
+  op getHyps : EquationSet -> EquationSet .
+  eq getHyps(Eqs) = $getHyps(Eqs, none) .
+
+  --- Tail recursive implementation of getHyps (Above)
+  op $getHyps : EquationSet EquationSet -> EquationSet .
+  ceq $getHyps(Eq Eqs, Eqs') = $getHyps(Eqs, Eq Eqs')
+   if is-hyp?(attrSet(Eq)) .
+  eq $getHyps(Eqs, Eqs') = Eqs' [owise].
+
+  --- Returns equations in sets that are hypotheses.
+  op getHyps : MembAxSet -> MembAxSet .
+  eq getHyps(Mbs) = $getHyps(Mbs, none) .
+
+  --- Tail recursive implementation of getHyps (Above)
+  op $getHyps : MembAxSet MembAxSet -> MembAxSet .
+  ceq $getHyps(Mb Mbs, Mbs') = $getHyps(Mbs, Mb Mbs')
+   if is-hyp?(attrSet(Mb)) .
+  eq $getHyps(Mbs, Mbs') = Mbs' [owise].
+
+  --- Returns constructor op declarations with given sort.
+  op ctor-ops-with-sort : Sort OpDeclSet -> OpDeclSet .
+  eq ctor-ops-with-sort(S, (op Q : TpL -> S [ctor AS].) Ops)
+   = (op Q : TpL -> S [ctor AS].) ctor-ops-with-sort(S, Ops) .
+  eq ctor-ops-with-sort(S, Ops) = none [owise].
+
+  --- Returns constructor memberships with given sort.
+  op ctor-mbs-with-sort : Sort MembAxSet -> MembAxSet .
+  eq ctor-mbs-with-sort(S, (mb T : S [AS].) Mbs)
+   = if isAx?(AS) then
+       (mb T : S [AS].) ctor-mbs-with-sort(S, Mbs)
+     else
+       ctor-mbs-with-sort(S, Mbs)
+     fi .
+  eq ctor-mbs-with-sort(S, (cmb T : S if EqC [AS].) Mbs)
+   = if isAx?(AS) then
+       (cmb T : S if EqC[AS].) ctor-mbs-with-sort(S, Mbs)
+     else
+       ctor-mbs-with-sort(S, Mbs)
+     fi .
+  eq ctor-mbs-with-sort(S, Mbs) = none [owise].
+
+  --- Returns memberships from op declarations.
+  op mbs-from-ops : Module OpDeclSet -> MembAxSet .
+  eq mbs-from-ops(M, Op Ops)
+   = if resultType(Op) :: Sort then
+       (mb getTerm(metaNormalize(M, term(Op))) : resultType(Op) [none].)
+       mbs-from-ops(M, Ops)
+     else
+       mbs-from-ops(M, Ops)
+     fi .
+  eq mbs-from-ops(M, none) = none .
+
+  --- mbs-from-subsorts(S, SSDS) returns memberships from subsorts of S in
+  --- SSDS .
+  op mbs-from-subsorts : Sort SubsortDeclSet -> MembAxSet .
+  eq mbs-from-subsorts(S, (subsort S' < S .) SSDS)
+   = (mb qid("X:" + string(S')) : S [none].)
+     mbs-from-subsorts(S, SSDS) .
+  eq mbs-from-subsorts(S, SSDS) = none [owise].
+
+  --- Returns true if module contains commutative relation with given name
+  op is-comm : Module Qid Sort -> Bool .
+  ceq is-comm(M, Q, Tp) = true
+   if (op Q : Tp1 Tp2 -> Tp' [comm AS].) Ops := getOps(M)
+   /\ sameKind(M, Tp, Tp1)
+   /\ sameKind(M, Tp, Tp2) .
+  eq is-comm(M, Q, Tp) = false [owise].
+
+  --- Returns true if attribute set contains associativity or identity
+  --- axioms.
+  op assoc-or-id? : AttrSet -> Bool .
+  eq assoc-or-id?(assoc AS) = true .
+  eq assoc-or-id?(id(T) AS) = true .
+  eq assoc-or-id?(left-id(T) AS) = true .
+  eq assoc-or-id?(right-id(T) AS) = true .
+  eq assoc-or-id?(AS) = false [owise] .
+
+  --- Returns true if module contains commutative relation with given name
+  op is-comm-rel : Module Qid Sort -> Bool .
+  ceq is-comm-rel(M, Q, Tp) = true
+   if (op Q : Tp1 Tp2 -> Tp' [comm AS].) Ops := getOps(M)
+   /\ sameKind(M, Tp, Tp1)
+   /\ sameKind(M, Tp, Tp2)
+   /\ sameKind(M, 'Bool, Tp')
+   /\ assoc-or-id?(AS) = false .
+  eq is-comm-rel(M, Q, S) = false [owise].
+endfm

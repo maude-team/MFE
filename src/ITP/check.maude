@@ -1,0 +1,627 @@
+--- Provides methods for getting equations that match or may match a term.
+fmod COMP-MATCH is
+  pr INT .
+  pr MODULE-FILTERS .
+
+  sort ExpandResult .
+  op {_} : VariableSet -> ExpandResult [ctor].
+  op noMatch : -> ExpandResult .
+
+  var AS           : AttrSet .
+  var GT           : GroundTerm .
+  var M            : Module .
+  var Op           : OpDecl .
+  var Ops          : OpDeclSet .
+  var Pat1 Pat2    : Term .
+  var Ptrn         : Term .
+  var Q            : Qid .
+  var St           : String .
+  var Sub1 Sub2    : Term .
+  var Subject      : Term .
+  var T T' T1 T2   : Term .
+  var TL TL'       : TermList .
+  var Tp Tp1 Tp2   : Type .
+  var TpL          : TypeList .
+  var V            : Variable .
+  var VS VS'       : VariableSet .
+  var NeTL NeTL'   : NeTermList .
+
+  --- Returns true if terms are of same kind.
+  op sameTermKind : Module Term Term -> Bool .
+  eq sameTermKind(M, T, T') = kindOf(M, T) == kindOf(M, T') .
+
+  --- Returns true if the pattern matches the subject.
+  --- 1st arg: Module terms are matched in.
+  --- 2nd arg: Pattern
+  --- 3rd arg: Subject
+  op match : Module Term Term -> Bool .
+  eq match(M, Ptrn, Subject)
+   = sameTermKind(M, Ptrn, Subject)
+      and-then (metaMatch(M, Ptrn, Subject, nil, 0) :: Substitution) .
+
+  --- This merges the results of the expandables function below together.
+  op merge : ExpandResult ExpandResult -> ExpandResult .
+  --- If one is noMatch, the other is no match.
+  eq merge(noMatch, noMatch) = noMatch .
+  eq merge(noMatch, {VS}) = noMatch .
+  eq merge({VS}, noMatch) = noMatch .
+  --- Otherwise, combine the variables together.
+  eq merge({VS}, {VS'}) = {VS ; VS'} .
+
+  --- Returns true if the term is "more specific" than just a variable of the
+  --- specified type.
+  --- The term must be well formed in the module and the type must be a
+  --- concrete type in the module.
+  op moreSpecific? : Module Term Type ~> Bool .
+  eq moreSpecific?(M, V, Tp) = not subtype?(M, Tp, getType(V)) .
+  eq moreSpecific?(M, T, Tp) = true [owise].
+
+  --- An op filter that accepts operator declarations of form "<.*>"
+  op braceQid : -> OpDeclFilter [ctor].
+  ceq accept(braceQid, Op)
+    = (substr(St, 0, 1) == "<") and
+      (substr(St, length(St) + -1, 1) == ">")
+   if St := string(qid(Op)) .
+
+  --- Returns true if a type has special constructors that would not be
+  --- constructed by only using the normal constructor definitions in the
+  --- specification.  As of Maude84c, this list includes FiniteFloat, Float
+  --- Char, String, Qid, Sort, Kind, Constant, and Variable.
+  op specialCtors : Module Type -> Bool .
+  eq specialCtors(M, Tp)
+   = filter(ctor and opResultType(M, Tp) and special and braceQid,
+            getOps(M)) =/= none .
+
+  op union : ExpandResult ExpandResult -> ExpandResult [comm].
+  --- If neither matches, return noMatch
+  eq union(noMatch, noMatch) = noMatch .
+  --- If one is noMatch, return other.
+  eq union({VS}, noMatch) = {VS} .
+  --- Otherwise, combine the variables together.
+  eq union({VS}, {VS'}) = {VS ; VS'} .
+
+  --- Returns true if the root symbol of the given term is commutative.
+  --- NOTE: This function assumes the module is flattened.
+  op rootIsComm : Module Term ~> Bool .
+  ceq rootIsComm(M, Q[T1, T2]) = true
+   if (op Q : Tp1 Tp2 -> Tp [comm AS].) Ops := getOps(M)
+   /\ sameKind(M, kindOf(M, T1), Tp1)
+   /\ sameKind(M, kindOf(M, T2), Tp2) .
+  eq rootIsComm(M, Q[T1, T2]) = false [owise].
+
+  --- Returns a variable set if the second term may match the first if one or
+  --- more variables in the second were expanded.  The variables in the set
+  --- correspond to variables that should be expanded.  Returns noMatch if
+  --- the termlists are incompatible.
+  --- 1st arg: Specification we are working in.
+  --- 2nd arg: Pattern
+  --- 3rd arg: Subject
+  --- NOTE: This function assumes the module is flattened.
+  op expandables : Module TermList TermList ~> ExpandResult [memo].
+  eq expandables(M, (T, NeTL), (T', NeTL'))
+   = merge(expandables(M, T, T'), expandables(M, NeTL, NeTL')) .
+  ceq expandables(M, T, GT) = {none}
+   if match(M, T, GT) .
+  --- Expand variable if term is more specific and var type is not Qid.
+  ceq expandables(M, T, V)
+    = if getType(V) :: Sort
+         and-then not specialCtors(M, getType(V))
+         and-then moreSpecific?(M, T, getType(V)) then
+	{V}
+      else
+        {none}
+      fi
+   if glbSorts(M, getType(V), leastSort(M, T)) : NeTypeSet .
+  ceq expandables(M, V, Q[TL]) = {none}
+   if glbSorts(M, leastSort(M, Q[TL]), getType(V)) : NeTypeSet .
+  ceq expandables(M, Q[Pat1, Pat2], Q[Sub1, Sub2])
+    = union(expandables(M, (Pat1, Pat2), (Sub1, Sub2)),
+            expandables(M, (Pat1, Pat2), (Sub2, Sub1)))
+   if rootIsComm(M, Q[Pat1, Pat2]) /\ rootIsComm(M, Q[Sub1, Sub2]) .
+  eq expandables(M, Q[TL], Q[TL']) = expandables(M, TL, TL') .
+  eq expandables(M, TL, TL') = noMatch [owise].
+endfm
+
+fmod COMP-EXPAND is
+  pr META-TERM .
+  pr MODULE-FILTERS .
+  pr TERM-SUBST .
+  pr COMP-MATCH .
+  pr ITP-BUILTIN-OPS .
+
+  var K            : Kind .
+  var M            : Module .
+  var Mb Mb'       : MembAx .
+  var Mbs          : MembAxSet .
+  var Op           : OpDecl .
+  var Ops          : OpDeclSet .
+  var S S'         : Sort .
+  var SS           : SortSet .
+  var Sub Sub'     : Substitution .
+  var T            : Term .
+  var V            : Variable .
+
+  --- Variable must have a sort type.
+  op expandTerm : Module MembAx Variable ~> MembAxSet .
+  ceq expandTerm(M, Mb, V)
+    = ctor-mbs-with-sort(S, M, include-subsort-decls)
+   if S := getType(V) .
+
+  op expandVar : MembAx Variable SortSet -> MembAxSet .
+  eq expandVar(Mb, V, S ; SS)
+   = substitute(Mb, V <- fixTerm(genVar("X", S), vars-itp(Mb) \ V))
+     expandVar(Mb, V, SS) .
+  eq expandVar(Mb, V, (none).SortSet) = none .
+
+  op expandVar : Module MembAx Variable OpDeclSet -> MembAxSet .
+  eq expandVar(M, Mb, V, Op Ops)
+   = substitute(Mb, V <- fixTerm(term(Op), vars-itp(Mb) \ V))
+     expandVar(M, Mb, V, Ops) .
+  eq expandVar(M, Mb, V, (none).OpDeclSet) = none .
+
+  --- Expand the first cterm to a list by substitution the variable
+  --- specified for each of the conditional terms in the list.
+  --- Returns a new conditional term list.
+  op expandVar : MembAx Variable MembAxSet -> MembAxSet .
+  ceq expandVar(Mb, V, Mb' Mbs)
+    = newMb(substitute(term(Mb), Sub),
+            sort(Mb),
+            substitute(condition(Mb), Sub)
+                /\ substitute(condition(Mb'), Sub'),
+            attrSet(Mb))
+      expandVar(Mb, V, Mbs)
+   if Sub' := freeVarSubst(vars-itp(Mb'), vars-itp(Mb) \ V)
+   /\ Sub := (V <- substitute(term(Mb'), Sub')) .
+  eq expandVar(Mb, V, (none).MembAxSet) = none .
+endfm
+
+--- This contains a
+fmod EMPTY-CHECKER is
+  pr META-MODULE-EXT .
+  pr TERM-COLLECTIONS .
+
+  var B            : Bool .
+  var K            : Kind .
+  var M            : Module .
+  var Mb           : MembAx .
+  var Mbs          : MembAxSet .
+  var Op           : OpDecl .
+  var Ops Ops'     : OpDeclSet .
+  var S S' : Sort .
+  var SS : SortSet .
+  var TpL : TypeList .
+  var TpS : TypeSet .
+  var V : Variable .
+  var VS : VariableSet .
+
+  --- Returns all the super sorts and kinds of the given type in the module.
+  --- The type should be a valid concrete type in the module.
+  op superTypes : Module Type ~> TypeSet .
+  eq superTypes(M, K) = K .
+  eq superTypes(M, S) = $superTypes(M, S, getSorts(M)) ; getKind(M, S) .
+
+  --- Implementation of superTypes.
+  op $superTypes : Module Sort SortSet ~> SortSet .
+  ceq $superTypes(M, S, S' ; SS) = S' ; $superTypes(M, S, S' ; SS)
+   if subtype?(M, S, S') .
+  eq $superTypes(M, S, SS) = none [owise].
+
+  --- Returns the types of the variables.
+  op varTypes : VariableSet -> TypeSet .
+  eq varTypes(V ; VS) = getType(V) ; varTypes(VS) .
+  eq varTypes(none) = none .
+
+  --- This returns the types that may not be empty.  Since the module
+  --- may contain conditional memberships, this is not necessarily
+  --- decidable, however it is decidable if there are no conditional
+  --- memberships.  If Bool is true conditional memberships will be
+  --- used, otherwise they will not.
+  op nonEmptyTypes : Module -> TypeSet [memo].
+  eq nonEmptyTypes(M)
+   = nonEmptyTypesImpl(M, getOps(M), getMbs(M), none, false) .
+
+  --- Implements nonEmptyTypes described above.
+  --- TODO: Extend function to handle polymorphic operators.
+  op nonEmptyTypesImpl : Module OpDeclSet MembAxSet TypeSet Bool
+                         -> TypeSet [memo].
+  --- Add type of operator non-polymorphic if type of all arguments is in
+  --- set.
+  ceq nonEmptyTypesImpl(M, Op Ops, Mbs, TpS, B)
+    = nonEmptyTypesImpl(M, Ops, Mbs, TpS ; superTypes(M, resultType(Op)), B)
+   if poly-args(attrSet(Op)) = nil
+   /\ resultType(Op) in TpS = false
+   /\ toTypeSet(argTypes(Op)) subset TpS .
+  --- Add type of membership sort if  all variables in a
+  --- membership has a type in the type set.
+  ceq nonEmptyTypesImpl(M, Ops, Mb Mbs, TpS, B)
+    = nonEmptyTypesImpl(M, Ops, Mbs, TpS ; superTypes(M, S), B)
+   if S := sort(Mb)
+   /\ S in TpS = false
+   /\ (B == true) or (condition(Mb) == nil)
+   /\ varTypes(vars-itp(term(Mb))) subset TpS .
+  eq nonEmptyTypesImpl(M, Ops, Mbs, TpS, B) = TpS [owise].
+endfm
+
+fmod CLAUSE-SIMPLIFY is
+  pr CLAUSE .
+  pr COMP-MATCH .
+  pr EMPTY-CHECKER .
+
+  var C C' C''     : Clause .
+  var M            : Module .
+  var Q            : Qid .
+  var S            : Sort .
+  var T T' T''     : Term .
+  var Tp           : Type .
+  var V V'         : Variable .
+  var VS           : VariableSet .
+
+  --- Attempts to simply a clause using special simplification rules.
+  --- Currently this is done via operations that recurse manually down the
+  --- parse tree.  It may make sense to change this to define a module with
+  --- simplification steps as rewrite rules, and then use metaRewrite on the
+  --- Clause within that module.
+  op simplify : Module Clause -> Clause .
+
+  --- Reduce terms if it is possible.
+  ceq simplify(M, (T = T')) = simplify(M, (T'' = T'))
+   if {T'', Tp} := metaReduce(M, T)
+   /\ (T == T'') = false .
+
+  eq simplify(M, (T = T)) = trueClause .
+
+  --- The next equation eliminates memberships is Maude can deduce the least
+  --- sort of the term is less than the sort itself.
+  ---
+  --- WARNING: This is safe even if module is not regular, however it is not
+  --- safe if module uses _==_ or owise, because Maude may compute a lower
+  --- least of the term, than it actually is.
+  ---
+  --- TODO: Consider taking union of maximal common subsorts of the
+  --- membership assertion.  Then we can form disjunction that T has one of
+  --- those sorts.  Note that in doing this, we either assume the module is
+  --- preregular, or we need to make sure we are not in the context of a
+  --- negation.  If module is not preregular, there may be sorts in the same
+  --- connected component the term belongs to that are not being considered.
+  ---
+  --- Here is an example:
+  ---      S'
+  ---     / \
+  ---   S0   S1
+  ---
+  --- What if the term is in both S0 and S1?  Maude may pick S0 as the least
+  --- sort, and if we expand on all common subsorts between S0 and S, we will
+  --- miss common subsorts between S1 and S.
+  ceq simplify(M, (T : S)) = trueClause
+   if subtype?(M, leastSort(M, T), S) .
+
+  --- The next equation looks for a disjunction containing an assertion that
+  --- a variable is not in a sort.  Such an assumption implies that the only
+  --- way the disjunction could be false is if the variable is in one of the
+  --- common subsorts between the sort and the variable.
+  ---
+  --- This equation should hold even if module is not regular or contains
+  --- unsafe operations because sort of variable is known.
+  ceq simplify(M, (forall V ; VS) not (V : S) or C)
+    = simplify(M, (forall V' ; VS) substituteC(C, V <- V'))
+   if subtype?(M, S, getType(V))
+   /\ V' := nextFreeVar(genVar(getName(V), S), (VS ; varsC(C)) \ V) .
+
+  --- The next 2 equations look for an existentially quantified variable
+  --- that should just equal a term that does not contain that variable.  In
+  --- this case, we can replace this with an assertion that T has the same
+  --- sort as the variable and eliminate the variable.
+  ---
+  --- This simplification should be safe even if the module is not regular
+  --- or unsound Maude features are used (i.e. _==_ or owise).
+  ceq simplify(M, (exists V ; VS) (V = T))
+    = simplify(M, (exists V ; VS) (T : getType(V)))
+   if V in vars-itp(T) = false .
+  ceq simplify(M, (exists V ; VS) (V = T) and C')
+    = simplify(M,
+               (exists V ; VS) (T : getType(V)) and substituteC(C', V <- T))
+   if V in vars-itp(T) = false .
+
+  --- This next two simplification equations eliminate quantified variables
+  --- if they are not referred to in the clause and the type of the variable
+  --- is not empty.
+  ---
+  --- The test to determine if a type is not empty is not guaranteed to work
+  --- if there are conditional memberships, but it does not need to worry
+  --- about regularity or unsound rewriting.
+  ceq simplify(M, (exists V ; VS) C) = simplify(M, (exists VS) C)
+   if V in varsC(C) = false
+   /\ getType(V) in nonEmptyTypes(M) .
+  ceq simplify(M, (forall V ; VS) C) = simplify(M, (forall VS) C)
+   if V in varsC(C) = false
+   /\ getType(V) in nonEmptyTypes(M) .
+
+  --- Next equations simply parse down simplification tree, simplifying
+  --- what they can.
+  ceq simplify(M, not C) = simplify(M, not C')
+   if C' := simplify(M, C) /\ C =/= C' .
+
+  ceq simplify(M, C and C'')     = simplify(M, C' and C'')
+   if C' := simplify(M, C) /\ C =/= C' .
+
+  ceq simplify(M, C or C'') = simplify(M, C' or C'')
+   if C' := simplify(M, C) /\ C =/= C' .
+
+  ceq simplify(M, (exists VS) C) = simplify(M, (exists VS) C')
+   if C' := simplify(M, C) /\ C =/= C' .
+
+  ceq simplify(M, (forall VS) C) = simplify(M, (forall VS) C')
+   if C' := simplify(M, C) /\ C =/= C' .
+
+  --- No simplification can be done, so quit.
+  eq simplify(M, C) = C [owise].
+endfm
+
+fmod PROOF-GENERATION is
+  pr CLAUSE-SIMPLIFY .
+  pr COMP-MATCH .
+  pr MODULE-FILTERS .
+  pr TERM-SUBST .
+
+  sorts ProofObligation ProofObligationSet .
+  subsort ProofObligation < ProofObligationSet .
+  op [_]_ : Term Clause -> ProofObligation [ctor format(d d d nt d)] .
+  op none : -> ProofObligationSet [ctor] .
+  op _;_ : ProofObligationSet ProofObligationSet -> ProofObligationSet
+     [ctor assoc comm id: none format(d d n d)] .
+
+  var Eq : Equation .
+  var Eqs : EquationSet .
+  var M : Module .
+  var Mb : MembAx .
+  var Mbs : MembAxSet .
+  var Op : OpDecl .
+  var Ops Ops' : OpDeclSet .
+  var MP : MatchPair .
+  var N : Nat .
+  var S : Sort .
+  var Sub : Substitution .
+  var T : Term .
+  var V : Variable .
+
+  var Cl : Clause .
+
+  eq [T] trueClause = none .
+  eq ([T] Cl) ; ([T] Cl) = ([T] Cl) .
+
+  op substToClause : Substitution -> Clause .
+  eq substToClause(V <- T ; Sub)
+   = if getType(V) :: Kind then
+       substToClause(Sub)
+     else
+       (T : getType(V)) and substToClause(Sub)
+     fi .
+  eq substToClause(none) = trueClause .
+
+  op reducible-formula : Module Term EquationSet -> Clause .
+  eq reducible-formula(M, T, Eq Eqs)
+   = reducible-formula1(M, T, Eq, 0) or reducible-formula(M, T, Eqs) .
+  eq reducible-formula(M, T, none) = falseClause .
+
+  op reducible-formula1 : Module Term Equation Nat ~> Clause .
+  ceq reducible-formula1(M, T, Eq, N)
+    = (substToClause(getSubstitution(MP))
+       and condToClause(substitute(condition(Eq), getSubstitution(MP))))
+      or reducible-formula1(M, T, Eq, s N)
+   if MP := metaXmatch(M, lhs(Eq), T, nil, 0, unbounded, N) .
+  eq reducible-formula1(M, T, Eq, N) = falseClause [owise].
+
+  op top-ctor-formula : Module Term MembAxSet -> Clause .
+  eq top-ctor-formula(M, T, Mb Mbs)
+   = top-ctor-formula1(M, T, Mb, 0) or top-ctor-formula(M, T, Mbs) .
+  eq top-ctor-formula(M, T, none) = falseClause .
+
+  op top-ctor-formula1 : Module Term MembAx Nat -> Clause .
+  ceq top-ctor-formula1(M, T, Mb, N)
+    = (substToClause(Sub) and condToClause(substitute(condition(Mb), Sub)))
+      or top-ctor-formula1(M, T, Mb, s N)
+   if Sub := metaMatch(M, term(Mb), T, nil, N) .
+  eq top-ctor-formula1(M, T, Mb, N) = falseClause [owise].
+
+  op patterns : Module Sort -> MembAxSet .
+  eq patterns(M, S)
+   = mbs(op-patterns(M, S))
+     filter(mbResultSubtype(M, S), getMbs(M)) .
+
+  --- Returns non-polymorphic operator declarations in module with result
+  --- sort less than or equal to given sort.
+  op op-patterns : Module Sort ~> OpDeclSet .
+  eq op-patterns(M, S) = $op-patterns(M, S, getOps(M), none) .
+
+  --- Tail recursive implementation of op-patterns.
+  op $op-patterns : Module Sort OpDeclSet OpDeclSet ~> OpDeclSet .
+  eq $op-patterns(M, S, Op Ops, Ops')
+   = $op-patterns(M, S, Ops,
+        if (poly-args(attrSet(Op)) == nil)
+              and-then subtype?(M, resultType(Op), S) then
+          Op Ops'
+        else
+          Ops'
+        fi) .
+
+  --- Returns the proof obligations required to show the conditional term
+  --- is sufficiently complete.
+  op proofObligation : Module MembAx -> ProofObligation .
+  eq proofObligation(M, Mb)
+   = [term(Mb)]
+     simplify(M,
+              ((forall vars-itp(term(Mb)))
+                  ((exists vars-itp(condition(Mb)) \ vars-itp(term(Mb)))
+                      condToClause(condition(Mb)))
+                  implies (top-ctor-formula(M, term(Mb),
+                                            patterns(M, sort(Mb)))
+                           or reducible-formula(M, term(Mb), getEqs(M))))) .
+endfm
+
+fmod CTOR-SUBSIGNATURE is
+  pr MODULE-FILTERS .
+  pr PROOF-GENERATION .
+  pr ITP-EXT-MOD .
+  pr ITP-LOGIC-OPS .
+
+  var AS : AttrSet .
+  var C : Constant .
+  var Cl : Clause .
+  var M : Module .
+  var Mb : MembAx .
+  var N : Nat .
+  var NL : NatList .
+  var Op : OpDecl .
+  var Ops Ops' : OpDeclSet .
+  var Q : Qid .
+  var Tp : Type .
+  var TpL TpL' : TypeList .
+  var TL TL' : TermList .
+  var POS : ProofObligationSet .
+
+  --- Filter returns defined operators that should be checked by sufficient
+  --- completeness checker.
+  op definedOp : -> OpDeclFilter .
+  eq definedOp = not ctor and not special .
+
+  op definedMb : -> MembAxFilter .
+  eq accept(definedMb, Mb) = isAx?(attrSet(Mb)) .
+
+  op ctorMb : -> MembAxFilter .
+  eq ctorMb = not definedMb .
+
+  --- Returns constructor operators in module.
+  op ctor-ops : Module ~> OpDeclSet .
+  eq ctor-ops(M) = $ctor-ops(M, getOps(M), none) .
+
+  --- Implementation of ctor-ops.
+  op $ctor-ops : Module OpDeclSet OpDeclSet ~> OpDeclSet .
+  eq $ctor-ops(M, Op Ops, Ops')
+   = $ctor-ops(M, Ops, Ops'
+       if isCtor?(Op) then
+         Op
+       else
+         newOp(qid(Op),
+               get-poly-kinds(M, poly-args(attrSet(Op)),
+                              resultType(Op) argTypes(Op)),
+               attrSet(Op))
+       fi) .
+  eq $ctor-ops(M, none, Ops) = Ops .
+
+  op ctor-subsignature : Module -> Module .
+  eq ctor-subsignature(M)
+   = setMbs(filter(ctorMb, getMbs(M)), setOps(ctor-ops(M), M)) .
+endfm
+
+fmod COMP-CHECK is
+  pr COMP-EXPAND .
+  pr EMPTY-CHECKER .
+  pr PROOF-GENERATION .
+  pr CTOR-SUBSIGNATURE .
+
+  var CtorM        : Module .
+  var Eq           : Equation .
+  var Eqs          : EquationSet .
+  var M            : Module .
+  var Mb           : MembAx .
+  var Mbs          : MembAxSet .
+  var Q            : Qid .
+  var Subject      : MembAx .
+  var Subjects     : MembAxSet .
+  var V            : Variable .
+  var VS           : VariableSet .
+
+  --- 1st argument is module
+  --- 2nd argument is subjects
+  --- 3rd is equations
+  --- 4th is constructor memberships
+  --- Note: This function assumes the module is flattened.
+  op checkCompleteness : Module MembAxSet EquationSet MembAxSet
+                         -> ProofObligationSet .
+
+  --- Discard equations and memberships that do not unify with subject.
+  ceq checkCompleteness(M, Subject, Eq Eqs, Mbs)
+    = checkCompleteness(M, Subject, Eqs, Mbs)
+   if (sameTermKind(M, lhs(Eq), term(Subject)) == false)
+   or ((match(M, lhs(Eq), term(Subject)) == false) and
+       (noMatch == expandables(M, lhs(Eq), term(Subject)))) .
+  ceq checkCompleteness(M, Subject, Eqs, Mb Mbs)
+    = checkCompleteness(M, Subject, Eqs, Mbs)
+   if (subtype?(M, sort(Mb), sort(Subject)) == false)
+   or ((match(M, term(Mb), term(Subject)) == false) and
+       (noMatch == expandables(M, term(Mb), term(Subject)))) .
+
+  --- If a subject has an unconditional match, then remove it.
+  --- This equation is only a performance enhancement, it does not affect
+  --- correctness (though it will have an effect on output if simplification
+  --- is not used).
+  ceq checkCompleteness(M, Subject, Eq Eqs, Mbs) = none
+   if sameTermKind(M, lhs(Eq), term(Subject))
+   /\ condition(Eq) = nil
+   /\ match(M, lhs(Eq), term(Subject)) .
+  ceq checkCompleteness(M, Subject, Eqs, Mb Mbs) = none
+   if subtype?(M, sort(Mb), sort(Subject))
+   /\ condition(Mb) = nil
+   /\ match(M, term(Mb), term(Subject)) .
+
+  --- Check to see if there is an equation that may match if a variable is
+  --- expanded, but does not currently.
+  ceq checkCompleteness(M, Subject, Eq Eqs, Mbs)
+    = checkCompleteness(M,
+                        expandTerm(M, Subject, V),
+                        Eq Eqs,
+                        Mbs)
+   if sameTermKind(M, lhs(Eq), term(Subject))
+   /\ not match(M, lhs(Eq), term(Subject))
+   /\ {V ; VS} := expandables(M, lhs(Eq), term(Subject)) .
+  ceq checkCompleteness(M, Subject, Eqs, Mb Mbs)
+    = checkCompleteness(M,
+                        expandTerm(M, Subject, V),
+                        Eqs,
+                        Mb Mbs)
+   if subtype?(M, sort(Mb), sort(Subject))
+   /\ not match(M, term(Mb), term(Subject))
+   /\ {V ; VS} := expandables(M, term(Mb), term(Subject)) .
+
+  eq checkCompleteness(M, Subject Mb Subjects, Eqs, Mbs)
+   = checkCompleteness(M, Subject, Eqs, Mbs) ;
+     checkCompleteness(M, Mb Subjects, Eqs, Mbs) .
+
+  eq checkCompleteness(M, none, Eqs, Mbs) = none .
+
+  --- Generate proof obligation after other options exhausted.
+  eq checkCompleteness(M, Subject, Eqs, Mbs)
+   = proofObligation(M, Subject) [owise].
+
+  --- Checks the completeness of the module.
+  --- Note: this function assumes the module is flattened and that all terms
+  --- in module are normalized.
+  op checkCompleteness : Module ~>  ProofObligationSet .
+  ceq checkCompleteness(M)
+    = checkCompleteness(CtorM,
+                        mbs(filter(definedOp, getOps(M)))
+                        filter(definedMb, getMbs(M)),
+                        getEqs(CtorM),
+                        mbs(filter(not special, getOps(CtorM)))
+                        getMbs(CtorM))
+   if wellFormed(M)
+   /\ getImports(M) = nil
+   /\ CtorM := ctor-subsignature(M) .
+
+  --- Returns proof obligations from checking sufficient completeness.
+  op checkCompleteness : Qid -> ProofObligationSet .
+  eq checkCompleteness(Q) = checkCompleteness(upModule(Q, true)) .
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Commented out as it is dead-code
+**************************************************************
+***(
+  --- Abbreviation for checkCompleteness
+  op cc : Module ~> ProofObligationSet .
+  eq cc(M) = checkCompleteness(M) .
+
+  op cc : Qid -> ProofObligationSet .
+  eq cc(Q) = checkCompleteness(Q) .
+***)
+endfm

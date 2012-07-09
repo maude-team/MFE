@@ -1,0 +1,13 @@
+mod BAG-CHOICE+CARD is
+ sort Nat .
+ op 0 : -> Nat [ctor metadata "rctor"] .
+ op s_ : Nat -> Nat [ctor metadata "rctor"] .
+ sorts NeBag Bag .
+ subsort Nat < NeBag < Bag .
+ op mt : -> Bag [ctor metadata "rctor"] .
+ op __ : Bag Bag -> Bag [ctor assoc comm id: mt] .
+ op |_| : Bag -> Nat [strat(0) frozen(1)] .
+ eq [card0] : | mt | = 0 .
+ eq [card1] : | N:Nat B:Bag | = s | B:Bag | .
+ rl [choice] : N:Nat NeB:NeBag => N:Nat .
+endm

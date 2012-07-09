@@ -1,0 +1,52 @@
+---- De:     Musab AlTurki <alturki@illinois.edu>
+---- Asunto:     A question about crchc3j
+---- Fecha:  24 de noviembre de 2010 00:33:09 GMT+01:00
+---- Para:   Francisco Dur‡n <duran@lcc.uma.es>
+----     
+---- Dear Paco,
+---- 
+---- I hope all is well. Another question came up to me while using crchc3j. Is 
+---- the membership predicate "::" supported by the tool? I am asking because 
+---- the following example returns an unexpected cp.
+
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod EXP is
+  ----pr BOOL-OPS . 
+
+  sorts Foo Bar Exp .
+  subsort Foo < Bar .
+
+  ops f b : -> Exp .
+  op h : Bar -> Exp .
+
+  var X : Foo . var Y : Bar . 
+
+  eq [eq_foo] : h(X) = f .
+ ceq [eq_bar] : h(Y) = b if (Y :: Foo) = false .
+endfm)
+
+(select tool CRC .)
+set print conceal off .
+set trace on . 
+set trace select on .
+trace select prepNarrowingSols 
+             .
+(ccr .)
+
+---- The Church-Rosser checker command results in the following cp:
+---- 
+---- Church-Rosser checking of EXP
+---- Checking solution:
+---- The following critical pairs cannot be joined:
+----   ccp for eq_foo and eq_bar
+----     f
+----     = b
+----     if false = false .
+---- The specification is sort-decreasing.
+---- 
+---- which doesn't seem to be correct. Could you please advise? thank you.
+---- 
+---- Regards,
+---- Musab

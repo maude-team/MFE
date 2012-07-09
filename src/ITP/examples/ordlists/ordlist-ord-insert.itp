@@ -1,0 +1,79 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- select WEBITP-TOOL .
+--- loop init-webitp .
+
+--- English:
+--- insert'ing an element in a ordered lists with
+--- returns always an ordered lists.
+
+--- ITP:
+(goal ordlist-ord-insert : ORDLIST |-
+      A{L:List? ; I:Int?}((((L:List?): OrdList) & ((I:Int?): Int))
+         => ((ord-insert(I:Int?, L:List?)): OrdList)) .)
+
+----------
+--- lemma: ordlist-list-ord-insert:
+----------
+(lem ordlist-list-ord-insert : A{E:Int? ; L:List?}
+     ((((E:Int?): Int) &  ((L:List?): List))
+   => ((ord-insert(E:Int?, L:List?)): List)) .)
+
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (E*Int? > V0#0*Int?) .)
+--- --- case true
+(auto .)
+--- --- case false
+(auto .)
+
+----------
+--- lemma: ordlist-ord-insert-aux
+----------
+(lem ordlist-ord-insert-aux : A{E1:Int? ; E2:Int? ; L:List?}
+     ((((E1:Int?): Int) & ((E2:Int?): Int) & ((L:List?): List) &
+       ((E1:Int? <= E2:Int?) = (true))
+        & ((E1:Int? : L:List?): OrdList))
+   => ((E1:Int? : ord-insert(E2:Int?, L:List?)): OrdList)) .)
+
+(ind on L:List? .)
+--- base cases:
+---
+(auto .)
+--- inductive case:
+(auto .)
+(split on (E2*Int? <= V0#0*Int?) .)
+--- case true
+(auto .)
+(ctor-term-split on (E1*Int? : V0#0*Int? : V0#1*List?) OrdList .)
+(auto .)
+--- case false
+(auto .)
+(ctor-term-split on (E1*Int? : V0#0*Int? : V0#1*List?) OrdList .)
+(auto .)
+
+---------
+--- goal: ordlist-ord-insert
+---------
+(ind on L:List? .)
+--- base cases:
+--- 1. empty lists
+(auto .)
+--- 2. unary lists
+(auto .)
+(split on (I*Int? <= V0#0*Int?) .)
+--- case I* Int? <= V0#0*Int? = true
+(auto .)
+--- case I* Int? <= V0#0*Int? = false
+(auto .)
+--- inductive case:
+(auto .)
+(split on (I*Int? <= V0#0*Int?) .)
+--- case I*Int? <= V0#0*Int? = true
+(auto .)
+--- case I*Int? <= V0#0*Int? = false
+(auto .)

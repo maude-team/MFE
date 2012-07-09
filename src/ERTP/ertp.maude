@@ -1,0 +1,28 @@
+---- load equation-resolution-theorem-prover.maude
+
+fmod ERTP-BANNER is
+  pr STRING .
+  op ertp-banner : -> String .
+  eq ertp-banner = "Equational Resolution Theorem Prover 0 - July 7th 2012" .
+endfm
+
+fmod ERTP-HELP is
+  pr META-LEVEL .
+  pr EXT-QID-LIST .
+
+  op ertp-help : -> QidList .
+  eq ertp-help =
+      string2qidList("Commands available in the ERTP tool:") '\n 
+      '\t '`( '\! 'prove '<goal> 'in '<module-name> '\o '. '`) '\n '\t '\t 'Proves 'goal '<goal> 'in 'module '<module-name>. '\n .
+
+endfm
+
+fmod ERTP-SIGN is
+  including FULL-MAUDE-SIGN .
+  sort @Goal@ .
+  op prove_in_. : @Goal@ @ModExp@ -> @Command@ [ctor] .
+  op ERTP help . : -> @Command@ [ctor] .
+----  op show state . : -> @Command@ [ctor] .
+----  op submit . : -> @Command@ [ctor] .
+----  op trust . : -> @Command@ [ctor] .
+endfm

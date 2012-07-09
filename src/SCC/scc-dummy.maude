@@ -1,0 +1,135 @@
+--- load full-maude25a.maude .
+
+fmod SCC-BANNER is
+  pr STRING .
+  op scc-banner : -> String .
+  eq scc-banner = "Sufficient Completeness Checker - Dummy" .
+endfm
+
+fmod SCC-HELP is
+  pr EXT-QID-LIST .
+  pr SCC-BANNER .
+  ops scc-help : -> QidList .
+  eq scc-help =
+      string2qidList("Commands available from the") '\n '\n
+      '\t '\t string2qidList(scc-banner) '\n '\n
+      '\s '\s '`( '\! 'check 'sc '\o '<module> '. '`) '\n
+      '\s '\s '`( '\! 'SCC 'help '\o '. '`) '\n
+      '\s '\s '`( '\! 'show 'state '\o '. '`) '\n
+----      '\s '\s '`( '\! 'trust '`[ '\o '<module-name> '`] '. '`) .
+      '\s '\s '`( '\! 'trust '\o '<module-name> '. '`) .
+endfm
+
+-------------------
+--- SCC Signature
+-------------------
+fmod SCC-SIGN is
+  including FULL-MAUDE-SIGN .
+
+  op SCC help . : -> @Command@ .
+  op check sc . : -> @Command@ .
+  op check sc_. : @ModExp@ -> @Command@ .
+  op show state . : -> @Command@ .
+  op trust_. : @ModExp@ -> @Command@ .
+----  op trust . : -> @Command@ .
+endfm
+
+fmod META-SCC-SIGN is
+  inc META-LEVEL .
+  pr META-FULL-MAUDE-SIGN .
+  pr UNIT .
+
+  op SCC-GRAMMAR : -> FModule .
+  eq SCC-GRAMMAR 
+    = addImports((including 'SCC-SIGN .), GRAMMAR) .
+endfm
+
+---(
+view Oid from TRIV to CONFIGURATION is
+  sort Elt to Oid .
+endv
+---)
+
+mod SCC is
+  pr DATABASE-HANDLING .
+  pr MAP{ModuleName, Oid} .
+  pr META-SCC-SIGN .
+  pr SCC-HELP .
+
+  ----
+  ---- Objects
+  ----
+  --- class identifiers
+  op SCC : -> Cid [ctor] .              --- SCC instances' class
+  op SCCBroker : -> Cid [ctor] .        --- SCC Broker class
+  --- object identifiers
+  op scc : Nat -> Oid [ctor] .          --- SCC instances' objectId
+  --- object attributes
+  op scc-count :_ : Nat -> Attribute [ctor] .                --- number of scc instances created
+  op scc-from :_ : Oid -> Attribute [ctor] .                 --- oid of the requester
+  op scc-mod :_ : Module -> Attribute [ctor] .               --- name of the module to be checked
+  op scc-mod-name :_ : ModuleName -> Attribute [ctor] .      --- name of the module to be checked
+  op scc-red :_ : Map{ModuleName, Oid} -> Attribute [ctor] . --- map of modules and scc instances
+  op scc-status :_ : SCCCheckStatus -> Attribute [ctor] .    --- TODO now it is just a message
+  sort SCCCheckStatus .
+  ops unchecked trusted : -> SCCCheckStatus [ctor] .
+
+  ----
+  ---- Messages
+  ----
+  sort SCCMsgBody .
+  op to_from_:_ : Oid Oid SCCMsgBody -> Msg [ctor] .
+  op scc-output : QidList -> SCCMsgBody [ctor] .
+  op scc-cmd : Term -> SCCMsgBody [ctor] .
+  op scc-mod-checked : ModuleName -> SCCMsgBody [ctor] .
+  op scc-trust-mods : ModuleName -> SCCMsgBody [ctor] .
+  op scc-show-state : -> SCCMsgBody [ctor] .
+
+  var  Atts Atts'  : AttributeSet .
+  var  Conf        : Configuration .
+  var  MN          : ModuleName .
+  var  Sta         : SCCCheckStatus .
+  var  N           : Nat .
+  vars O O' O'' O3 : Oid .
+  var  T           : Term .
+
+  op scc-show-state : Configuration -> QidList .
+  eq scc-show-state(< O : SCC | scc-mod-name : MN, scc-status : Sta, Atts > Conf)
+   = scc-show-state(Conf) 'Sufficient 'completeness 'check 'for eMetaPrettyPrint(MN) ': 
+     if Sta == unchecked
+       then 'unchecked
+       else 'trusted
+     fi '\n .
+  eq scc-show-state(Conf) = nil [owise] .
+
+  op scc-trust : Configuration ModuleName Oid -> Configuration .
+  eq scc-trust(< O : SCC | scc-mod-name : MN, scc-status : unchecked, scc-from : O', Atts > Conf, MN, O'')
+   = scc-trust(< O : SCC | scc-mod-name : MN, scc-status : trusted, scc-from : O', Atts > 
+               (to O' from O'' : scc-mod-checked(MN)) Conf, MN, O'') .
+  eq scc-trust(Conf, MN, O) = Conf [owise] .
+
+ crl [scc-dummy-check] :
+     < O : SCCBroker | scc-count : N, Atts >
+     (to O from O' : scc-cmd('check`sc_.[T]))
+  => < O : SCCBroker | scc-count : s(N), Atts >
+     < scc(N) : SCC | scc-mod-name : MN, scc-from : O', scc-status : unchecked >
+  if MN := parseModExp(T) .
+
+ crl [scc-trust-local] :
+     < O : SCCBroker | Atts > to O from O' : scc-cmd('trust_.[T])
+  => < O : SCCBroker | Atts > to O from O' : scc-trust-mods(MN)
+  if MN := parseModExp(T) .
+
+  rl [scc-show-state] :
+     < O : SCCBroker | scc-count : N, Atts > (to O from O' : scc-cmd('show`state`..@Command@))
+  => < O : SCCBroker | scc-count : N, Atts > 
+     if N == 0 
+       then (to O' from O : scc-output('There 'is 'nothing 'to 'show!))
+       else (to O from O' : scc-show-state)
+     fi .
+
+  rl [scc-show-help] :
+     < O : SCCBroker | scc-count : N, Atts > (to O from O' : scc-cmd('SCC`help`..@Command@))
+  => < O : SCCBroker | scc-count : N, Atts > 
+     (to O' from O : scc-output(scc-help)) .
+endm

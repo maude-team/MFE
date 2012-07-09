@@ -1,0 +1,174 @@
+\documentclass{article}
+
+\usepackage{AMMALanguages}
+
+\begin{document}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+                                        --- Example: Readers and Writers
+                                        --- Source:  All About Maude ...
+                                        --- Ref.: Sections 12.3 and 12.4
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(mod READERS-WRITERS is
+  sort NewNat .
+  op 0 : -> NewNat [ctor] .
+  op s : NewNat -> NewNat [ctor] .
+
+  sort Config .
+  op <_`,_> : NewNat NewNat -> Config [ctor] .       --- readers/writers
+
+  vars R W : NewNat .
+
+  rl [wrt+] : < 0 , 0 > => < 0 , s(0) > .
+  rl [wrt-] : < R , s(W) > => < R , W > .
+  rl [rdr+] : < R , 0 > => < s(R) , 0 > .
+  rl [rdr-] : < s(R) , W > => < R , W > .
+endm)
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+(mod READERS-WRITERS-PREDS is
+  pr READERS-WRITERS .
+  sort NewBool .
+
+  ops tt ff : -> NewBool [ctor] .
+  ops mutex one-writer : Config -> NewBool [frozen] .
+
+  vars M N : NewNat .
+
+  eq mutex(< s(N), s(M) >) = ff .
+  eq mutex(< 0, N >) = tt .
+  eq mutex(< N, 0 >) = tt .
+  eq one-writer(< N, s(s(M)) >) = tt .
+  eq one-writer(< N, s(0) >) = tt .
+  eq one-writer(< N, 0 >) = tt .
+endm)
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+(mod READERS-WRITERS-ABS is
+  inc READERS-WRITERS-PREDS .
+  var N : NewNat .
+  eq [abs] : < s(s(N)), 0 > = < s(0), 0 > .
+endm)
+\end{lstlisting}
+
+\section{Proof Script}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+(check coherence READERS-WRITERS-ABS .)
+(ChC submit .)                ---- the ChC submits all proof obligations 
+(CRC submit .)      ---- 
+(MTT trust READERS-WRITERS-ABS .)
+(ITP trust READERS-WRITERS-ABS#0@0 .)  ---- The ITP trusts its main goal 
+                                       ---- (methods for this proofs are 
+                                       ---- not available yet)
+\end{lstlisting}
+
+\section{Step by step:}
+
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ChC show state .)                           ---- shows ChC state
+There is nothing to show!
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (CRC show state .)                           ---- shows CRC state
+There is nothing to show!
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ITP show state .)                           ---- shows ITP state
+There is nothing to show!
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (MTT show state .)                           ---- shows MTT state
+There is nothing to show!
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (SCC show state .)                           ---- shows SCC state
+There is nothing to show!
+\end{lstlisting}
+	
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (check coherence READERS-WRITERS-ABS .)
+Coherence checking of READERS-WRITERS-ABS
+Result:
+The following critical pairs cannot be rewritten:
+  cp READERS-WRITERS-ABS1 for abs and rdr-
+    < s(0),0 >
+    => < s(#1:NewNat),0 > .
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ChC show state .)
+Coherence check for READERS-WRITERS-ABS : 1 cps non-terminating non-Church-Rosser
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ChC submit .)      ---- the ChC submits all proof obligations 
+The goal for critical pair READERS-WRITERS-ABS1 has been submitted to the ITP
+The Church-Rosser goal for module READERS-WRITERS-ABS has been submitted to the CRC 
+The termination goal for module READERS-WRITERS-ABS has been submitted to the MTT
+=================================
+label-sel: READERS-WRITERS-ABS1#0@0
+=================================
+A{#1:NewNat} < s(0),0 > = < s(#1:NewNat),0 >
++++++++++++++++++++++++++++++++++
+Church-Rosser checking of READERS-WRITERS-ABS
+Checking solution:
+All critical pairs have been joined.
+The specification is locally-confluent.
+The specification is sort-decreasing.
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (CRC show state .)
+State of the CRC:
+Church-Rosser check for READERS-WRITERS-ABS : 0 cps 0 mas non-terminating
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (CRC submit .)
+The termination goal for module READERS-WRITERS-ABS has been submitted to the MTT
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (MTT trust READERS-WRITERS-ABS .)
+The module READERS-WRITERS-ABS has been checked terminating.
+The module READERS-WRITERS-ABS has been checked terminating.
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (MTT show state .)
+Termination check for READERS-WRITERS-ABS : trusted
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ITP show -state .) 
+Proof  Goal                                      State     Source    
+-----  ----------------------------------------  --------  --------  
+0*     READERS-WRITERS-ABS1#0@0                  Open(1)   ChC(0)
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ITP trust READERS-WRITERS-ABS1#0@0 .)    ---- The ITP trusts its 
+               ---- main goal (methods for this proofs are not available
+Goal READERS-WRITERS-ABS1#0@0 trusted.
+The critical pair READERS-WRITERS-ABS1 has been discharged.
+\end{lstlisting}
+
+\begin{lstlisting}[style=AMMA, language=Maude, numbers=none]
+Maude> (ITP show state .)
+Proof  Goal                                      State     Source    
+-----  ----------------------------------------  --------  --------  
+0*     READERS-WRITERS-ABS1#0@0                  Trusted   ChC(0)
+
+SUCCESS: module READERS-WRITERS-ABS is coherent
+\end{lstlisting}
+\end{document}

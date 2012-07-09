@@ -1,0 +1,10 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English: 
+--- If we append two lists, we always obtain a list
+--- ITP
+(goal list-append : LIST-ITP
+   |- A{L1:List? ; L2:List?}((((L1:List?): List) & ((L2:List?): List))
+       => ((append(L1:List?, L2:List?)): List)) .)
+(ind* on L1:List? .)

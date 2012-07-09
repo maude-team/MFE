@@ -1,0 +1,19 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- An ordered lists is a list.
+
+--- ITP:
+(goal ordlist-insert : ORDLIST |-
+      A{L:List?}(((L:List?): OrdList)
+         => ((L:List?): List)) .)
+
+(auto .)
+(ctor-split on (L*List?) OrdList .)
+--- case L*List? = nil
+(auto .)
+--- case L*List? = V0#0:Int? : nil
+(auto .)
+--- case L*List? = V0#0:Int? : V0#1:Int? : V0#2:List?
+(auto .)

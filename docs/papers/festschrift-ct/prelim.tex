@@ -1,0 +1,211 @@
+\section{Object-Based Programming and User Interfaces in Maude}
+\label{sec.prelim}
+
+We assume that the reader is familiar with the basics of rewriting
+logic and Maude, and refer to~\cite{CDELMMT:2007-book} for 
+an introduction to these.
+
+Maude can be used not only to define domain-specific languages
+or tools, but also to build environments for such languages and tools.
+In such applications, the predefined $\tcode{LOOP-MODE}$ module can 
+be used to handle
+the input/output and to maintain the persistent state of the language
+environment or tool. This section explains some basic background on how
+object-based systems, which naturally model distributed systems in Maude,
+and the $\tcode{LOOP-MODE}$ module are used to define MFE's 
+interactive infrastructure as an extension of Full Maude.
+
+\paragraph{\bf Object-based programming.}
+Maude supports the modeling of object-based systems in the
+predefined $\tcode{CONFIGURATION}$ module that declares sorts
+representing the essential concepts of object, message, and
+configuration, along with notation for object syntax that serves
+as a common language for specific object-based systems. 
+The basic sorts defined in \tcode{CONFIGURATION} are \tcode{Object},
+\tcode{Msg}, and \tcode{Configuration}. A configuration is
+a multiset of objects and messages that represent a possible system state.
+Configurations are formed by multiset union, represented by empty syntax \verb~__~,
+starting from singleton objects and messages.
+The empty configuration is represented by the constant \tcode{none}. 
+
+%A typical configuration has the form 
+
+%\begin{alltt}
+%\(\obj{Ob\({}_{1}\)} \dots \obj{Ob-m} \obj{Mes-1} \dots \obj{Mes-n}\)
+%\end{alltt}
+
+%where $\obj{Ob-1} \dots \obj{Ob-m}$ are objects,
+%$\obj{Mes-1} \dots \obj{Mes-n}$ are messages, and the order is immaterial.
+
+\begin{small}
+\begin{verbatim}
+  sort Configuration .
+  subsorts Object Message < Configuration .
+  op none : -> Configuration [ctor] .
+  op __ : Configuration Configuration -> Configuration
+      [ctor assoc comm id: none] .
+\end{verbatim}
+\end{small}
+%
+In general, a rewrite rule for an object-based system has the form
+
+{\small \ttfamily
+\begin{tabbing}
+\     \ cr\=l [\textit{r}] :\\
+      \> \(\textit{Obj}_1\;\ldots\;\textit{Obj}_m\;\textit{Msg}_1\;\ldots\;\textit{Msg}_n\) \\
+      \> => \= \(\textit{Obj}'_1\;\ldots\;\textit{Obj}'_j\;\textit{Obj}_{m+1}\;\ldots\;\textit{Obj}_p\;\textit{Msg}'_1\;\ldots\;\textit{Msg}'_q\) \\
+      \> if \textit{Cond} .
+\end{tabbing}
+\rmfamily }
+
+%\begin{alltt}
+%rl \(Ob_{1} \dots \obj{Ob-m} \obj{Mes-1} \dots \obj{Mes-n}\)
+%=> \(\obj{Ob'-1} \dots \obj{Ob'-j} \obj{Ob-m+1} \dots \obj{Ob-p} \obj{Mes'-1} \dots \obj{Mes'-q}\; .\)
+%\end{alltt}
+
+\noindent where objects \texttt{\(\textit{Obj}'_1 \ldots \textit{Obj}'_j\)} are updated versions of objects
+\texttt{\(\textit{Obj}_1 \ldots \textit{Obj}_m\)}, for $j \leq m$, 
+\texttt{\(\textit{Obj}_{m+1} \ldots \textit{Obj}_p\)} are newly created objects,
+\texttt{\(\textit{Msg}_1 \ldots \textit{Msg}_n\)} are consumed messages, 
+and \texttt{\(\textit{Msg}'_1 \ldots \textit{Msg}'_q\)} are new messages.
+
+The user is free to define any object or message syntax that is convenient.
+However, for uniformity in identifying objects and message receivers,
+the adopted convention is that {\em the first argument of an object constructor should be its identifier}, and {\em the first argument of a
+message constructor should be the identifier of its addressee}. Module $\tcode{CONFIGURATION}$
+provides an object syntax that serves as a common notation that can be used by
+developers of object-based system specifications, as is the case
+in Full Maude. This module introduces sorts $\tcode{Oid}$ for
+object identifiers, $\tcode{Cid}$ for class identifiers,
+$\tcode{Attribute}$ for named elements of an object's state,
+and $\tcode{AttributeSet}$ for multisets of attributes. 
+In this syntax, objects have the general form
+\texttt{\(\texttt{<} \; \textit{O} \; \texttt{:} \; \textit{C} \; \texttt{|} \; \textit{a}_1 \texttt{:} \textit{v}_1
+\texttt{,} \; ... \texttt{,} \; \textit{a}_n \texttt{:} \textit{v}_n \; \texttt{>}\)}
+%\begin{alltt}
+%< O : C | \(\obj{att-1} \dots \obj{att-k}\) >
+%\end{alltt}
+where \texttt{\textit{O}} is an object identifier, \texttt{\textit{C}} is a class identifier, and 
+the \texttt{\(\textit{a}_i \texttt{:} \textit{v}_i\)} are 
+pairs of an attribute name $\textit{a}_i$ and a value $\textit{v}_i$, for $1\leq i\leq n$. 
+
+%are the object's attributes. Attribute sets
+%are formed from singleton attributes by a multiset union operator $\_,\_$
+%with identity $\tcode{none}$, the empty multiset.
+
+Full Maude provides convenient notation for object-oriented modules in which classes are declared with
+the syntax 
+{\small \ttfamily
+\begin{tabbing}
+\ \ class \textit{C} | \(\textit{a}_1\) : \(\textit{S}_1\), ..., \(\textit{a}_n\) : \(\textit{S}_n\) .
+\end{tabbing}
+\rmfamily}
+\noindent where \texttt{\textit{C}} is the name of the class,
+the \texttt{\(\textit{a}_i\)} are attribute identifiers, and the \texttt{\(\textit{S}_i\)} are the sorts of the corresponding
+attributes. Class inheritance is directly supported by Maude's order-sorted type structure.
+A subclass declaration
+{\small
+\begin{alltt}
+  subclass \textit{C} < \textit{C}' .
+\end{alltt}
+}
+\noindent is just a particular case of a subsort
+declaration \texttt{\(\textit{C}\) < \(\textit{C}\)'}. The effect of a subclass declaration is that the attributes,
+messages, and rules of all the superclasses, together with the newly defined
+attributes, messages, and rules of the subclass, characterize the structure and
+behavior of the objects in the subclass.
+In what follows, we use this convenient object-oriented notation for defining classes.
+See~\cite{CDELMMT:2007-book} for further details on this notation and on the 
+transformation of object-oriented modules into system modules. 
+
+\paragraph{\bf User interfaces.}
+Module $\tcode{LOOP-MODE}$ specifies in Maude
+a general input/output facility by a read-eval-print loop
+using object-based concepts.
+A {\em loop object} is a term of the form \verb~[In,St,Out]~ where
+\verb~In~ is an input stream, \verb~Out~ is an output stream, and 
+\verb~St~ is its state. 
+%Operator
+%\begin{alltt}
+%op [_,_,_] : QidList State QidList -> System [...] .
+%\end{alltt}
+%can be seen as an object, called the {\em loop object}, with an input
+%stream (the first argument), an output stream (the third argument), and
+%a state (given by the second argument). 
+%In the current release only
+%one input stream is supported (the current terminal). 
+One can think
+of the input and output events as implicit {\em rewrites} that transfer
+the input and output data between two objects, namely the loop object
+and the user (or terminal) object.
+
+Loop objects are constructed with the operator 
+\begin{verbatim}
+  op [_,_,_] : QidList State QidList -> System [...] .
+\end{verbatim}
+Besides having input and output streams,
+terms of sort $\tcode{System}$ give a generic way for maintaining a state
+in its second component. In fact, sort $\tcode{State}$ in
+$\tcode{LOOP-MODE}$ does not have any constructors, giving complete
+flexibility for defining the terms we want to have for representing
+the state of the loop. In MFE, we represent state terms as
+configurations of objects and messages, by declaring sort {\tt Configuration}
+as subsort of {\tt State}.
+
+Rewrite rules define the interaction of the state with the loop
+and the changes produced in the state by the actions requested by the user.
+In order to generate in Maude an {\em interface} for interacting with an application,
+the language for interaction needs to be defined by a data type for commands and other constructs.
+In this way, a rule can detect when a valid request has been introduced
+by the user, and if the state of the system allows it, passes it as the next
+action to be attempted. For the other direction of interaction, a rule
+detects when the state has a response to be output and, in that case, 
+it places it in the output component of the loop object.
+
+\paragraph{\bf Full Maude.}
+In Full Maude, the persistent state of the read-eval-print loop
+ provided by module
+\texttt{LOOP-MODE} is given by a single object of class 
+\texttt{DatabaseClass}. 
+%
+Objects of this class have: an attribute \texttt{db} of sort 
+\texttt{Database} to keep the actual database where all the
+modules entered to the system are stored,
+an attribute \texttt{default} denoting the name of the current 
+default module, and attributes \texttt{input} and \texttt{output}
+that simplify the communication between the read-eval-print loop 
+and the database object. 
+%
+Using the above syntactic sugar for object-oriented modules, 
+we can declare such a class as:
+
+\begin{small}
+\begin{verbatim}
+ class DatabaseClass | 
+   db : Database, default : ModName, input : TermList, output : QidList .
+\end{verbatim}
+\end{small}
+%
+Inputs from the user into Full Maude are parsed using the built-in \texttt{metaParse} function. For such parsing, Full Maude uses
+the \texttt{FULL-MAUDE-SIGN} module, in which we can find the 
+declarations so that any valid input can be parsed. 
+In particular, we find in these modules, among others, sorts 
+\verb~@Module@~, 
+\verb~@ModExp@~, 
+and \verb~@Command@~, of modules, 
+module expressions, and commands, respectively,
+and syntax declarations such as:
+
+\begin{small}
+\begin{verbatim}
+ op select_. : @ModExp@ -> @Command@ .
+ op show module_. : @ModExp@ -> @Command@ .
+ op mod_is_endm : @Interface@ @SDeclList@ -> @Module@ .
+ op omod_is_endom : @Interface@ @ODeclList@ -> @Module@ .
+\end{verbatim}
+\end{small}
+%
+for commands
+\texttt{select} and \texttt{show module}, and for system and object-oriented modules. 
+
+The behavior of Full Maude upon the reception of new inputs from the user is specified by rewrite rules. For the different commands, different actions are accomplished. 

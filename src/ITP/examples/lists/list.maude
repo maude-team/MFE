@@ -1,0 +1,88 @@
+---o spec LIST is
+fmod LIST-ITP is
+  protecting INT .
+
+  ---o kind Bool? = [Bool] .
+  sort Bool? .
+  subsort Bool < Bool? .
+
+  ---o kind Int? = [Int] .
+  sort Int? .
+  subsort Int < Int? .
+
+  ---o kind List? = [NeList, List] .
+  sorts NeList List List? .
+  subsort NeList < List? .
+  subsort List < List? .
+
+  op nil : -> List? .
+  op _:_ : Int? List? -> List? .
+  op append : List? List? -> List? .
+  op reverse : List? -> List? .
+  op isMember : Int? List? -> Bool? .
+  op delete : Int? List? -> List? .
+ 
+  vars I J : Int? .
+  vars L L1 L2 : List? .
+
+  ---------
+  --- sort: NeList 
+  ---------
+  cmb (I : L): NeList if I : Int /\ L : List .
+
+  ---------
+  --- sort: List
+  --------- 
+  mb nil : List .
+  ---o cmb L : List if L : NeList .
+  subsort NeList < List .
+
+  -------------
+  --- function: delete 
+  -------------
+  eq delete(I, nil) = nil .
+  ceq delete(I, J : L) = L 
+      if I <= J = true /\ J <= I = true  .
+  ceq delete(I, J : L) = (J : delete(I,L)) 
+      if I < J = true .
+  ceq delete(I, J : L) = (J : delete(I, L))
+      if I > J = true .
+
+  --------------
+  --- operation: append
+  --------------
+  eq append(nil, L) = L .
+  eq append((I : L1), L2) = I : append(L1, L2) .
+
+  --------------
+  --- operation: reverse
+  --------------
+  eq reverse(nil) = nil .
+  eq reverse(I : L) = append(reverse(L), I : nil) .
+
+  --------------
+  --- operation: isMember
+  --------------
+  eq isMember(I, nil) = false .
+  ceq isMember(I, J : L) = true
+      if I = J .
+  ceq isMember(I, J : L) = isMember(I, L)
+      if I < J .
+  ceq isMember(I, J : L) = isMember(I, L)
+      if I > J .
+
+  -------------
+  --- function: delete 
+  -------------
+  eq delete(I, nil) = nil .
+  ceq delete(I, J : L) = L 
+      if I <= J = true /\ J <= I = true  .
+  ceq delete(I, J : L) = (J : delete(I,L)) 
+      if I < J = true .
+  ceq delete(I, J : L) = (J : delete(I, L))
+      if I > J = true .
+
+endfm
+ 
+
+

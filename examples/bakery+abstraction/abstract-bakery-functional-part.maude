@@ -1,0 +1,104 @@
+(set include BOOL off .)
+
+(fmod MNAT-2 is
+   protecting TRUTH-VALUE .
+   sort MNat .
+   op 0 : -> MNat [ctor] .
+   op s_ : MNat -> MNat [ctor] .
+   op _<_ : MNat MNat -> Bool .
+   ops 1 2 3 4 5 : -> MNat .
+   vars N M : MNat .
+   eq 1 = s 0 . eq 2 = s 1 . eq 3 = s 2 . eq 4 = s 3 . eq 5 = s 4 .
+   eq [MNat-0] : N < 0 = false .
+   eq [MNat-1] : 0 < s(M) = true .
+   eq [MNat-2] : s N < s M = N < M .
+   ops min max : MNat MNat -> MNat [assoc comm] .
+   eq [MNat-3] : min(N, N) = N .
+   eq [MNat-4] : min(0, N) = 0 .
+   eq [MNat-5] : min(s N, s M) = s min(N, M) .
+   eq [MNat-6] : max(N, N) = N .
+   eq [MNat-7] : max(0, N) = N .
+   eq [MNat-8] : max(s N, s M) = s max(N, M) .
+ endfm)
+
+(fmod MNATINF-2 is
+   protecting MNAT-2 .
+   sort MNat MNatInf .
+   subsort MNat < MNatInf .
+   op oo : -> MNatInf [ctor] .
+   op s_ : MNatInf -> MNatInf [ctor] .
+   op _<_ : MNatInf MNatInf -> Bool .
+   op min : MNatInf MNatInf -> MNatInf [assoc comm] .
+   var N : MNat . vars M M' : MNatInf .
+   eq [MNatInf-0] : s oo = oo .
+   eq [MNatInf-1] : oo < oo = false .
+   eq [MNatInf-2] : 0 < oo = true .
+   eq [MNatInf-3] : oo < 0 = false .
+   eq [MNatInf-4] : oo < s N = oo < N .
+   eq [MNatInf-5] : s N < oo = N < oo .
+   eq [MNatInf-6] : min(M, M) = M .
+   eq [MNatInf-7] : min(0, M) = 0 .
+   eq [MNatInf-8] : min(s M, s M') = s min(M, M') .
+   eq [MNatInf-9] : min(oo, M) = M .
+ endfm)
+
+(mod BAKERY-2 is
+   protecting MNATINF-2 .
+   protecting BOOL-OPS .
+   sorts Id Mode BProcess BState GBState .
+   ops sleep wait crit : -> Mode [ctor] .
+   op <_`,_`,_> : MNat Mode MNat -> BProcess [ctor] .
+   subsort BProcess < BState .
+   op __ : BState BState -> BState [ctor assoc comm id: none] .
+   op none : -> BState [ctor] .
+   op `[`[_`]`] : BState -> GBState [ctor] .
+   var P : Mode . vars I X N : MNat . var M : MNatInf . var BSt : BState .
+
+   ---- initial state
+   op initial : MNat -> BState .
+   eq initial(s N) = < s N, sleep, 0 > initial(N) .
+   eq initial(0) = none .
+
+   ---- max of the numbers assigned to processes (0 if none)
+   op maxNumber : BState -> MNat .
+   op maxNumber : BState MNat -> MNat .
+   eq [max-1] : maxNumber(BSt) = maxNumber(BSt, 0) .
+   eq [max-2] : maxNumber(< I, P, X > BSt, N) 
+     = maxNumber(BSt, max(N, X)) .
+   eq [max-3] : maxNumber(none, N) = N .
+
+   ---- min. of the nonzero numbers assigned to processes (oo if none)
+   op minNzNumber : BState -> MNatInf .
+   op minNzNumber : BState MNatInf -> MNatInf .
+   eq [min-1] : minNzNumber(BSt) = minNzNumber(BSt, oo) .
+   eq [min-2] : minNzNumber(< I, P, 0 > BSt, M) = minNzNumber(BSt, M) .
+   eq [min-3] : minNzNumber(< I, P, s X > BSt, M) 
+     = minNzNumber(BSt, min(M, s X)) .
+   eq [min-4] : minNzNumber(none, M) = M .
+ endm)
+
+(mod ABSTRACT-BAKERY is
+   including BAKERY-2 .
+   var  P : Mode .
+   var  BSt : BState .
+   vars I N : MNat .
+    
+  ceq [AB] : 
+     [[ BSt ]] 
+     = [[ dec(BSt) ]] 
+     if 1 < minNzNumber(BSt) and minNzNumber(BSt) < oo . ---- no one has number 1
+
+   op dec : BState -> BState . ---- decreases (by 1) the number of each of the processes in the BState
+   eq dec(< I, P, 0 > BSt) = < I, P, 0 > dec(BSt) .
+   eq dec(< I, P, s N > BSt) = < I, P, N > dec(BSt) .
+   eq dec(none) = none .
+ endm)
+  
+(ITP show state .)
+(new-goal in : MNAT |- (A { X:PNat ; Y:PNat} ((X < Y) = (Y < X))) .)
+(goal in : (A { BSt:BState } ((minNzNumber(BSt:BState) < oo) = (0 < maxNumber(BSt:BState)))) .)
+eof
+(lem distributivity : (A { X:PNat ; Y:PNat ; Z:PNat } ((X * (Y + Z)) = ((X * Y) + (X * Z)))) .)
+(ind* on X:PNat .)
+(ind* on X:PNat .)
+ 

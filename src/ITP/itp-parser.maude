@@ -1,0 +1,1016 @@
+--- This theory defines sorts in the module
+fth ITP-USER-THEORY is
+  --- UserMode represents a module.
+  sort UserModule .
+  --- UserToken represents a label.
+  sort UserToken .
+  sort CtorDefSet .        --- A set of constructor definitions in goal.
+  op none : -> CtorDefSet .
+  sort UserVar .           --- A variable in the user's module.
+  sort UserTerm .          --- A term in the user's module.
+  sort UserTermSet .       --- A set of terms in user's module.
+  op none : -> UserTermSet .
+  sort UserSort .          --- A type in the user's module.
+  sort UserOpName .        --- Name of an operator in the user's module.
+  sort UserSubstitution .  --- A substitution in the user's module.
+  sort UserSentence .      --- A formula in user's module.
+endfth
+
+fmod ITP-COMMANDS{X :: ITP-USER-THEORY} is
+  --- We define the sort Input for user commands.
+  sorts Input .
+  --- Make given goal the current goal.
+  op sel_. : X$UserToken -> Input [ctor] .
+  --- Show complete module of current goal.
+  op show-all`. : -> Input [ctor] .
+  --- Show current formula to prove.
+  op show-goal`. : -> Input [ctor] .
+  --- Show hypothesis axioms in goal.
+  op show-hyps`. : -> Input [ctor] .
+  --- Show all axioms in goal containing the given operator.
+  op show-rules`with_. : X$UserOpName -> Input [ctor].
+  --- Define a new goal.
+  op goal_:_|-_. : X$UserToken X$UserModule X$UserSentence -> Input [ctor] .
+  --- Parses term in module with given name.
+  op parse`(_`)in_. : X$UserTerm X$UserModule -> Input [ctor] .
+  --- Parses term in current module.
+  op parse`(_`). : X$UserTerm -> Input [ctor] .
+  --- Construct a new lemma.
+  op lem_:_. : X$UserToken X$UserSentence -> Input [ctor] .
+  op ex-lem_:_. : X$UserToken X$UserSentence -> Input [ctor] .
+  op auto`. : -> Input [ctor] .
+  --- Split with no explicit case name.
+  op split`on_. : X$UserTerm -> Input .
+  --- Split on term with prefix for label of case.
+  op split`on`(_`)lbl_. : X$UserTerm X$UserToken -> Input [ctor] .
+  op ctor-split`on`(_`)_. : X$UserTerm X$UserSort -> Input [ctor] .
+  --- Instantiate
+  op a-inst_with_. : X$UserToken X$UserSubstitution -> Input [ctor] .
+  op e-inst_. : X$UserToken -> Input [ctor] .
+  op e-inst`with`(_`). : X$UserSubstitution -> Input [ctor] .
+  op c-ind`on`(_`). : X$UserTerm -> Input [ctor] .
+  --- This command interprets the formula Alpha as a logically equivalent
+  --- conjunction Alpha_1 /\ ... /\ Alpha_n and creates n new subgoals ---
+  --- each with one of the formulas Alpha_i.
+  op cnj`. : -> Input [ctor].
+  --- Adds all antecedents in formula to module as equations and memberships
+  --- or to labeled formulas.
+  op imp`. : -> Input [ctor] .
+  --- Makes all variables in the outermost universal quantifier constants.
+  op cns`. : -> Input [ctor] .
+  --- Makes a particular variable in the outermost universal quantifier
+  --- a constant.
+  op cns_. : X$UserVar -> Input [ctor].
+  op simp`. : -> Input [ctor] .
+  op rwr`. : -> Input [ctor] .
+  op idt`. : -> Input [ctor] .
+  op ind`on_. : X$UserVar -> Input [ctor] .
+  op ind*`on_. : X$UserVar -> Input [ctor] .
+  op ctor-term-split`on`(_`)_. : X$UserTerm X$UserSort -> Input [ctor] .
+  op sort-ctor-split`on_. : X$UserTerm -> Input [ctor] .
+  op drv`(_`). : X$UserTerm -> Input [ctor] .
+
+  --- Performs cover set induction on the current goal.
+  --- Arguments
+  ---   First: Names of constructor memberships to
+  ---  Second: Seed
+  ---   Third: Additional patterns to expand against.
+  op cov`using_on_. : X$CtorDefSet X$UserTerm -> Input [ctor].
+
+  --- Performs coverset induction, but also applies auto to all generated
+  --- subgoals.
+  op cov*`using_on_. : X$CtorDefSet X$UserTerm -> Input [ctor] .
+
+  --- Performs constructor splitting on variables in term in order to match
+  --- more equations and cause term to reduce.
+  op eq-split`using_on_. : X$CtorDefSet X$UserTerm -> Input [ctor].
+  --- Performs constructor splitting on variables, but also applies auto to
+  --- all generated subgoals.
+  op eq-split*`using_on_. : X$CtorDefSet X$UserTerm -> Input [ctor].
+
+  --- Simple coverset command that uses default constructor memberships.
+  op cov`on_. : X$UserTerm -> Input .
+  eq (cov                      on T:X$UserTerm .)
+   = (cov using none on T:X$UserTerm .) .
+
+  --- Simple coverset* command that uses default constructor memberships.
+  op cov*`on_. : X$UserTerm -> Input [ctor] .
+  eq (cov*                      on T:X$UserTerm .)
+   = (cov* using none on T:X$UserTerm .) .
+
+  --- Simple eq-split command that uses default constructor memberships.
+  op eq-split`on_. : X$UserTerm -> Input [ctor].
+  eq (eq-split on T:X$UserTerm .) = (eq-split using none on T:X$UserTerm .) .
+
+  --- Simple eq-split* command that uses default constructor memberships.
+  op eq-split*`on_. : X$UserTerm -> Input [ctor].
+  eq (eq-split* on T:X$UserTerm .)
+   = (eq-split* using none on T:X$UserTerm .) .
+
+  --- Coverset induction command which automatically splits the consequent
+  --- of each induction case using terms in the set.
+  --- The same ctor definitions are used for
+  op cov-split`using_on_split_. : X$CtorDefSet X$UserTerm X$UserTermSet
+    -> Input [ctor].
+
+  --- Coverset induction command which automatically splits the consequent
+  --- of each induction case using terms in the set.
+  --- Applies auto to each goal.
+  op cov-split*`using_on_split_. : X$CtorDefSet X$UserTerm X$UserTermSet
+    -> Input [ctor].
+
+  --- Simple cov-split that uses default constructor memberships.
+  op cov-split`on_split_. : X$UserTerm X$UserTermSet -> Input .
+  eq (cov-split on T:X$UserTerm split TS:X$UserTermSet .)
+   = (cov-split using none on T:X$UserTerm split TS:X$UserTermSet .) .
+
+  --- Simple cov-split* that uses default constructor memberships.
+  op cov-split*`on_split_. : X$UserTerm X$UserTermSet -> Input .
+  eq (cov-split* on T:X$UserTerm split TS:X$UserTermSet .)
+   = (cov-split* using none on T:X$UserTerm split TS:X$UserTermSet .) .
+
+  --- Parses the user formula to create an alternative set of constructor
+  --- memberships with the given token as a name.  The formula should have
+  --- the form:
+  ---- A{X:S}
+  ----   (E{Vars1} (T = X /\ Conj1) V ... V E{VarsN} (T = X /\ ConjN))
+  op ctor-def_:_. : X$UserToken X$UserSentence -> Input [ctor].
+
+  --- Sets default constructors to use for coverset induction and
+  --- eq-splitting.
+  --- The original constructors are named after the sort.
+  op set-default-ctor_. : X$UserToken -> Input [ctor].
+
+  --- Enables execution of membership or equation with the given label
+  --- in the current goal's module.
+  op enable_. : X$UserToken -> Input [ctor].
+
+  --- Disables execution of membership or equation with the given label
+  --- in the current goal's module.
+  op disable_. : X$UserToken -> Input [ctor].
+
+  --- Reduces term in current goal's module and prints result.
+  --- Useful for debugging proof attempts.
+  op red_. : X$UserTerm -> Input [ctor].
+
+  --- Defines an operator to be an equivalence relation on terms with a
+  --- specific sort.  The operator should be a binary operator.
+  op defequiv_on_. : X$UserOpName X$UserSort -> Input [ctor].
+
+  --- Applies transitive closure to propagate equal terms in module.
+  op equiv-propagate`. : -> Input [ctor].
+
+---- Commands added when integrating the ITP with Maude's Formal Environment
+
+  --- new-goal added to support multiple goals and having the
+  --- following idea on mind: start a new proof in parallel, if there 
+  --- is one already running; otherwise is just the same as goal...
+  op new-goal_:_|-_. : X$UserToken X$UserModule X$UserSentence -> Input [ctor] .
+
+  --- show-itp-state shows the state of the itp with the information on all
+  --- goals that have been registered in it
+  op ITP show state`. : -> Input [ctor] . 
+
+  --- command for switching among proofs
+  op sel-proof_. : X$UserToken -> Input [ctor] .
+
+  --- command for showing ITP's help facility
+  op ITP help`. : -> Input [ctor] .
+
+  --- command for marking a main goal as trusted
+  op trust_. : X$UserToken -> Input [ctor] .
+endfm
+
+--- This module implements ITP-USER-ATOMS for the parser.
+fmod ITP-PARSER-ATOMS is
+  pr QID-LIST .
+
+  sort UserModule .
+  op module : Qid -> UserModule
+     [ctor special (id-hook Bubble (1 1)
+                    op-hook qidSymbol (<Qids> : ~> Qid))] .
+
+  sort UserToken .
+  op token : Qid -> UserToken
+     [ctor special (id-hook Bubble (1 1)
+                    op-hook qidSymbol (<Qids> : ~> Qid))] .
+
+  --- Set of tokens for names.
+  sort CtorDefSet .
+  op none : -> CtorDefSet [ctor].
+  op ctor : Qid -> CtorDefSet
+     [ctor special (id-hook Bubble (1 1)
+                    op-hook qidSymbol (<Qids> : ~> Qid))] .
+  op _;_ : CtorDefSet CtorDefSet -> CtorDefSet
+           [ctor assoc comm id: none].
+
+  sort UserVar .
+  op var : QidList -> UserVar
+      [ctor special(id-hook Bubble (1 -1)
+                    op-hook qidListSymbol (__ : QidList QidList ~> QidList)
+                    op-hook qidSymbol (<Qids> : ~> Qid)
+                    id-hook Exclude ( `} } ; ))].
+
+  sort UserTerm .
+  op term : QidList -> UserTerm
+      [ctor special(id-hook Bubble (1 -1 ( ))
+                    op-hook qidListSymbol (__ : QidList QidList ~> QidList)
+                    op-hook qidSymbol (<Qids> : ~> Qid))].
+
+  sort UserTermSet .
+  op `(_`) : UserTerm -> UserTermSet [ctor].
+  op none : -> UserTermSet [ctor] .
+  op _;_ : UserTermSet UserTermSet -> UserTermSet
+           [ctor assoc comm gather (e E) prec 50].
+
+  sort UserSort .
+  op sort : Qid -> UserSort
+     [ctor special (id-hook Bubble (1 1)
+                    op-hook qidSymbol (<Qids> : ~> Qid))] .
+
+  sort UserOpName .
+  op op : Qid -> UserOpName
+     [ctor special (id-hook Bubble (1 1)
+                    op-hook qidSymbol (<Qids> : ~> Qid))] .
+
+  sort UserSubstitution .
+  op _<-_ : UserVar UserTerm -> UserSubstitution [ctor prec 45] .
+  op none : -> UserSubstitution [ctor] .
+  op _;_ : UserSubstitution UserSubstitution -> UserSubstitution
+           [ctor assoc id: none gather (e E) prec 48] .
+
+  --- List of variables.
+  sort UserVarSet .
+  subsort UserVar < UserVarSet .
+  op none : -> UserVarSet [ctor] .
+  op _;_ : UserVarSet UserVarSet -> UserVarSet
+           [ctor assoc comm gather (e E) prec 50].
+
+  --- Sort for user formulas.
+  sort UserSentence .
+  op true : -> UserSentence [ctor] .
+  op false : -> UserSentence [ctor] .
+  op `(_`)=`(_`) : UserTerm UserTerm -> UserSentence [ctor prec 40] .
+  op `(_`):_ : UserTerm UserSort -> UserSentence [ctor prec 40] .
+  op ~_ : UserSentence -> UserSentence [ctor prec 45] .
+  op _=>_ : UserSentence UserSentence -> UserSentence [ctor prec 49] .
+  op _&_ : UserSentence UserSentence -> UserSentence
+           [ctor assoc comm prec 47].
+  op _V_ : UserSentence UserSentence -> UserSentence
+           [ctor assoc comm prec 48] .
+  op A`{_`}`(_`) : UserVarSet UserSentence -> UserSentence [ctor] .
+  op E`{_`}`(_`) : UserVarSet UserSentence -> UserSentence [ctor] .
+endfm
+
+view itp-parser-atoms from ITP-USER-THEORY to ITP-PARSER-ATOMS is
+endv
+
+fmod ITP-GRAMMAR is
+  pr ITP-COMMANDS{itp-parser-atoms} .
+endfm
+
+--- This module contains methods for parsing terms, variables, and formulas
+--- that a user inputs.
+fmod ITP-PARSER is
+  pr ITP-EXT-TERM .
+  pr ITP-LOGIC-OPS .
+  pr CONVERSION .
+  pr META-MODULE-EXT .
+  pr ITP-EXT-MOD .
+  pr SHOW-ITP .
+
+  var BoundVS : VariableSet .
+  var C : Constant .
+  var M : Module .
+  var N : Nat .
+  var Q : Qid .
+  var QIL : QidList .
+  var RP RP' : ResultPair .
+  var RP? : ResultPair? .
+  var StS : StringSet .
+  var T T' T1 T2 : Term .
+  var TL TL' : TermList .
+  var TS : ITPTermSet .
+  var Tp? : Type? .
+  var V : Variable .
+  var VS : VariableSet .
+
+  --- Global variable for identifying the ITP's grammar module
+  op itp-grammar : -> Module .
+  eq itp-grammar = ['ITP-GRAMMAR] .
+
+  --- Attempts to parse token.
+  op parseToken : Term ~> String .
+  eq parseToken('token[T]) = string($downQid(T)) .
+
+  --- Attempts to parse term as list of ctor definitions.
+  op parseCtorDefs : TermList ~> StringSet  .
+  eq parseCtorDefs('_;_[TL]) = $parseCtorDefs(TL, none) .
+  eq parseCtorDefs('ctor[T]) = $parseCtorDefs('ctor[T], none) .
+  ceq parseCtorDefs(C) = none
+   if getName(C) = 'none .
+
+  --- Tail recursive implementation of parseCtorDefs.
+  op $parseCtorDefs : TermList StringSet ~> StringSet .
+  eq $parseCtorDefs(('ctor[T], TL), StS)
+   = $parseCtorDefs(TL, StS ; string($downQid(T))) .
+  eq $parseCtorDefs(empty, StS) = StS .
+
+  --- Attempts to parse term as a sort.
+  op $parseSort : Term ~> Sort .
+  ceq $parseSort('sort[T]) = $downQid(T)
+   if $downQid(T) : Sort .
+
+  --- Returns error message from failing to parse sort.
+  op parseSortError : Term ~> QidList .
+  ceq parseSortError('sort[T]) = 'The 'input 'must 'be 'a 'sort.
+   if ($downQid(T) :: Sort) = false .
+
+  --- Parses operator declaration given user module.
+  op parseOpName : Term ~> Qid .
+  eq parseOpName('op[T]) = $downQid(T) .
+
+  --- Replace constants in terms with bound variables.
+  op fixBoundVars : Module VariableSet TermList ~> TermList .
+  eq fixBoundVars(M, BoundVS, (Q[TL], TL'))
+   = (Q[fixBoundVars(M, BoundVS, TL)], fixBoundVars(M, BoundVS, TL')) .
+  eq fixBoundVars(M, BoundVS, (V, TL))
+   = (V, fixBoundVars(M, BoundVS, TL)) .
+  ceq fixBoundVars(M, V ; BoundVS, (C, TL))
+    = (V, fixBoundVars(M, V ; BoundVS, TL))
+   if getName(V) = getName(C)
+   /\ sameKind(M, getType(V), getType(C)) .
+  eq fixBoundVars(M, BoundVS, (C, TL))
+   = (C, fixBoundVars(M, BoundVS, TL)) [owise].
+  eq fixBoundVars(M, BoundVS, empty) = empty .
+
+  --- Parses a term in a module with some variables addd as constants.
+  op parseTerm : Module VariableSet Term Type? ~> Term .
+  ceq parseTerm(M, BoundVS, 'term[T], Tp?) = fixBoundVars(M, BoundVS, T')
+   if QIL := $downQidList(T)
+   /\ T' := getTerm(metaParse(M, QIL, Tp?)) .
+
+  --- Try parsing the Maude term as a list of variables in the user's module.
+  op parseITPTermSet : Module VariableSet Term ~> ITPTermSet .
+  eq parseITPTermSet(M, BoundVS, '_;_[TL])
+   = $parseITPTermSet(M, BoundVS, TL, none) .
+  eq parseITPTermSet(M, BoundVS, '`(_`)[T])
+   = parseTerm(M, BoundVS, T, anyType) .
+  ceq parseITPTermSet(M, BoundVS, C) = none
+   if getName(C) = 'none .
+
+  --- Tail recursive implementation of parseITPTermSet above.
+  op $parseITPTermSet : Module VariableSet TermList ITPTermSet ~> ITPTermSet .
+  eq $parseITPTermSet(M, BoundVS, ('`(_`)[T], TL), TS)
+   = $parseITPTermSet(M, BoundVS, TL, TS ; parseTerm(M, BoundVS, T, anyType)) .
+  eq $parseITPTermSet(M, BoundVS, empty, TS) = TS .
+
+  --- Returns an error message when parsing a variable list may fail.
+  --- This function only returns a QidList if it really detects an error.
+  op parseITPTermSetError : Module VariableSet Term ~> QidList .
+  ceq parseITPTermSetError(M, BoundVS, ('`(_`)[T], TL)) = QIL
+   if QIL := parseTermError(M, BoundVS, T, anyType) .
+  ceq parseITPTermSetError(M, BoundVS, '_;_[TL, '`(_`)[T], TL']) = QIL
+   if QIL := parseTermError(M, BoundVS, T, anyType) .
+
+  op with-type : Type? -> QidList .
+  eq with-type(anyType) = nil .
+  eq with-type(S:Sort) = 'with 'sort S:Sort .
+  eq with-type(K:Kind) = 'with 'kind K:Kind .
+
+  --- Returns an error message is parsing a term fails.
+  --- This function only returns a QidList if it really detects an error.
+  op parseTermError : Module VariableSet Term Type? ~> QidList .
+  ceq parseTermError(M, BoundVS, 'term[T], Tp?)
+    = if N < size(QIL) then
+        ('Unable 'to 'parse QIL 'as 'a 'term with-type(Tp?) 'starting 'from
+         nth-tail(N, QIL) '.)
+      else
+        ('Unexpected 'end 'of 'input 'when 'parsing QIL 'as 'a 'term
+         with-type(Tp?))
+      fi
+   if QIL := $downQidList(T)
+   /\ noParse(N) := metaParse(M, QIL, Tp?) .
+  ceq parseTermError(M, BoundVS, 'term[T], Tp?)
+    = 'The 'list 'of 'tokens ' QIL ' 'has 'at 'least 'two 'distinct 'parses
+      'in 'the 'module getName(M) ': 'a.  mpp-term(M, getTerm(RP))
+      '`, 'and 'b.  mpp-term(M, getTerm(RP')) '.
+   if QIL := $downQidList(T)
+   /\ ambiguity(RP, RP') := metaParse(M, $downQidList(T), Tp?) .
+
+  --- Attempts to parse the user term as a variable.
+  op parseVar : Module VariableSet Term ~> Variable .
+  ceq parseVar(M, BoundVS, 'var[T]) = V
+   if V := parseTerm(M, BoundVS, 'term[T], anyType) .
+
+  --- Returns an error message when parsing a variable fails.
+  --- This function only returns a QidList if it really detects an error.
+  op parseVarError : Module VariableSet Term ~> QidList .
+  ceq parseVarError(M, BoundVS, 'var[T])
+    = QIL '\n 'Note 'that 'variables 'must 'be 'quantified 'by 'their 'type,
+      'e.g., 'N:Nat.
+   if QIL := parseTermError(M, BoundVS, 'term[T], anyType) .
+  ceq parseVarError(M, BoundVS, 'var[T])
+    = 'The 'term $downQidList(T) 'must 'be 'a 'variable.
+   if T := parseTerm(M, BoundVS, 'term[T], anyType)
+   /\ T :: Variable = false .
+
+  --- Attempts to parse term as a substitution.
+  --- TODO: Make sure substitution bounds each variable to at most one term.
+  op parseSubst : TermList VariableSet Module ~> Substitution .
+  eq parseSubst('_;_[TL], BoundVS, M)
+   = parseSubst(TL, BoundVS, M) .
+  eq parseSubst('none.UserSubstitution, BoundVS, M) = none .
+  ceq parseSubst(('_<-_[T1, T2], TL), BoundVS, M)
+    = (V <- parseTerm(M, none, T2, getType(V))) ;
+      parseSubst(TL, BoundVS, M)
+   if V := parseVar(M, BoundVS, T1) .
+  eq parseSubst(empty, BoundVS, M) = none .
+
+  --- Returns an error message when parsing a substitution fails.
+  op parseSubstError : TermList VariableSet Module ~> QidList .
+  eq parseSubstError('_;_[TL], BoundVS, M)
+   = parseSubstError(TL, BoundVS, M) .
+  ceq parseSubstError((TL, '_<-_[T1, T2], TL'), BoundVS, M)
+    = QIL
+   if QIL := parseVarError(M, BoundVS, T1) .
+  ceq parseSubstError((TL, '_<-_[T1, T2], TL'), BoundVS, M)
+    = QIL
+   if V := parseVar(M, BoundVS, T1)
+   /\ QIL := parseTermError(M, none, T2, getType(V)) .
+
+  --- TODO: Add error handling.
+endfm
+
+fmod ITP-FORMULA-PARSER is
+  pr ITP-PARSER .
+  pr ITP-LOGIC-OPS .
+
+  sort ParseFormulaResult .
+  --- 1st arg is formula we parsed and second argument is free variables in
+  --- formula.
+  op formula : Formula VariableSet -> ParseFormulaResult [ctor].
+  op parse-formula-error : QidList -> ParseFormulaResult [ctor].
+
+  var Alpha Beta : Formula .
+  var C : Constant .
+  var M : Module .
+  var NeVS : NeVariableSet .
+  var PFR : ParseFormulaResult .
+  var Q : Qid .
+  var QIL : QidList .
+  var S : Sort .
+  var T T' T1 T2 : Term .
+  var TL TL' : TermList .
+  var Tp? : Type? .
+  var BoundVS FreeVS FreeVS' : VariableSet .
+  var V V' : Variable .
+  var VS : VariableSet .
+
+  --- Try parsing the Maude term as a list of variables in the user's module.
+  op parseVarSet : Module Term ~> VariableSet .
+  eq parseVarSet(M, '_;_[TL]) = $parseVarSet(M, TL, none) .
+  eq parseVarSet(M, 'var[T]) = parseVar(M, none, 'var[T]) .
+  ceq parseVarSet(M, C) = none
+   if getName(C) = 'none .
+
+  --- Tail recursive implementation of parseVarSet above.
+  op $parseVarSet : Module TermList VariableSet ~> VariableSet .
+  eq $parseVarSet(M, ('var[T], TL), VS)
+   = $parseVarSet(M, TL, VS ; parseVar(M, none, 'var[T])) .
+  eq $parseVarSet(M, empty, VS) = VS .
+
+  --- Returns an error message when parsing a variable list may fail.
+  --- This function only returns a QidList if it really detects an error.
+  op parseVarSetError : Module Term ~> QidList .
+  ceq parseVarSetError(M, ('var[T], TL)) = QIL
+   if QIL := parseVarError(M, none, 'var[T]) .
+  ceq parseVarSetError(M, '_;_[TL, 'var[T], TL']) = QIL
+   if QIL := parseVarError(M, none, 'var[T]) .
+
+  --- Return an operator declaration Q : -> Tp for each var Q:Tp in list.
+  op varOpDecls : VariableSet -> OpDeclSet .
+  eq varOpDecls(V ; VS)
+   = (op getName(V) : nil -> getType(V) [none].) varOpDecls(VS) .
+  eq varOpDecls(none) = none .
+
+  --- Maps non-empty variable set to string for writing out to user.
+  op printVariableSet : NeVariableSet -> QidList .
+  eq printVariableSet(V ; V' ; NeVS)
+   = V ', printVariableSet(V' ; NeVS) .
+  eq printVariableSet(V ; V')
+   = V ', 'and V' .
+  eq printVariableSet(V) = V .
+
+  --- Negates formula inside parse result if any.
+  op negation : ParseFormulaResult -> ParseFormulaResult .
+  eq negation(parse-formula-error(QIL)) = parse-formula-error(QIL) .
+  eq negation(formula(Alpha, FreeVS)) = formula(negation(Alpha), FreeVS) .
+
+  --- Applies implication to formulas inside parse results if any.
+  op implication : ParseFormulaResult ParseFormulaResult
+        -> ParseFormulaResult [strat(1 0 2 0)].
+  eq implication(parse-formula-error(QIL), PFR:[ParseFormulaResult])
+    = parse-formula-error(QIL) .
+  eq implication(formula(Alpha, FreeVS), parse-formula-error(QIL))
+   = parse-formula-error(QIL) .
+  eq implication(formula(Alpha, FreeVS), formula(Beta, FreeVS'))
+   = formula(implication(Alpha, Beta), FreeVS ; FreeVS') .
+
+  --- Applies conjunction to formulas inside parse results if any.
+  op conjunction : ParseFormulaResult ParseFormulaResult
+        -> ParseFormulaResult [strat(1 0 2 0)].
+  eq conjunction(parse-formula-error(QIL), PFR:[ParseFormulaResult])
+   = parse-formula-error(QIL) .
+  eq conjunction(formula(Alpha, FreeVS), parse-formula-error(QIL))
+   = parse-formula-error(QIL) .
+  eq conjunction(formula(Alpha, FreeVS), formula(Beta, FreeVS'))
+   = formula(conjunction(Alpha, Beta), FreeVS ; FreeVS') .
+
+  --- Applies disjunction to formulas inside parse results if any.
+  op disjunction : ParseFormulaResult ParseFormulaResult
+        -> ParseFormulaResult [strat(1 0 2 0)].
+  eq disjunction(parse-formula-error(QIL), PFR:[ParseFormulaResult])
+   = parse-formula-error(QIL) .
+  eq disjunction(formula(Alpha, FreeVS), parse-formula-error(QIL))
+   = parse-formula-error(QIL) .
+  eq disjunction(formula(Alpha, FreeVS), formula(Beta, FreeVS'))
+   = formula(disjunction(Alpha, Beta), FreeVS ; FreeVS') .
+
+  --- Parses formula where the variables in the set appear as constants in
+  --- the module, but should be interpreted as variables.
+  op parseFormula : Term Module VariableSet ~> ParseFormulaResult .
+  ceq parseFormula(C, M, BoundVS) = formula(trueFormula, none)
+   if getName(C) = 'true .
+  ceq parseFormula(C, M, BoundVS) = formula(falseFormula, none)
+   if getName(C) = 'false .
+
+  --- AQuantification and EQuantification
+  ---------------------------------------
+  --- Succesful parse.
+  ceq parseFormula('A`{_`}`(_`)[T1, T2], M, BoundVS)
+    = formula(AQuantification(VS, Alpha), FreeVS \ VS)
+   if VS := parseVarSet(M, T1)
+      --- Next line implicitly checks that every bound var appears at least
+      --- once as a free variable in subformula.
+   /\ formula(Alpha, VS ; FreeVS)
+         := parseFormula(T2, addOpsITP(varOpDecls(VS), M), BoundVS ; VS) .
+  ceq parseFormula('E`{_`}`(_`)[T1, T2], M, BoundVS)
+    = formula(EQuantification(VS, Alpha), FreeVS \ VS)
+   if VS := parseVarSet(M, T1)
+      --- Next line implicitly checks that every bound var appears at least
+      --- once as a free variable in subformula.
+   /\ formula(Alpha, VS ; FreeVS)
+         := parseFormula(T2, addOpsITP(varOpDecls(VS), M), BoundVS ; VS) .
+  ceq parseFormula(Q[T1, T2], M, BoundVS) = parse-formula-error(QIL)
+   if Q in ('A`{_`}`(_`) ; 'E`{_`}`(_`))
+   /\ QIL := parseVarSetError(M, T1) .
+  ceq parseFormula(Q[T1, T2], M, BoundVS) = parse-formula-error(QIL)
+   if Q in ('A`{_`}`(_`) ; 'E`{_`}`(_`))
+   /\ VS := parseVarSet(M, T1)
+   /\ parse-formula-error(QIL)
+         := parseFormula(T2, addOpsITP(varOpDecls(VS), M), BoundVS ; VS) .
+  ceq parseFormula(Q[T1, T2], M, BoundVS)
+    = parse-formula-error('The 'variables printVariableSet(NeVS) 'appear
+                          'bound 'in 'a 'quantifier '`, 'but 'are 'not 'used
+                          'in 'formula.)
+   if Q in ('A`{_`}`(_`) ; 'E`{_`}`(_`))
+   /\ VS := parseVarSet(M, T1)
+   /\ formula(Alpha, FreeVS)
+         := parseFormula(T2, addOpsITP(varOpDecls(VS), M), BoundVS ; VS)
+      --- If there are variables in list that are not in set.
+   /\ NeVS := VS \ FreeVS .
+
+  --- Equality
+  ceq parseFormula('`(_`)=`(_`)[T1, T2], M, BoundVS)
+    = formula(equality(T, T'), vars-itp(T) ; vars-itp(T'))
+   if T  := parseTerm(M, BoundVS, T1, anyType)
+   /\ T' := parseTerm(M, BoundVS, T2, kindOf(M, T)) .
+  ceq parseFormula('`(_`)=`(_`)[T1, T2], M, BoundVS)
+    = parse-formula-error(QIL)
+   if QIL := parseTermError(M, BoundVS, T1, anyType) .
+  ceq parseFormula('`(_`)=`(_`)[T1, T2], M, BoundVS)
+    = parse-formula-error(QIL)
+   if T := parseTerm(M, BoundVS, T1, anyType)
+   /\ QIL := parseTermError(M, BoundVS, T2, kindOf(M, T)) .
+
+  --- Membership
+  --------------
+  --- Successful parse.
+  ceq parseFormula('`(_`):_[T1, 'sort[T2]], M, BoundVS)
+    = formula(sortP(T, S), vars-itp(T))
+   if S := $downQid(T2)
+   /\ S in getSorts(M)
+   /\ T := parseTerm(M, BoundVS, T1, S) .
+  --- Fail to parse sort.
+  ceq parseFormula('`(_`):_[T1, 'sort[T2]], M, BoundVS)
+    = parse-formula-error('Could 'not 'find 'sort $downQid(T2) 'in 'module.)
+   if $downQid(T2) in getSorts(M) = false .
+  --- Failure to parse term.
+  ceq parseFormula('`(_`):_[T1, 'sort[T2]], M, BoundVS)
+    = parse-formula-error(QIL)
+   if S := $downQid(T2)
+   /\ S in getSorts(M)
+   /\ QIL := parseTermError(M, BoundVS, T1, S) .
+
+  --- Boolean connectives.
+  eq parseFormula('~_[T1], M, BoundVS)
+   = negation(parseFormula(T1, M, BoundVS)) .
+  eq parseFormula('_=>_[T1, T2], M, BoundVS)
+   = implication(parseFormula(T1, M, BoundVS),
+                 parseFormula(T2, M, BoundVS)) .
+  eq parseFormula('_&_[(T, TL)], M, BoundVS)
+   = parseConjunction(parseFormula(T, M, BoundVS), TL, M, BoundVS) .
+  eq parseFormula('_V_[(T, TL)], M, BoundVS)
+   = parseDisjunction(parseFormula(T, M, BoundVS), TL, M, BoundVS) .
+
+  --- Parses remaining terms in list and conjoins formula with them.
+  op parseConjunction : ParseFormulaResult TermList Module VariableSet
+        ~> ParseFormulaResult .
+  eq parseConjunction(PFR, (T, TL), M, BoundVS)
+   = parseConjunction(conjunction(PFR, parseFormula(T, M, BoundVS)),
+                      TL, M, BoundVS) .
+  eq parseConjunction(PFR, empty, M, BoundVS)
+   = PFR .
+
+  --- Parses remaining terms in list and disjoins formula with them.
+  op parseDisjunction : ParseFormulaResult TermList Module VariableSet
+        ~> ParseFormulaResult .
+  eq parseDisjunction(PFR, (T, TL), M, BoundVS)
+   = parseDisjunction(disjunction(PFR, parseFormula(T, M, BoundVS)),
+                      TL, M, BoundVS) .
+  eq parseDisjunction(PFR, empty, M, BoundVS)
+   = PFR .
+endfm
+
+fmod ITP-MODULE-PARSER is
+  pr META-LEVEL .
+  pr META-MODULE-EXT .
+  pr ITP-EXT-TERM .
+  pr ITP-EXT-MOD .
+  pr ITP-LOGIC .
+  pr DATABASE .           ---- Full Maude  
+  pr MOD-EXP-PARSING .    ---- Full Maude
+
+  --- Parses a module.
+  sort ParseModuleResult .
+  op module : Module -> ParseModuleResult [ctor].
+  op parse-module-error : QidList -> ParseModuleResult [ctor].
+
+  var  AS : AttrSet .
+  vars EqC EqC' : EqCondition .
+  var  Eq : Equation .
+  vars Eqs Eqs' : EquationSet .
+  vars F Q Q' : Qid .
+  vars HL HL' : HookList .
+  var  IL : ImportList .
+  var  K : Kind .
+  var  Mb : MembAx .
+  vars Mbs Mbs' : MembAxSet .
+  var  M : Module .
+  var  Mod : FModule .
+  var  Mode : ITPMode .
+  var  N : Nat .
+  var  Op : OpDecl .
+  vars Ops Ops' : OpDeclSet .
+  vars QS QS' ItpQS : QidSet .
+  var  QIL : QidList .
+  vars S S' : Sort .
+  var  SS : SortSet .
+  vars T T' : Term .
+  var  NeTL : NeTermList .
+  var  Tp : Type .
+  var  TpL : TypeList .
+  var  NeTpL : NeTypeList .
+  var  PDL : ParameterDeclList .
+  var  SSD : SubsortDecl .
+  vars SSDS SSDS' : SubsortDeclSet .
+  var  ST : String .
+  var  VL : VarList .
+  var  DB : Database .
+  var  ME : ModuleExpression .
+
+  --- Returns true if the module is parameterized.
+  op isParameterized? : FModule -> Bool .
+  eq isParameterized?(fmod Q{PDL} is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = true .
+  eq isParameterized?(fmod Q is IL sorts SS . SSDS Ops Mbs Eqs endfm)
+   = false .
+
+  --- Remove operators whose behavior may be unsound in the ITP.
+  op remove-unsound-ops : OpDeclSet -> OpDeclSet .
+  --- Remove equality and disequality symbols.
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+       [special(HL id-hook('EqualitySymbol, QIL) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  --- Remove up and down ops:
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaDownTerm) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpEqs) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpImports) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpMbs) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpModule) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpOpDecls) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpRls) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+      [special(HL id-hook('MetaLevelOpSymbol, 'metaUpSorts) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+     [special(HL id-hook('MetaLevelOpSymbol, 'metaUpSubsortDecls) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops (op F : TpL -> Tp
+     [special(HL id-hook('MetaLevelOpSymbol, 'metaUpTerm) HL') AS].))
+   = remove-unsound-ops(Ops) .
+  eq remove-unsound-ops(Ops) = Ops [owise].
+
+  --- Computes modules we should import from sorts in module.
+  op builtin-imports : SortSet -> QidSet .
+  eq builtin-imports(SS) = $builtin-imports(0, SS) .
+
+  op $builtin-imports : Nat SortSet -> QidSet .
+  --- Qid modules and strings.
+  eq $builtin-imports(0,    'Qid ; SS) = 'QID ; $builtin-imports(2, SS) .
+  eq $builtin-imports(1, 'String ; SS) = 'STRING ; $builtin-imports(2, SS) .
+  --- Number modules to import.
+  eq $builtin-imports(2,    'Rat ; SS) = 'RAT .
+  eq $builtin-imports(2,  'NzRat ; SS) = 'RAT .
+  eq $builtin-imports(2, 'PosRat ; SS) = 'RAT .
+  eq $builtin-imports(3,    'Int ; SS) = 'INT .
+  eq $builtin-imports(3,  'NzInt ; SS) = 'INT .
+  eq $builtin-imports(4,    'Nat ; SS) = 'NAT .
+  eq $builtin-imports(4,  'NzNat ; SS) = 'NAT .
+  eq $builtin-imports(4,   'Zero ; SS) = 'NAT .
+  eq $builtin-imports(5, SS) = 'BOOL .
+  eq $builtin-imports(N, SS) = $builtin-imports(s N, SS) [owise].
+
+  op normalize : Module TypeList ~> TypeList .
+  eq normalize(M, S TpL) = S normalize(M, TpL) .
+  eq normalize(M, K TpL) = getKind(M, K) normalize(M, TpL) .
+  eq normalize(M, (nil).TypeList) = nil .
+
+  op normalize : Module HookList ~> HookList .
+  eq normalize(M, HL term-hook(Q, T) HL')
+   = normalize(M, HL) term-hook(Q, getTerm(metaNormalize(M, T)))
+     normalize(M, HL') .
+  eq normalize(M, HL) = HL [owise].
+
+  op normalize : Module AttrSet ~> AttrSet .
+  eq normalize(M, id(T) AS)
+   = id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
+  eq normalize(M, left-id(T) AS)
+   = left-id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
+  eq normalize(M, right-id(T) AS)
+   = left-id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
+  eq normalize(M, special(HL) AS)
+   = special(normalize(M, HL)) normalize(M, AS) .
+  eq normalize(M, AS) = AS [owise].
+
+  op normalize : Module OpDeclSet ~> OpDeclSet .
+  eq normalize(M, (op Q : TpL -> Tp [AS].) Ops)
+   = (op Q : normalize(M, TpL) -> normalize(M, Tp)[normalize(M, AS)].)
+     normalize(M, Ops) .
+  eq normalize(M, (none).OpDeclSet) = none .
+
+  --- Returns ImportList that protecting imports each module in set with
+  --- name prefixed with "ITP-".
+  op itp-imports : QidSet ~> QidSet .
+  eq itp-imports(Q ; QS) = qid("ITP-" + string(Q)) ; itp-imports(QS) .
+  eq itp-imports(none) = none .
+
+  --- Returns imports for each name in set.
+  op make-imports : QidSet ~> ImportList .
+  eq make-imports(Q ; QS) = (including Q .) make-imports(QS) .
+  eq make-imports(none) = nil .
+
+  --- Returns all sorts in modules in set.
+  op up-all-sorts : QidSet ~> SortSet .
+  eq up-all-sorts(Q ; QS) = upSorts(Q, true) ; up-all-sorts(QS) .
+  eq up-all-sorts(none) = none .
+
+  --- Returns all subsort declarations in modules in set.
+  op up-all-subsorts : QidSet ~> SubsortDeclSet .
+  eq up-all-subsorts(Q ; QS)
+   = upSubsortDecls(Q, true) up-all-subsorts(QS) .
+  eq up-all-subsorts(none) = none .
+
+  --- Returns all opeerator declarations in modules in set.
+  op up-all-ops : QidSet ~> OpDeclSet .
+  eq up-all-ops(Q ; QS) = upOpDecls(Q, true) up-all-ops(QS) .
+  eq up-all-ops(none) = none .
+
+  --- Returns all equations in modules in set.
+  op up-all-eqs : QidSet ~> EquationSet .
+  eq up-all-eqs(Q ; QS) = upEqs(Q, true) up-all-eqs(QS) .
+  eq up-all-eqs(none) = none .
+
+  --- "Fixes" flattened module so that unsound operators have been removed.
+  op fixupModule : FModule ~> FModule .
+  ceq fixupModule(M)
+    = (fmod Q is
+        nil
+        sorts (SS \ up-all-sorts(QS)) ; up-all-sorts(ItpQS) .
+        (SSDS \ up-all-subsorts(QS)) up-all-subsorts(ItpQS)
+        (Ops \ normalize(M, up-all-ops(QS)))
+               normalize(M, up-all-ops(ItpQS))
+        Mbs
+        (Eqs \ up-all-eqs(QS)) up-all-eqs(ItpQS)
+      endfm)
+   if (fmod Q is nil sorts SS . SSDS Ops Mbs Eqs endfm) := M
+   /\ QS := builtin-imports(SS)
+   /\ ItpQS := itp-imports(builtin-imports(SS)) .
+
+  --- Removes builtin ITP operators and adds imports.
+  op unflattenMod : FModule ~> FModule .
+  ceq unflattenMod(M)
+    = (fmod Q is
+        make-imports(QS)
+        sorts (SS \ up-all-sorts(QS)) .
+        (SSDS \ up-all-subsorts(QS))
+        (Ops \ normalize(M, up-all-ops(QS)))
+        Mbs
+        (Eqs \ up-all-eqs(QS))
+      endfm)
+   if (fmod Q is nil sorts SS . SSDS Ops Mbs Eqs endfm) := M
+   /\ QS := itp-imports(builtin-imports(SS)) .
+
+
+
+  --- Returns true if the attribute set only contains the allowed operator
+  --- attributes of ctor, prec, gather, and format.
+  op op-attrs-allowed? : AttrSet -> Bool .
+  eq op-attrs-allowed?(ctor AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(assoc AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(comm AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(prec(N) AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(gather(QIL) AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(format(QIL) AS) = op-attrs-allowed?(AS) .
+  eq op-attrs-allowed?(AS) = (AS == none) [owise].
+
+  --- Returns operator declarations with attributes that are not allowed.
+  op ops-with-illegal-attrs : OpDeclSet -> OpDeclSet .
+  eq ops-with-illegal-attrs(Op Ops)
+   = if op-attrs-allowed?(attrSet(Op)) then
+       ops-with-illegal-attrs(Ops)
+     else
+       Op ops-with-illegal-attrs(Ops)
+     fi .
+  eq ops-with-illegal-attrs(none) = none .
+
+  --- Returns true if the only attributes are metadata and nonexec.
+  op statement-attrs-allowed? : AttrSet -> Bool .
+  eq statement-attrs-allowed?(metadata(ST) AS)
+   = statement-attrs-allowed?(AS) .
+  eq statement-attrs-allowed?(nonexec AS)
+   = statement-attrs-allowed?(AS) .
+  eq statement-attrs-allowed?(AS) = (AS == none) [owise].
+
+  --- Returns true if condition has a matching formula in it.
+  op has-matching-cond? : EqCondition -> Bool .
+  eq has-matching-cond?(EqC /\ T := T' /\ EqC') = true .
+  eq has-matching-cond?(EqC) = false [owise].
+
+  --- Returns memberships with attributes that are not allowed.
+  op mbs-with-illegal-attrs : MembAxSet -> MembAxSet .
+  eq mbs-with-illegal-attrs(Mb Mbs)
+   = if statement-attrs-allowed?(attrSet(Mb)) then
+       mbs-with-illegal-attrs(Mbs)
+     else
+       Mb mbs-with-illegal-attrs(Mbs)
+     fi .
+  eq mbs-with-illegal-attrs(none) = none .
+
+  --- Returns memberships containing a matching predicate t := t' in the
+  --- condition.
+  op mbs-with-matching-cond : MembAxSet -> MembAxSet .
+  eq mbs-with-matching-cond(Mb Mbs)
+   = if has-matching-cond?(condition(Mb)) then
+       Mb mbs-with-matching-cond(Mbs)
+     else
+       mbs-with-matching-cond(Mbs)
+     fi .
+  eq mbs-with-matching-cond(none) = none .
+
+  --- Returns equations with attributes that are not allowed.
+  op eqs-with-illegal-attrs : EquationSet -> EquationSet .
+  eq eqs-with-illegal-attrs(Eq Eqs)
+   = if statement-attrs-allowed?(attrSet(Eq)) then
+       eqs-with-illegal-attrs(Eqs)
+     else
+       Eq eqs-with-illegal-attrs(Eqs)
+     fi .
+  eq eqs-with-illegal-attrs(none) = none .
+
+  --- Returns equations containing a matching predicate t := t' in the
+  --- condition.
+  op eqs-with-matching-cond : EquationSet -> EquationSet .
+  eq eqs-with-matching-cond(Eq Eqs)
+   = if has-matching-cond?(condition(Eq)) then
+       Eq eqs-with-matching-cond(Eqs)
+     else
+       eqs-with-matching-cond(Eqs)
+     fi .
+  eq eqs-with-matching-cond(none) = none .
+
+  --- Returns the variable Xn:K where K is the kind of Tp in the module.
+  op opVar : Nat Type Module ~> Variable .
+  eq opVar(N, Tp, Mod)
+   = qid("X" + string(N, 10) + ":" + string(getKind(Mod, Tp))) .
+
+  --- Creates a normalized term whose root symbol is given by the Qid,
+  --- whose arguments are the termlist and whose kind is in the same
+  --- connected component as the type in the given module.
+  op makeTerm : Qid TermList Type Module ~> Term .
+  eq makeTerm(F, empty, Tp, Mod)
+   = getTerm(metaNormalize(Mod, qid(string(F) + "." + string(Tp)))) .
+  eq makeTerm(F, NeTL, Tp, Mod)
+   = getTerm(metaNormalize(Mod, F[NeTL])) .
+
+  --- Tail-recursive utility function that creates the membership implied
+  --- by an operator declaration with the given Qid as it's symbol, sort as
+  --- it's domain and TypeList as it's arguments.  The VarList and
+  --- EqCondition should both be initialized to nil, and the Nat should be
+  --- initialized to 0.  The Module should be the module the operator is
+  --- declared in.
+  op $extractMb : Qid Sort TypeList VarList EqCondition Nat Module
+        ~> MembAx .
+  eq $extractMb(F, S, S' TpL, VL, EqC, N, Mod)
+   = $extractMb(F, S, TpL, VL opVar(N, S', Mod),
+                EqC /\ (opVar(N, S', Mod) : S'), s N, Mod) .
+  eq $extractMb(F, S, K TpL, VL, EqC, N, Mod)
+   = $extractMb(F, S, TpL, VL opVar(N, K, Mod), EqC, s N, Mod) .
+  eq $extractMb(F, S, nil, VL, EqC, N, Mod)
+   = newMb(makeTerm(F, VL, S, Mod), S, EqC, none) .
+
+  --- Returns the memberships that may are implied by any operator
+  --- declarations at the sort level in this module.
+  op extractMbs : OpDeclSet FModule -> MembAxSet .
+  eq extractMbs((op F : TpL -> S [AS].) Ops, Mod)
+   = $extractMb(F, S, TpL, nil, nil, 0, Mod)
+     extractMbs(Ops, Mod) .
+  eq extractMbs((op F : TpL -> K [AS].) Ops, Mod)
+   = extractMbs(Ops, Mod) .
+  eq extractMbs(none, Mod) = none .
+
+  --- Attempts to parse a Maude module.
+  --- Returns an error message if we can not load the Maude module.
+  ---- TODO parseModExp(T) should be used instead of $downQid, but for that 
+  ---- TODO module names must be parsed as module expressions.
+  op parseModule : Term Database ~> ParseModuleResult .
+  eq parseModule('module[T], DB) = $parseModule(evalModExp($downQid(T), DB)) .
+
+  --- Implementation of parse module.
+  --- TODO;
+  --- * Convert sort declarations on operators into memberships.
+  ---   This is implemented in extractMbs, but we need to use the Mode
+  ---   attribute to decide when to do this.
+  --- * Convert implicit sort constraints on variables in equations and
+  ---   memberships into explicit conditions.
+  --- * Decide if we want to allow rules labeled nonexec with extra
+  ---   variables in the condition.
+  --- * Check that user does not declare sort "Universal"
+  op $parseModule : Tuple{Database, ModuleExpression} ~> ParseModuleResult .
+  op $parseModule : Module ~> ParseModuleResult .
+  
+  eq $parseModule(< DB ; ME >) = $parseModule(getFlatModule(ME, DB)) .
+  eq $parseModule(unitError(QIL)) = parse-module-error(QIL) .
+
+  eq $parseModule(Mod) -------- TODO Check error messages
+    = if Mod :: FModule
+      then if not isParameterized?(Mod)
+           then if wellFormed(fixupModule(Mod))
+                then module(Mod)
+                else parse-module-error('We 'could 'not 'flatten 'the 'module getName(Mod) '.  'You
+                       'may 'want 'to 'check 'that 'you 'do 'not 'use 'unsupported 'builtins
+                       'like '_==_ 'or 'many 'of 'the 'builtin 'arithmetic 'operators '.)
+                fi
+           else parse-module-error('The 'module getName(Mod) 'must 'be 'unparameterized '.)
+           fi 
+      else parse-module-error('The 'module getName(Mod) 'must 'be 'a 'functional 'module '.)
+      fi .
+ endfm
+
+view itp-user-types from ITP-USER-THEORY to ITP-LOGIC is
+  sort UserModule to Module .
+  sort UserToken to String .
+  sort CtorDefSet to StringSet .
+  sort UserVar to Variable .
+  sort UserTerm to Term .
+  sort UserTermSet to ITPTermSet .
+  sort UserSort to Sort .
+  sort UserOpName to Qid .
+  sort UserSubstitution to Substitution .
+  sort UserSentence to Formula .
+endv

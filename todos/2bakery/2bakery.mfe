@@ -1,0 +1,18 @@
+(set include BOOL off .)
+load 2bakery.maude
+(select tool MTT .)
+(ctf 2BAK .)
+(select tool CRC .)
+(ccr 2BAK .)
+(submit .)      --- The proof succeeds, but a duplicate message is shown to the user ... BUG!
+(select tool SCC .)
+(scc 2BAK-SYNTAX .)   --- The check fails because the prelude we are using is not the one addapted for the SCC ... BUG!
+(submit .)
+(select tool ChC .)
+(cch 2BAK .)    --- The ChC does not implement the command ChC show status
+(submit .)      --- A termination proof cannot be found ... a BUG!
+(select tool MTT .)
+(ct 2BAK-PROPS-EXT .)
+(select tool CRC .)
+(ccr 2BAK-PROPS-EXT .)
+(submit .)

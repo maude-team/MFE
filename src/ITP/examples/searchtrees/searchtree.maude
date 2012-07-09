@@ -1,0 +1,137 @@
+fmod SEARCHTREE is
+  protecting INT .
+
+  ---o kind Bool? = [Bool] .
+  ---o kind Int? = [Int] .
+  ---o kind STree? = [NeTree, Tree, NeSTree, STree] .
+  ---o kind IntSet? = [IntSet] .
+
+  sorts Bool? Int? NeTree Tree NeSTree STree STree? IntSet IntSet? .
+  subsort Bool < Bool? .
+  subsort Int < Int? .
+  subsort Tree < STree? .
+  subsort NeTree < STree? .
+  subsort STree < STree? .
+  subsort NeSTree < STree? .
+  subsort IntSet < IntSet? .
+  subsort Int < IntSet .
+
+  op empty : -> STree? .
+  op _[_]_ : STree? Int? STree? -> STree? .
+  op max : STree? -> Int? .
+  op min : STree? -> Int? .
+
+---(
+  op null : -> IntSet? .
+  op __ : IntSet? IntSet? -> IntSet? [assoc comm id: null] .
+)
+  op elements : STree? -> IntSet? .
+  op insert : STree? Int? -> STree? .
+  op delete : Int? STree? -> STree? .
+  op reverse : STree? -> STree? .
+  op isMember : Int? STree? -> Bool? .
+  op search-isMember : Int? STree? -> Bool? .
+
+  vars I I' IL IR : Int? .
+  vars L R LL LR RL RR : STree? .
+  vars NEL NER NELL NELR NERL NERR : STree? .
+
+  eq min(empty [I] R) = I .
+  ceq min(NEL [I] R) = min(NEL) if NEL : NeTree .
+  eq max(L [I] empty) = I .
+  ceq max(L [I] NER) = max(NER) if NER : NeTree .
+  
+  --------
+  --- sort NeTree 
+  --------
+  cmb L [I] R : NeTree if L : Tree /\ R : Tree /\ I : Int .
+  -------
+  --- sort Tree 
+  -------
+  mb empty : Tree .
+  ---o cmb L : Tree if L : NeTree .
+  subsort NeTree < Tree .
+  --------
+  --- sort NeSTree
+  --------
+  cmb empty [I] empty : NeSTree if I : Int .
+  cmb NEL [I] empty : NeSTree if I : Int /\ NEL : NeSTree /\ max(NEL) < I .
+  cmb empty [I] NER : NeSTree if I : Int /\ NER : NeSTree /\ I < min(NER) .
+  cmb NEL [I] NER : NeSTree
+      if I : Int /\ NEL : NeSTree /\ NER : NeSTree /\ 
+         max(NEL) < I /\ I < min(NER) .
+  --------
+  --- sort STree
+  --------
+  mb empty : STree .
+  ---o cmb L : STree if L : NeSTree .
+  subsort NeSTree < STree .
+
+  --------
+  --- operation insert
+  -------
+  eq insert(empty, I) = empty [I] empty .
+  ceq insert(L [I] R, I') = L [I] R
+      if I <= I'  /\ I' <= I .
+  ceq insert(L [I] R, I') = insert(L, I') [I] R 
+      if I' < I .
+  ceq insert(L [I] R, I') = L [I] insert(R, I')
+      if I < I' .
+
+---(
+  --------
+  --- idempotence for IntSet
+  ---
+  ceq I I' = I if I = I' . --- Instead of I I = I, to take advantage of
+                           --- decision procedures.
+
+  -------
+  --- operation elements
+  -------
+  eq elements(empty) = null .
+  eq elements(L [I] R) = I elements(L) elements(R) .
+)
+
+  -------
+  --- operation delete
+  -------
+  eq delete(I, empty) = empty .
+  ceq delete(I, L [I'] R) = delete(I, L) [I'] R
+      if I < I' .
+  ceq delete(I, L [I'] R) = L [I'] delete(I, R)
+      if I > I' .
+  ceq delete(I, empty [I'] R) = R if I <= I' /\ I' <= I .
+  ceq delete(I, L [I'] empty) = L if I <= I' /\ I' <= I .
+  ceq delete(I, NEL [I'] NER) = NEL [min(NER)] delete(min(NER), NER)
+      if I <= I' /\ I' <= I .
+
+  -------
+  --- operation reverse
+  ------- 
+  eq reverse(empty) = empty .
+  eq reverse(L [I] R) = reverse(R) [I] reverse(L) . 
+
+  -------
+  --- operation isMember
+  ------- 
+  eq isMember(I, empty) = false .
+  ceq isMember(I, L [I'] R) = true if I = I' . 
+  ceq isMember(I, L [I'] R) = true if I < I' /\ isMember(I, L) = true . 
+  ceq isMember(I, L [I'] R) = isMember(I, R) 
+      if I < I' /\ isMember(I, L) = false . 
+  ceq isMember(I, L [I'] R) = true if I > I' /\ isMember(I, L) = true . 
+  ceq isMember(I, L [I'] R) = isMember(I, R)
+      if I > I' /\ isMember(I, L) = false .   
+
+  -------
+  --- operation search-isMember
+  ------- 
+  eq search-isMember(I, empty) = false .
+  ceq search-isMember(I, L [I'] R) = true if I = I' . 
+  ceq search-isMember(I, L [I'] R) = search-isMember(I, L) if I < I' .
+  ceq search-isMember(I, L [I'] R) = search-isMember(I, R) if I > I' .
+endfm
+
+
+
+

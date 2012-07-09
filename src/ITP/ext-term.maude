@@ -1,0 +1,324 @@
+---- Changed by Paco Dur‡n on March 1st, 2010 to make it work on alpha92a
+---- Look for "---- Paco Dur‡n"
+
+fmod ITP-AUXILIARY-FUNCTIONS is
+  pr INT .
+  pr META-LEVEL .
+  pr EXT-BOOL .
+
+  var AS : AttrSet .
+  var K : Kind .
+  var M : Module .
+  var N : Nat .
+  var Q : Qid .
+  var QL : QidList .
+  var S S' : Sort .
+  var T : Term .
+  var TL : TermList .
+  var Tp Tp' : Type .
+  var TpL TpL' : TypeList .
+
+  --- Returns the postfix of the list starting with the given natural number.
+  op nth-tail : Nat QidList ~> QidList .
+  eq nth-tail(0, QL) = QL .
+  eq nth-tail(s N, Q QL) = nth-tail(N, QL) .
+
+  --- Returns true if the first type is a subtype of the 2nd in the given
+  --- module.  Both types must be concrete types within the module.
+  op subtype? : Module Type Type ~> Bool .
+  eq subtype?(M, Tp, K)  = sameKind(M, Tp, K) .
+  eq subtype?(M, K, S) = false .
+  eq subtype?(M, S, S') = sameKind(M, S, S') and-then sortLeq(M, S, S') .
+
+  --- Returns true if each list has the same length and types with the same
+  --- position in each list belong to the same kind.
+  op sameKinds : Module TypeList TypeList ~> Bool .
+  eq sameKinds(M, Tp TpL, Tp' TpL')
+   = sameKind(M, Tp, Tp') and-then sameKinds(M, TpL, TpL') .
+  eq sameKinds(M, Tp TpL, nil) = false .
+  eq sameKinds(M, nil, Tp TpL) = false .
+  eq sameKinds(M, nil, nil) = true .
+
+  --- Constructs new op where result type is first type in list.
+  op newOp : Qid NeTypeList AttrSet -> OpDecl .
+  eq newOp(Q, Tp TpL, AS) = (op Q : TpL -> Tp [AS].) .
+endfm
+
+fmod ITP-EXT-TERM is
+  pr META-LEVEL .
+  pr ITP-AUXILIARY-FUNCTIONS .
+  pr CONVERSION .
+
+  --- VariableSet is a collection of variables.
+  sort NeVariableSet VariableSet .
+  subsort EmptyTypeSet < VariableSet < QidSet .
+  subsort Variable < NeVariableSet < NeQidSet VariableSet .
+  op _;_ : VariableSet VariableSet -> VariableSet [ctor ditto].
+  op _;_ : NeVariableSet VariableSet -> NeVariableSet [ctor ditto].
+
+  --- NeAtomicITPTermSet and AtomicITPTermSet correspond to non-empty and arbitrary
+  --- finite sets of variables and constants.
+  sorts NeAtomicITPTermSet AtomicITPTermSet .
+  subsort Constant Variable < TermQid < NeAtomicITPTermSet < AtomicITPTermSet . ---- Paco Dur‡n March 1st, 2010: added " < TermQid" to make it work on alpha92a
+  subsort NeVariableSet < NeAtomicITPTermSet < NeQidSet .
+  subsort VariableSet < AtomicITPTermSet < QidSet .
+  op _;_ : NeAtomicITPTermSet AtomicITPTermSet -> NeAtomicITPTermSet [ctor ditto].
+  op _;_ : AtomicITPTermSet AtomicITPTermSet -> AtomicITPTermSet [ctor ditto].
+
+  --- NeITPTermSet and ITPTermSet correspond to non-empty and arbitrary finite sets
+  --- of terms.
+  sorts NeITPTermSet ITPTermSet .
+  subsort Term < NeITPTermSet < ITPTermSet .
+  subsort NeAtomicITPTermSet < NeITPTermSet .
+  subsort AtomicITPTermSet < ITPTermSet .
+  op _;_ : NeITPTermSet ITPTermSet -> NeITPTermSet [ctor ditto].
+  op _;_ : ITPTermSet ITPTermSet -> ITPTermSet [ctor ditto].
+  eq T:Term ; T:Term = T:Term .
+
+  --- GroundAssignment and GroundSubstitution are substitutions where the
+  --- right-hand side is a ground term.
+  sort GroundAssignment GroundSubstitution .
+  subsort GroundAssignment < Assignment GroundSubstitution .
+  subsort GroundSubstitution < Substitution .
+  op none : -> GroundSubstitution [ctor] .
+  op _<-_ : Variable GroundTerm -> GroundAssignment [ctor ditto].
+  op _;_ : GroundSubstitution GroundSubstitution -> GroundSubstitution
+           [ctor ditto].
+
+  --- Datatype returned when attempting to interpret an operator Qid as
+  --- an iter operator.
+  sort ParseIterResult .
+  --- Base name of operator and number of times it occurs.
+  op pir : String NzNat -> ParseIterResult [ctor].
+  op failure : -> ParseIterResult [ctor].
+
+  var AS : AttrSet .
+  var Cond : Condition .
+  var F : Qid .
+  var GT : GroundTerm .
+  var M : Module .
+  var N : Nat .
+  var NL : NatList .
+  var NeNL : NeNatList .
+  var NeTL : NeTermList .
+  var NeTS : NeITPTermSet .
+  var S : Sort .
+  var ST : String .
+  var SB SB' ResultSB : Substitution .
+  var T T' : Term .
+  var TL TL' : TermList .
+  var TS : ITPTermSet .
+  var Tp Tp1 Tp2 : Type .
+  var TpL TpL' : TypeList .
+  var V V' : Variable .
+  var VS : VariableSet .
+
+  --- Constant identifying true in module.
+  op true-con : Module ~> Constant .
+  eq true-con(M) = getTerm(metaReduce(M, 'true.Bool)) .
+
+  --- Constant identifying true in module.
+  op false-con : Module ~> Constant .
+  eq false-con(M) = getTerm(metaReduce(M, 'false.Bool)) .
+
+  --- Attempts to parse an operator Qid as an iter operator.
+  op parse-iter : Qid -> ParseIterResult .
+  ceq parse-iter(F) = pir(substr(string(F), 0, N), NzN:NzNat)
+   if N := rfind(string(F), "^", length(string(F)))
+   /\ NzN:NzNat := rat(substr(string(F), N + 1, length(string(F))), 10) .
+  eq parse-iter(F) = failure [owise].
+
+  -------------------------------------------------------
+  --- Operations for getting the kind of various objects.
+  -------------------------------------------------------
+
+  --- Returns the kind of the term.
+  op kindOf : Module Term ~> Kind .
+  eq kindOf(M, T) = getKind(M, getType(metaNormalize(M, T))) .
+
+  --- Returns kinds of each term in list.
+  op get-kinds : Module TermList ~> TypeList .
+  eq get-kinds(M, (T, TL)) = kindOf(M, T) get-kinds(M, TL) .
+  eq get-kinds(M, empty) = nil .
+
+  --- Returns true if poly is in attribute set.
+  op poly-args : AttrSet -> NatList .
+  eq poly-args(poly(NeNL) AS) = NeNL .
+  eq poly-args(AS) = nil [owise].
+
+  --- Returns kinds of list where arguments in natlist are polymorphic and
+  --- should not be touched.
+  op get-poly-kinds : Module NatList TypeList -> TypeList .
+  eq get-poly-kinds(M, NL, TpL) = $get-poly-kinds(M, NL, TpL, 0, nil) .
+
+  --- Implementation of get-poly-kinds.
+  op $get-poly-kinds : Module NatList TypeList Nat TypeList -> TypeList .
+  eq $get-poly-kinds(M, NL, Tp TpL, N, TpL')
+   = if occurs(N, NL) then
+       $get-poly-kinds(M, NL, TpL, s N, TpL' Tp)
+     else
+       $get-poly-kinds(M, NL, TpL, s N, TpL' getKind(M, Tp))
+     fi .
+  eq $get-poly-kinds(M, NL, nil, N, TpL) = TpL .
+
+  --- Removes ctor from attribute.
+  op remove-ctor : AttrSet -> AttrSet .
+  eq remove-ctor(ctor AS) = AS .
+  eq remove-ctor(AS) = AS [owise].
+
+  --------------
+  --- substitute
+  --------------
+
+  --- Returns a binding of the variable in the substitution.  If multiple
+  --- bindings are in the substitution, one is non-deterministically chosen.
+  --- If the variable is not bound, then the variable itself is returned.
+  --- This only considers exact matches equivalent -- it is not sufficient
+  --- that only the variable names match.
+  op binding : Substitution Variable ~> Term .
+  eq binding(V <- T ; SB, V) = T .
+  eq binding(SB, V) = V [owise].
+
+  --- Returns variables in left-hand side of substitution.
+  op lhs-vars : Substitution -> VariableSet .
+  eq lhs-vars(SB) = $lhs-vars(SB, none) .
+
+  --- Tail recursive implementation of lhs-vars above.
+  op $lhs-vars : Substitution VariableSet ~> VariableSet .
+  eq $lhs-vars((V <- T) ; SB, VS) = $lhs-vars(SB, V ; VS) .
+  eq $lhs-vars((none).Substitution, VS) = VS .
+
+  --- Returns variables in terms of right-hand side of substitution.
+  op rhs-vars : Substitution ~> VariableSet .
+  eq rhs-vars(SB) = $rhs-vars(SB, none) .
+
+  --- Tail recursive implementation of rhs-vars above.
+  op $rhs-vars : Substitution VariableSet ~> VariableSet .
+  eq $rhs-vars((V <- T) ; SB, VS) = $rhs-vars(SB, $vars(T, VS)) .
+  eq $rhs-vars((none).Substitution, VS) = VS .
+
+  --- Applies substitution to all terms in list.
+  op substitute : TermList Substitution -> TermList .
+  eq substitute(TL, none) = TL .
+  eq substitute((V, TL), SB)
+   = (binding(SB, V), substitute(TL, SB)) .
+  eq substitute((GT, TL), SB)
+   = (GT, substitute(TL, SB)) .
+  eq substitute((F[TL], TL'), SB)
+   = (F[substitute(TL, SB)], substitute(TL', SB)) .
+  eq substitute(empty, SB) = empty .
+
+  --- Applies substitution to all terms in a condition.
+  op substitute : Condition Substitution -> Condition .
+  eq substitute((nil).Condition, SB) = nil .
+  eq substitute(T = T' /\ Cond, SB)
+   = substitute(T, SB) = substitute(T', SB)
+        /\ substitute(Cond, SB).
+  eq substitute(T : S /\ Cond, SB)
+   = substitute(T, SB) : S /\ substitute(Cond, SB).
+  eq substitute(T := T' /\ Cond, SB)
+   = substitute(T, SB) := substitute(T', SB)
+        /\ substitute(Cond, SB) .
+  eq substitute(T => T' /\ Cond, SB)
+   = substitute(T, SB) => substitute(T', SB)
+        /\ substitute(Cond, SB) .
+
+  --- Remove the variable bindings from the substitution.
+  op removeBindings : Substitution VariableSet -> Substitution .
+  eq removeBindings(V <- T ; SB, VS)
+   = if V in VS then
+       removeBindings(SB, VS)
+     else
+       (V <- T) ; removeBindings(SB, VS)
+     fi .
+  eq removeBindings(none, VS) = none .
+
+  --- Applies second substitution to each term in rhs of first.
+  op substitute-rhs : Substitution Substitution -> Substitution .
+  eq substitute-rhs(SB, SB') = $substitute-rhs(SB, SB', none) .
+
+  --- Tail recursive implementation of substitute-rhs.
+  op $substitute-rhs : Substitution Substitution Substitution
+      -> Substitution .
+  eq $substitute-rhs((V <- T) ; SB', SB, ResultSB)
+   = $substitute-rhs(SB', SB, (V <- substitute(T, SB)) ; ResultSB) .
+  eq $substitute-rhs(none, SB, ResultSB) = ResultSB [owise].
+
+  --- Visits each variable in a list of terms, and renames it by appending
+  --- the given string to it's name.  Returns the resulting list of terms.
+  op renameVar : TermList String -> TermList .
+  eq renameVar(GT, ST) = GT .
+  eq renameVar(V, ST)
+   = qid(string(getName(V)) + ST + ":" + string(getType(V))) .
+  eq renameVar(F[TL], ST) = F[renameVar(TL, ST)] .
+  eq renameVar((T, NeTL), ST)
+   = (renameVar(T, ST), renameVar(NeTL, ST)) .
+  eq renameVar(empty, ST) = empty .
+
+  -------------
+  --- Term sets
+  -------------
+
+  --- Extend membership to ITPTermSet.
+  op _in_ : Term ITPTermSet -> Bool .
+  eq T in (T ; TS) = true .
+  eq T in TS = false [owise].
+
+  --- Extend cardinality function for to ITPTermSet.
+  op |_| : ITPTermSet -> Nat .
+  eq | TS | = $card(TS, 0) .
+
+  --- Extend $card to ITPTermSet.
+  eq $card(T ; T ; TS, N) = $card(T ; TS, N) .
+  eq $card(T ; TS, N) = $card(TS, N + 1) [owise].
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Commented out as it is dead-code and it creates conflict
+*** with FM
+**************************************************************
+***(
+  op vars : ITPTermSet -> VariableSet .
+  eq vars(TS) = $vars(TS, none) .
+***)
+
+  --- Tail recursive implementation of vars (above).
+  op $vars : ITPTermSet VariableSet -> VariableSet .
+  eq $vars(T ; NeTS, VS) = $vars(NeTS, $vars(T, VS)) .
+  eq $vars(none, VS) = VS .
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Commented out as it is dead-code
+**************************************************************
+***(
+  op downTypes : Term -> [TypeList] .
+  eq downTypes(T) = downTerm(T, errorTypes) .
+***)
+
+  --------
+  --- down
+  --------
+  op errorBool : -> [Bool] .
+  op errorQid : -> [Qid] .
+  op errorQidList : -> [QidList] .
+  op errorString : -> [String] .
+  op errorTypes : -> [TypeList] .
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Renamed as it generates conflicts with FM
+**************************************************************
+  ----------------------------
+  --- downQid --> $downQid ---
+  ----------------------------
+  op $downQid : Term -> [Qid] .
+  eq $downQid(T) = downTerm(T, errorQid) .
+
+  ------------------------------------
+  --- downQidList --> $downQidList ---
+  ------------------------------------
+  op $downQidList : Term -> [QidList] .
+  eq $downQidList(T) = downTerm(T, errorQidList) .
+*********** END CODE MOVED *****************************
+endfm

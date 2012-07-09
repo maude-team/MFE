@@ -1,0 +1,115 @@
+\section{Introduction}
+\label{sec.intro}
+
+There is a great deal of interest today in developing
+multipurpose environments that combine declarative
+programming with specification languages and useful
+formal analysis tools (see, e.g., \cite{Mossakowski-Maeder-Luttich:2007,Franssen-Brand:2009,Hemer-Long-Strooper:2005,uitp-web-page,Aspinall-Luth:2007}).
+Maude~\cite{CDELMMQ:2002,CDELMMT:2007-book} is a reflective declarative language and system based on 
+rewriting logic in which computation
+corresponds to efficient deduction by rewriting.
+Maude has been successfully used as a {\em metatool} in the creation of tools for
+verifying properties of Maude specifications~\cite{clavel99,CDHLMO:2007}.
+Nevertheless, these tools work in isolation, 
+making it inconvenient to switch between their environments
+and difficult to exchange data between them.
+In this sense, despite its title, previous work presented in~\cite{CDHLMO:2007}
+does not conform to the notion of formal tool environment discussed here.
+In response to these limitations, 
+we present the Maude Formal Environment (MFE),
+an executable and highly extensible software infrastructure
+within which a user can interact with several 
+tools to mechanically verify properties of Maude specifications.
+In MFE, tool interoperability allows for discharging proof obligations
+of different nature without switching between different
+tool environments.
+The integration of different tools inside 
+MFE's common environment presents the user with a consistent user interface,
+a mechanism to keep track of pending proof obligations,
+and allows the execution of several instances of each tool,
+among other features.
+
+%One of the key aspects to designing a
+%formal environment is to identify what its {\em purpose} is.
+%Once this aspect is clear, there is one important implementation 
+%question to answer: 
+%what {\em model} to chose so that it is flexible enough to accommodate 
+%existing tools and extensible enough to facilitate
+%future developments? 
+The purpose of MFE is to
+support interactive formal analysis of Maude specifications,
+and therefore the integration of tools within MFE 
+revolves around Maude modules.
+MFE is naturally modeled in Maude as an object-based system in which the tools are 
+objects and their communication mechanism
+is message passing. User interaction is available through
+Full Maude~\cite{Duran-Meseguer:2007-scp,CDELMMT:2007-book}, an extension of Maude that
+has become a common base on top of which tools
+can be built, offering a modular design for easily
+integrating other tools written in Maude (see, e.g.,~\cite{Duran-Olveczky:2008-wrla} for a guide on how to extend Full Maude).
+
+One of the most interesting challenges was to make the 
+MFE design highly extensible and amenable to tool interoperability.
+In MFE, there is no constraint on how each tool 
+should model its particular domain or how it maintains its internal
+state. We implemented an object-based version of the 
+{\em model-view-controller} 
+pattern to separate the modeling of the domain for each tool,
+the presentation of information, and the actions based on user input
+into separate objects. 
+This pattern isolates the application logic for the user from the 
+user input and presentation, permitting independent development, 
+testing and maintenance of each.
+We also followed
+good object-oriented design practices that kept the
+cohesion high and the coupling low among objects.
+In our experience, these good design practices proved
+key for the integration of tools
+in MFE.
+
+We report here on the integration of five tools 
+with highly different designs and implementations in MFE. Namely, 
+the Maude Termination Tool (MTT)~\cite{Duran-Lucas-Meseguer:2008-ijcar},
+the Church-Rosser Checker (CRC)~\cite{Duran-Meseguer:2010-wrla-crc,Duran-Meseguer:2011},
+the Coherence Checker (ChC)~\cite{Duran-Meseguer:2010-wrla-chc,Duran-Meseguer:2011},
+the Sufficient Completeness Checker (SCC)~\cite{Hendrix-Clavel-Meseguer:05,Hendrix-Meseguer-Ohsaki:2006},
+and Maude's Inductive Theorem Prover (ITP)~\cite{Clavel-Palomino-Riesco:2006,Hendrix:2008}.
+Despite their heterogeneousness and isolated conception,
+these tools were integrated in MFE with very few code alterations,
+many of these due to renaming of sorts and operators.
+For tools which depend on external
+utilities not directly available from Maude such as MTT and SCC, 
+we have extended the Maude system to a non-official distribution
+with {\em built-in} operators associated with appropriate
+C++ code that interacts with the external tools.
+A similar extension was already performed for SCC~\cite{Hendrix:2008}.
+
+%\camilo{Paco, qu\'e te parece si eliminamos este p\'arrafo?}
+%The task of proving formal properties of 
+%software specifications needs valuable human effort
+%and hence, there is a great interest in building libraries
+%of completed theorems (see, e.g., \cite{Aspinall-Luth-Winterstein:2007,Franssen:2010}). For a first effort in this 
+%direction, MFE adds support for automatically 
+%storing user sessions to enable re-use. Within
+%a session, the user can instantiate a tool 
+%with as many goals as necessary, send requests
+%from one tool to another, and even rely on external
+%tools to handle proof obligations. 
+
+MFE, with these five tools, as well
+as some examples and some preliminary documentation, is available
+at \url{http://maude.lcc.uma.es/MFE}.
+
+\paragraph{\bf Outline of the paper.} 
+Section~\ref{sec.prelim} gives a summarized account
+of Maude's object-based programing and support for user interoperability.
+Section~\ref{sec.design} discusses the main design
+aspects of MFE. 
+Section~\ref{sec.tools} describes the tools available
+from the current version of MFE.
+Section~\ref{sec.extend} illustrates how to extend MFE with a concrete tool 
+and Section~\ref{sec.example} presents
+a case study in which a user interacts with several tools 
+within MFE.
+Finally, Section~\ref{sec.concl} presents related and future work,
+and some concluding remarks.

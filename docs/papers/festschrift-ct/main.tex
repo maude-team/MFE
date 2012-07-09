@@ -1,0 +1,57 @@
+\documentclass{llncs}
+
+\usepackage{pslatex}
+\usepackage{url}
+\usepackage{latexsym}
+\usepackage{alltt,verbatim,graphicx,xcolor}
+\usepackage{amsmath,amssymb,url}
+
+\input{macros}
+
+\title{Towards a Maude Formal Environment}
+
+\author{Francisco Dur\'an\inst{1} \and Camilo Rocha\inst{2} \and Jos\'e M. \'Alvarez\inst{1}}
+
+\institute{
+Universidad de M\'alaga, Spain. %\email{duran@lcc.uma.es} 
+\and
+University of Illinois at Urbana-Champaign, IL, USA. %\email{meseguer@uiuc.edu}
+}
+
+%
+% Margin notes
+%
+\newcounter{marginalnote}
+\setcounter{marginalnote}{1}
+\renewcommand{\themarginalnote}{\arabic{marginalnote}}
+	
+\setlength{\marginparwidth}{3cm}
+	
+\newcommand{\mnote}[1]
+{\raisebox{1ex}{\scriptsize (\themarginalnote)}%
+\marginpar{\footnotesize\raggedright\indent
+\raisebox{1ex}{\scriptsize (\themarginalnote)} %\textcolor{red}
+                                               {#1}}%
+\addtocounter{marginalnote}{1}}
+%
+
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{intro}
+\input{prelim}
+\input{design}
+\input{tools}
+\input{extend}
+\input{example}
+%\input{related}
+\input{concl}
+
+\bibliographystyle{splncs03}
+\bibliography{biblio,duran}
+
+\end{document}

@@ -1,0 +1,139 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{uitp-web-page}
+User interfaces for theorem provers,
+  \url{http://www.informatik.uni-bremen.de/uitp/}
+
+\bibitem{Aspinall-Luth:2007}
+Aspinall, D., L\"uth, C.: Special issue on user interfaces in theorem proving.
+  Journal of Automated Reasoning  39(2) (2007)
+
+\bibitem{CDELMMQ:2002}
+Clavel, M., Dur{\'a}n, F., Eker, S., Lincoln, P., Mart\'{\i}-Oliet, N.,
+  Meseguer, J., Quesada, J.: {Maude}: Specification and programming in
+  rewriting logic. Theoretical Computer Science  285,  187--243 (2002)
+
+\bibitem{CDELMMT:2007-book}
+Clavel, M., Dur\'{a}n, F., Eker, S., Lincoln, P., Mart\'{\i}-Oliet, N.,
+  Meseguer, J., Talcott, C.: All About {Maude} - A High-Performance Logical
+  Framework: How to Specify, Program, and Verify Systems in Rewriting Logic,
+  Lecture Notes in Computer Science, vol. 4350. Springer (2007)
+
+\bibitem{clavel99}
+Clavel, M., Dur{\'a}n, F., Eker, S., Meseguer, J., Stehr, M.O.: {M}aude as a
+  formal meta-tool. In: Wing, J.M., Woodcock, J., Davies, J. (eds.) World
+  Congress on Formal Methods. Lecture Notes in Computer Science, vol. 1709, pp.
+  1684--1703. Springer (1999)
+
+\bibitem{CDHLMO:2007}
+Clavel, M., Dur\'an, F., Hendrix, J., Lucas, S., Meseguer, J., \"Olveczky, P.:
+  The {Maude} formal tool environment. In: Mossakowski, T., Montanari, U.,
+  Haveraaen, M. (eds.) Algebra and Coalgebra in Computer Science, Second
+  International Conference, CALCO 2007, Proceedings, Lecture Notes in Computer
+  Science, vol. 4624, pp. 173--178. Springer (2007)
+
+\bibitem{Clavel-Palomino-Riesco:2006}
+Clavel, M., Palomino, M., Riesco, A.: Introducing the {ITP} tool: a tutorial.
+  Journal of Universal Computer Science  12(11),  1618--1650 (2006)
+
+\bibitem{Duran-Lucas-Meseguer:2008-ijcar}
+Dur\'{a}n, F., Lucas, S., Meseguer, J.: {MTT}: The {Maude} termination tool
+  (system description). In: Armando, A., Baumgartner, P., Dowek, G. (eds.)
+  Automated Reasoning 4th International Joint Conference, IJCAR 2008,
+  Proceedings. Lecture Notes in Computer Science, vol. 5195, pp. 313--319.
+  Springer (2008)
+
+\bibitem{Duran-Lucas-Meseguer:2009-prole}
+Dur\'{a}n, F., Lucas, S., Meseguer, J.: Methods for proving termination of
+  rewriting-based programming languages by transformation. Electronic Notes in
+  Theoretical Computer Science  248,  93--113 (2009)
+
+\bibitem{Duran-Lucas-Meseguer:2009-frocos}
+Dur\'an, F., Lucas, S., Meseguer, J.: Termination modulo combinations of
+  equational theories. In: Ghilardi, S., Sebastiani, R. (eds.) Frontiers of
+  Combining Systems, 7th International Symposium, FroCoS 2009, Proceedings.
+  Lecture Notes in Computer Science, vol. 5749, pp. 246--262. Springer (2009)
+
+\bibitem{Duran-Meseguer:2007-scp}
+Dur{\'a}n, F., Meseguer, J.: {M}aude's module algebra. Science of Computer
+  Programming  66(2),  125--153 (April 2007)
+
+\bibitem{Duran-Meseguer:2010-wrla-chc}
+Dur\'an, F., Meseguer, J.: A {Church-Rosser} checker tool for conditional
+  order-sorted equational {Maude} specifications. In: \"Olveczky, P. (ed.)
+  Rewriting Logic and Its Applications. Lecture Notes in Computer Science, vol.
+  6381, pp. 69--85. Springer (2010)
+
+\bibitem{Duran-Meseguer:2010-wrla-crc}
+Dur\'an, F., Meseguer, J.: A maude coherence checker tool for conditional
+  order-sorted rewrite theories. In: \"Olveczky, P. (ed.) Rewriting Logic and
+  Its Applications. Lecture Notes in Computer Science, vol. 6381, pp. 86--103.
+  Springer (2010)
+
+\bibitem{Duran-Meseguer:2011}
+Dur\'{a}n, F., Meseguer, J.: On the {C}hurch-{R}osser and coherence properties
+  of conditional order-sorted rewrite theories. Journal of Logic and Algebraic
+  Programming Journal of Logic and Algebraic Programming  (2011), submitted for
+  publication
+
+\bibitem{Duran-Olveczky:2008-wrla}
+Dur\'an, F., \"Olveczky, P.C.: A guide to extending {Full Maude} illustrated
+  with the implementation of {Real-Time Maude}. Electronic Notes in Theoretical
+  Computer Science  238(3),  83--102 (2009)
+
+\bibitem{Franssen-Brand:2009}
+Franssen, M., {van den Brand}, M.: Design of a proof repository architecture.
+  In: Proceedings of the 1st Workshop on Modules and Libraries for Proof
+  Assistants (MLPA'09). pp. 19--23. ACM (2009)
+
+\bibitem{Giesl-Schneider-Kamp-Thiemann:2006}
+Giesl, J., Schneider-Kamp, P., Thiemann, R.: {AProVE} 1.2: Automatic
+  termination proofs in the dependency pair framework. In: Furbach, U.,
+  Shankar, N. (eds.) Proceedings of the Third International Joint Conference on
+  Automated Reasoning (IJCAR'06). Lecture Notes in Artificial Intelligence,
+  vol. 4130, pp. 281--286. Springer (2006)
+
+\bibitem{Hemer-Long-Strooper:2005}
+Hemer, D., Long, G., Strooper, P.: Plug-in proof support for formal development
+  environments. In: Proceedings of the 2005 Australasian symposium on Theory of
+  computing (CATS'05). pp. 69--79. Australian Computer Society, Inc. (2005)
+
+\bibitem{Hendrix:2008}
+Hendrix, J.: Decision Procedures for Equationally Based Reasoning. Ph.D.
+  thesis, University of Illinois at Urbana-Champaign (2008)
+
+\bibitem{Hendrix-Clavel-Meseguer:05}
+Hendrix, J., Clavel, M., Meseguer, J.: A sufficient completeness reasoning tool
+  for partial specifications. In: Proc. Rewriting Techniques and Applications.
+  Lecture Notes in Computer Science, vol. 3467, pp. 165--174. Springer (2005)
+
+\bibitem{Hendrix-Meseguer-Ohsaki:2006}
+Hendrix, J., Meseguer, J., Ohsaki, H.: A sufficient completeness checker for
+  linear order-sorted specifications modulo axioms. In: Furbach, U., Shankar,
+  N. (eds.) Automated Reasoning, Third International Joint Conference, IJCAR
+  2006, Proceedings. Lecture Notes in Computer Science, vol. 4130, pp.
+  151--155. Springer (2006)
+
+\bibitem{Lucas:2004}
+Lucas, S.: {MU-TERM}: A tool for proving termination of context-sensitive
+  rewriting. In: van Oostrom, V. (ed.) Proceedings of the 15th International
+  Conference on Rewriting Techniques and Applications (RTA'04). Lecture Notes
+  in Computer Science, vol. 3091, pp. 200--209. Springer (2004)
+
+\bibitem{Mossakowski-Maeder-Luttich:2007}
+Mossakowski, T., Maeder, C., L\"uttich, K.: The heterogeneous tool set, {H}ets.
+  In: Grumberg, O., Huth, M. (eds.) Tools and Algorithms for the Construction
+  and Analysis of Systems, 13th International Conference, TACAS 2007,
+  Proceedings. Lecture Notes in Computer Science, vol. 4424, pp. 519--522.
+  Springer (2007)
+
+\bibitem{Rocha-Meseguer:2010}
+Rocha, C., Meseguer, J.: Constructors, sufficient completeness and deadlock
+  freedom of rewrite theories. In: Ferm\"uller, C.G., Voronkov, A. (eds.) Logic
+  for Programming, Artificial Intelligence, and Reasoning - 17th International
+  Conference, LPAR-17, Proceedings. Lecture Notes in Computer Science, vol.
+  6397, pp. 594--609. Springer (2010)
+
+\end{thebibliography}

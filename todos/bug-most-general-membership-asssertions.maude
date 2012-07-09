@@ -1,0 +1,31 @@
+---- El problema es que si los sort son diferentes, eliminar los casos
+---- menos "generales" es INCORRECTO, como demuestra la siguiente
+---- especificacion:
+
+(fmod GOTCHA! is
+ sorts A B C D .
+ subsorts B < C < D .
+ op g : D -> D .
+ op f : C -> C .
+ op f : B -> B .
+ op k : C -> C .
+
+ eq f(X:C) = g(X:C) .
+ eq g(X:C) = k(X:C) .
+endfm)
+
+---- las dos obligaciones de prueba son:
+---- 
+----  mb g(X:C) : C .
+----  mb g(X:B) : B .
+---- 
+---- pero segun la definicion que teniamos antes, la segunda es caso particular de la
+---- primera y se elimina.  Pero la obligacion g(X:C) : C es trivial de demostrar usando la
+---- segunda ecuacion.  Sin embargo, la obligacion g(X:B) : B solo se puede
+---- simplificar a k(X:B) : B, que NO se cumple.
+---- 
+---- Que hace en el momento presente el CRC???  Si construye MMA(\cR) segun deciamos,
+---- es calaramente erronea como el ejemplo demuestra.
+
+(select tool CRC .)
+(check Church-Rosser .)

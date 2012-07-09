@@ -1,0 +1,9 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- If a stack is non empty, then it always has a top element.
+
+(goal top : STACK |- A{S:[Stack]}
+      (((S:[Stack]) : NeStack) => ((top(S:[Stack])) : Int)) .)
+
+(ind on S:[Stack] .)

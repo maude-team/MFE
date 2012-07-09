@@ -1,0 +1,53 @@
+fmod 2BAK-SYNTAX is 
+  protecting NAT . 
+  sorts Mode State . 
+  ops sleep wait crit : -> Mode [ctor] . 
+  op <_,_,_,_> : Mode Nat Mode Nat -> State [ctor] .
+endfm
+
+mod 2BAK is 
+  protecting 2BAK-SYNTAX . 
+  vars M N : Nat . vars X Y : Mode .
+  rl [p1_s] : < sleep, M, Y, N > => < wait, s N, Y, N > .
+ crl [p1_w] : < wait, M, Y, N >  => < crit, M, Y, N > if M <= N = true .
+  rl [p1_c] : < crit, M, Y, N >  => < sleep, 0, Y, N > . 
+  rl [p2_s] : < X, M, sleep, N > => < X, M, wait, s M > .
+ crl [p2_w] : < X, M, wait, N >  => < X, M, crit, N > if N < M = true .
+  rl [p2_c] : < X, M, crit, N >  => < X, M, sleep, 0 > .
+endm
+
+fmod 2BAK-PROPS is 
+  protecting 2BAK-SYNTAX . 
+  vars M N : Nat . vars X Y : Mode . 
+  ops init mutex : State -> [Bool] .
+  eq [init] : init(< sleep, 0, sleep, 0 >) = true . 
+  eq [p1_s-p2_s] : mutex(< sleep, M, sleep, N >) = true . 
+  eq [p1_w-p2_s] : mutex(< wait, M, sleep, N >) = true . 
+  eq [p1_c-p2_s] : mutex(< crit, M, sleep, N >) = true . 
+  eq [p1_s-p2_w] : mutex(< sleep, M, wait, N >) = true . 
+  eq [p1_w-p2_w] : mutex(< wait, M, wait, N >) = true . 
+  eq [p1_c-p2_w] : mutex(< crit, M, wait, N >) = true . 
+  eq [p1_s-p2_c] : mutex(< sleep, M, crit, N >) = true . 
+  eq [p1_w-p2_c] : mutex(< wait, M, crit, N >) = true . 
+  eq [p1_c-p2_c] : mutex(< crit, M, crit, N >) = false .
+endfm
+
+fmod 2BAK-PROPS-EXT is 
+  protecting 2BAK-PROPS . 
+  vars M N : Nat . 
+  op aux : State -> [Bool] . 
+  eq [p1_s-p2_s] : aux(< sleep, M, sleep, N >) = true . 
+  eq [p1_w-p2_s] : aux(< wait, M, sleep, N >) = true . 
+  eq [p1_c-p2_s] : aux(< crit, M, sleep, N >) = true . 
+  eq [p1_s-p2_w] : aux(< sleep, M, wait, N >) = true . 
+  eq [p1_w-p2_w] : aux(< wait, M, wait, N >) = true . 
+  eq [p1_s-p2_c] : aux(< sleep, M, crit, N >) = true . 
+  eq [p1_c-p2_c] : aux(< crit, M, crit, N >) = false .
+ ceq [p1_c-p2_w] : aux(< crit, M, wait, N >) = true if M <= N = true .  --- strengthening
+ ceq [p1_w-p2_c] : aux(< wait, M, crit, N >) = true if N < M = true .   --- strengthening
+
+  --- Lemmata
+  eq M <= s M = true .
+  eq M <  s M = true .
+endfm
+

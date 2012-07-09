@@ -1,0 +1,21 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English: 
+--- Appending lists is associative
+
+--- ITP:
+(goal ordlist-append-assoc : 
+   ORDLIST |- A{L1:List? ; L2:List? ; L3:List?}
+((((L1:List?): List) & ((L2:List?): List) & ((L3:List?): List))
+ => ((append(L1:List?, append(L2:List?, L3:List?)))
+      = (append(append(L1:List?, L2:List?), L3:List?)))) .)
+
+---------
+--- goal: list-append-assoc
+---------
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)

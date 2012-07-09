@@ -1,0 +1,17 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- If a stack is non empty, then after popping its top element we always obtain a stack.
+
+--- ITP:
+(goal pop : STACK |- A{S:Stack?}
+      (((S:Stack?): NeStack) => ((pop(S:Stack?)): Stack)) .)
+
+---------
+--- goal: pop 
+---------
+(ind on S:Stack? .)
+(auto .) 
+
+

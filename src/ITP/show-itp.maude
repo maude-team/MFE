@@ -1,0 +1,234 @@
+fmod SHOW-ITP is
+  pr CONVERSION .
+  pr META-LEVEL .
+
+  var AtS : AttrSet .
+  var Cond : Condition .
+  var Eqs : EquationSet .
+  var HL : HookList .
+  var K : Kind .
+  var IL : ImportList .
+  var M : Module .
+  var Mbs : MembAxSet .
+  var N : Nat .
+  var NL : NatList .
+  var Ops : OpDeclSet .
+  var Q F Q' : Qid .
+  var QL : QidList .
+  var NeQL : QidList .
+  var Rls : RuleSet .
+  var S S' : Sort .
+  var SS : SortSet .
+  var SSDS : SubsortDeclSet .
+  var St St' : String .
+  var T T' : Term .
+  var Tp : Type .
+  var TpL : TypeList .
+
+  --- mpp-term
+  op mpp-term : Module Term ~> QidList .
+  eq mpp-term(M, T)
+   = metaPrettyPrint(M, T, mixfix flat format number rat) .
+
+  op mpp-mod : Module ~> QidList .
+  ceq mpp-mod(M)
+    = ('\n '\b
+      'mod '\o Q '\b 'is '\o
+        mpp-imps(IL)
+        (if SS == none then
+          nil
+         else
+           ('\n '\s '\s '\b 'sorts '\o mpp-sorts(SS) '\b '. '\o)
+         fi)
+        mpp-subsorts(SSDS)
+        mpp-ops(M, Ops)
+        mpp-mbs(M, Mbs)
+        mpp-eqs(M, Eqs)
+       'rules!!!
+     '\n '\b 'endm '\o '\n)
+   if mod Q is IL sorts SS . SSDS Ops Mbs Eqs Rls endm := M .
+  ceq mpp-mod(M)
+    = ('fmod Q 'is '\n
+         mpp-imps(IL)
+         (if SS == none then
+           nil
+          else
+            ('sorts mpp-sorts(SS) '. '\n)
+          fi)
+         mpp-subsorts(SSDS)
+         mpp-ops(M, Ops)
+         mpp-mbs(M, Mbs)
+         mpp-eqs(M, Eqs)
+       'endfm)
+   if fmod Q is IL sorts SS . SSDS Ops Mbs Eqs endfm := M .
+
+  --- Warning does not print out module expressions.
+  op mpp-imps : ImportList ~> QidList .
+  eq mpp-imps((protecting Q .) IL) = ('protecting Q '. '\n mpp-imps(IL)) .
+  eq mpp-imps((extending Q .) IL) = ('extending Q '. '\n  mpp-imps(IL)) .
+  eq mpp-imps((including Q .) IL) = ('including Q '. '\n  mpp-imps(IL)) .
+  eq mpp-imps(nil) = nil .
+
+  --- Returns true if 1st string begins with second.
+  op begins-with : String String -> Bool .
+  eq begins-with(St, St') = substr(St, 0, length(St')) == St' .
+
+  --- Returns characters at index Nat or after.
+  op chars-after : String Nat -> String .
+  eq chars-after(St, N) = substr(St, N, length(St)) .
+
+  --- Converts string to nil if it is empty and a qid otherwise.
+  op null-qid : String -> QidList .
+  eq null-qid("") = nil .
+  eq null-qid(St) = qid(St) [owise].
+
+  --- Tokenizes quoted identifier so that brackets appear in separate qid.
+  op tokenize : Qid -> QidList .
+  eq tokenize(Q) = $tokenize(string(Q), "") .
+
+  op $tokenize : String String -> QidList .
+  eq $tokenize(St, St')
+   = if St == "" then
+       qid(St')
+     else if begins-with(St, "`{") then
+       null-qid(St') '`{ $tokenize(chars-after(St, 2), "")
+     else if begins-with(St, "`}") then
+       null-qid(St') '`} $tokenize(chars-after(St, 2), "")
+     else if begins-with(St, "`[") then
+       null-qid(St') '`[ $tokenize(chars-after(St, 2), "")
+     else if begins-with(St, "`]") then
+       null-qid(St') '`] $tokenize(chars-after(St, 2), "")
+     else
+       $tokenize(chars-after(St, 1), St' + substr(St, 0, 1))
+     fi fi fi fi fi .
+
+  --- Tokenizes all types in list.
+  op mpp-types : TypeList -> QidList .
+  eq mpp-types(S TpL) = tokenize(S) mpp-types(TpL) .
+  eq mpp-types(K TpL) = ' tokenize(K) mpp-types(TpL) .
+  eq mpp-types(nil) = nil .
+
+  --- Tokenizes all sorts in set.
+  op mpp-sorts : SortSet -> QidList .
+  eq mpp-sorts(S ; SS) = tokenize(S) mpp-sorts(SS) .
+  eq mpp-sorts(none) = nil .
+
+  --- subsorts
+  op mpp-subsorts : SubsortDeclSet -> QidList .
+  eq mpp-subsorts((subsort S < S' .) SSDS)
+   = 'subsort tokenize(S) '< tokenize(S') '.  '\n mpp-subsorts(SSDS) .
+  eq mpp-subsorts(none) = nil .
+
+  --- Prints out attributes surrounded by square braces if there are any.
+  op mpp-ats : Module AttrSet ~> QidList .
+  eq mpp-ats(M, AtS)
+   = if AtS == none then
+       nil
+     else
+       ' '`[ $mpp-ats(M, AtS) '`]
+     fi .
+
+  --- Implementation of mpp-ats
+  op $mpp-ats : Module AttrSet ~> QidList .
+  eq $mpp-ats(M, assoc AtS) = 'assoc $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, comm AtS) = 'comm $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, idem AtS) = 'idem $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, iter AtS) = 'iter $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, id(T) AtS) = 'id: mpp-term(M, T) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, left-id(T) AtS)
+   = 'left 'id: mpp-term(M, T) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, right-id(T) AtS)
+   = 'right 'id: mpp-term(M, T) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, strat(NL) AtS)
+   = 'strat '`( mpp-natl(NL) '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, memo AtS) = 'memo $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, prec(N) AtS) = 'prec mpp-nat(N) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, gather(QL) AtS) = 'gather '`( QL '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, format(QL) AtS) = 'format '`( QL '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, ctor AtS) = 'ctor $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, config AtS) = 'config $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, object AtS) = 'object $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, msg AtS) = 'msg $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, frozen(NL) AtS)
+   = 'frozen '`( mpp-natl(NL) '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, poly(NL) AtS)
+   = 'poly '`( mpp-natl(NL) '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, special(HL) AtS)
+   = 'special '`( mpp-hooklist(M, HL) '`) $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, label(Q) AtS) = 'label Q $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, metadata(St) AtS)
+   = 'metadata  qid("\"" + St + "\"") $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, owise AtS) = 'owise $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, nonexec AtS) = 'nonexec  $mpp-ats(M, AtS) .
+  eq $mpp-ats(M, none) = nil .
+
+  --- ops
+  op mpp-ops : Module OpDeclSet ~> QidList .
+  eq mpp-ops(M, ((op F : TpL -> Tp [AtS] .) Ops))
+   = ('op F ': mpp-types(TpL) '-> tokenize(Tp) mpp-ats(M, AtS) '. '\n)
+     mpp-ops(M, Ops) .
+  eq mpp-ops(M, none)  = nil .
+
+  op mpp-hooklist : Module HookList ~> QidList .
+  eq mpp-hooklist(M, id-hook(Q, nil) HL) = 'id-hook Q mpp-hooklist(M, HL) .
+  eq mpp-hooklist(M, id-hook(Q, NeQL) HL)
+   = 'id-hook Q '`( NeQL '`) mpp-hooklist(M, HL) .
+  eq mpp-hooklist(M, op-hook(Q, F, QL, Q') HL)
+   = 'op-hook Q '`( F ': QL '~> Q' '`) mpp-hooklist(M, HL) .
+  eq mpp-hooklist(M, term-hook(Q, T) HL)
+   = 'term-hook Q '`( mpp-term(M, T) '`) mpp-hooklist(M, HL) .
+  eq mpp-hooklist(M, nil) = nil .
+
+  --- mpp-nat
+  op mpp-nat : Nat -> QidList .
+  eq mpp-nat(N) = qid(string(N, 10)) .
+
+  --- mpp-natl
+  op mpp-natl : NatList -> QidList .
+  eq mpp-natl(N NL) = mpp-nat(N) mpp-natl(NL) .
+  eq mpp-natl(nil) = nil .
+
+  --- mpp-cond
+  op mpp-cond : Module EqCondition ~> QidList .
+  eq mpp-cond(M, T = T' /\ Cond)
+   = if Cond == nil then
+       mpp-term(M, T) '= mpp-term(M, T')
+     else
+       mpp-term(M, T) '= mpp-term(M, T') '/\ mpp-cond(M, Cond)
+     fi .
+  eq mpp-cond(M, T : S /\ Cond)
+   = if Cond == nil then
+       mpp-term(M, T) ': S
+     else
+       mpp-term(M, T) ': S '/\ mpp-cond(M, Cond)
+     fi .
+  eq mpp-cond(M, T := T' /\ Cond)
+   = if Cond == nil then
+       mpp-term(M, T) ':= mpp-term(M, T')
+     else
+       mpp-term(M, T) ':=  mpp-term(M, T') '/\ mpp-cond(M, Cond)
+     fi .
+  eq mpp-cond(M, nil) = nil .
+
+  --- mpp-mbs
+  op mpp-mbs : Module MembAxSet ~> QidList .
+  eq mpp-mbs(M, (mb T : S [AtS] .) Mbs)
+   = 'mb mpp-term(M, T) ': tokenize(S) mpp-ats(M, AtS) '. '\n
+     mpp-mbs(M, Mbs) .
+  eq mpp-mbs(M, (cmb T : S if Cond [AtS] .) Mbs)
+   = 'cmb mpp-term(M, T) ': tokenize(S) '\n
+      'if mpp-cond(M, Cond) mpp-ats(M, AtS) '. '\n
+     mpp-mbs(M, Mbs) .
+  eq mpp-mbs(M, none) = nil .
+
+  --- mpp-eqs
+  op mpp-eqs : Module EquationSet ~> QidList .
+  eq mpp-eqs(M, ((eq T = T' [AtS] .) Eqs))
+   = 'eq mpp-term(M, T) '\n ' '= mpp-term(M, T') mpp-ats(M, AtS) '. '\n
+     mpp-eqs(M, Eqs) .
+  eq mpp-eqs(M, ((ceq T = T' if Cond [AtS] .) Eqs))
+   = 'ceq mpp-term(M, T) '\n ' ' '= mpp-term(M, T') '\n
+      'if mpp-cond(M, Cond) mpp-ats(M, AtS) '. '\n
+     mpp-eqs(M, Eqs) .
+  eq mpp-eqs(M, none) = nil .
+endfm

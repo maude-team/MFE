@@ -1,0 +1,9 @@
+--- Created by Camilo Rocha
+--- July 7 of 2011
+--- PD: moved by C. Rocha to todos/scc on July 11 of 2011
+
+The messages in the following tools need to be more uniform:
+
+- SCC: a success message can be given only when all submited proof obligations have been cleared
+- SCC: format of checking the output
+

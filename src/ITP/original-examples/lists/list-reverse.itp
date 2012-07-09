@@ -1,0 +1,31 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English: 
+--- If we reverse a lists, we always obtain a list.
+
+--- ITP: 
+(goal list-reverse :
+    LIST-ITP |- A{L1:List?}
+  (((L1:List?): List) => ((reverse(L1:List?)): List)) .)
+
+----------
+--- lemma: list-append:
+----------
+(lem list-append : 
+   A{L1:List? ; L2:List?}((((L1:List?): List) & ((L2:List?): List))
+      => ((append(L1:List?, L2:List?)): List)) .)
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+---------
+--- goal: list-reverse
+---------
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)

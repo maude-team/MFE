@@ -1,0 +1,55 @@
+fmod SEARCHTREE is
+protecting INT .
+
+sort Int? NESearchTree NESearchTree?  SearchTree SearchTree? .
+subsort Int < Int? .
+subsort SearchTree < SearchTree? .
+subsort NESearchTree < NESearchTree? .
+subsort NESearchTree < SearchTree .
+subsort NESearchTree? < SearchTree? .
+
+op empty : -> SearchTree? .
+op searchTree : Int? SearchTree? SearchTree? -> NESearchTree? .
+op max : NESearchTree? -> Int? .
+op min : NESearchTree? -> Int? .
+
+op insert : SearchTree? Int? -> NESearchTree? .
+
+vars I I' IL IR : Int? .
+vars L R LL LR RL RR : SearchTree? .
+vars NEL NER NELL NELR NERL NERR : NESearchTree? .
+
+
+eq min(searchTree(I, empty, R)) = I .
+eq min(searchTree(I, NEL, R))
+   = min(NEL) .
+eq max(searchTree(I, L, empty)) = I .
+eq max(searchTree(I, L, NER))
+   = max(NER) .
+
+
+mb empty : SearchTree .
+cmb searchTree(I, empty, empty): NESearchTree if I : Int .
+cmb searchTree(I, NEL, empty): NESearchTree if I : Int /\ NEL : NESearchTree /\ max(NEL) < I .
+cmb searchTree(I,empty, NER): NESearchTree if I : Int /\ NER : NESearchTree /\ I < min(NER) .
+cmb searchTree(I, NEL, NER): NESearchTree
+    if I : Int /\ NEL : NESearchTree /\ NER : NESearchTree
+    /\ max(NEL) < I /\ I < min(NER) .
+
+---
+eq insert(empty, I) = searchTree(I, empty, empty) .
+ceq insert(searchTree(I, L, R), I')
+   = searchTree(I, L, R)
+   if I <= I'  /\ I' <= I .
+ceq insert(searchTree(I, L, R), I')
+   = searchTree(I, insert(L, I'), R)
+   if I' < I .
+ceq insert(searchTree(I, L, R), I')
+   = searchTree(I, L, insert(R, I'))
+   if I < I' .
+
+endfm
+
+
+
+

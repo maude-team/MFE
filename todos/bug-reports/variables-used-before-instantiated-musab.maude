@@ -1,0 +1,77 @@
+---- De:     Musab AlTurki <musab.alturki@gmail.com>
+---- Asunto:     Re: A question about crchc3j
+---- Fecha:  6 de diciembre de 2010 23:00:28 GMT+01:00
+---- Para:   Francisco Dur‡n <duran@lcc.uma.es>
+----     
+---- Dear Paco,
+---- 
+---- Sorry to bother you again. But I have been facing another problem with the 
+---- tool. The following minimal example re-produces it:
+
+(fmod TEST is
+  pr BOOL-OPS .
+  sorts Foo FooSet Bar .
+  subsort Foo < FooSet Bar .
+
+  op mt : -> FooSet .
+  op _`,_ : FooSet FooSet -> FooSet [assoc comm id: mt] .
+
+  var F : Foo .
+  
+  eq F , F = F .
+endfm) 
+
+---- Now, the Church-Rosser command gives an apparently infinite number of 
+---- identical warnings of the form
+---- 
+---- Warning: <automatic>: variable X@@@:[FooSet,Bar] is used before it is bound in equation:
+---- eq #3:[FooSet,Bar] = X@@@:[FooSet,Bar],F:Foo .
+---- ...
+---- ...
+---- ...
+---- 
+---- Interestingly enough, if you remove the Bar sort, the problem disappears. 
+---- Please let me know what you think about this. 
+---- 
+---- Thanks and Regards,
+---- Musab
+
+
+
+On Nov 23, 2010, at 5:33 PM, Musab AlTurki wrote:
+
+Dear Paco,
+
+I hope all is well. Another question came up to me while using crchc3j. Is the membership predicate "::" supported by the tool? I am asking because the following example returns an unexpected cp.
+
+(fmod EXP is
+  pr BOOL-OPS . 
+
+  sorts Foo Bar Exp .
+  subsort Foo < Bar .
+
+  ops f b : -> Exp .
+  op h : Bar -> Exp .
+
+  var X : Foo . var Y : Bar . 
+
+  eq [eq_foo] : h(X) = f .
+ ceq [eq_bar] : h(Y) = b if (Y :: Foo) = false .
+endfm)
+
+The Church-Rosser checker command results in the following cp:
+
+Church-Rosser checking of EXP
+Checking solution:
+The following critical pairs cannot be joined:
+  ccp for eq_foo and eq_bar
+    f
+    = b
+    if false = false .
+The specification is sort-decreasing.
+
+which doesn't seem to be correct. Could you please advise? thank you.
+
+Regards,
+Musab
+

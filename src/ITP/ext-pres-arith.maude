@@ -1,0 +1,1956 @@
+--- THIS FILE IS ACTUALLY NEVER USED!!!
+
+--- This module contains entities that are used both at the Metalevel in
+--- SUP-INF-METHOD and in the linear arithmetic decision procedure itself.
+fmod PRES-ARITH-COMMON is
+  protecting META-TERM .
+
+  --- A linear inequality variable is just a pair of Qids identifying the
+  --- name and type respectively.
+  sort LinIneqVar .
+  op v : Qid Qid -> LinIneqVar [ctor].
+endfm
+
+fmod SUP-INF-METHOD is
+  protecting QID .
+  protecting CONVERSION .
+  protecting PRES-ARITH-COMMON .
+
+  sort PresExp .
+  subsort Float < PresExp .
+  op add : PresExp PresExp -> PresExp [ctor assoc comm] .
+  op times : Float LinIneqVar -> PresExp [ctor] .
+
+  --- A partial operation that has some simplification operations below.
+  op div : [PresExp] [PresExp] -> [PresExp] .
+
+  var FL FL1 FL2 : Float .
+  var LIV : LinIneqVar .
+  var PE PE1 PE2 : PresExp .
+
+  --- Simplification equations for add.
+  eq add(0.0, PE) = PE .
+  eq add(FL1, FL2) = FL1 + FL2 .
+  eq add(PE, times(-1.0, PE)) = 0.0 .
+
+  --- Simplification equations for times(Float, LinIneqVar).
+  eq times(0.0, LIV) = 0.0 .
+
+  --- Additional times operation for arbitrary pressburger expressions.  Note
+  --- that this is a different symbol that the constructor above because
+  --- LinIneqVar and PresExp inhabit different kinds.
+  op times : Float PresExp -> PresExp .
+  eq times(0.0, PE) = 0.0 .
+  eq times(FL1, FL2) = FL1 * FL2 .
+  eq times(FL, add(PE1, PE2)) = add(times(FL, PE1), times(FL, PE2)) .
+  eq times(FL1, times(FL2, LIV)) = times(FL1 * FL2, LIV) .
+  eq times(FL1, times(FL2, PE)) = times(FL1 * FL2, PE) .
+
+  --- Simplification operations for div.
+  eq div(PE, FL) = times((1.0 / FL), PE) .
+  eq div(FL1, FL2) = FL1 / FL2 .
+  eq div(times(FL1, LIV), FL2) = times((FL1 / FL2), LIV) .
+  eq div(add(PE1, PE2), FL) = add(div(PE1, FL), div(PE2, FL)) .
+endfm
+
+fmod SUP-INF is
+  pr RAT .
+  pr CONVERSION .
+  pr ITP-LOGIC .
+  pr PRES-ARITH-COMMON .
+
+  sort Number .
+  op c : Rat -> Number [ctor].
+
+  --- A linear expression is a sum of elements whose elements are:
+  --- * constants c(R)
+  --- * variable multiplied by scalars. R * V.
+  sort LinExp .
+  subsort Number < LinExp .
+  --- We use none rather than c(0) as an identity, because Maude 2.3 prints
+  --- out advisories about the normalization rules collapsing.
+  op none : -> LinExp [ctor].
+  op _*_ : NzRat LinIneqVar -> LinExp [ctor prec 31].
+  op _+_ : LinExp LinExp -> LinExp [ctor assoc comm id: none prec 33].
+  --- Canonization rules for linear expressions.
+  --- There are many rules to deal with identity.
+  eq c(R1:NzRat) + c(R2:NzRat) = c(R1:NzRat + R2:NzRat) .
+  eq c(0) = none .
+  eq 0 * V:LinIneqVar = c(0) .
+  eq (R:Rat * V:LinIneqVar) + (R':Rat * V:LinIneqVar)
+   = (R:Rat + R':Rat) * V:LinIneqVar .
+
+  sort LinMode .
+  op sup : -> LinMode [ctor].
+  op inf : -> LinMode [ctor].
+
+  --- A set of linear expressions that represents a upper or lower bound
+  --- on a variable.  This sort also contains a constant fail indicating
+  --- that no value can be assigned to the variable.
+  sort LinBound .
+  op fail : -> LinBound [ctor].
+  op none : -> LinBound [ctor].
+  op exp : LinExp -> LinBound [ctor].
+  op _;_ : LinBound LinBound -> LinBound [ctor assoc comm id: none].
+  eq exp(E:LinExp) ; exp(E:LinExp) = exp(E:LinExp) .
+  eq (fail).LinBound ; (fail).LinBound = fail .
+  eq fail ; exp(E:LinExp) = fail .
+
+  --- A number is a floating point value or the constants infPos or infNeg.
+  sort WNumber .
+  subsort Float < WNumber .
+  op infPos : -> WNumber [ctor].
+  op infNeg : -> WNumber [ctor].
+
+  sort LinIneqVarSet .
+  subsort LinIneqVar < LinIneqVarSet .
+  op none : -> LinIneqVarSet [ctor].
+  op _;_ : LinIneqVarSet LinIneqVarSet -> LinIneqVarSet
+           [ctor assoc comm id: none].
+  eq LIV:LinIneqVar ; LIV:LinIneqVar = LIV:LinIneqVar .
+
+  --- TrueFormula just contains the constant trueFormula and is added for
+  --- preregularity.
+  sort TrueFormula .
+  subsort TrueFormula < ConjAtomic .
+  op trueFormula : -> TrueFormula [ctor].
+
+  sort LinIneqSystem .
+  op none : -> LinIneqSystem [ctor].
+  op 0<=_ : LinExp -> LinIneqSystem [ctor prec 35].
+  op _;_ : LinIneqSystem LinIneqSystem -> LinIneqSystem
+     [ctor assoc comm id: none prec 40].
+
+  sort LinIneqSystem? .
+  subsort LinIneqSystem < LinIneqSystem? .
+  op fail : -> LinIneqSystem? [ctor].
+
+  var LB : LinBound .
+  var LE LE' : LinExp .
+  var LIS : LinIneqSystem .
+  var LIV : LinIneqVar .
+  var LIVS LIVS' : LinIneqVarSet .
+  var LM : LinMode .
+  var R R' : Rat .
+
+  --- Returns variables in system.
+  op vars : LinIneqSystem -> LinIneqVarSet .
+  eq vars(LIS) = $vars(LIS, none) .
+
+  --- Tail recursive implementation of vars (above).
+  op $vars : LinIneqSystem LinIneqVarSet -> LinIneqVarSet .
+  eq $vars(0<= LE ; LIS, LIVS) = $vars(LIS, $vars(LE, LIVS)) .
+  eq $vars((none).LinIneqSystem, LIVS) = LIVS .
+
+  --- Returns union of vars in expression and set.
+  op $vars : LinExp LinIneqVarSet -> LinIneqVarSet .
+  eq $vars(R * LIV + LE, LIVS) = $vars(LE, LIV ; LIVS) .
+  eq $vars((none).LinExp, LIVS) = LIVS .
+  eq $vars(c(R), LIVS) = LIVS .
+
+  op substInSystem : LinIneqVar Rat LinIneqSystem -> LinIneqSystem .
+  eq substInSystem(LIV, R, (0<= R' * LIV + LE) ; LIS)
+   = (0<= (R * R') * LIV + LE) ; substInSystem(LIV, R, LIS) .
+  eq substInSystem(LIV, R, LIS) = LIS [owise].
+
+  op _in_ : LinIneqVar LinIneqVarSet -> Bool .
+  eq LIV in LIV ; LIVS = true .
+  eq LIV in LIVS = false [owise].
+
+  --- Returns true if system contains an expression with the form 0<= c(R)
+  --- where R is negative.
+  op is-unsat? : LinIneqSystem -> Bool [strat(1 0)].
+  ceq is-unsat?(0<= c(R) ; LIS) = true if R < 0 .
+  eq is-unsat?(LIS) = false [owise].
+
+  --- Returns a positive number if Mode is sup and a negative number if Mode
+  --- if inf.
+  op sign : LinMode -> Int .
+  eq sign(sup) = 1 .
+  eq sign(inf) = -1 .
+
+  --- Negates linear mode.
+  op neg_ : LinMode -> LinMode .
+  eq neg sup = inf .
+  eq neg inf = sup .
+
+  op val : Number -> Rat .
+  eq val(c(R)) = R .
+
+  op _*_ : Rat LinExp -> LinExp .
+  eq R * ((R' * LIV) + LE) = ((R * R') * LIV) + (R * LE) .
+  eq R * c(R') = c(R * R') .
+  eq R * (none).LinExp = none .
+
+  --- Adds linear expression to each element of bound.
+  op _+_ : LinExp LinBound -> LinBound .
+  eq LE + (exp(LE') ; LB) = exp(LE + LE') ; (LE + LB) .
+  eq LE + (none).LinBound = none .
+  eq LE + fail = fail .
+
+  --- Multiplies each expression in bound by rational coefficient.
+  op _*_ : Rat LinBound -> LinBound .
+  eq R * (exp(LE) ; LB) = exp(R * LE) ; (R * LB) .
+  eq R * (none).LinBound = none .
+  eq R * fail = fail .
+
+  --- Solves each inequality in the system to return bounds on the given
+  --- variable.
+  --- This functions as upper if the mode is "sup", and lower if the mode is
+  --- "inf".
+  op bound : LinIneqVar LinIneqSystem LinMode -> LinBound [strat(1 2 0)].
+  ceq bound(LIV, (0<= (R * LIV) + LE) ; LIS, LM)
+    = exp((1 / (- R)) * LE) ; bound(LIV, LIS, LM)
+   if sign(LM) * R < 0 .
+  eq bound(LIV, LIS, LM)
+   = if is-unsat?(LIS) then fail else none fi [owise].
+
+  --- Returns bound by solving var on linear expression.
+  --- This function the same as supp or inff depending on the mode.
+  op solve : LinIneqVar LinExp LinMode ~> LinBound .
+  eq solve(LIV, R * LIV + LE, LM)
+   = if R < 1 then
+       exp((1 / _-_(1, R)) * LE)
+     else if (R == 1)
+            and-then (LE :: Number)
+            and-then (sign(LM) * val(LE) < 0) then
+       fail
+     else
+       none
+     fi fi .
+  --- if binding for V does not appear in E.
+  eq solve(LIV, LE, LM) = exp(LE) [owise].
+
+  --- Returns bound obtained by solving var on each expression in the bound.
+  op solve-all : LinIneqVar LinBound LinMode ~> LinBound .
+  eq solve-all(LIV, exp(LE) ; LB, LM)
+   = solve(LIV, LE, LM) ; solve-all(LIV, LB, LM) .
+  eq solve-all(LIV, fail, LM) = fail .
+  eq solve-all(LIV, none, LM) = none .
+
+  --- Returns all variables in expression that are not in variable set.
+  op var-diff : LinExp LinIneqVarSet -> LinIneqVarSet .
+  ceq var-diff(R * LIV + LE, LIVS) = LIV ; var-diff(LE, LIVS)
+   if LIV in LIVS = false .
+  eq var-diff(LE, LIVS) = none [owise].
+
+  --- Evaluates bound on variable in system.
+  --- This function as "sup" if mode is "sup" and "inf" if mode is "inf".
+  op eval : LinIneqVar LinIneqVarSet LinIneqSystem LinMode ~> LinBound .
+  eq eval(LIV, LIV ; LIVS, LIS, LM) = exp(1 * LIV) .
+  eq eval(LIV, LIVS, LIS, LM)
+   = solve-all(LIV,
+               eval-bound(bound(LIV, LIS, LM), LIV ; LIVS, LIS, LM),
+               LM) [owise].
+
+  --- Evaluates expressions in linear bound in system.
+  op eval-bound : LinBound LinIneqVarSet LinIneqSystem LinMode -> LinBound .
+  eq eval-bound(fail, LIVS, LIS, LM) = fail .
+  eq eval-bound(none, LIVS, LIS, LM) = none .
+  eq eval-bound(exp(LE) ; LB, LIVS, LIS, LM)
+   = $eval-all(var-diff(LE, LIVS), exp(LE), LIVS, LIS, LM) ;
+     eval-bound(LB, LIVS, LIS, LM) .
+
+  --- Evaluates each variable in set to eliminate it from expression.
+  op $eval-all : LinIneqVarSet LinBound LinIneqVarSet LinIneqSystem LinMode
+        -> LinBound .
+  eq $eval-all(LIVS, fail, LIVS', LIS, LM) = fail .
+  eq $eval-all(LIV ; LIVS, LB, LIVS', LIS, LM)
+   = $eval-all(LIVS,
+               $eval1(LIV, LB, LIVS ; LIVS', LIS, LM),
+               LIVS', LIS, LM) .
+  eq $eval-all(none, LB, LIVS', LIS, LM) = LB .
+
+  op $eval1 : LinIneqVar LinBound LinIneqVarSet LinIneqSystem LinMode
+      -> LinBound .
+  eq $eval1(LIV, exp(R * LIV + LE) ; LB, LIVS, LIS, LM)
+   = $eval1(LIV, LB, LIVS, LIS, LM) ;
+     if R > 0 then
+       LE + R * eval(LIV, LIVS, LIS, LM)
+     else --- R < 0
+       LE + R * eval(LIV, LIVS, LIS, neg LM)
+     fi .
+  eq $eval1(LIV, LB, LIVS, LIS, LM) = LB [owise].
+
+  op sup : LinIneqVar LinIneqSystem -> WNumber .
+  eq sup(LIV, LIS) = $sup(eval(LIV, none, LIS, sup)) .
+
+  --- Extracts a supremimum from the bound.
+  op $sup : LinBound ~> WNumber .
+  eq $sup(fail) = infNeg .
+  eq $sup(none) = infPos .
+  eq $sup(exp(c(R)) ; exp(c(R')) ; LB) = $sup(exp(c(min(R, R'))) ; LB) .
+  eq $sup(exp(c(R))) = float(R) .
+  eq $sup(exp(none)) = 0.0 .
+
+  op inf : LinIneqVar LinIneqSystem ~> WNumber .
+  eq inf(LIV, LIS) = $inf(eval(LIV, none, LIS, inf)) .
+
+  --- Extracts a infiminimum from the bound.
+  op $inf : LinBound ~> WNumber .
+  eq $inf(fail) = infPos .
+  eq $inf(none) = infNeg .
+  eq $inf(exp(c(R)) ; exp(c(R')) ; LB) = $inf(exp(c(max(R, R'))) ; LB) .
+  eq $inf(exp(c(R))) = float(R) .
+  eq $inf(exp(none)) = 0.0 .
+endfm
+
+fmod EXT-PRES-MOD-TRANSFORMER is
+  pr ITP-EXT-TERM .
+  pr ITP-EXT-MOD .
+
+  var S S1 S2 : Sort .
+  var Mod : Module .
+  var ST : String .
+  var C : Constant .
+  var V : Variable .
+  var F : Qid .
+  var TL : TermList .
+  var T T1 T2 : Term .
+  var Tp : Type .
+  var TpL : TypeList .
+  var NeTL : NeTermList .
+  var SSDS : SubsortDeclSet .
+  var EqC : EqCondition .
+  var AS : AttrSet .
+  var OpDs : OpDeclSet .
+  var Mbs : MembAxSet .
+
+  ------------
+  --- function: Char2String
+  -------------
+  --- Note: this function is used by the Term2String function
+  ---------
+  op Char2String : String -> String .
+  eq Char2String(ST)
+   = if ST == "_" then "@" else ST fi .
+  -------------
+  --- function: Op2String
+  -------------
+  op Op2String : String -> String .
+  eq Op2String(ST)
+     = if length(ST) == 1
+       then Char2String(ST)
+       else (Char2String(substr(ST, 0, 1))
+             + Op2String(substr(ST, 1, length(ST)))) fi .
+  -------------
+  --- function: TermList2String
+  -------------
+  op TermList2String : TermList -> String .
+  eq TermList2String(T) = Term2String(T) .
+  eq TermList2String((T, NeTL))
+   = Term2String(T) + "," + TermList2String(NeTL) .
+  eq TermList2String(empty) = "" .
+  -------------
+  --- function: Term2String
+  -------------
+  --- Note: this function is used to transform
+  --- EPA terms into EPA variables, whose first
+  --- argument is the terms as a string
+  --- very much dependant of our particular implementation
+  --- of the Shostack decision procedure
+  op Term2String : Term -> String .
+  eq Term2String(C) = string(C) .
+  eq Term2String(V) = string(V) .
+  eq Term2String(F[TL])
+   = Op2String(string(F)) + "(" + TermList2String(TL) + ")" .
+
+  --- Returns true if this type is one considered by Pressburger solver.
+  op isPresSort? : Type -> Bool .
+  eq isPresSort?('Zero) = true .
+  eq isPresSort?('Int) = true .
+  eq isPresSort?('Nat) = true .
+  eq isPresSort?('NzInt) = true .
+  eq isPresSort?('NzNat) = true .
+  eq isPresSort?('Rat) = true .
+  eq isPresSort?('NzRat) = true .
+  eq isPresSort?(Tp) = false [owise].
+
+  -------------
+  --- function: toFloat
+  -------------
+  --- Note: this function replace EPA sorts (Zero, Nat, NzNat, NzInt, Int, and
+  --- Rat) by PresExp .
+  op toFloat : TypeList -> TypeList .
+  eq toFloat(nil) = nil .
+  eq toFloat(Tp TpL)
+   = if isPresSort?(Tp) then 'PresExp toFloat(TpL) else Tp toFloat(TpL) fi .
+
+  -------------
+  --- procExtPresExp converts a term in the user's module into a term in the
+  --- user's module after extModSupInf has been applied to it.
+  --- In this transformation,
+  --- * variables with sorts understood by the linear arithmetic procedure
+  ---   have their sort mapped to 'PresExp, and other variables are left alone.
+  --- * The true, false constants and builtin qid, string constants are
+  ---   unchanged.
+  --- * '0.Zero is mapped to '0.0.FiniteFloat
+  --- * Other constants c with a Pressburger sort are mapped to a "variable"
+  ---   times(1.0, v(qid(term2String(c)), qid(getType(C)))
+  --- TODO: Describe other changes.
+  op procExtPresExp : Term -> Term .
+  eq procExtPresExp(V)
+   = if isPresSort?(getType(V)) then
+       qid(string(getName(V)) + ":PresExp")
+     else
+       V
+     fi .
+  eq procExtPresExp(C)
+   = if (getType(C) == 'Bool) and-then (downTerm(C, errorBool) :: Bool) then
+       C
+     else if (getType(C) == 'Qid) and-then (downTerm(C, errorQid) :: Qid) then
+       C
+     else if ((getType(C) == 'Char) or (getType(C) == 'String))
+          and-then (downTerm(C, errorString) :: String) then
+       C
+     else if C == '0.Zero then
+       '0.0.FiniteFloat
+     else if isPresSort?(getType(C)) then
+       'times['1.0.FiniteFloat,
+              'v[qid("'" + Term2String(C) + ".Qid"),
+                 qid("'" + string(getType(C)) + ".Qid")]]
+     else
+       qid("#" + string(getName(C)) + "." + string(getType(C)))
+     fi fi fi fi fi .
+  eq procExtPresExp('s_[T])
+   = 'add['float['s_['0.Zero]], procExtPresExp(T)] .
+  ceq procExtPresExp(F[T])
+    = 'add['float[F['0.Zero]], procExtPresExp(T)]
+   if substr(string(F), 0, 3) = "s_^" .
+  eq procExtPresExp('-_[T])
+   = 'times['-_['1.0.Float], procExtPresExpList(T)] .
+  eq procExtPresExp('_+_[TL])
+   = 'add[procExtPresExpList(TL)] .
+  eq procExtPresExp('_-_[T1, T2])
+   = 'add[procExtPresExp(T1), 'times['-_['1.0.Float], procExtPresExp(T2)]] .
+  eq procExtPresExp('_*_[TL])
+   = 'times[procExtPresExpList(TL)] .
+  eq procExtPresExp('_/_[T1, T2])
+   = 'div[procExtPresExp(T1), procExtPresExp(T2)] .
+  eq procExtPresExp('_<_[T1, T2])
+   = '_<_[procExtPresExp(T1), procExtPresExp(T2)] .
+  eq procExtPresExp('_>_[T1, T2])
+   = '_>_[procExtPresExp(T1), procExtPresExp(T2)] .
+  eq procExtPresExp('_<=_[T1, T2])
+   = '_<=_[procExtPresExp(T1), procExtPresExp(T2)] .
+  eq procExtPresExp('_>=_[T1, T2])
+   = '_>=_[procExtPresExp(T1), procExtPresExp(T2)] .
+  eq procExtPresExp(F[TL])
+   = qid("#" + string(F))[procExtPresExpList(TL)] [owise] .
+
+
+  --- Note: this function is used by procExtPresExp
+  op procExtPresExpList : TermList -> TermList .
+  eq procExtPresExpList((T, TL))
+   = (procExtPresExp(T), procExtPresExpList(TL)) .
+  eq procExtPresExpList(empty) = empty .
+
+  -------------
+  --- function: extSubsorts
+  -------------
+  --- Note: this function is used by extModSupInf
+  op extSubsorts : SubsortDeclSet -> SubsortDeclSet .
+  eq extSubsorts(none) = none .
+  eq extSubsorts(subsort S1 < S2 . SSDS)
+   = (subsort toFloat(S1) < S2 . extSubsorts(SSDS)) .
+
+  -------------
+  --- function: extEqC
+  -------------
+  op extEqC : EqCondition ~> EqCondition .
+  --- Note: this function is used by extModSupInf
+  ---------
+  eq extEqC(T : S /\ EqC)
+   = procExtPresExp(T) : toFloat(S) /\ extEqC(EqC) .
+  eq extEqC(T1 = T2 /\ EqC)
+   = (procExtPresExp(T1) = procExtPresExp(T2)) /\ extEqC(EqC) .
+  eq extEqC(nil) = nil .
+
+  -------------
+  --- function: extOps
+  -------------
+  --- Note: this function is used by extModSupInf
+  -------------
+  --- extension: to add also all the #-operations
+  --- corresponding to the Int-operations
+  --- included in the builtins imported by the module
+  ---- e.g., ascii
+
+  op is-special? : AttrSet -> Bool .
+  eq is-special?(special(HL:HookList) AS) = true .
+  eq is-special?(AS) = false [owise].
+
+  op extOps : OpDeclSet -> OpDeclSet .
+  eq extOps(none) = none .
+  eq extOps(op F : TpL -> Tp [AS] . OpDs)
+   = if is-special?(AS) then
+       extOps(OpDs)
+     else if TpL == nil then
+       (if isPresSort?(Tp) then
+          (op F : nil -> 'PresExp [AS] . extOps(OpDs))
+        else
+          (op qid("#" + string(F)) : nil -> Tp [AS] . extOps(OpDs))
+        fi)
+     else
+       (op qid("#" + string(F)) : toFloat(TpL) -> toFloat(Tp) [AS] .
+        extOps(OpDs))
+     fi fi .
+
+  op extBoolOps : OpDeclSet -> OpDeclSet .
+  eq extBoolOps(none) = none .
+  eq extBoolOps(op F : TpL -> Tp [AS] . OpDs)
+   = if is-special?(AS) then
+       extOps(OpDs)
+     else
+       (op qid("#" + string(F)) : TpL -> Tp [AS] . extOps(OpDs))
+     fi .
+
+  -------------
+  --- function: ExtMbs
+  -------------
+  op extMbs : MembAxSet -> MembAxSet .
+  --- Note: this function is used by extModSupInf
+  -------------
+  eq extMbs(none) = none .
+  eq extMbs((cmb T : S if EqC [AS].) Mbs)
+   = (cmb procExtPresExp(T) : toFloat(S) if extEqC(EqC) [AS] .)
+     extMbs(Mbs) .
+  eq extMbs((mb T : S [AS].) Mbs)
+   = (mb procExtPresExp(T): toFloat(S) [AS].) extMbs(Mbs) .
+
+  ------------------------------------------------------------------------
+  --- extModSupInf is a theory transformation which maps each Maude module
+  --- into a theory where expressions that can be handled by the Pressburger
+  --- arithmetic decision procedure have sort PresExp.
+  ---
+  --- TODO: Fill in the part after iff below:
+  --- Let t \in T_Mod,
+  ---  extModSupInf(Mod) |- procExtPresExp(t) : PresExp
+  --- iff
+  ---
+  op extModSupInf : Module -> Module .
+  eq extModSupInf(Mod)
+   = (fmod 'EXT-SUP-INF-METHOD is
+        protecting 'SUP-INF-METHOD .
+        sorts getSorts(Mod) .
+        extSubsorts(getSubsorts(Mod))
+        extOps(getOps(Mod)) extBoolOps(upOpDecls('ITP-BOOL, true))
+        op '#_^_ : 'PresExp 'PresExp -> 'PresExp [none] .
+        extMbs(getMbs(Mod))
+        none
+      endfm) .
+endfm
+
+--- This module defines the predicates for recognizing the fragments of
+--- Pressburger arithmetic supported by Maude.
+fmod EXT-PRES-ARITH-RECOGNIZER is
+pr EXT-PRES-MOD-TRANSFORMER .
+pr ITP-LOGIC .
+pr ITP-EXT-MOD .
+
+var AS : AttrSet .
+var C : Constant .
+var F : Qid .
+var T T1 T2 : Term .
+var ExtMod : Module .
+var Alpha Beta : Formula .
+var V : Variable .
+var TL TL' : TermList .
+var S1 S2 : Type .
+var Mod : Module .
+var EqS : EquationSet .
+var EqC : EqCondition .
+var S S' : Type .
+
+--- Returns true if this term(s) could be a Presburger expression.  Note that
+--- this function is only an overapproximation.  All it really ends up
+--- checking is that the term is ground and _<_, _<=_, _>_, and _>=_ do not
+--- appear as subterms of the term.
+op isExtPresExp? : TermList -> Bool .
+eq isExtPresExp?((C, TL')) = isExtPresExp?(TL') .
+eq isExtPresExp?((F[TL], TL'))
+ = not (F in ('_<_ ; '_<=_ ; '_>_ ; '_>=_))
+      and-then isExtPresExp?((TL, TL')) .
+eq isExtPresExp?((V,TL)) = false .
+eq isExtPresExp?(empty) = true .
+
+--- Returns true if the given term can be interpreted as a Pressburger
+--- arithmetic predicate.  Note that the term is in the ITP module, but
+--- extModSupInf has been applied to the module argument.
+op isExtLinIneqAux? : Term Module -> Bool .
+eq isExtLinIneqAux?(F[T1, T2], ExtMod)
+ = (F in ('_<_ ; '_<=_ ; '_>_ ; '_>=_))
+    and-then isExtPresExp?(T1)
+    and-then isExtPresExp?(T2)
+    and-then subtype?(ExtMod,
+                      getType(metaReduce(ExtMod, procExtPresExp(T1))),
+                      'PresExp)
+    and-then subtype?(ExtMod,
+                      getType(metaReduce(ExtMod, procExtPresExp(T2))),
+                      'PresExp) .
+eq isExtLinIneqAux?(T, ExtMod) = false [owise].
+
+op isBoolConst? : Term -> Bool .
+eq isBoolConst?( 'true.Bool) = true .
+eq isBoolConst?('false.Bool) = true .
+eq isBoolConst?('T) = false [owise].
+
+--- isExtLinIneq? is a function that recognizes whether a formula should be
+--- interpreted as something to pass to the decision procedure.  It takes
+--- a formula whose terms are in the user's module and the user's module
+--- after being transformed by extModSupInf.
+---
+--- The exact semantics of this function are somewhat obscure.  It returns
+--- true iff the formula is quantifier free, does not contain trueFormula,
+--- falseFormula, or a membership, and each equality appearing in the
+--- formula has one of the following forms:
+--- 1. true = false
+--- 2. false = true
+--- 3. true = T or false = T where isExtLinIneqAux?(T) is true
+--- 4. T = true or T = false where isExtLinIneqAux?(T) is true
+--- 5. T1 = T2 where T1 and T2 are both ground, do not contain the operators
+---    { _<_, _<=_, _>_, _>=_ } in subterms, and both have sort PresExp in
+---    the processed module.
+op isExtLinIneq? : Formula Module -> Bool .
+eq isExtLinIneq?(equality( 'true.Bool,  'true.Bool), ExtMod) = true .
+eq isExtLinIneq?(equality( 'true.Bool, 'false.Bool), ExtMod) = true .
+eq isExtLinIneq?(equality('false.Bool,  'true.Bool), ExtMod) = true .
+eq isExtLinIneq?(equality('false.Bool, 'false.Bool), ExtMod) = true .
+ceq isExtLinIneq?(equality(T, F[T1, T2]), ExtMod) = true
+ if isBoolConst?(T)
+ /\ isExtLinIneqAux?(F[T1, T2], ExtMod) .
+ceq isExtLinIneq?(equality(F[T1, T2], T), ExtMod) = true
+ if isBoolConst?(T)
+ /\ isExtLinIneqAux?(F[T1, T2], ExtMod) .
+ceq isExtLinIneq?(equality(T1, T2), ExtMod) = true
+ if isExtPresExp?(T1)
+ /\ isExtPresExp?(T2)
+ /\ subtype?(ExtMod, getType(metaReduce(ExtMod, procExtPresExp(T1))),
+             'PresExp)
+ /\ subtype?(ExtMod, getType(metaReduce(ExtMod, procExtPresExp(T2))),
+             'PresExp) .
+eq isExtLinIneq?(negation(Alpha), ExtMod)
+ = isExtLinIneq?(Alpha, ExtMod) .
+eq isExtLinIneq?(implication(Alpha, Beta), ExtMod)
+ = isExtLinIneq?(Alpha, ExtMod) and-then isExtLinIneq?(Beta, ExtMod) .
+eq isExtLinIneq?(disjunction(Alpha, Beta), ExtMod)
+ = isExtLinIneq?(Alpha, ExtMod) and-then isExtLinIneq?(Beta, ExtMod) .
+eq isExtLinIneq?(conjunction(Alpha, Beta), ExtMod)
+ = isExtLinIneq?(Alpha, ExtMod) and-then isExtLinIneq?(Beta, ExtMod) .
+eq isExtLinIneq?(Alpha, ExtMod) = false [owise] .
+
+--- This function returns a conjunction of the equalities with an equality
+--- t1 = t2 if "eq t1 = t2" is an unconditional ground equation that can
+--- be interpreted as a linear inequality.  The equations are taken from the
+--- user's module.  The first module is the user's module after having been
+--- transformed by extModSupinf.  The second module is the user's module with
+--- the equations removed, but still with the memberships.
+op getExtLinIneq : EquationSet Module Module -> Formula .
+eq getExtLinIneq(none, ExtMod, Mod) = trueFormula .
+eq getExtLinIneq((eq T1 = T2 [AS] . EqS), ExtMod, Mod)
+ = if (T1 :: GroundTerm) and (T2 :: GroundTerm)
+          and-then isExtLinIneq?(equality(T1, T2), ExtMod) then
+     conjunction(equality(getTerm(metaReduce(Mod, T1)),
+                           getTerm(metaReduce(Mod, T2))),
+                 getExtLinIneq(EqS, ExtMod, Mod))
+   else
+     getExtLinIneq(EqS, ExtMod, Mod)
+   fi .
+eq getExtLinIneq((ceq T1 = T2 if EqC [AS] . EqS), ExtMod, Mod)
+ = getExtLinIneq(EqS, ExtMod, Mod) .
+
+--- Returns a conjunction of equalities obtained from the ground
+--- unconditional equations in the module that can be interpreted as linear
+--- equations.
+op getGroundLinIneqs : FModule -> Formula .
+eq getGroundLinIneqs(Mod)
+ = getExtLinIneq(getEqs(Mod), extModSupInf(Mod), setEqs(none, Mod)) .
+endfm
+
+fmod EXT-PRES-ARITH is
+  including ITP-EXT-TERM .
+  including ITP-EXT-MOD .
+  including ITP-LOGIC .
+  including CONVERSION .
+  including EXT-PRES-MOD-TRANSFORMER .
+  including EXT-PRES-ARITH-RECOGNIZER .
+  pr SUP-INF .
+
+  sort PresExp .
+  subsort WNumber < PresExp .
+  op add : PresExp PresExp -> PresExp [ctor assoc comm] .
+  op times : Float LinIneqVar -> PresExp [ctor] .
+  op times : [PresExp] [PresExp] -> [PresExp] [assoc comm] .
+  --- This membership axiom allows one to infer that any floating point
+  --- number times a pressburger expression is a pressburger expression.
+  --- This axiom cannot be represented as a standard operator declaration
+  --- because it is non-associative.  It is not clear whether this axiom is
+  --- needed for computation in this module.
+  mb times(FL:Float, PE:PresExp) : PresExp .
+
+  sort PresExpMSet .
+  subsort PresExp < PresExpMSet .
+  op none : -> PresExpMSet [ctor].
+  op _;_ : PresExpMSet PresExpMSet -> PresExpMSet
+     [ctor assoc comm id: none].
+
+  sort LinIneq .
+  subsort TrueFormula < LinIneq < Formula .
+  op falseFormula : -> LinIneq [ctor].
+  op lessEq : PresExp PresExp -> LinIneq [ctor].
+
+  sort PairTermRatSet .
+  op none : -> PairTermRatSet [ctor].
+  op _<-_ : Term Rat -> PairTermRatSet [ctor].
+  op _;_ : PairTermRatSet PairTermRatSet -> PairTermRatSet
+           [ctor assoc comm id: none].
+
+  ---------
+  --- sort: ReplTermPair
+  ---------
+  sort ReplTermPair .
+  op _<<-_ : GroundTerm Constant -> ReplTermPair [ctor].
+
+  ---------
+  --- sort: Replacement
+  ---------
+  sort Replacement .
+  subsort ReplTermPair < Replacement .
+  op none : -> Replacement [ctor].
+  op _;_ : Replacement Replacement -> Replacement
+           [ctor assoc comm id: none].
+  eq RTP:ReplTermPair ; RTP:ReplTermPair = RTP:ReplTermPair .
+
+  --- PairVarFloat .
+  sort PairVarFloat .
+  op _<-_ : LinIneqVar Float -> PairVarFloat [ctor].
+
+  sort TermPair .
+  op tp : Term Term -> TermPair [ctor comm].
+
+  sort TermPairSet .
+  subsort TermPair < TermPairSet .
+  op emptyTPS : -> TermPairSet [ctor].
+  op tps : TermPairSet TermPairSet -> TermPairSet
+     [ctor assoc comm id: emptyTPS] .
+
+  var B : Bool .
+  var CNL CNL1 CNL2 : ConjLit .
+  var C : Constant .
+  var DN : DisjNormForm .
+  var FL FL' FL1 FL2 : Float .
+  var Alpha Beta Gamma Delta : Formula .
+  var LE : LinExp .
+  var LI LI1 LI2 : LinIneq .
+  var LIS LIS' : LinIneqSystem .
+  var LIV LIV1 LIV2 : LinIneqVar .
+  var LIVS : LinIneqVarSet .
+  var LSS LSS' : LinSystemSet .
+  var Mod Mod' : Module .
+  var I NT : Nat .
+  var NeTL NeTL1 NeTL2 : NeTermList .
+  var NMB NMB1 NMB2 : WNumber .
+  var PTRS : PairTermRatSet .
+  var PVF : PairVarFloat .
+  var PE PE1 PE2 : PresExp .
+  var PES : PresExpMSet .
+  var F QI QI' : Qid .
+  var R R1 R2 : Rat .
+
+  var RPL RPL' : Replacement .
+  var RTP : ReplTermPair .
+  var ST ST1 : String .
+  var T T1 T2 T3 T4 : Term .
+  var TL TL' TL1 TL2 TL3 : TermList .
+  var TP : TermPair .
+  var TPS : TermPairSet .
+  var TS TS1 TS2 : TermSet .
+  var Tp : Type .
+
+  --- Simplication rules for add.
+  eq add(0.0, PE) = PE .
+  eq add(PE, times(-1.0, PE)) = 0.0 .
+  eq add(FL, FL') = FL + FL' .
+  eq add(FL, infNeg) = infNeg .
+  eq add(FL, infPos) = infPos .
+  eq add(infNeg, infNeg) = infNeg .
+  eq add(infPos, infPos) = infPos .
+  eq add(infNeg, infPos) = 0.0 .
+  eq add(times(FL, LIV), times(FL', LIV)) = times(add(FL, FL'), LIV) .
+
+  --- Simplication rules for times.
+  eq times(0.0, LIV) = 0.0 .
+  eq times(0.0, PE) = 0.0 .
+  eq times(FL1, FL2) = FL1 * FL2 .
+  eq times(FL, add(PE1, PE2)) = add(times(FL, PE1), times(FL, PE2)) .
+  eq times(FL1, times(FL2, LIV)) = times(times(FL1, FL2), LIV) .
+  ceq times(FL, infNeg) = infPos if FL < 0.0 .
+  ceq times(FL, infNeg) = infNeg if FL > 0.0 .
+  ceq times(FL, infPos) = infNeg if FL < 0.0 .
+  ceq times(FL, infPos) = infPos if FL > 0.0 .
+
+  --- Simplification for lessEq
+  eq lessEq(FL1, FL2)
+   = if FL1 <= FL2 then
+       trueFormula
+     else
+       falseFormula
+     fi .
+
+  op less : PresExp PresExp -> LinIneq .
+  eq less(PE1, PE2) = lessEq(add(PE1, 1.0), PE2) .
+
+  --- Partial Division operator.
+  op div : PresExp PresExp ~> PresExp .
+  eq div(PE, FL) = times((1.0 / FL), PE) .
+  eq div(FL, FL') = FL / FL' .
+  eq div(times(FL, LIV), FL') = times((FL / FL'), LIV) .
+  eq div(add(PE1, PE2), FL) = add(div(PE1, FL), div(PE2, FL)) .
+
+  --- Converts a restricted subset of PresExp into LinExp.
+  op toLinExp : PresExp ~> LinExp .
+  eq toLinExp(add(PE1, PE2)) = toLinExp(PE1) + toLinExp(PE2) .
+  eq toLinExp(times(FL, LIV)) = rat(FL) * LIV .
+  eq toLinExp(FL) = c(rat(FL)) .
+  --- infPos, and infNeg are undefined.
+
+  -------------------------------------
+  ---------
+  --- Section: PresExp
+  ---------
+
+  -------------
+  --- function: getLinIneqVarType
+  -------------
+  op getLinIneqVarType : LinIneqVar -> Qid .
+  eq getLinIneqVarType(v(QI, QI')) = QI' .
+
+  ------------------------------------
+  --- section: normal forms
+  ------------------------------------
+
+  ---------
+  --- sort: ConjLit
+  ---------
+  sort ConjLit .
+  subsort LinIneq < ConjLit .
+  op x-conjunction : ConjLit ConjLit -> ConjLit [ctor].
+  op x-conjunction : Formula Formula -> Formula .
+  eq x-conjunction(DN, trueFormula) = DN .
+  eq x-conjunction(trueFormula, DN) = DN .
+  eq x-conjunction(DN, falseFormula) = falseFormula .
+  eq x-conjunction(falseFormula, DN) = falseFormula .
+  eq x-conjunction(x-conjunction(LI, CNL1), CNL2)
+   = x-conjunction(LI, x-conjunction(CNL1, CNL2)) .
+
+  ---------
+  --- sort: DisjNormForm
+  ---------
+  sort DisjNormForm .
+  subsort ConjLit < DisjNormForm .
+  subsort DisjNormForm < Formula .
+  op x-disjunction : DisjNormForm DisjNormForm -> DisjNormForm  [ctor].
+  op x-disjunction : Formula Formula -> Formula [ctor].
+  eq x-disjunction(x-disjunction(Alpha, Beta), Gamma)
+     = x-disjunction(Alpha, x-disjunction(Beta, Gamma)) .
+  eq x-disjunction(trueFormula, Alpha) = trueFormula .
+  eq x-disjunction(Alpha, trueFormula) = trueFormula .
+  eq x-disjunction(falseFormula, Alpha) = Alpha .
+  eq x-disjunction(Alpha, falseFormula) = Alpha .
+
+  -------------
+  --- function: getFloatWNumber
+  -------------
+  op getFloatNumber : Qid -> Float .
+  eq getFloatNumber(F)
+   = float(substr(string(F), 3, length(string('s_^42))) + ".0") .
+
+  -------------
+  --- function: x-procPresExp
+  -------------
+  --- note: from (EPA) terms to EPA formulas.
+  ---------
+  op x-procPresExp : Term ~> PresExp .
+  eq x-procPresExp(C)
+   = if C == '0.Zero then
+       0.0
+     else
+       times(1.0, v(C, getType(C)))
+     fi .
+  eq x-procPresExp('s_[T]) = add(1.0, x-procPresExp(T)) .
+  ceq x-procPresExp(F[T]) = add(getFloatNumber(F), x-procPresExp(T))
+   if substr(string(F), 0, 3) = "s_^" .
+  eq x-procPresExp('-_[T]) = times(-1.0, x-procPresExp(T)) .
+  eq x-procPresExp('_+_[TL]) = x-procPresExpListAdd(TL) .
+  eq x-procPresExp('_-_[T1, T2])
+     = add(x-procPresExp(T1), times(-1.0, x-procPresExp(T2))) .
+  eq x-procPresExp('_*_[TL]) =  x-procPresExpListTimes(TL) .
+  eq x-procPresExp('_/_[T1, T2])
+   =  div(x-procPresExp(T1), x-procPresExp(T2)) .
+
+  op x-procPresExpListAdd : TermList -> PresExp .
+  eq x-procPresExpListAdd((T, TL))
+   = add(x-procPresExp(T), x-procPresExpListAdd(TL)) .
+  eq x-procPresExpListAdd(empty) = 0.0 .
+
+  op x-procPresExpListTimes : TermList -> PresExp .
+  eq x-procPresExpListTimes((T, TL))
+   = times(x-procPresExp(T), x-procPresExpListTimes(TL)) .
+  eq x-procPresExpListTimes(empty) = 1.0 .
+
+  -------------
+  --- function: isPresExp?
+  -------------
+  --- note: check whether a term is an (EPA) term
+  --------
+  op isPresExp? : Term -> Bool .
+  eq isPresExp?(C) = isPresSort?(getType(C)) .
+  eq isPresExp?('s_[T]) = isPresExp?(T) .
+  ceq isPresExp?(F[T]) = isPresExp?(T)
+   if substr(string(F), 0, 3) = "s_^" .
+  eq isPresExp?('-_[T]) = isPresExpList?(T) .
+  eq isPresExp?('_+_[TL]) = isPresExpList?(TL) .
+  eq isPresExp?('_-_[TL]) = isPresExpList?(TL) .
+  eq isPresExp?('_*_[TL]) = isPresExpList?(TL) .
+  eq isPresExp?('_/_[TL]) = isPresExpList?(TL) .
+  eq isPresExp?(T) = false [owise] .
+
+  --- isPresExpList?
+  op isPresExpList? : TermList -> Bool .
+  eq isPresExpList?(empty) = true .
+  eq isPresExpList?((T, TL)) = isPresExp?(T) and-then isPresExpList?(TL) .
+
+  op equal : PresExp PresExp -> Formula .
+  eq equal(PE1, PE2) = conjunction(lessEq(PE1, PE2), lessEq(PE2, PE1)) .
+
+  -------------
+  --- function: x-procLinIneq
+  ------------
+  --- note: from (EPA) FOL-formulas to EPA formulas
+  ---------
+  op x-procLinIneq : Formula ~> Formula .
+  eq x-procLinIneq(disjunction(Alpha, Beta))
+   = disjunction(x-procLinIneq(Alpha), x-procLinIneq(Beta)) .
+  eq x-procLinIneq(conjunction(Alpha, Beta))
+   = conjunction(x-procLinIneq(Alpha), x-procLinIneq(Beta)) .
+  eq x-procLinIneq(implication(Alpha, Beta))
+   = implication(x-procLinIneq(Alpha), x-procLinIneq(Beta)) .
+  eq x-procLinIneq(negation(Alpha))
+   = negation(x-procLinIneq(Alpha)) .
+  eq x-procLinIneq(trueFormula) = trueFormula .
+  eq x-procLinIneq(falseFormula) = falseFormula .
+  eq x-procLinIneq(equality('false.Bool, 'true.Bool)) = falseFormula .
+  eq x-procLinIneq(equality('true.Bool, 'false.Bool)) = falseFormula .
+  eq x-procLinIneq(equality(T1, T1)) = trueFormula .
+  eq x-procLinIneq(sortP(T, 'Nat)) = lessEq(0.0, x-procPresExp(T)) .
+  eq x-procLinIneq(sortP(T, 'NzNat)) = less(0.0, x-procPresExp(T)) .
+  eq x-procLinIneq(sortP(T, 'NzInt))
+     = disjunction(less(0.0, x-procPresExp(T)),
+                   less(x-procPresExp(T), 0.0)) .
+  ceq x-procLinIneq(equality(T1, T2))
+    = conjunction(lessEq(x-procPresExp(T1), x-procPresExp(T2)),
+                  lessEq(x-procPresExp(T2), x-procPresExp(T1)))
+   if isPresExp?(T1) /\ isPresExp?(T2) .
+  eq x-procLinIneq(equality('_<_[T1, T2], 'true.Bool))
+   = less(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('_<=_[T1, T2], 'true.Bool))
+   = lessEq(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('_>_[T1, T2], 'true.Bool))
+   = less(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('_>=_[T1, T2], 'true.Bool))
+   = lessEq(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('true.Bool, '_<_[T1, T2]))
+   = less(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('true.Bool, '_<=_[T1, T2]))
+   = lessEq(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('true.Bool,  '_>_[T1, T2]))
+   = less(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('true.Bool, '_>=_[T1, T2]))
+   = lessEq(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality( '_<_[T1, T2], 'false.Bool))
+   = lessEq(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('_<=_[T1, T2], 'false.Bool))
+   = less(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality( '_>_[T1, T2], 'false.Bool))
+   = lessEq(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('_>=_[T1, T2], 'false.Bool))
+   = less(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('false.Bool,  '_<_[T1, T2]))
+   = lessEq(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('false.Bool, '_<=_[T1, T2]))
+   = less(x-procPresExp(T2), x-procPresExp(T1)) .
+  eq x-procLinIneq(equality('false.Bool,  '_>_[T1, T2]))
+   = lessEq(x-procPresExp(T1), x-procPresExp(T2)) .
+  eq x-procLinIneq(equality('false.Bool, '_>=_[T1, T2]))
+   = less(x-procPresExp(T1), x-procPresExp(T2)) .
+
+
+  -------------
+  --- function: x-getVarInPresExp
+  -------------
+  --- note: extract from a EPA expression  the EPA variables
+  ---------
+  op x-getVarInPresExp : PresExp -> LinIneqVarSet .
+  eq x-getVarInPresExp(NMB) = none .
+  eq x-getVarInPresExp(add(PE1, PE2))
+   = x-getVarInPresExp(PE1) ; x-getVarInPresExp(PE2) .
+  eq x-getVarInPresExp(times(NMB, LIV)) = LIV .
+
+  -------------
+  --- function: x-getVarInLinIneq
+  -------------
+  --- note: extract from a EPA formula the (EPA) variables
+  op x-getVarInLinIneq : Formula -> LinIneqVarSet .
+  eq x-getVarInLinIneq(x-conjunction(Alpha, Beta))
+   = x-getVarInLinIneq(Alpha) ; x-getVarInLinIneq(Beta) .
+  eq x-getVarInLinIneq(x-disjunction(Alpha, Beta))
+   = x-getVarInLinIneq(Alpha) ; x-getVarInLinIneq(Beta) .
+  eq x-getVarInLinIneq(conjunction(Alpha, Beta))
+   = x-getVarInLinIneq(Alpha) ; x-getVarInLinIneq(Beta) .
+  eq x-getVarInLinIneq(disjunction(Alpha, Beta))
+   = x-getVarInLinIneq(Alpha) ; x-getVarInLinIneq(Beta) .
+  eq x-getVarInLinIneq(implication(Alpha, Beta))
+   = x-getVarInLinIneq(Alpha) ; x-getVarInLinIneq(Beta) .
+  eq x-getVarInLinIneq(negation(Alpha)) = x-getVarInLinIneq(Alpha) .
+  eq x-getVarInLinIneq(trueFormula) = none .
+  eq x-getVarInLinIneq(falseFormula) = none .
+  eq x-getVarInLinIneq(lessEq(PE1, PE2))
+   = x-getVarInPresExp(PE1) ; x-getVarInPresExp(PE2) .
+
+  -------------
+  --- function: x-elimPresExpSortInfo
+  -------------
+  --- note: delete from a EPA term the included sort information
+  ---------
+  op x-elimPresExpSortInfo : PresExp -> PresExp .
+  eq x-elimPresExpSortInfo(NMB) = NMB .
+  eq x-elimPresExpSortInfo(add(PE1, PE2))
+   = add(x-elimPresExpSortInfo(PE1), x-elimPresExpSortInfo(PE2)) .
+  eq x-elimPresExpSortInfo(times(NMB, v(QI, QI')))
+     = times(NMB,
+             if QI' in ('NzNat ; 'Nat ; 'Zero ; 'NzInt) then
+               v(QI, 'Int)
+             else
+               v(QI, QI')
+             fi) .
+
+  -------------
+  --- function: x-elimLinIneqVarSortInfo
+  -------------
+  --- note: delete from a EPA formula the included sort information
+  ---------
+  op x-elimLinIneqSortInfo : Formula -> Formula  .
+  eq x-elimLinIneqSortInfo(conjunction(Alpha, Beta))
+   = conjunction(x-elimLinIneqSortInfo(Alpha), x-elimLinIneqSortInfo(Beta)).
+  eq x-elimLinIneqSortInfo(disjunction(Alpha, Beta))
+   = disjunction(x-elimLinIneqSortInfo(Alpha), x-elimLinIneqSortInfo(Beta)).
+  eq x-elimLinIneqSortInfo(implication(Alpha, Beta))
+   = implication(x-elimLinIneqSortInfo(Alpha), x-elimLinIneqSortInfo(Beta)).
+  eq x-elimLinIneqSortInfo(negation(Alpha))
+   = negation(x-elimLinIneqSortInfo(Alpha)) .
+  eq x-elimLinIneqSortInfo(trueFormula) = trueFormula .
+  eq x-elimLinIneqSortInfo(falseFormula) = falseFormula .
+  eq x-elimLinIneqSortInfo(lessEq(PE1, PE2))
+   = lessEq(x-elimPresExpSortInfo(PE1), x-elimPresExpSortInfo(PE2)) .
+
+  -------------
+  --- function: x-getLinIneqVarSortInfo
+  -------------
+  --- note: get from a EPA variable list the included sort-EPA information
+  ---------
+  op x-getLinIneqVarSortInfo : LinIneqVarSet -> Formula .
+  eq x-getLinIneqVarSortInfo(none) = trueFormula .
+  eq x-getLinIneqVarSortInfo(LIV ; LIV ; LIVS)
+   = x-getLinIneqVarSortInfo(LIV ; LIVS) .
+  eq x-getLinIneqVarSortInfo(v(QI, QI') ; LIVS)
+   = conjunction(
+       if QI' == 'NzNat then
+         less(0.0, times(1.0, v(QI, QI')))
+       else if QI' == 'Nat then
+         lessEq(0.0, times(1.0, v(QI, QI')))
+       else if QI' == 'Zero then
+         equal(times(1.0, v(QI, QI')), 0.0)
+       else if QI' == 'NzInt then
+         negation(equal(times(1.0, v(QI, QI')), 0.0))
+       else
+         trueFormula
+       fi fi fi fi,
+       x-getLinIneqVarSortInfo(LIVS)) [owise].
+
+  -------------
+  --- function: toDNF
+  -------------
+  op toDNF : Formula -> Formula .
+  eq toDNF(falseFormula) = falseFormula .
+  eq toDNF(trueFormula) = trueFormula .
+  eq toDNF(lessEq(PE1, PE2)) = lessEq(PE1, PE2) .
+  eq toDNF(negation(lessEq(PE1, PE2))) = lessEq(add(PE2, 1.0), PE1) .
+  eq toDNF(negation(conjunction(Alpha, Beta)))
+   = flattenDisjNormForm(
+       x-disjunction(toDNF(negation(Alpha)), toDNF(negation(Beta)))) .
+  eq toDNF(negation(disjunction(Alpha, Beta)))
+   = toDNFAux(x-conjunction(toDNF(negation(Alpha)), toDNF(negation(Beta)))) .
+  eq toDNF(negation(implication(Alpha, Beta)))
+   = toDNFAux(x-conjunction(toDNF(Alpha), toDNF(negation(Beta)))) .
+  eq toDNF(disjunction(Alpha, Beta))
+   = flattenDisjNormForm(x-disjunction(toDNF(Alpha), toDNF(Beta))) .
+  eq toDNF(implication(Alpha, Beta))
+   = flattenDisjNormForm(
+       x-disjunction(toDNF(negation(Alpha)), toDNF(Beta))) .
+  eq toDNF(conjunction(Alpha, Beta))
+   = toDNFAux(x-conjunction(toDNF(Alpha), toDNF(Beta))) .
+  --- this need to be clean up
+  eq toDNF(x-conjunction(Alpha, Beta))
+   = x-conjunction(toDNF(Alpha), toDNF(Beta)) .
+  ---
+
+  -------------
+  --- function: toDNFAux
+  -------------
+  op toDNFAux : Formula ~> Formula .
+  eq toDNFAux(falseFormula) = falseFormula .
+  eq toDNFAux(trueFormula) = trueFormula .
+  eq toDNFAux(lessEq(PE1, PE2)) = lessEq(PE1, PE2) .
+  eq toDNFAux(x-conjunction(x-disjunction(Alpha, Beta),
+                            x-disjunction(Gamma, Delta)))
+   = flattenDisjNormForm(
+       x-disjunction(toDNFAux(x-conjunction(Alpha, Gamma)),
+         x-disjunction(toDNFAux(x-conjunction(Alpha, Delta)),
+           x-disjunction(toDNFAux(x-conjunction(Beta, Gamma)),
+                         toDNFAux(x-conjunction(Beta, Delta)))))) .
+  eq toDNFAux(x-conjunction(x-conjunction(Alpha, Beta),
+                            x-disjunction(Gamma, Delta)))
+   = flattenDisjNormForm(
+       x-disjunction(
+         toDNFAux(x-conjunction(x-conjunction(Alpha, Beta), Gamma)),
+         toDNFAux(x-conjunction(x-conjunction(Alpha, Beta), Delta)))) .
+
+  eq toDNFAux(x-conjunction(x-disjunction(Gamma, Delta),
+                            x-conjunction(Alpha, Beta)))
+   = flattenDisjNormForm(
+       x-disjunction(
+         toDNFAux(x-conjunction(x-conjunction(Alpha, Beta), Gamma)),
+         toDNFAux(x-conjunction(x-conjunction(Alpha, Beta), Delta)))) .
+  eq toDNFAux(x-conjunction(LI, x-disjunction(Gamma, Delta)))
+   = flattenDisjNormForm(x-disjunction(toDNFAux(x-conjunction(LI, Gamma)),
+                                       toDNFAux(x-conjunction(LI, Delta)))).
+  eq toDNFAux(x-conjunction(x-disjunction(Gamma, Delta), LI))
+   = flattenDisjNormForm(x-disjunction(toDNFAux(x-conjunction(LI, Gamma)),
+                                       toDNFAux(x-conjunction(LI, Delta)))) .
+  eq toDNFAux(x-conjunction(x-conjunction(Alpha, Beta),
+                            x-conjunction(Gamma, Delta)))
+   = flattenConjLit(x-conjunction(x-conjunction(Alpha, Beta),
+                                  x-conjunction(Gamma, Delta))) .
+  eq toDNFAux(x-conjunction(LI, x-conjunction(Gamma, Delta)))
+   = flattenConjLit(x-conjunction(LI, x-conjunction(Gamma, Delta))) .
+  eq toDNFAux(x-conjunction(x-conjunction(Gamma, Delta), LI))
+   = flattenConjLit(x-conjunction(LI, x-conjunction(Gamma, Delta))) .
+  eq toDNFAux(x-conjunction(LI1, LI2)) = x-conjunction(LI1, LI2) .
+  eq toDNFAux(x-disjunction(Alpha, Beta))
+   = x-disjunction(toDNFAux(Alpha), toDNFAux(Beta)) .
+
+  --- Makes each x-disjunction right associative.
+  op flattenDisjNormForm : Formula ~> Formula .
+  eq flattenDisjNormForm(x-disjunction(x-disjunction(Alpha, Beta), Gamma))
+   = flattenDisjNormForm(x-disjunction(Alpha, x-disjunction(Beta, Gamma))) .
+  eq flattenDisjNormForm(x-disjunction(x-conjunction(Alpha, Beta), Gamma))
+   = x-disjunction(x-conjunction(Alpha, Beta), flattenDisjNormForm(Gamma)) .
+  eq flattenDisjNormForm(x-disjunction(LI, Gamma))
+   = x-disjunction(LI, flattenDisjNormForm(Gamma)) .
+  eq flattenDisjNormForm(x-conjunction(Alpha, Beta))
+   = x-conjunction(Alpha, Beta) .
+  eq flattenDisjNormForm(LI) = LI .
+  eq flattenDisjNormForm(trueFormula) = trueFormula .
+  eq flattenDisjNormForm(falseFormula) = falseFormula .
+
+
+  --- Makes x-conjunction right associative.
+  op flattenConjLit : Formula ~> Formula .
+  eq flattenConjLit(x-conjunction(x-conjunction(Alpha, Beta), Gamma))
+   = flattenConjLit(x-conjunction(Alpha, x-conjunction(Beta, Gamma))) .
+  eq flattenConjLit(x-conjunction(LI, Alpha))
+   = x-conjunction(LI, flattenConjLit(Alpha)) .
+  eq flattenConjLit(LI) = LI .
+
+  sort LinSystemSet .
+  op none : -> LinSystemSet [ctor].
+  op lis : LinIneqSystem -> LinSystemSet [ctor].
+  op _;_ : LinSystemSet LinSystemSet -> LinSystemSet
+     [ctor assoc comm id: none].
+
+  op leq : PresExp PresExp -> LinIneqSystem .
+  eq leq(PE1, PE2) = 0<= toLinExp(PE2) + (-1 * toLinExp(PE1)) .
+
+  op conjoin : LinSystemSet LinSystemSet -> LinSystemSet .
+  eq conjoin(none, LSS) = none .
+  eq conjoin(lis(LIS) ; LSS, LSS')
+   = conjoin1(LIS, LSS') ; conjoin(LSS, LSS') .
+
+  op conjoin1 : LinIneqSystem LinSystemSet -> LinSystemSet .
+  eq conjoin1(LIS, none) = none .
+  eq conjoin1(LIS, lis(LIS') ; LSS) = lis(LIS ; LIS') ; conjoin1(LIS, LSS) .
+
+  op toPresExp : LinExp -> PresExp .
+  eq toPresExp(none) = 0.0 .
+  eq toPresExp(c(R)) = float(R) .
+  eq toPresExp(R * LIV + LE) = add(times(float(R), LIV), toPresExp(LE)) .
+
+  op toFormula : LinSystemSet -> Formula .
+  eq toFormula(lis(LIS) ; LSS)
+   = x-disjunction(toFormula1(LIS), toFormula(LSS)) .
+  eq toFormula(none) = falseFormula .
+
+  op toFormula1 : LinIneqSystem -> Formula .
+  eq toFormula1(0<= LE ; LIS)
+   = x-conjunction(lessEq(0.0, toPresExp(LE)), toFormula1(LIS)) .
+  eq toFormula1(none) = trueFormula .
+
+  op toDNF2 : Formula ~> LinSystemSet .
+  eq toDNF2(falseFormula) = none .
+  eq toDNF2(trueFormula) = lis(none) .
+
+  eq toDNF2(lessEq(PE1, PE2)) = lis(leq(PE1, PE2)) .
+  --- NOTE: The equation below is unsound when PE1 or PE2 contains rational
+  ---   coefficients or variables.
+  eq toDNF2(negation(lessEq(PE1, PE2)))
+   = lis(leq(add(PE2, 1.0), PE1)) .
+
+  eq toDNF2(conjunction(Alpha, Beta))
+   = conjoin(toDNF2(Alpha), toDNF2(Beta)) .
+  eq toDNF2(negation(conjunction(Alpha, Beta)))
+   = toDNF2(negation(Alpha)) ; toDNF2(negation(Beta)) .
+  eq toDNF2(x-conjunction(Alpha, Beta))
+   = conjoin(toDNF2(Alpha), toDNF2(Beta)) .
+  eq toDNF2(negation(x-conjunction(Alpha, Beta)))
+   = toDNF2(negation(Alpha)) ; toDNF2(negation(Beta)) .
+
+  eq toDNF2(disjunction(Alpha, Beta)) = toDNF2(Alpha) ; toDNF2(Beta) .
+  eq toDNF2(negation(disjunction(Alpha, Beta)))
+   = conjoin(toDNF2(negation(Alpha)), toDNF2(negation(Beta))) .
+  eq toDNF2(x-disjunction(Alpha, Beta)) = toDNF2(Alpha) ; toDNF2(Beta) .
+  eq toDNF2(negation(x-disjunction(Alpha, Beta)))
+   = conjoin(toDNF2(negation(Alpha)), toDNF2(negation(Beta))) .
+
+  eq toDNF2(implication(Alpha, Beta))
+   = toDNF2(negation(Alpha)) ; toDNF2(Beta) .
+  eq toDNF2(negation(implication(Alpha, Beta)))
+   = conjoin(toDNF2(Alpha), toDNF2(negation(Beta))) .
+
+  -------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+  --- section: DECISION PROCEDURE
+  -------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+
+  op _<_ : PresExp PresExp ~> Bool [ditto] .
+  eq infPos < FL = false .
+  eq infNeg < FL = true .
+  eq FL < infPos = true .
+  eq FL < infNeg = false .
+
+  op _>_ : PresExp PresExp ~> Bool [ditto] .
+  eq infPos > FL = true .
+  eq infNeg > FL = false .
+  eq FL > infPos = false .
+  eq FL > infNeg = true .
+
+  -----------------------------------------------------
+  -----------------------------------------------------
+
+  op in? : TermPair TermPairSet -> Bool .
+  eq in?(TP, tps(TP, TPS)) = true .
+  eq in?(TP, TPS) = false [owise].
+
+  --- Creates an equality iff the terms are distinct and trueFormula
+  --- otherwise.
+  op mk-equality : Term Term -> Formula .
+  eq mk-equality(T, T) = trueFormula .
+  eq mk-equality(T1, T2) = equality(T1, T2) [owise].
+
+  --- Eliminates duplicate formulas in a conjunction.
+  op elim-cnj-rep : Formula -> Formula .
+  eq elim-cnj-rep(conjunction(Alpha, Alpha, Beta))
+   = elim-cnj-rep(conjunction(Alpha, Beta)) .
+  eq elim-cnj-rep(Alpha) = Alpha [owise].
+
+  --- eqPairs
+  op eqPairs : Term Term TermPairSet PairTermRatSet -> Formula .
+  ceq eqPairs(T1, T2, TPS, PTRS) = trueFormula
+   if in?(tp(T1, T2), TPS) .
+
+  ceq eqPairs(T1, T2, TPS, PTRS) = equality(T1, T2)
+   if in?(tp(T1,T2), TPS) = false
+   /\ T1 in etSet(T2, PTRS) = false .
+
+  --- NOTE: It appears this equation would never be called.
+  ceq eqPairs(T1, T2, TPS, PTRS)
+    = elim-cnj-rep(
+        conjunction(mk-equality(T1, F[T3]),
+                    mk-equality(T2, F[T4]),
+                    Alpha))
+   if in?(tp(T1, T2), TPS) = false
+   /\ T1 in etSet(T2, PTRS) = false
+   /\ F[T3] ; TS1 := etSet(T1, PTRS)
+   /\ F[T4] ; TS2 := etSet(T2, PTRS)
+   /\ Alpha := eqPairs(T3, T4, tps(tp(T1, T2), TPS), PTRS)
+   /\ Alpha =/= trueFormula .
+
+  ceq eqPairs(T1, T2, TPS, PTRS)
+    = elim-cnj-rep(
+        conjunction(mk-equality(T1, F[TL1]),
+                    mk-equality(T2, F[TL2]),
+                    Alpha))
+   if in?(tp(T1, T2), TPS) = false
+   /\ T1 in etSet(T2, PTRS) = false
+   /\ F[TL1] ; TS1 := etSet(T1, PTRS)
+   /\ F[TL2] ; TS2 := etSet(T2, PTRS)
+   /\ Alpha := eqPairsList(TL1, TL2, tps(tp(T1, T2), TPS), PTRS)
+   /\ Alpha =/= trueFormula .
+
+  eq eqPairs(T1, T2, TPS, PTRS) = trueFormula [owise] .
+
+  op eqPairsList : NeTermList NeTermList TermPairSet PairTermRatSet
+        -> Formula .
+  eq eqPairsList((T1, NeTL1), (T2, NeTL2), TPS, PTRS)
+   = if eqPairs(T1, T2, TPS, PTRS) == trueFormula then
+       trueFormula
+     else
+       eqPairsList(NeTL1, NeTL2, TPS, PTRS)
+     fi .
+  eq eqPairsList(T1, T2, TPS, PTRS)
+   = eqPairs(T1, T2, TPS, PTRS) .
+
+  --- NOTE: assumes that there exists a solution
+  op getSol : Term PairTermRatSet -> Rat .
+  eq getSol(T, (T <- R) ; PTRS) = R .
+
+  --- etSet
+  op etSet : Term PairTermRatSet -> TermSet .
+  eq etSet(T, (T <- R) ; PTRS) = etSetAux(R, PTRS) .
+  eq etSet(T, PTRS) = T [owise].
+
+  --- Returns all terms in set with given solution
+  op etSetAux : Rat PairTermRatSet -> TermSet .
+  eq etSetAux(R, (T <- R) ; PTRS) = T ; etSetAux(R, PTRS) .
+  eq etSetAux(R, PTRS) = none [owise].
+
+  --- getTermPairSet
+  op getTermPairSet : PairTermRatSet TermPairSet -> TermPairSet .
+  eq getTermPairSet(none, TPS) = TPS .
+  eq getTermPairSet((T <- R) ; PTRS, TPS)
+   = getTermPairSet(PTRS, getTermPairSetAux(T, R, PTRS, TPS)) .
+
+  --- NOTE: introducing some efficiency, given the
+  --- definition of eqPairs
+
+  op getTermPairSetAux : Term Rat PairTermRatSet TermPairSet
+        ~> TermPairSet .
+  ceq getTermPairSetAux(T1, R1, (T2 <- R2) ; PTRS, TPS)
+   = getTermPairSetAux(T1, R1, PTRS, tps(tp(T1, T2), TPS))
+   if top(T1) = top(T2)
+   /\ R1 =/= R2
+   /\ inEtSet?(tp(T1, T2), TPS, (T2 <- R2) ; PTRS) = false .
+  eq getTermPairSetAux(T, R, PTRS, TPS) = TPS .
+
+  --- inEtSet?
+  op inEtSet? : TermPair TermPairSet PairTermRatSet -> Bool .
+  ceq inEtSet?(tp(T1, T2), tps(tp(T3, T4), TPS), PTRS) = true
+   if getSol(T1, PTRS) = getSol(T3, PTRS)
+   /\ getSol(T2, PTRS) = getSol(T3, PTRS) .
+  eq inEtSet?(tp(T1, T2), TPS, PTRS) = false [owise].
+
+  --- top
+  op top : Term -> Qid .
+  eq top(F[TL]) = F .
+
+  op var2Term : LinIneqVar -> Term .
+  eq var2Term(v(QI, QI')) = String2Term(string(QI)) .
+
+  op String2Term : String -> Term .
+  ceq String2Term(ST) = qid(ST)
+   if find(ST, "`(", 0) = notFound .
+  ceq String2Term(ST)
+    = qid(String2Op(substr(ST, 0, NT)))
+         [getTermListFromString(
+             substr(ST, NT + 2, _-_(rfind(ST, "`)", length(ST)), NT + 2)))]
+   if NT := find(ST, "`(", 0) .
+
+  op getTermListFromString : String -> TermList .
+  ceq getTermListFromString(ST) = String2Term(ST)
+   if find(ST, "`,", 0) = notFound .
+  ceq getTermListFromString(ST)
+    =  (String2Term(substr(ST, 0, _-_(NT, 1))),
+          getTermListFromString(substr(ST, NT + 1,
+               1 + _-_(length(ST), NT))))
+   if NT := findFirstSubTerm(ST, 0, 0)
+   /\ NT < length(ST) .
+  eq getTermListFromString(ST) = String2Term(ST) [owise] .
+
+  op findFirstSubTerm : String Nat Int -> Nat .
+  ceq findFirstSubTerm(ST, NT, I)
+    = if ST1 == "(" then
+        findFirstSubTerm(ST, NT + 1, I + 1)
+      else if ST1 == ")" then
+        findFirstSubTerm(ST, NT + 1, _-_(I, 1))
+      else if ST1 == "," and I == 0 then
+         NT
+      else
+        findFirstSubTerm(ST, NT + 1, I)
+      fi fi fi
+   if NT < length(ST)
+   /\ ST1 := substr(ST, NT, 1) .
+  eq findFirstSubTerm(ST, NT, I) = length(ST) [owise] .
+
+  op String2Op : String -> String .
+  ceq String2Op(ST)
+    = if substr(ST, 0, 1) == "@" then
+        "_"
+       else
+         substr(ST, 0, 1)
+       fi
+   if length(ST) = 1 .
+  eq String2Op(ST)
+    = if substr(ST, 0, 1) == "@" then
+        "_" + String2Op(substr(ST, 1, length(ST)))
+      else
+        substr(ST, 0, 1) + String2Op(substr(ST, 1, length(ST)))
+      fi [owise] .
+
+  ---
+  --- PresAritProc
+  ---
+  op PresAritProc : LinIneqSystem? -> Formula .
+  eq PresAritProc(fail) = falseFormula .
+  eq PresAritProc(LIS) = PresAritProcAux(LIS, vars(LIS), none) .
+
+  op PresAritProcAux : LinIneqSystem LinIneqVarSet PairTermRatSet
+      -> Formula .
+  eq PresAritProcAux(LIS, LIV ; LIVS, PTRS)
+   = if existSolution?(getLinIneqVarType(LIV),
+                       sup(LIV, LIS),
+                       inf(LIV, LIS)) then
+       PresAritProcAux(
+         substInSystem(LIV,
+                       getSolution(getLinIneqVarType(LIV),
+                                   sup(LIV, LIS),
+                                   inf(LIV, LIS)),
+                       LIS),
+         LIVS,
+         (var2Term(LIV)
+             <- getSolution(getLinIneqVarType(LIV),
+                            sup(LIV, LIS),
+                            inf(LIV, LIS))) ; PTRS)
+     else
+       falseFormula
+     fi .
+  --- Check for violation.
+  --- We want to find two terms that are assigned different floating point
+  --- values that cannot be different with the given equalities.
+  ceq PresAritProcAux(LIS, none, PTRS)
+    = implication(Alpha, equality(T1, T2))
+   if tps(tp(T1, T2), TPS) := getTermPairSet(PTRS, emptyTPS)
+   /\ Alpha := eqPairs(T1, T2, emptyTPS, PTRS)
+   /\ Alpha =/= trueFormula .
+  eq PresAritProcAux(LIS, none, PTRS) = trueFormula [owise].
+
+  --- Returns true if there exist a number in the given range with the
+  --- prescribed type.
+  --- 1st arg: Type
+  --- 2nd arg: Upper bound
+  --- 3rd arg: Lower bound
+  op existSolution? : Type WNumber WNumber ~> Bool .
+  eq existSolution?(Tp, NMB, infPos) = false .
+  eq existSolution?(Tp, infNeg, NMB) = false .
+  eq existSolution?('Zero, infPos, FL) = FL <= 0.0 .
+  eq existSolution?(   Tp, infPos, FL) = true [owise].
+  eq existSolution?(   Tp, infPos, infNeg) = true .
+  eq existSolution?(  'Nat, FL, infNeg) = FL >= 0.0 .
+  eq existSolution?('NzNat, FL, infNeg) = FL > 0.0 .
+  eq existSolution?( 'Zero, FL, infNeg) = FL >= 0.0 .
+  eq existSolution?(    Tp, FL, infNeg) = true [owise].
+  eq existSolution?(  'Rat, FL1, FL2)
+   = FL1 >= FL2 .
+  eq existSolution?('NzRat, FL1, FL2)
+   = FL1 >= FL2 and ((FL1 > 0.0) or (0.0 > FL2)) .
+  eq existSolution?(  'Int, FL1, FL2)
+   = floor(FL1) >= ceiling(FL2) .
+  eq existSolution?('NzInt, FL1, FL2)
+   = (floor(FL1) >= ceiling(FL2)) and ((FL1 >= 1.0) or (-1.0 >= FL2)) .
+  eq existSolution?(  'Nat, FL1, FL2)
+   = floor(FL1) >= max(0.0, ceiling(FL2)) .
+  eq existSolution?('NzNat, FL1, FL2)
+   = floor(FL1) >= max(1.0, ceiling(FL2)) .
+  eq existSolution?( 'Zero, FL1, FL2)
+   = (FL1 >= 0.0) and (0.0 >= FL2) .
+
+  --- Returns a solution to the given problem.
+  --- This operation assumes existSolution? is true for the given inputs.
+  op getSolution : Sort WNumber WNumber ~> Rat .
+  eq getSolution('NzInt, infPos, FL) = max(ceiling(rat(FL)), 1) .
+  eq getSolution('NzNat, infPos, FL) = max(ceiling(rat(FL)), 1) .
+  eq getSolution(    Tp, infPos, FL) = max(ceiling(rat(FL)), 0) [owise].
+  eq getSolution('NzInt, infPos, infNeg) = 1 .
+  eq getSolution('NzNat, infPos, infNeg) = 1 .
+  eq getSolution(    Tp, infPos, infNeg) = 0 [owise].
+  eq getSolution('NzInt, FL, infNeg) = min(floor(rat(FL)), -1) .
+  eq getSolution('NzNat, FL, infNeg) = 1 .
+  eq getSolution(Tp, FL, infNeg) = min(floor(rat(FL)), 0) [owise].
+  eq getSolution('NzInt, FL1, FL2)
+   = if rat(FL1) >= 1 then
+       max(ceiling(rat(FL2)), 1)
+     else --- rat(FL2) must be <= -1.
+       min(floor(rat(FL1)), -1)
+     fi .
+  eq getSolution('NzNat, FL1, FL2)
+   = min(floor(rat(FL1)), max(ceiling(rat(FL2)), 1)) .
+  eq getSolution(Tp, FL1, FL2)
+   = min(floor(rat(FL1)), max(ceiling(rat(FL2)), 0)) [owise].
+
+  --------------------------------------------------
+  --------------------------------------------------
+  --------------------------------------------------
+  --- EXTENDED PRESBURGER ARITHMETIC
+  --------------------------------------------------
+  --------------------------------------------------
+  --------------------------------------------------
+
+  -----------------------------------------------
+  --- subsection: preprocessing EPA formulas
+  -----------------------------------------------
+
+  --- Returns true if the Qid is considered a linear operator.
+  op isLinearOp? : Qid -> Bool .
+  eq isLinearOp?(F)
+   = (F in ('_<_ ; '_<=_ ; '_>_ ; '_>=_ ; 's_ ; '-_ ; '_+_ ; '_-_ ; '_*_ ;
+            '_/_ ; '_quo_))
+      or (substr(string(F), 0, 3) == "s_^") .
+
+  -------------
+  --- precProcTerm takes a ground term T and returns a new ground term where:
+  ---
+  --- * If F[TL] is a subterm of T, and F is not a linear inequality symbol
+  ---   or an arithmetic operator, then F is changed to qid("#"string(F)[TL].
+  --- * If C is a constant in T and isPresSort?(getType(C)) = false or T is
+  ---   not a boolean then C is replaced with qid("#" + string(C)).
+  --- * Other operations are left alone.
+  op preProcTerm : GroundTerm -> GroundTerm .
+  eq preProcTerm(C)
+   = if isPresSort?(getType(C)) or getType(C) == 'Bool then
+       C
+     else
+       qid("#" + string(C))
+     fi .
+  eq preProcTerm(F[TL])
+   = if isLinearOp?(F) then
+       F[preProcTermList(TL)]
+     else
+       qid("#" + string(F))[preProcTermList(TL)]
+     fi .
+
+  --- List version of preProcTerm
+  op preProcTermList : GroundTermList -> GroundTermList .
+  eq preProcTermList(empty) = empty .
+  eq preProcTermList((T, TL)) = (preProcTerm(T), preProcTermList(TL)) .
+
+  -------------
+  --- function: preProcFormulaAux
+  -------------
+  --- This function transforms a quantifier-free ground formula without
+  --- memberships into an equivalent formula where all of the terms have been
+  --- processed with preProcTerm.
+  op preProcFormulaAux : Formula ~> Formula .
+  eq preProcFormulaAux(trueFormula) = trueFormula .
+  eq preProcFormulaAux(falseFormula) = falseFormula .
+  eq preProcFormulaAux(negation(Alpha))
+   = negation(preProcFormulaAux(Alpha)) .
+  eq preProcFormulaAux(conjunction(Alpha, Beta))
+   = conjunction(preProcFormulaAux(Alpha), preProcFormulaAux(Beta)) .
+  --- v015
+  eq preProcFormulaAux(implication(Alpha, Beta))
+   = implication(preProcFormulaAux(Alpha), preProcFormulaAux(Beta)) .
+  eq preProcFormulaAux(disjunction(Alpha, Beta))
+   = disjunction(preProcFormulaAux(Alpha), preProcFormulaAux(Beta)) .
+  eq preProcFormulaAux(equality(T1, T2))
+   = equality(preProcTerm(T1), preProcTerm(T2)) [owise] .
+
+  -------------
+  --- function: getSubTermInTerm
+  -------------
+  -------------
+  --- getSubTermInTerm returns subterms whose root is prefix with "#" and
+  --- whose parents operators are all not prefix with "#".
+  op getSubTermInTerm : GroundTerm -> TermSet .
+  eq getSubTermInTerm(C)
+   = if substr(string(C), 0, 1) == "#" then
+       C
+     else
+       none
+     fi .
+  eq getSubTermInTerm(F[TL])
+   = if F[TL] == 's_['0.Zero] then
+       none
+     else if (substr(string(F), 0, 3) == "s_^") and (TL == '0.Zero) then
+       none
+     else if substr(string(F), 0, 1) =/= "#" then
+       getSubTermInTermList(TL)
+     else
+        F[TL]
+     fi fi fi .
+
+  -------------
+  --- function: getSubTermInTermList
+  -------------
+  op getSubTermInTermList : GroundTermList -> TermSet .
+  eq getSubTermInTermList(empty) = none .
+  eq getSubTermInTermList((T, TL))
+   = getSubTermInTerm(T) ; getSubTermInTermList(TL) .
+
+  --- Returns all of the terms obtained by calling getSubTermInTerm on the
+  --- terms appearing in the formula.  The input formula is assumed to be
+  --- quantifier free, ground, and contain no membership predicates.
+  op getSubTermInFormula : Formula ~> TermSet .
+  eq getSubTermInFormula(trueFormula) = none .
+  eq getSubTermInFormula(falseFormula) = none .
+  eq getSubTermInFormula(negation(Alpha))
+   = getSubTermInFormula(Alpha) .
+  eq getSubTermInFormula(conjunction(Alpha, Beta))
+   = getSubTermInFormula(Alpha) ; getSubTermInFormula(Beta) .
+  --- v015
+  eq getSubTermInFormula(implication(Alpha, Beta))
+   = getSubTermInFormula(Alpha) ; getSubTermInFormula(Beta) .
+  eq getSubTermInFormula(disjunction(Alpha, Beta))
+   = getSubTermInFormula(Alpha) ; getSubTermInFormula(Beta) .
+  ---
+  eq getSubTermInFormula(equality(T1, T2))
+   = getSubTermInTerm(T1) ; getSubTermInTerm(T2) .
+
+  -------------
+  --- getSubTermInTermNew with a false boolean value returns proper subterms
+  --- of a ground term that are not prefixed with "#" but whose parent
+  --- operator is prefixed with "#".  As a special case, getSubTermInTermNew
+  --- will not return subterms that identify natural number constants.
+  ---
+  --- Since this operation is used in the context of terms that have been
+  --- passed through PreProcTerm, this operation has the effect of returning
+  --- subterms whose root symbol is an arithmetic operator or linear equality
+  --- predicate which appear immeadiately beneath a term that neither.
+  op getSubTermInTermNew : GroundTermList Bool -> TermSet .
+  eq getSubTermInTermNew(empty, B) = none .
+  eq getSubTermInTermNew((C, TL), B)
+   = getSubTermInTermNew(TL, B) .
+  eq getSubTermInTermNew((F[TL], TL'), B)
+   = if (F[TL] == 's_['0.Zero]) then
+       getSubTermInTermNew(TL', B)
+     else if (substr(string(F), 0, 3) == "s_^") and (TL == '0.Zero) then
+       getSubTermInTermNew(TL', B)
+     else if substr(string(F), 0, 1) == "#" then
+       getSubTermInTermNew(TL, true) ;
+       getSubTermInTermNew(TL', B)
+     else if B then
+       F[TL] ;
+       getSubTermInTermNew(TL, false) ;
+       getSubTermInTermNew(TL', B)
+     else
+       getSubTermInTermNew(TL, false) ;
+       getSubTermInTermNew(TL', B)
+     fi fi fi fi .
+
+  -------------
+  --- Returns all of the terms obtained by calling getSubTermInTermNew on the
+  --- terms appearing in the formula.  The input formula is assumed to be
+  --- quantifier free, ground, and contain no membership predicates.
+
+  op getSubTermInFormulaNew : Formula ~> TermSet .
+  eq getSubTermInFormulaNew(trueFormula) = none .
+  eq getSubTermInFormulaNew(falseFormula) = none .
+  eq getSubTermInFormulaNew(negation(Alpha))
+   = getSubTermInFormulaNew(Alpha) .
+  eq getSubTermInFormulaNew(conjunction(Alpha, Beta))
+   = getSubTermInFormulaNew(Alpha) ; getSubTermInFormulaNew(Beta) .
+  --- v015
+  eq getSubTermInFormulaNew(implication(Alpha, Beta))
+   = getSubTermInFormulaNew(Alpha) ; getSubTermInFormulaNew(Beta) .
+  eq getSubTermInFormulaNew(disjunction(Alpha, Beta))
+   = getSubTermInFormulaNew(Alpha) ; getSubTermInFormulaNew(Beta) .
+  ---
+  eq getSubTermInFormulaNew(equality(T1, T2))
+   = getSubTermInTermNew(T1, false) ;
+     getSubTermInTermNew(T2, false) .
+
+  -------------
+  --- function: replaceInTermNew
+  -------------
+  op replaceInTermNew : Term Replacement ~> Term .
+  eq replaceInTermNew(C, RPL) = C .
+  eq replaceInTermNew(T, (T <<- C) ; RPL) = C .
+  eq replaceInTermNew(F[TL], RPL)
+   = F[replaceInTermListNew(TL, RPL)] [owise].
+
+  -------------
+  --- function: replaceInTermListNew
+  -------------
+  op replaceInTermListNew : TermList Replacement -> TermList .
+  eq replaceInTermListNew(empty, RPL) = empty .
+  eq replaceInTermListNew((T, TL), RPL)
+     = (replaceInTermNew(T, RPL), replaceInTermListNew(TL, RPL)) .
+
+  -------------
+  --- function: replaceInFormulaNew
+  -------------
+  op replaceInFormulaNew : Formula Replacement ~> Formula .
+  eq replaceInFormulaNew(trueFormula, RPL) = trueFormula .
+  eq replaceInFormulaNew(falseFormula, RPL) = falseFormula .
+  eq replaceInFormulaNew(equality(T1, T2), RPL)
+   = equality(replaceInTermNew(T1, RPL), replaceInTermNew(T2, RPL)) .
+  eq replaceInFormulaNew(negation(Alpha), RPL)
+   = negation(replaceInFormulaNew(Alpha, RPL)) .
+  eq replaceInFormulaNew(conjunction(Alpha, Beta), RPL)
+   = conjunction(replaceInFormulaNew(Alpha, RPL),
+                 replaceInFormulaNew(Beta, RPL)) .
+  --- v015
+  eq replaceInFormulaNew(implication(Alpha, Beta), RPL)
+   = implication(replaceInFormulaNew(Alpha, RPL),
+                 replaceInFormulaNew(Beta, RPL)) .
+  eq replaceInFormulaNew(disjunction(Alpha, Beta), RPL)
+   = disjunction(replaceInFormulaNew(Alpha, RPL),
+                 replaceInFormulaNew(Beta, RPL)) .
+  ---
+
+  op elimRepet : TermList -> TermList .
+  eq elimRepet((TL1, T, TL2, T, TL3)) = elimRepet((TL1, TL2, T, TL3)) .
+  eq elimRepet(TL) = TL [owise].
+
+  -------------
+  --- function : assignVar
+  --------------
+  --- Note: Terms in set should be ground.
+  op assignVar : TermSet Module ~> Replacement .
+  eq assignVar(C ; TS, Mod)
+   = (C <<-
+       qid(Term2String(C) + "."
+         + string(getType(metaReduce(Mod, invPreProcTerm(C))))))
+        ; assignVar(TS, Mod) .
+  eq assignVar(F[TL] ; TS, Mod)
+   = (F[TL] <<-
+       qid(Term2String(F[TL]) + "."
+         + string(getType(metaReduce(Mod, invPreProcTerm(F[TL]))))))
+        ; assignVar(TS, Mod) .
+  eq assignVar(none, Mod) = none .
+
+  --- Converts Replacement into formula by mapping each assignment into a
+  --- equality and returning the conjunction of all of them.
+  op getSubstAxioms : Replacement -> Formula .
+  eq getSubstAxioms(none) = trueFormula .
+  eq getSubstAxioms((T <<- C) ; RPL)
+   = conjunction(equality(C, T), getSubstAxioms(RPL)) .
+
+  --- Returns the constant associated to given term in replacement or term
+  --- itself is there is none.
+  op getReplacement : GroundTerm Replacement -> GroundTerm .
+  eq getReplacement(T, (T <<- C) ; RPL) = C .
+  eq getReplacement(T, RPL) = T [owise].
+
+  --- Replaces all subterm in term whose root symbol is prefixed with "#
+  --- whose parents are not prefixed with "#" with constant value in
+  --- replacement map.  If term does not appear in replacement map, then it
+  --- is not replaced.
+  ---
+  --- Note that if Replacement doe not contain terms with #-prefix root
+  --- symbols that this is the identity function.
+  op replaceInTerm : GroundTerm Replacement -> GroundTerm .
+  eq replaceInTerm(C, RPL) = C .
+  eq replaceInTerm(F[TL], RPL)
+   = if substr(string(F), 0, 1) == "#" then
+       getReplacement(F[TL], RPL)
+     else
+       F[replaceInTermList(TL, RPL)]
+     fi .
+
+  --- List version of replaceInTerm above.
+  op replaceInTermList : GroundTermList Replacement -> GroundTermList .
+  eq replaceInTermList(empty, RPL) = empty .
+  eq replaceInTermList((T, TL), RPL)
+   = (replaceInTerm(T, RPL), replaceInTermList(TL, RPL)) .
+
+  -------------
+  --- function: replaceInReplacement
+  -------------
+  op replaceInReplacement : Replacement ReplTermPair ~> Replacement .
+  eq replaceInReplacement(none, RTP) = none .
+  eq replaceInReplacement((T <<- C) ; RPL, RTP)
+   = (replaceInTerm(T, RTP) <<- C) ; replaceInReplacement(RPL, RTP) .
+
+  -------------
+  --- function: normAssignAux
+  -------------
+  op normAssignAux : Replacement Replacement -> Replacement .
+  eq normAssignAux(none, RPL) = RPL .
+  eq normAssignAux((RTP ;  RPL), RPL')
+   = normAssignAux(replaceInReplacement(RPL, RTP),
+                   RTP ; replaceInReplacement(RPL', RTP)) .
+
+  op normAssign : Replacement -> Replacement .
+  eq normAssign(RPL) = normAssignAux(RPL, none) .
+
+  --- Converts the replacement map into operator declarations.
+  op getNewOps : Replacement -> OpDeclSet .
+  eq getNewOps(none) = none .
+  eq getNewOps((T <<- C) ; RPL)
+   = (op getName(C) : nil -> getType(C) [none] .) getNewOps(RPL) .
+
+  -------------
+  --- function: preProcFormulaNew
+  -------------
+  --- This function applies processing to the formula that appears to be
+  --- related to purification of terms.
+  ---
+  --- The input formula is assumed to be quantifier free, ground, and not
+  --- contain any memberships.
+  op preProcFormulaNew : Formula FModule ~> Formula .
+  ceq preProcFormulaNew(Alpha, Mod)
+    = x-procLinIneq(
+        replaceInFormulaNew(Gamma,
+           assignVar(getSubTermInFormula(Gamma),
+                     addOps(getNewOps(RPL), Mod))))
+   if Beta := preProcFormulaAux(Alpha)
+      --- Get linear arithmetic terms that appear beneath an alien operator,
+      --- and create replacement that maps each term to a constant.
+      --- Note that all terms in RPL have a linear arithmetic root.
+   /\ RPL := assignVar(getSubTermInFormulaNew(Beta), Mod)
+   /\ Gamma := conjunction(getSubstAxioms(normAssign(RPL)),
+                           replaceInFormulaNew(Beta, RPL)) .
+
+  --------------------------------------------------------------
+  --------------------------------------------------------------
+
+  -------------
+  --- function: createNewSolution
+  -------------
+  --- note: this function is used in the auto command
+  --- to check whether the current module is consistent.
+  op createNewSolution : Module ~> Formula .
+  ceq createNewSolution(Mod)
+    = createNewSolutionAux2(Mod,
+        toDNFAux(
+          toDNF(x-elimLinIneqSortInfo(
+                  conjunction(
+                    x-getLinIneqVarSortInfo(x-getVarInLinIneq(Gamma)),
+                    Gamma)))))
+   if Alpha := getGroundLinIneqs(Mod)
+   /\ Gamma := preProcFormulaNew(Alpha, Mod) .
+
+  --- How this function is used:
+  ---   If this function returns true, then the equality is rewritten
+  ---   to trueFormula in applyReducePlus.
+  op createNewSolutionNeg : Equality Module ~> Formula .
+  ceq createNewSolutionNeg(equality(T1, T2), Mod)
+    = createNewSolutionAux2(Mod,
+        toDNFAux(
+          x-conjunction(
+            createNewSolution(Mod),
+            toDNF(x-elimLinIneqSortInfo(
+                    conjunction(
+                      x-getLinIneqVarSortInfo(x-getVarInLinIneq(Gamma)),
+                      Gamma))))))
+   if Gamma := preProcFormulaNew(negation(equality(T1, T2)), Mod) .
+
+  -------------
+  --- function: invPreProcTermList
+  -------------
+  op invPreProcTermList : GroundTermList -> GroundTermList .
+  eq invPreProcTermList((T, TL))
+   = (invPreProcTerm(T), invPreProcTermList(TL)) .
+  eq invPreProcTermList(empty) = empty .
+
+  --- Returns the qid with it's initial character removed.
+  op removeInitialChar : Qid -> Qid .
+  eq removeInitialChar(F) = qid(substr(string(F), 1, length(string(F)))) .
+
+  -------------
+  --- function: invPreProcTerm
+  -------------
+  op invPreProcTerm : GroundTerm ~> GroundTerm .
+  eq invPreProcTerm(C)
+   = if isPresSort?(getType(C)) then
+       C
+     else if getType(C) == 'FiniteFloat then
+       getTerm(metaReduce(['SUP-INF-METHOD], 'rat[C]))
+     else
+       removeInitialChar(C)
+     fi fi .
+  eq invPreProcTerm(F[TL])
+   = if isLinearOp?(F) then
+       F[invPreProcTermList(TL)]
+     else
+       removeInitialChar(F)[invPreProcTermList(TL)]
+     fi .
+
+  --- This function applies invPreProcTerm to the terms appearing in equality
+  --- predicates.  The input formula is assumed to be quantifier-free and
+  --- only contain ground equations without memberships.
+  op invPreProcFormula : Formula ~> Formula .
+  eq invPreProcFormula(implication(Alpha, Beta))
+   = implication(invPreProcFormula(Alpha), invPreProcFormula(Beta)) .
+  eq invPreProcFormula(conjunction(Alpha, Beta))
+   = conjunction(invPreProcFormula(Alpha), invPreProcFormula(Beta)) .
+  eq invPreProcFormula(disjunction(Alpha, Beta))
+   = disjunction(invPreProcFormula(Alpha), invPreProcFormula(Beta)) .
+  eq invPreProcFormula(negation(Alpha))
+   = negation(invPreProcFormula(Alpha)) .
+  eq invPreProcFormula(trueFormula) = trueFormula .
+  eq invPreProcFormula(falseFormula) = falseFormula .
+  eq invPreProcFormula(equality(T1, T2))
+   = equality(invPreProcTerm(T1), invPreProcTerm(T2)) .
+
+  -------------
+  --- function: cook
+  -------------
+  op cook : Module Formula -> Formula .
+  --- Ralf
+  ceq cook(Mod, Alpha)
+    = x-elimLinIneqSortInfo(
+        conjunction(
+          x-getLinIneqVarSortInfo(x-getVarInLinIneq(Beta)),
+          Beta))
+   if Beta := preProcFormulaNew(invPreProcFormula(Alpha), Mod) .
+
+  op getILP : ConjLit ~> LinIneqSystem? .
+  eq getILP(CNL) = $getILP(CNL, none) .
+
+  op $getILP : ConjLit LinIneqSystem ~> LinIneqSystem? .
+  eq $getILP(x-conjunction(falseFormula, CNL), LIS) = fail .
+  eq $getILP(x-conjunction(trueFormula, CNL), LIS) = $getILP(CNL, LIS) .
+  eq $getILP(x-conjunction(lessEq(PE1, PE2), CNL), LIS)
+   = $getILP(CNL, (0<= toLinExp(PE2) + (-1 * toLinExp(PE1))) ; LIS) .
+  eq $getILP(falseFormula, LIS) = fail .
+  eq $getILP(trueFormula, LIS) = LIS .
+  eq $getILP(lessEq(PE1, PE2), LIS)
+   = (0<= toLinExp(PE2) + (-1 * toLinExp(PE1))) ; LIS .
+
+  -------------
+  --- function: createNewSolutionAux2
+  -------------
+  op createNewSolutionAux2 : Module Formula ~> Formula .
+  ceq createNewSolutionAux2(Mod, CNL)
+    = if Alpha == falseFormula then
+        falseFormula
+      else if Alpha == trueFormula then
+        CNL
+      else
+        createNewSolutionAux2(Mod,
+          toDNFAux(toDNF(conjunction(cook(Mod, Alpha), CNL))))
+      fi fi
+  if Alpha := PresAritProc(getILP(CNL)) .
+  ceq createNewSolutionAux2(Mod, x-disjunction(CNL, DN))
+    = if Alpha == falseFormula then
+        createNewSolutionAux2(Mod, DN)
+      else if Alpha == trueFormula then
+        x-disjunction(CNL, DN)
+      else
+        createNewSolutionAux2(Mod,
+          toDNFAux(
+            x-disjunction(toDNF(conjunction(cook(Mod, Alpha), CNL)),
+                          DN)))
+      fi fi
+  if Alpha := PresAritProc(getILP(CNL)) .
+endfm

@@ -1,0 +1,13 @@
+select ITP-TOOL .
+loop init-itp .
+
+(goal reverse-reverse-searchtree : SEARCHTREE |- A{T:STree?}
+      ((((T:STree?): Tree)) => ((reverse(reverse(T:STree?))) = (T:STree?))) .)
+
+-------------------------------------
+--- main goal
+-------------------------------------
+
+(ind on T:STree? .)
+(auto .)
+(auto .)

@@ -1,0 +1,99 @@
+fmod ORDLIST is
+  protecting INT .
+  ---o kind Bool? = [Bool] .
+  ---o kind Int? = [Int] .
+  ---o kind List? = [NeList, List, OrdList] .
+  sorts Bool? Int? NeList List OrdList List? .
+  subsort Bool < Bool? .
+  subsort Int < Int? .
+  subsort List < List? .
+  ---o cmb L : List if L : NeList .
+  subsort NeList < List? .
+  subsort OrdList < List? .
+
+  op nil : -> List? .
+  op _:_ : Int? List? -> List? .
+  op append : List? List? -> List? .
+  op reverse : List? -> List? .
+  op isMember : Int? List? -> Bool? .
+
+  op ord-insert : Int? List? -> List? .
+  op delete : Int? List? -> List? .
+  op ord-isMember : Int? List? -> Bool? .
+
+  vars I J : Int? .
+  vars L L1 L2 : List? .
+
+  ---------
+  --- sort: NeList
+  ---------
+  cmb (I : L) : NeList if I : Int /\ L : List .
+  ---------
+  --- sort: List
+  ---------
+  mb nil : List .
+  ---o cmb L : List if L : NeList .
+  subsort NeList < List .
+  ---------
+  --- sort: OrdList
+  ---------
+  mb nil : OrdList .
+  cmb (I : nil) : OrdList if I : Int .
+  cmb (I : J : L) : OrdList
+      if I : Int /\ J : Int /\ L : List /\ I <= J = true /\ (J : L) : OrdList .
+
+  --------------
+  --- operation: append
+  --------------
+  eq append(nil, L) = L .
+  eq append((I : L1), L2) = I : append(L1, L2) .
+
+  --------------
+  --- operation: reverse
+  --------------
+  eq reverse(nil) = nil .
+  eq reverse(I : L) = append(reverse(L), I : nil) .
+
+  --------------
+  --- operation: isMember
+  --------------
+  eq isMember(I, nil) = false .
+  ceq isMember(I, J : L) = true
+      if I = J .
+  ceq isMember(I, J : L) = isMember(I, L)
+      if I < J .
+  ceq isMember(I, J : L) = isMember(I, L)
+      if I > J .
+
+  -------------
+  --- function: ord-insert
+  -------------
+  eq ord-insert(I, nil) = (I : nil) .
+  ceq ord-insert(I, (J : L)) = I : J : L
+   if I <= J = true .
+  ceq ord-insert(I, (J : L)) = J : ord-insert(I, L)
+   if I <= J = false .
+
+  --------------
+  --- operation: ord-isMember
+  --------------
+  eq ord-isMember(I, nil) = false .
+  ceq ord-isMember(I, J : L) = true
+      if I = J .
+  ceq ord-isMember(I, J : L) = false
+      if I < J .
+  ceq ord-isMember(I, J : L) = ord-isMember(I, L)
+      if I > J .
+
+  --------------
+  --- operation: delete
+  --------------
+  eq delete(I, nil) = nil .
+  ceq delete(I, J : L) = L
+   if I <= J /\ J <= I .
+  ceq delete(I, J : L) = (J : delete(I,L))
+   if J <= I = false .
+  ceq delete(I, J : L) = (J : delete(I, L))
+   if I <= J = false .
+
+endfm

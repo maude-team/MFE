@@ -1,0 +1,102 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English: if an integer is a member of a list L, then it is also
+--- a member of the reverse of L.
+
+(goal ordlist-member-reverse : 
+      ORDLIST |- A{N:Int? ; L:List?}
+      ((((N:Int?): Int) & ((L:List?): List) & ((isMember(N:Int?, L:List?)) = (true)))
+                => ((isMember(N:Int?, reverse(L:List?))) = (true))) .)
+
+-----------
+---- lemma: append
+-----------
+(lem ordlist-append : 
+   A{L1:List? ; L2:List?}((((L1:List?): List) & ((L2:List?): List))
+      => ((append(L1:List?, L2:List?)): List)) .)
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+----------
+--- lemma: ordlist-member-append-left 
+----------
+(lem ordlist-member-append-left : 
+     A{N:Int? ; L1:List? ; L2:List?}
+((((N:Int?): Int) & ((L1:List?): List) & ((isMember(N:Int?, L1:List?)) = (true)))
+                => ((isMember(N:Int?, append(L1:List?, L2:List?))) = (true))) .)
+
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (N*Int? < V0#0*Int?) .)
+--- case N*Int? < V0#0*Int? = true
+(auto .)
+--- case N*Int? < V0#0*Int? = false
+(auto .)
+(split on (N*Int? > V0#0*Int?) .)
+--- --- case N*Int? > V0#0*Int? = true
+(auto .)
+--- --- case N*Int? > V0#0*Int? = false
+(auto .)
+
+----------
+--- lemma: ordlist-member-append-right  
+----------
+(lem list-member-append-right : 
+     A{N:Int? ; L1:List? ; L2:List?}
+((((N:Int?): Int) & ((L1:List?): List) & ((isMember(N:Int?, L2:List?)) = (true)))
+                => ((isMember(N:Int?, append(L1:List?, L2:List?))) = (true))) .)
+
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (N*Int? < V0#0*Int?) .)
+--- case N*Int? < V0#0*Int? = true
+(auto .)
+--- case N*Int? < V0#0*Int? = false
+(auto .)
+(split on (N*Int? > V0#0*Int?) .)
+--- --- case N*Int? > V0#0*Int? = true
+(auto .)
+--- --- case N*Int? > V0#0*Int? = false
+(auto .)
+
+
+----------
+--- lemma: ordlist-reverse 
+----------
+(lem ordlist-reverse : 
+   A{L1:List?}(((L1:List?): List) => ((reverse(L1:List?)): List)) .)
+
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+---------
+--- goal: list-member-reverse
+---------
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (N*Int? < V0#0*Int?) .)
+--- case N*Int? < V0#0*Int? = true
+(auto .)
+--- case N*Int? < V0#0*Int? = false
+(auto .)
+(split on (N*Int? > V0#0*Int?) .)
+--- --- case N*Int? > V0#0*Int? = true
+(auto .)
+--- --- case N*Int? > V0#0*Int? = false
+(auto .)

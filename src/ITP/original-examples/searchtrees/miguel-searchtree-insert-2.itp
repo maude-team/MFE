@@ -1,0 +1,72 @@
+select ITP-TOOL .
+loop init-itp .
+
+(goal insert-searchtree-2 : SEARCHTREE |- A{I:Int? ; ST:STree?}
+      ((((I:Int?): Int) & ((ST:STree?): STree))
+        => 
+       ((elements(insert(ST:STree?, I:Int?))) = (I:Int? elements(ST:STree?)))) .)
+
+-------------------------------------
+--- main goal
+-------------------------------------
+
+(ind on ST:STree? .)
+----------
+--- case 1
+---------- 
+(auto .)
+
+----------
+--- case 2
+---------- 
+(auto .)
+(split on (V0#0*Int? < I*Int?) .)
+(auto .)
+(auto .)
+(split on (I*Int? < V0#0*Int?) .)
+(auto .)
+(auto .)
+
+----------
+--- case 3
+---------- 
+(auto .)
+(split on (V0#0*Int? < I*Int?) .)
+(auto .)
+(auto .)
+(split on (I*Int? < V0#0*Int?) .)
+(auto .)
+(auto .)
+(lem aux1 : ((I*Int?) = (V0#0*Int?)) .)
+(auto .)
+(auto .)
+
+----------
+--- case 4
+---------- 
+(auto .)
+(split on (V0#1*Int? < I*Int?) .)
+(auto .)
+(auto .)
+(split on (I*Int? < V0#1*Int?) .)
+(auto .)
+(auto .)
+(lem aux2 : ((I*Int?) = (V0#1*Int?)) .)
+(auto .)
+(auto .)
+
+----------
+--- case 5
+---------- 
+(auto .)
+(split on (V0#1*Int? < I*Int?) .)
+(auto .)
+(auto .)
+(split on (I*Int? < V0#1*Int?) .)
+(auto .)
+(auto .)
+(lem aux3 : ((I*Int?) = (V0#1*Int?)) .)
+(auto .)
+(auto .)
+
+

@@ -1,0 +1,54 @@
+fmod TERMINATION-CHECK is
+  pr BOOL .
+  pr INT .
+  pr STRING .
+  pr QID .
+  pr QID-LIST .
+
+*** First parameter: keywork for the external tool
+*** Second parameter: expression to be checked
+***                   A temporary file is created containing the expression
+***                   and the file is passed as argument to the tool.
+*** Third parameter: Maximum number of miliseconds for the computation
+*** Result: Resulting String from the external tool shown as QidList
+*** This function relays on the existence of a configuration file
+*** called mfe.config. This file include one line per tool with two or three
+*** keywords:
+*** - keyword for the external tool,
+*** - batch file to be run
+*** - expected file extension for that external tool.
+*** Example: 
+*** aprove /usr/local/utils/runme .trs
+*** othertool /usr/local/utils/runmenow
+*** That file is searched in $MAUDE_LIB, the directory where the executable 
+*** file is and in the present directory, in that order
+
+  op termCheck : String String Nat ~> String
+       [ctor
+        special (id-hook TerminationCheckerSymbol (checktermination)
+                 op-hook succSymbol (s_ : Nat ~> NzNat)
+                 op-hook stringSymbol (<Strings> : ~> String))].
+
+*** First parameter: Name of the log file.
+*** Second parameter: String to be written to the file.
+*** Third parameter: true -> remove previous file content,
+***                  false -> append to the previous file content.
+*** Result: The message is written to the log file and a String is returned
+***         ("ERROR" or "SUCCESS")
+  op writeToFile : String String Bool ~> String
+       [ctor
+        special (id-hook TerminationCheckerSymbol (writelog)
+                 op-hook trueSymbol (true : ~> Bool)
+                 op-hook falseSymbol (false : ~> Bool)
+                 op-hook stringSymbol (<Strings> : ~> String)
+                 op-hook stringSymbol (<Strings> : ~> String))].
+
+  op stringTokenize : String ~> QidList 
+       [ctor
+        special (id-hook TerminationCheckerSymbol (strtokenizer)
+                 op-hook quotedIdentifierSymbol (<Qids> : ~> Qid)
+                 op-hook nilQidListSymbol (nil : ~> QidList)
+                 op-hook qidListSymbol (__ : QidList QidList ~> QidList)
+                 op-hook stringSymbol (<Strings> : ~> String))].
+
+endfm

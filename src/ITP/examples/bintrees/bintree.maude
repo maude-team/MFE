@@ -1,0 +1,105 @@
+in ../ordlists/ordlist.maude
+
+fmod BINARY-SEARCH-TREE is
+  pr INT .
+  pr ORDLIST .
+
+  sorts BSTree BSTree? NeBSTree .
+  
+  subsort NeBSTree BSTree < BSTree? .
+  
+  op empty : -> BSTree? .
+  op node : BSTree? Int? BSTree? -> BSTree? .
+  
+  op insert : BSTree? Int? -> BSTree? .
+  op delete : BSTree? Int? -> BSTree? .
+  op in? : BSTree? Int? -> Bool? .
+  op preorder : BSTree? -> List? .
+  op preorderAux : BSTree? List? -> List? .
+  op postorder : BSTree? -> List? .
+  op postorderAux : BSTree? List? -> List? .
+  op nonEmpty : BSTree? -> Bool? .
+  op firstPreorder : BSTree? -> Int? .
+  
+  vars BST BST' BST'' : BSTree? .
+  vars I I' I'' : Int? .
+  vars L L' : List? .
+  
+  ---------
+  --- sort: NeBSTree
+  ---------
+  cmb node(BST, I, BST') : NeBSTree
+  if I : Int /\ BST : BSTree /\ BST' : BSTree .
+  ---------
+  --- sort: BSTree
+  ---------
+  mb empty : BSTree .
+  subsort NeBSTree < BSTree .
+  
+  --------------
+  --- operation: insert
+  --------------
+  eq insert(empty, I) = node(empty, I, empty) .
+  ceq insert(node(BST, I, BST'), I') = node(BST, I, insert(BST', I'))
+   if I < I' .
+  ceq insert(node(BST, I, BST'), I') = node(insert(BST, I'), I, BST')
+   if I' < I .
+  ceq insert(node(BST, I, BST'), I') = node(BST, I, BST')
+   if I <= I' /\ I' <= I .
+  
+  --------------
+  --- operation: delete
+  --------------
+  eq delete(empty, I) = empty .
+  ceq delete(node(BST, I, empty), I') = BST
+   if I <= I' /\ I' <= I .
+  ceq delete(node(empty, I, BST), I') = BST 
+   if I <= I' /\ I' <= I .
+  ceq delete(node(BST, I, BST'), I') = 
+    node(delete(BST, I'), I, BST')
+  if I' < I .
+  ceq delete(node(BST, I, BST'), I') = 
+    node(BST, I, delete(BST', I'))
+  if I < I' .
+  ceq delete(node(BST, I, BST'), I') = 
+    node(BST, firstPreorder(BST'), delete(BST', firstPreorder(BST')))
+   if I <= I' /\ I' <= I /\ nonEmpty(BST) /\ nonEmpty(BST') .
+  
+  --------------
+  --- operation: nonEmpty
+  --------------
+  eq nonEmpty(empty) = false .
+  eq nonEmpty(node(BST, I, BST')) = true .
+  
+  --------------
+  --- operation: firstPreorder
+  -------------- 
+  eq firstPreorder(node(empty, I, BST')) = I .
+  ceq firstPreorder(node(BST, I, BST')) = firstPreorder(BST)
+   if nonEmpty(BST) .
+  
+  --------------
+  --- operation: in?
+  --------------
+  eq in?(empty, I) = false .
+  eq in?(node(BST, I, BST'), I) = true .
+  ceq in?(node(BST, I, BST'), I') = in?(BST', I')
+  if I < I' .
+  ceq in?(node(BST, I, BST'), I') = in?(BST, I')
+  if I' < I .
+      
+  --------------
+  --- operation: preorder
+  --------------
+  eq preorder(BST) = preorderAux(BST, nil) .
+  eq preorderAux(empty, L) = L .
+  eq preorderAux(node(BST, I, BST'), L) = preorderAux(BST, I : preorderAux(BST', L)) .
+  
+  --------------
+  --- operation: postorder
+  --------------
+  eq postorder(BST) = postorderAux(BST, nil) .
+  eq preorderAux(empty, L) = L .
+  eq preorderAux(node(BST, I, BST'), L) = preorderAux(BST', I : preorderAux(BST, L)) .
+
+endfm

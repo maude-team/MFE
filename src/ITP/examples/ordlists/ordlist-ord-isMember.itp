@@ -1,0 +1,64 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- if L is an ordered lists, then
+--- checking with ord-isMember
+--- whether an element is in L gives
+--- the same result than checking it 
+--- with isMember.
+
+--- ITP:
+(goal ordlist-ord-isMember : ORDLIST |-
+      A{L:List? ; I:Int?}((((L:List?): OrdList) & ((I:Int?): Int)) 
+         => ((ord-isMember(I:Int?, L:List?)) = (isMember(I:Int?, L:List?)))) .)
+
+----------
+--- lemma:
+----------
+(lem ordlist-isMember :
+   A{L:List? ; I1:Int? ; I2:Int?}((((L:List?): List) & ((I1:Int?): Int) & ((I2:Int?): Int)
+            & ((I1:Int? < I2:Int?) = (true)) & ((I2:Int? :  L:List?): OrdList))
+         => ((isMember(I1:Int?, (I2:Int? : L:List?))) = (false))) .)
+
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+---
+(ctor-term-split on (I2*Int? : V0#0*Int? : V0#1*List?) OrdList .)
+(auto .)
+
+---------
+--- goal: ordlist-ord-isMember
+---------
+
+(ind on L:List? .)
+--- base cases:
+--- --- 1. empty lists
+(auto .)
+--- --- 2. unary lists
+(auto .)
+(split on (I*Int? < V0#0*Int?) .)
+--- --- --- case I*Int? < V0#0*Int? = true
+(auto .)
+--- --- --- case I*Int? < V0#0*Int? = false
+(auto .)
+(split on (I*Int? > V0#0*Int?) .)
+--- --- --- case I*Int? > V0#0*Int? = true
+(auto .)
+--- --- --- case I*Int? > V0#0*Int? = false
+(auto .)
+--- inductive case:
+(auto .)
+(split on (I*Int? < V0#0*Int?) .)
+--- --- case I*Int? < V0#0*Int? = true
+(auto .)
+--- --- case I*Int? < V0#0*Int? = false
+(auto .)
+(split on (I*Int? > V0#0*Int?) .)
+--- --- --- case I*Int? > V0#0*Int? = true
+(auto .)
+--- --- --- case I*Int? > V0#0*Int? = false
+(auto .)

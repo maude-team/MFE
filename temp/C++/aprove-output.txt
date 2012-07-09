@@ -1,0 +1,59 @@
+START MAUDE AND TOOL ... 
+(fmod FOO is
+  sort S .
+  ops a b : -> S .
+  eq a = b .
+ endfm)
+
+
+
+==============================
+START Maude C;U;B false false
+SUCESSFULLY 1 Maude seconds 3
+
+(VAR)
+
+
+(RULES
+ a -> b
+)
+
+==============================
+START AProVE
+SUCESSFULLY AProVE seconds: 1
+
+Term Rewriting System R:
+
+   []
+   a -> b
+
+Termination of R to be shown.
+
+
+
+
+
+   TRS     ->RFC Match Bounds
+
+
+
+Termination could be shown with a Match Bound of 0.
+The certificate found is represented by the following graph.
+The certificate consists of the following enumerated nodes:
+1, 2
+
+Node 1 is start node and node 2 is final node.
+
+Those nodes are connect through the following edges:
+
+* 2 to 2 labelled #(0)
+* 1 to 2 labelled b(0)
+
+
+
+Termination of R successfully shown.
+
+Duration: 
+0:00 minutes
+
+

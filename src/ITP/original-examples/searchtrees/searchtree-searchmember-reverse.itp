@@ -1,0 +1,85 @@
+select ITP-TOOL .
+loop init-itp .
+
+(goal searchmember-reverse : SEARCHTREE |- A{I:Int? ; T:STree?}
+      ((((I:Int?) : Int) & ((T:STree?) : Tree)) 
+       =>
+       ((isMember(I:Int?, reverse(T:STree?))) = 
+        (isMember(I:Int?, T:STree?)))) .)
+
+-------------------------------------
+--- lemma ismember-bool
+-------------------------------------
+(lem ismember-bool : A{I:Int? ; T:STree?}
+     ((((I:Int?) : Int) & ((T:STree?) : Tree))
+      =>
+      ((isMember(I:Int?, T:STree?)): Bool)) .)
+
+(ind on T:STree? .)
+(auto .)
+(auto .)
+(split on (I*Int? < V0#2*Int?) .)
+(split on (isMember(I*Int?, V0#0*STree?)) .)
+(auto .)
+(auto .)
+--- Necessary to distinguish the case I*Int? = V0#2*Int?
+(split on (I*Int? > V0#2*Int?) .)
+(split on (isMember(I*Int?, V0#0*STree?)) .)  --- I*Int? > V0#2*Int?
+(auto .)
+(auto .)
+(auto .)  --- I*Int? = V0#2*Int?
+
+-------------------------------------
+--- lemma ismember-bool
+-------------------------------------
+(lem reverse-tree : A{T:STree?}
+     ((((T:STree?) : Tree))
+      =>
+      ((reverse(T:STree?)): Tree)) .)
+
+(ind on T:STree? .)
+(auto .)
+(auto .)
+
+-------------------------------------
+--- main goal
+-------------------------------------
+
+(ind on T:STree? .)
+----------
+--- case 1
+---------- 
+(auto .)
+
+----------
+--- case 2
+----------
+(auto .)
+(split on (I*Int? < V0#2*Int?) .) 
+(split on (isMember(I*Int?, V0#1*STree?)) .)
+--- split on isMember
+  (auto .)
+  (split on (isMember(I*Int?, V0#0*STree?)) .)
+  (auto .)
+  (auto .)
+--- split on isMember
+  (auto .)
+  (split on (isMember(I*Int?, V0#0*STree?)) .)
+  (auto .)
+  (auto .)
+--- --- second part of the splitting of I*Int < V0#2*Int?
+--- Necessary to distinguish the case I*Int? = V0#2*Int?
+(split on (I*Int? > V0#2*Int?) .)
+(split on (isMember(I*Int?, V0#1*STree?)) .)  --- I*Int? > V0#2*Int?
+--- split on isMember
+  (auto .)
+  (split on (isMember(I*Int?, V0#0*STree?)) .)
+  (auto .)
+  (auto .)
+--- split on isMember
+  (auto .)
+  (split on (isMember(I*Int?, V0#0*STree?)) .)
+  (auto .)
+  (auto .)
+(auto .)  --- I*Int? = V0#2*Int?
+

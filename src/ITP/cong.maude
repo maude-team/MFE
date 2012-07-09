@@ -1,0 +1,105 @@
+fmod ITP-CONG-CLOSURE is
+  pr ITP-EXT-TERM .
+
+  sort CongRecord .
+  op none : -> CongRecord [ctor].
+  --- edge(Src, Target)
+  op edge : GroundTerm GroundTerm -> CongRecord [ctor].
+  op ineq : GroundTerm GroundTerm -> CongRecord [ctor comm].
+  op pending(_==_) : GroundTerm GroundTerm -> CongRecord [ctor].
+  op fneq : GroundTerm GroundTerm -> CongRecord [ctor].
+  op __ : CongRecord CongRecord -> CongRecord
+     [ctor assoc comm id: none format(d ni d)].
+
+  var AS       : AttrSet .
+  var C        : Constant .
+  var Eqs      : EquationSet .
+  var F        : CongRecord .
+  var M        : Module .
+  var Q        : Qid .
+  var T T' T'' : GroundTerm .
+  var TL TL'   : GroundTermList .
+  var V        : Variable .
+
+  op rep : GroundTerm CongRecord -> Constant .
+  eq rep(T, edge(T, T') F) = rep(T', edge(T, T') F) .
+  eq rep(T, F) = T [owise].
+
+  --- Returns the size of the tree underneath the specified vertex.
+  op size : GroundTerm CongRecord ~> Nat .
+  eq size(T, edge(T', T) F) = size(T, F) + size(T', F) .
+  eq size(T, F) = 1 [owise].
+
+  --- Processing pending equalities between terms and propagates further
+  --- induced equalities.
+  op prop : CongRecord -> CongRecord .
+  --- Stop when conflict detected
+  eq prop(ineq(T, T) F) = ineq(T,T) F .
+  --- Eliminate duplicates.
+  eq prop(ineq(T, T') ineq(T, T') F) = prop(ineq(T, T') F) .
+  eq prop(edge(T, T') edge(T, T') F) = prop(edge(T, T') F) .
+  --- Path compression
+  eq prop(edge(T'', T)  edge(T, T') F)
+   = prop(edge(T'', T') edge(T, T') F) .
+  eq prop(fneq(Q[TL], T)  edge(T, T') F)
+   = prop(fneq(Q[TL], T') edge(T, T') F) .
+  eq prop(ineq(T'', T)  edge(T, T') F)
+   = prop(ineq(T'', T') edge(T, T') F) .
+  eq prop(fneq(Q[TL, T,  TL'], T'') edge(T, T') F)
+   = prop(fneq(Q[TL, T', TL'], T'') edge(T, T') F) .
+  --- Propagate bottom up.
+  eq prop(fneq(Q[TL], T) fneq(Q[TL], T') F)
+   = prop(pending(T == T') fneq(Q[TL], T) F) .
+  --- Handling pending equations.
+  eq prop(pending(T == T') F)
+   = prop(if rep(T, F) == rep(T', F) then
+            F
+          else if size(rep(T, F), F) <= size(rep(T', F), F) then
+            edge(rep(T, F), rep(T',F)) F
+          else
+            edge(rep(T', F), rep(T, F)) F
+          fi fi) .
+  eq prop(F) = F [owise].
+
+  --- Register terms in database.
+  op $reg-terms : GroundTermList CongRecord ~> CongRecord .
+  eq $reg-terms((Q[TL],TL'), fneq(Q[TL], T) F)
+   = $reg-terms(TL', fneq(Q[TL], T) F) .
+  eq $reg-terms((Q[TL],TL'), F)
+   = $reg-terms((TL, TL'), fneq(Q[TL], Q[TL]) F) [owise].
+  eq $reg-terms((C,TL), F) = $reg-terms(TL, F) .
+  eq $reg-terms((V,TL), F) = $reg-terms(TL, F) .
+  eq $reg-terms(empty, F) = F .
+
+  op set-equal : GroundTerm GroundTerm CongRecord ~> CongRecord .
+  eq set-equal(T, T', F)
+   = prop(pending(T == T') $reg-terms((T, T'), F)) .
+
+  op set-not-equal : GroundTerm GroundTerm CongRecord ~> CongRecord .
+  eq set-not-equal(T, T', F)
+   = prop(ineq(T, T') $reg-terms((T, T'), F)) .
+
+  op in-conflict? : CongRecord ~> Bool .
+  eq in-conflict?(ineq(T, T) F) = true .
+  eq in-conflict?(F) = false [owise].
+
+  --- Asserts ground unconditional equations in congruence record.
+  op assert-ground-eqs : EquationSet CongRecord ~> CongRecord .
+  eq assert-ground-eqs((eq T = T' [AS].) Eqs, F)
+   = assert-ground-eqs(Eqs, set-equal(T, T', F)) .
+  eq assert-ground-eqs(Eqs, F) = F [owise].
+
+  op init-cr : Module -> CongRecord .
+  eq init-cr(M)
+   = assert-ground-eqs(getEqs(M), ineq(true-con(M), false-con(M))) .
+
+  --- Returns true if module is inconsistent.
+  op inconsistent? : Module ~> Bool .
+  eq inconsistent?(M)
+   = in-conflict?(init-cr(M)) .
+
+  --- Returns true if terms are equal in module.
+  op is-implied? : CongRecord Term Term ~> Bool .
+  eq is-implied?(F, T, T') = in-conflict?(set-not-equal(T, T', F)) .
+endfm
+

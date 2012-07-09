@@ -1,0 +1,9 @@
+select ITP-TOOL .
+loop init-itp .
+(goal leaves-inner :
+  TREE |- A{T:Tree}
+    ((leaves(T)) = (s(inner(T)))) .)
+
+(ind on T:Tree .)
+(auto .)
+(auto .)

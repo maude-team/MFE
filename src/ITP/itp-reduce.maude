@@ -1,0 +1,314 @@
+fmod ITP-REDUCE is
+pr META-LEVEL .
+pr INT .
+pr ITP-LOGIC .
+pr ITP-EXT-TERM .
+pr ITP-LOGIC .
+--- pr EXT-PRES-ARITH .
+pr META-MODULE-EXT .
+pr ITP-LOGIC-OPS .
+pr ITP-CONG-CLOSURE .
+
+var Atm : Atomic .
+var C : Constant .
+var CR : CongRecord .
+var CT : Context .
+var EqC : EqCondition .
+var Eq : Equation .
+var Eqs : EquationSet .
+var F : Qid .
+var Mb : MembAx .
+var MbS : MembAxSet .
+var M Mod : Module .
+var GT GT' : GroundTerm .
+var T T' T1 T2 : Term .
+var NewLeft NewRight : Term .
+var Subject Pattern : Term .
+var TL TL' : TermList .
+var S S' : Sort .
+var N : Nat .
+var SelSubst : Substitution .
+var SelContext : Context .
+var VS : VariableSet .
+var Alpha Beta : Formula .
+
+--- replaceInContext
+op replaceInContext : Context Term -> Term .
+op replaceInContext : GTermList Term -> Term .
+eq replaceInContext([], T) = T .
+eq replaceInContext(F[(TL, CT, TL')], T)
+   = F[(TL, replaceInContext(CT, T), TL')] .
+
+--- isAnIdentity?
+op isAnIdentity? : Module Formula -> Bool .
+eq isAnIdentity?(Mod, equality(T1, T2))
+ = metaReduce(Mod, T1) == metaReduce(Mod, T2) .
+ceq isAnIdentity?(Mod, disjunction(equality(T1, T2), Alpha)) = true
+ if metaReduce(Mod, T1) == metaReduce(Mod, T2) .
+eq isAnIdentity?(Mod, conjunction(Alpha, Beta))
+ = isAnIdentity?(Mod, Alpha) and-then isAnIdentity?(Mod, Beta) .
+eq isAnIdentity?(Mod, Alpha) = false [owise] .
+
+--- Returns the first substitution found that causes the subject to match
+--- the pattern that satisfies the condition.
+--- The final argument should be initialized to 0.
+op matchPlus : Module Term Term Condition Nat ~> Substitution? .
+ceq matchPlus(Mod, Pattern, Subject, EqC, N)
+  = if solveCondWithReducePlus(Mod, substitute(EqC, SelSubst)) then
+      SelSubst
+    else
+      matchPlus(Mod, Pattern, Subject, EqC, N + 1)
+    fi
+ if SelSubst := metaMatch(Mod, Pattern, Subject, nil, N) .
+eq matchPlus(Mod, Pattern, Subject, EqC, N) = noMatch [owise].
+
+--- Returns the context and substitution found that results in a subterm
+--- of the subject matching the pattern with the condition satisfied.
+--- Requires that the term that is replaced is a ground term.
+--- The final argument should be initialized to 0.
+op xMatchPlusGround : Module Term Term EqCondition Nat ~> MatchPair? .
+ceq xMatchPlusGround(Mod, Pattern, Subject, EqC, N)
+  = if solveCondWithReducePlus(Mod, substitute(EqC, SelSubst))
+          and-then (substitute(Pattern, SelSubst) :: GroundTerm) then
+      {SelSubst, SelContext}
+    else
+      xMatchPlusGround(Mod, Pattern, Subject, EqC, N + 1)
+    fi
+ if {SelSubst, SelContext}
+       := metaXmatch(Mod, Pattern, Subject, nil, 0, unbounded, N) .
+eq xMatchPlusGround(Mod, Pattern, Subject, EqC, N) = noMatch [owise].
+
+--- Attempts to apply the equation to any position in the term.
+op xApplyPlusGround : Module Term Equation -> ReducePlusOneResult .
+ceq xApplyPlusGround(Mod, T, Eq)
+  = rpo(replaceInContext(SelContext, substitute(rhs(Eq), SelSubst)))
+ if {SelSubst, SelContext}
+      := xMatchPlusGround(Mod, lhs(Eq), T, condition(Eq), 0) .
+eq xApplyPlusGround(Mod, T, Eq) = failure [owise].
+
+-------------------------------------------------- new
+---
+--- reducePlusOne
+---
+
+sort ReducePlusOneResult .
+op rpo : Term -> ReducePlusOneResult [ctor].
+op failure : -> ReducePlusOneResult [ctor].
+
+--- Attempts to reduces a term by one rewrite (may technically involve more
+--- rewrites when evaluating condition).  Returns either rpo(T') if T
+--- rewrites to T' or failure if T is irreducible.
+op reducePlusOne : Module Term -> ReducePlusOneResult .
+eq reducePlusOne(Mod, T) = reducePlusOneAux(Mod, T, 0) .
+
+--- Implementation of reducePlusOne uses a natural number indicating the
+--- priority of the equation to apply.  The priority is used to choose which
+--- equation should apply first and starts at 0.
+op reducePlusOneAux : Module Term Nat -> ReducePlusOneResult .
+
+--- First try reducing using a conditional hypothesis equation.
+ceq reducePlusOneAux(Mod, T, 0) = rpo(T')
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq))
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(T') := xApplyPlusGround(Mod, T, Eq) .
+
+--- Now try reducing using a conditional non-hypothesis equation.
+ceq reducePlusOneAux(Mod, T, 1) = rpo(T')
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq)) = false
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(T') := xApplyPlusGround(Mod, T, Eq) .
+
+--- Default case when previous equations fail.
+eq reducePlusOneAux(Mod, T, 2) = failure .
+
+--- Try incrementing to next strategy
+eq reducePlusOneAux(Mod, T, N) = reducePlusOneAux(Mod, T, N + 1) [owise].
+
+--- Returns true if every term in the list has the given sort.
+op all-have-sort? : Module TermList Sort -> Bool .
+ceq all-have-sort?(Mod, (TL, T, TL'), S) = false
+ if sortLeq(Mod, leastSort(Mod, T), S) = false .
+eq all-have-sort?(Mod, TL, S) = true [owise].
+
+--- Return formula asserting that all terms in list equal second term.
+op all-equal : TermList Term -> Formula .
+eq all-equal(TL, T) = $all-equal(TL, T, trueFormula) .
+
+--- Tail recursive implementation of all-equal (above).
+op $all-equal : TermList Term Formula -> Formula .
+eq $all-equal((T, TL), T', Alpha)
+ = $all-equal(TL, T', conjunction(equality(T, T'), Alpha)) .
+eq $all-equal(empty, T, Alpha) = Alpha .
+
+--- Simply equality that it trivially true.
+op trueEquality : -> Formula .
+eq trueEquality = equality('true.Bool, 'true.Bool) .
+
+--- applyReducePlus
+op applyReducePlus : Module Formula ~> Formula .
+eq applyReducePlus(M, Alpha) = $applyReducePlus(M, init-cr(M), Alpha) .
+
+op $applyReducePlus : Module CongRecord Formula ~> Formula .
+eq $applyReducePlus(M, CR, trueFormula) = trueFormula .
+eq $applyReducePlus(M, CR, falseFormula) = falseFormula .
+eq $applyReducePlus(M, CR, conjunction(Alpha, Beta))
+ = conjunction($applyReducePlus(M, CR, Alpha),
+               $applyReducePlus(M, CR, Beta)) .
+eq $applyReducePlus(M, CR, disjunction(Alpha, Beta))
+ = disjunction($applyReducePlus(M, CR, Alpha),
+               $applyReducePlus(M, CR, Beta)) .
+eq $applyReducePlus(M, CR, implication(Alpha, Beta))
+ = implication($applyReducePlus(M, CR, Alpha),
+               $applyReducePlus(M, CR, Beta)) .
+eq $applyReducePlus(M, CR, AQuantification(VS, Alpha))
+ = AQuantification(VS, $applyReducePlus(M, CR, Alpha)) .
+eq $applyReducePlus(M, CR, EQuantification(VS, Alpha))
+ = EQuantification(VS, $applyReducePlus(M, CR, Alpha)) .
+eq $applyReducePlus(M, CR, Atm) = applyReducePlus(M, CR, Atm, 0) .
+
+---------------------------------------------
+--- applyReducePlus on atomic formulas.
+---------------------------------------------
+op applyReducePlus : Module CongRecord Atomic Nat ~> Formula .
+
+eq applyReducePlus(M, CR, sortP(T, 'Zero), 0)
+ = $applyReducePlus(M, CR, equality(T, '0.Zero)) .
+
+ceq applyReducePlus(M, CR, sortP(T, 'Nat), 0)
+  = $applyReducePlus(M, CR, equality('_>=_[T, '0.Zero], 'true.Bool))
+ if $applyReducePlus(M, CR, sortP(T, 'Int)) = trueEquality .
+
+ceq applyReducePlus(M, CR, sortP(T, 'NzNat), 0)
+  = $applyReducePlus(M, CR, equality('_>_[T, '0.Zero], 'true.Bool))
+ if $applyReducePlus(M, CR, sortP(T, 'Int)) = trueEquality .
+
+ceq applyReducePlus(M, CR, sortP(T, 'NzInt), 0)
+  = trueEquality
+ if $applyReducePlus(M, CR, equality('_>_[T, '0.Zero], 'true.Bool))
+        = trueEquality
+ /\ $applyReducePlus(M, CR, sortP(T, 'Int)) = trueEquality .
+
+ceq applyReducePlus(M, CR, sortP(T, 'NzInt), 0) = trueEquality
+ if $applyReducePlus(M, CR, equality('_<_[T, '0.Zero], 'true.Bool))
+        = trueEquality
+ /\ $applyReducePlus(M, CR, sortP(T, 'Int)) = trueEquality .
+
+--- Normalize left-hand side of membership.
+ceq applyReducePlus(M, CR, sortP(T, S), 1)
+  = applyReducePlus(M, CR, sortP(NewLeft, S), 1)
+ if NewLeft := getTerm(metaReduce(M, T))
+ /\ NewLeft =/= T .
+
+ceq applyReducePlus(M, CR, sortP(T, S), 2)
+  = trueEquality
+ if subtype?(M, getType(metaReduce(M, T)), S) .
+
+--- First make sure T1 and T2 are normalized by ordinary rewriting.
+ceq applyReducePlus(M, CR, equality(T1, T2), 0)
+  = applyReducePlus(M, CR, equality(NewLeft, T2), 0)
+ if NewLeft := getTerm(metaReduce(M, T1))
+ /\ NewLeft =/= T1 .
+
+ceq applyReducePlus(M, CR, equality(T1, T2), 0)
+  = applyReducePlus(M, CR, equality(T1, NewRight), 0)
+ if NewRight := getTerm(metaReduce(M, T2))
+ /\ NewRight =/= T2 .
+
+eq applyReducePlus(M, CR, equality(T, T), 0) = trueEquality .
+
+--- Simplify true equality to conjunction.
+ceq applyReducePlus(M, CR, equality('_and_[TL], C), 1)
+  = $applyReducePlus(M, CR, all-equal(TL, C))
+ if true-con(M) = C
+ /\ all-have-sort?(M, TL, 'Bool) .
+
+ceq applyReducePlus(M, CR, equality(GT, GT'), 2) = trueEquality
+ if is-implied?(CR, GT, GT') .
+
+--- Final case to prevent infinite loops.
+eq applyReducePlus(M, CR, Atm, 3) = Atm .
+
+eq applyReducePlus(M, CR, Atm, N) = applyReducePlus(M, CR, Atm, s N) [owise].
+
+---(
+ceq applyReducePlus(M, sortP(T, S), 2)
+  = applyReducePlus(M, sortP(NewLeft, S))
+ if rpo(NewLeft) := reducePlusOne(Mod, T) .
+
+ceq applyReducePlus(Mod, sortP(T, S), 2)
+  = trueEquality
+ if Mb MbS := getMbs(Mod)
+ /\ condition(Mb) = nil
+ /\ subtype?(Mod, sort(Mb), S)
+ /\ matchPlus(Mod, term(Mb), T, condition(Mb), 0) : Substitution .
+
+ceq applyReducePlus(Mod, sortP(T, S), 3)
+  = trueEquality
+ if Mb MbS := getMbs(Mod)
+ /\ condition(Mb) =/= nil
+ /\ subtype?(Mod, sort(Mb), S)
+ /\ matchPlus(Mod, term(Mb), T, condition(Mb), 0) : Substitution .
+
+--- Try solving with linear arithmetic decision procesure.
+ceq applyReducePlus(Mod, equality(T1, T2), 1)
+  = trueEquality
+ if NewLeft := getTerm(metaReduce(Mod, T1))
+ /\ NewRight := getTerm(metaReduce(Mod, T2))
+ /\ NewLeft : GroundTerm
+ /\ NewRight : GroundTerm
+ /\ isExtLinIneq?(equality(NewLeft, NewRight),
+                  extModSupInf(unflattenMod(Mod)))
+ /\ createNewSolutionNeg(equality(NewLeft, NewRight), Mod) = falseFormula .
+
+--- Try reducing terms with a hypothesis conditional equation.
+ceq applyReducePlus(Mod, equality(T1, T2), 2)
+  = applyReducePlus(Mod, equality(NewLeft, T2))
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq))
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(NewLeft) := xApplyPlusGround(Mod, T1, Eq) .
+
+ceq applyReducePlus(Mod, equality(T1, T2), 2)
+  = applyReducePlus(Mod, equality(T1, NewRight))
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq))
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(NewRight) := xApplyPlusGround(Mod, T2, Eq) .
+
+--- Try reducing terms with a non-hypothesis conditional equation.
+ceq applyReducePlus(Mod, equality(T1, T2), 3)
+  = applyReducePlus(Mod, equality(NewLeft, T2))
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq)) = false
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(NewLeft) := xApplyPlusGround(Mod, T1, Eq) .
+
+ceq applyReducePlus(Mod, equality(T1, T2), 3)
+  = applyReducePlus(Mod, equality(T1, NewRight))
+ if Eq Eqs := getEqs(Mod)
+ /\ condition(Eq) =/= nil
+ /\ is-hyp?(attrSet(Eq)) = false
+ /\ is-enabled?(attrSet(Eq))
+ /\ rpo(NewRight) := xApplyPlusGround(Mod, T2, Eq) .
+)
+
+
+op solveCondWithReducePlus : Module EqCondition -> Bool .
+
+eq solveCondWithReducePlus(Mod,(T1 = T2 /\ EqC))
+ = isAnIdentity?(Mod, applyReducePlus(Mod, equality(T1, T2)))
+        and-then solveCondWithReducePlus(Mod, EqC) .
+
+eq solveCondWithReducePlus(Mod, (T1 : S /\ EqC))
+ = isAnIdentity?(Mod, applyReducePlus(Mod, sortP(T1, S)))
+        and-then solveCondWithReducePlus(Mod, EqC) .
+
+eq solveCondWithReducePlus(Mod, nil) = true .
+endfm

@@ -1,0 +1,31 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- If an element is a member of a list L2, 
+--- then it is also a member of the list that results of appending the list L2 to a list L1.
+
+--- ITP:
+(goal ordlist-member-append-right : 
+      ORDLIST |- A{N:Int? ; L1:List? ; L2:List?}
+((((N:Int?): Int) & ((L1:List?): List) & ((isMember(N:Int?, L2:List?)) = (true)))
+                => ((isMember(N:Int?, append(L1:List?, L2:List?))) = (true))) .)
+
+---------
+--- goal: list-member-append-right 
+---------
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (N*Int? < V0#0*Int?) .)
+--- case N*Int? < V0#0*Int? = true
+(auto .)
+--- case N*Int? < V0#0*Int? = false
+(auto .)
+(split on (N*Int? > V0#0*Int?) .)
+--- --- case N*Int? > V0#0*Int? = true
+(auto .)
+--- --- case N*Int? > V0#0*Int? = false
+(auto .)

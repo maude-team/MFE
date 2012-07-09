@@ -1,0 +1,17 @@
+--- Created by Camilo Rocha
+--- July 7 of 2011
+---- PD: One can always trust the proof in the meanwhile ;-)
+
+--- Consider the following proof script:
+
+(set include BOOL off .) 
+load qlock.maude 
+(select tool MTT .) 
+(ctf QLOCK .) 
+(trust .)                     ---- PD
+(select tool CRC .) 
+(ccr QLOCK .) 
+(submit .) 
+
+--- Because of qlock.todo1 , QLOCK cannot be proved to be Chruch-Rosser
+--- -or ground coherent-.

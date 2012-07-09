@@ -1,0 +1,18 @@
+select ITP-TOOL .
+loop init-itp .
+
+---ooo English:
+--- If we append to a list L the empty list, we always obtain the same list L.
+
+--- ITP:
+(goal append-nil : 
+   ORDLIST |- A{L:List?}(((L:List?): List) => (append(L:List?, nil)) = (L:List?)) .)
+
+---------
+--- goal: list-append-nil
+---------
+(ind on L:List? .)
+--- base case
+(auto .)
+--- inductive case
+(auto .)

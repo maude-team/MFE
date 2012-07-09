@@ -1,0 +1,45 @@
+---o spec STACK is
+fmod STACK is
+  protecting INT .
+
+  ---o kind Int? = [Int] .
+  sort Int? .
+  subsort Int < Int? .
+
+  ---o kind Stack? = [NeStack,Stack] .
+  sorts NeStack Stack Stack? .
+  subsort NeStack < Stack? .
+  subsort Stack < Stack? .
+
+  op empty : -> Stack? [ctor] .
+  op push : Int? Stack? -> Stack? [ctor] .
+  op pop : Stack? -> Stack? . 
+  op top : Stack? -> Int? . 
+
+  var S : Stack? . 
+  var I : Int? . 
+
+  ---------
+  --- sort: NeStack
+  ---------
+  cmb push(I, S): NeStack if I : Int /\ S : Stack .
+
+  ---------
+  --- sort: Stack
+  ---------
+  mb empty : Stack .
+  ---o cmb S : Stack if S : NeStack . 
+  subsort NeStack < Stack .
+
+  --------------
+  --- operation: pop
+  --------------
+  eq pop(push(I,S)) = S . 
+
+  --------------
+  --- operation: top
+  --------------
+  eq top(push(I,S)) = I .
+
+---o endsp
+endfm

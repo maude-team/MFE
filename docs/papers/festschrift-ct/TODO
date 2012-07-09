@@ -1,0 +1,184 @@
+---------------------------------------------------------
+Detailed comments (stylistic, typos, etc)
+--------------------------------
+
+abstract: 
+--------
+
+[DONE] I would remove "One of the most exciting ... that"
+
+intro: 
+-----
+
+[DONE] skip the two sentences "One of the key aspects to designing .... 
+future developments?"
+
+[DONE] what is the "model-view-controller pattern"? maybe a couple of 
+words or a reference explaining this notion would not hurt?
+
+[TODO] tool URL: the web page asks us to download Maude 2.6++. It seems 
+that you mean 2.5++?
+
+Section 2: 
+---------
+
+[DONE] I would probably start with some gentle introduction like
+    "We assume that the reader is familiar with the basics of rewriting
+     logic and Maude, and refer to ... for an introduction to these."
+     or something.
+
+[SKIP]  BUT, if you anyways assume knoweldge of Maude, I would probably
+  skip/shorten all this explanation of 'object-based programming', 
+  including the 
+  sort Configuration and object-oriented rules, since this would also
+  be familiar to any intended reader of the paper. 
+  
+I think we can assume certain familiarity with equational specifications and 
+some intuition on rewriting. How to do object-oriented programming is not 
+simple, and with some of the descriptions given one could hardly follow the rest.  
+
+[DONE] "are pairs attribute name-current value" should probably be rephrased
+
+[DONE] next page,  "Since class names  ... subsort declaration C < C'" can 
+safely be removed
+
+Section 3.1:
+----------
+
+[TODO] I am a little bit confused: the proof objects seem not to have actual
+  "proofs" ... then you write "The ... proof object representing the 
+  state of the proof."
+  Where is this? Is the point that a module only has one thing to do?
+  That's not the case for the ITP at least. Anyways, this is confusing 
+  and should be clarified.
+
+[DONE] "a class inheriting from Proof": probably better to write just "a 
+   subclass of Proof" (even if subclass by transitivity)
+
+Section 3.3:
+----------
+
+[DONE?] Many places (e.g., "done by attribute tools") you should add 'the': 
+  "done by the attribute tools"
+  
+I'm not sure. I'd say "the tools attribute", but I think both "attribute tools"
+and "the attribute tools" are correct. Probably the reviewer is right ;-)
+
+[DONE] next page, below middle: "The getName and qid2tool operators returns": 
+  should be "return"
+
+Section 3.4, second page:
+-------------------
+
+[DONE] "User inputs are first ... active tool." This is a very useful feature, 
+  but it has been said TOO many times by now. 
+
+[DONE] "It broadcasts two messages ...": do you really mean "broadcast"? 
+  Every message has one receiver, so maybe "sends" or "unicasts" is 
+  more appropriate?
+
+[DONE] "it forwards to itself a version ...": in the code snippet, it seems 
+  like the message is sent from O'. Maybe you want (to O from O : getTerm...) 
+  in the rule?
+
+Section 4
+---------
+
+[TODO] It's not a big deal, and it has been given in the introduction, 
+  but I would still add a reference to each tool again when discussed here. 
+
+[DONE] "non trivial" should be one word
+
+[DONE] "please check the given references" should be something like "we refer to ..."  or something kinder
+
+[DONE] 4.1: It's strange that the second paragraph motivates the tool.
+  Probably you want to switch the order of the two paragraphs in this section.
+
+Section 4.4:
+---------
+
+[SKIP] "tree-automaton-based" is better
+
+Sounds good, isn't it? What would you write "tree-automaton based" or "tree-automata-based"?
+
+I'd go for "tree-automata-based"
+
+[DONE] maybe in this section, you should say something about constructors?
+
+Perhaps he is right. Given some intuitition from a Maude programmer/specifier point of view wouldn't hurt.
+
+[DONE] "non-deterministic" usually come without a hyphen
+
+[DONE] "equationally defined in all inputs": maybe "for all arguments" is better
+
+Either of them. You pick.
+
+Section 5:
+--------
+
+[DONE] line 2: "take  ... advantage ... from the infrastructure" should be 
+  "take .. advantage ... of ..."
+
+Section 5.1:
+-----------
+
+[DONE] line 1: "of class SCCProof, WHICH IS a subclass of Proof"
+
+[DONE] the sort 3Bool shows up different places. What is this?
+
+[DONE] next page, "offered in MFE" should probably "offered by".  
+  Furthermore, this sentence "Thanks to ... tools." is actually 
+  not a well formed sentence. Please rephrase.
+
+Section 5.2:
+---------
+
+[DONE] "instance of class SCCTool, WHICH IS a subclass of MFE's Tool.
+   THE class SCCTool inherits from Tool its attributes and behavior": 
+   The second sentence is obviously not needed, as this has been 
+   stated before (and is very well known)
+
+[DONE] next page, I would add "the" in front of "command X" many places 
+  in this section. 
+
+Section 6, next page:
+----------------
+
+[SKIP] the inclusion of module MBool here is confusing as it is not used here,
+   but only in the abstraction. Move it there. 
+   
+I don't think it's confusing there, but we can move it right before module READERS-WRITERS-PREDS
+(ooops, without the "the")
+
+[DONE] "we must check ... the equations being ground terminating and CR": well,
+   since you don't have ANY equations, this does not really have to be 
+   checked :-)
+   (Same thing with "there are no critical pairs between equations")
+   
+Perhaps we can say something like the module is trivially terminating and Church-Rosser. 
+But the actual check must be left.
+
+[DONE] next page, line -3: remove "trivially"
+
+[DONE] next page:
+    "at most one reader or one reader [sic]": you obviously do not mean this
+
+References:
+----------
+
+[DONE] 13 and 14 have appeared
+
+[DONE] 15: capitalize Church and Rosser; furthermore, the paper is 
+   at the moment NOT accepted for publication!
+   
+He is actually right. The paper "is accepted under the condition of a properly 
+executed minor revision". The deadline for submitting the final version was April 1st, 
+but we didn't do it yet. 
+
+Maybe we should say "Submitted for publication".
+
+[DONE] 16: do you have a journal number?
+
+[DONE] 21 and 22 refer to the same thesis!
+
+[DONE] 26: shoud 'hets' be capitalized?

@@ -1,0 +1,2240 @@
+---- Things to be fixed:
+---- - ChC ground case: Derived operators are frozen, but only those with different 
+----   syntactic form should be frozen. Notice that subsort overloded operators 
+----   must have the same attributes.
+---- - The proof obligation returned by the ChC should be in the syntax of the ITP.
+---- - The A case should be improved. Currently, each of the associative (without comm)
+----   operators are eliminated by adding a non-problematic orientation of the 
+----   corresponding associativity equation. We however may be not handling cases 
+----   that could be handled, since the orientation chosen for an operator may 
+----   make invalid both the orientations of the equation for other associative 
+----   operators considered later. Instead of dealing with them one after another, 
+----   we should consider all the possible orientations of the equations for all the 
+----   (only) associative operators in our spec.  
+---- - The AU case does not work. The equations being added (together with the 
+----   variants of the axioms) to eliminate the identities unify with both orientations
+----   of the associative case. It is not enough with checking if there is a 
+----   narrowing step, but we can check whether the oriented associativity rule
+----   is coherent with the equations in the module. That is, we basically look 
+----   for narrowing steps, but discard as unproblematic those which give place
+----   to critical pairs that can be closed. 
+----   The case of coherence is a bit more subtle, so it be happening that the 
+----   equational part was proved confluent using a particular orientation of the 
+----   associativity rule, and therefore we need to make sure that the same orientation
+----   is used for the coherence check. What would need to be done is to do one check 
+----   after the other, and proceed with the coherence check once confluence has 
+----   been proved using the exact module used in the process. I will have to 
+----   see how to modify the confluence check so that the funtion returns both the 
+----   critical pairs and the module resulting from the transformations used.     
+
+---- Latest changes:
+---- July 10th, 2011: rewrites in conditions are now supported. Bug reported by 
+----   Musab Alturki.  
+---- July 10th, 2011: There was a very subtle bug in the CRC when constructing the  
+----   cps from the solutions of the narrowing problem. The bug was producing that 
+----   the conditions of cps were not calculated properly. Reported by Musab Alturki 
+----   and Camilo Rocha.   
+---- July 10th, 2011: The ctf was not removing rls from the module before doing the 
+----   check, and therefore there was no difference with ct. Reported by Camilo Rocha. 
+---- Feb. 19th, 2011: In the transformation of eqs and rls for doing unification modulo
+----   using the narrowing functionality by S. Escobar, the _/\_ ctor for the conditions 
+----   was AU. These atributes have been removed and the declarations adapted accordingly.  
+---- Feb. 19th, 2011: Change in the calculation of most general cps, the terms in the 
+----   cps to compare are checked in the same kind before trying matching them.  
+
+set show loop stats off .
+set show loop timing off .
+set show advisories off .
+
+---- crc can show cps with and without detailed information
+---- the crc is able to add a new goal
+
+-------------------------------------------------------------------------------
+---- file: crchc3j.maude
+---- author: Francisco Duran
+---- last modified by Francisco Duran on November 24nd, 2010
+----
+---- use: load it in Maude (alpha 95a) after Full Maude (full-maude25a.maude)
+----      maude full-maude crchc3j
+----
+---- commands available:
+----      - (CRC help .)
+----        shows the commands available for the CRC.
+----      - (check Church-Rosser .) (ccr .)
+----        checks the Church-Rosser property of the default module.
+----      - (check Church-Rosser <module> .) (ccr <module> .)
+----        checks the Church-Rosser property of the specified module.
+----      - (CRC show critical pairs .) (CRC show cps .)   
+----        shows the critical pairs of the last check Church-Rosser command.
+----      - (CRC show all critical pairs .)  (CRC show all cps .)  
+----        shows the status of all critical pairs of the last check Church-Rosser command.
+----      - (CRC show membership assertions .) (CRC show mas .)   
+----        shows the membership assertions of the last check Church-Rosser command.
+----      - (CRC show all membership assertions .)  (CRC show all mas .)  
+----        shows the status of all membership assetions of the last check Church-Rosser command.
+----      - (submit CRC critical pair <id> .) (submit CRC cp <Id> .)
+----        submits the critical pair with the specified identifier to the ITP
+----        (not available because the ITP is not ready to get them yet).
+----      - (submit CRC membership assertion <id> .) (submit CRC ma <Id> .)
+----        submits the membership assertion with the specified identifier to the ITP.
+----      - (CRC select module <module> .) (CRC select <module> .)
+----        sets the specified module as the current module of the CRC. 
+----
+----      - (ChC help .)
+----        shows the commands available for the ChC
+----      - (check coherence .) (cch .)
+----        checks the coherence property of the current module.
+----      - (check coherence <module> .) (cch <module> .)
+----        checks the coherence property of the specified module.
+----      - (check ground coherence .) (cgch .)
+----        checks the ground coherence property of the current module.
+----      - (check ground coherence <module> .) (cgch <module> .)
+----        checks the ground coherence property of the specified module.
+----      - (ChC show critical pairs .) (ChC show cps .)  
+----        shows the cps of the last check coherence command after rewritten
+----      - (ChC show all critical pairs .) (ChC show all cps .)   
+----        shows the cps of the last check coherence command before rewritten
+----
+---- main changes and bugs fixed since last release:
+---- 
+---- - October 27th, 2010
+----   - The discarding of cps by unfeasibility and context joinability has been improved.
+----     - Un feasibility has been extended to cover the case of conditions like true = false.
+----       In a preunfeasibility process conditions are evaluated without the context given by
+----       the conditions. If the terms of a equality condition do not have variables, are 
+----       strongly irreducible and are different (non unifiable), then the condition is not 
+----       satisfiable.  
+----     - For the ChC conditions are simplified.
+----     - In the ChC ground case, an inductive proof obligation is now generated.  
+---- - December 7th, 2009
+----   - Several problems with the getVariants function fixed by Santiago Escobar. 
+----   - The A without C case now supported by using the techniques in FroCos'09.
+----   - The U case is now handled by using the variant-based transformation in FroCos'09.
+---- - November 5th, 2009
+----   - added a function that calculates the closure of a set (closure : Sort Module -> Set{Sort})
+---- - October 2009
+----   - Ids are removed using the variant-based transformation (removeIds).  
+----     The metaNarrowSearch function is used instead of metaNarrowSearchGenAll.
+---- - July, 20th
+----   - We now support LU, RU, C, CU, AC and ACU cases.
+----   - A message is given if the speficication to be checked does not satisfy the requirements
+----     (use of iter, idem, owise, assoc without comm, or special, i.e. built-ins, or use of equations or 
+----     rules with single variables in their left-hand sides)
+----   - Some conditional critical pairs can now be discarded by checking their context-joinability
+----     and unfeasibility.
+---- - July 24th
+----   - Axioms with non-exec attributes are not taken into account by the tools 
+
+---- to do:
+---- - Reglas AC-coherentes para poder utilizar narrowing
+---- - en chc add rl-eq
+---- - el coherence check utiliza simplify, el findAllOneStepRewrites no funciona
+---- - comando check ground coherence
+---- - check coherence deber’a hacer frozen todos los operadores deinidos, 
+----   check ground coherence no hace congeladas las cosas definidas
+---- - documentar los ctor-split
+---- - a–adir comandos check lcoherence y check ground lcoherence
+----   funciona igual, pero al buscar se utilizan solo las reglas con la misma 
+----   etiqueta de la utilizada en el par cr’tico (ver notas murcia 26-27/12/08)
+---- - for conditional case, a manual search is required 
+
+----load ../FM24/full-maude24l.maude
+
+fmod CRC-BANNER is
+  pr STRING .
+  op crc-banner : -> String .
+  eq crc-banner = "Church-Rosser Checker 3l -    November 24th 2010" .
+endfm
+
+fmod ChC-BANNER is
+  pr STRING .
+  op chc-banner : -> String .
+  eq chc-banner = "Coherence Checker 3l -        November 24th 2010" .
+endfm
+
+fmod CRC-HELP is
+  pr EXT-QID-LIST .
+  op crc-help : -> QidList .
+  eq crc-help 
+    = '\t string2qidList("(CRC help .)") '\n
+      '\t '\t string2qidList("shows the commands available for the CRC.") '\n
+      '\t string2qidList("(ccr .) / (check Church-Rosser .)") '\n
+      '\t '\t string2qidList("checks the Church-Rosser property of the current module.") '\n
+      '\t string2qidList("(ccr <module> .) / (check Church-Rosser <module> .)") '\n
+      '\t '\t string2qidList("checks the Church-Rosser property of the specified module.") '\n
+      '\t string2qidList("(show cps .) / (show critical pairs .)") '\n
+      '\t '\t string2qidList("shows the critical pairs for the last check Church-Rosser") '\n
+      '\t '\t string2qidList("command.") '\n
+      '\t string2qidList("(show all cps .) / (show all critical pairs .)") '\n
+      '\t '\t string2qidList("shows the status of all critical pairs for the last check") '\n
+      '\t '\t string2qidList("Church-Rosser command.") '\n
+      '\t string2qidList("(show mas .) / (show membership assertions .)") '\n
+      '\t '\t string2qidList("shows the membership assertions of the last check Church-Rosser") '\n
+      '\t '\t string2qidList("command.") '\n
+      '\t string2qidList("(show all mas .) / (show all membership assertions .)") '\n
+      '\t '\t string2qidList("shows the status of all membership assertions of the last ") '\n
+      '\t '\t string2qidList("check Church-Rosser command.") '\n
+      '\t string2qidList("(submit .)") '\n
+      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+      '\t '\t string2qidList("current module to the ITP.") '\n
+      '\t string2qidList("(select <module> .)") '\n
+      '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
+endfm
+
+fmod ChC-HELP is
+  pr EXT-QID-LIST .
+  op chc-help : -> QidList .
+  eq chc-help 
+    = ----help 
+      string2qidList("Commands available in the ChC tool:") '\n
+      '\t string2qidList("(cch .) / (check coherence .)") '\n
+      '\t '\t string2qidList("checks the coherence property of the default module.") '\n
+      '\t string2qidList("(cch <module> .) / (check coherence <module> .)") '\n
+      '\t '\t string2qidList("checks the coherence property of the specified module.") '\n
+      '\t string2qidList("(cgch .) (check ground coherence .)") '\n
+      '\t '\t string2qidList("checks the ground coherence property of the current module.") '\n
+      '\t string2qidList("(cgch <module> .) / (check ground coherence <module> .)") '\n
+      '\t '\t string2qidList("checks the ground coherence property of the specified module.") '\n
+      '\t string2qidList("(show cps .) / (show critical pairs .)") '\n
+      '\t '\t string2qidList("shows the critical pairs of the last check coherence or ground") '\n
+      '\t '\t string2qidList("coherence command after rewritten.") '\n
+      '\t string2qidList("(show all cps .) / (show all critical pairs .)") '\n
+      '\t '\t string2qidList("shows the critical pairs of the last check coherence or ground") '\n
+      '\t '\t string2qidList("coherence command before rewritten.") '\n
+      '\t string2qidList("(submit .)") '\n
+      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+      '\t '\t string2qidList("current module to the ITP.") '\n
+      '\t string2qidList("(select <module> .)") '\n
+      '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
+endfm
+
+---- main changes from 3d:
+---- - May 13th, 2009
+----   Most general critical pairs calculation failed for conditional cps with different number of conditions. 
+----      - uses narrowing to generated the critical pairs (based on work by S. 
+----      - Escobar et al.)  
+----      - keeps the cps in the state of the database, both before and after 
+----        rewriting them, so that we can later refer to them.
+----      - a new command (show critical pairs .) shows the cps after rewritten
+----      - a new command (show all critical pairs .) shows the cps before rewritten
+---- to do:
+----      - add a command (ctor-split n on x .) where n is the goal number (the 
+----        unjoined cp with number n, and x is the variable to instantiate 
+----        with constructor terms.  
+-------------------------------------------------------------------------------
+
+**** We first introduce some basic functions for the manipulation of terms, and 
+**** then we present the unification and matching functions.
+
+fmod AUXILIARY-FUNCTIONS is
+  pr UNIT .
+  pr EXT-BOOL .
+  pr EXT-DECL .
+  pr EXT-TERM .
+  pr INT .
+  pr CONVERSION .
+
+  vars T T' : Term .
+  var  TL : TermList .
+  vars Tp Tp' Tp'' Tp''' : Type .
+  vars TpL TpL' : TypeList .
+  vars M M' M'' : Module .
+  var  At : Attr .
+  var  AtS : AttrSet .
+  vars QI L F G : Qid .
+  var  QIL : QidList .
+  var  ODS : OpDeclSet .
+  var  EqS : EquationSet .
+  var  Cd : Condition .
+  var  S : Sort .
+  var  N : Nat .
+  var  Id : String .
+
+  op name : Qid Nat -> String .
+  op name : String Nat -> String .
+  eq name(QI, N) = string(QI) + string(N, 10) .
+  eq name(Id, N) = Id + string(N, 10) .
+
+  *** some built-in sort operations on lists
+  op sortLeq : Module TypeList TypeList ~> Bool [ditto] . 
+  eq sortLeq(M, (Tp Tp' TpL), (Tp'' Tp''' TpL')) 
+    = sortLeq(M, Tp, Tp'') and-then sortLeq(M, Tp' TpL, Tp''' TpL') .
+  eq sortLeq(M, nil, nil) = true .  
+  eq sortLeq(M, TpL, TpL') = false [owise] .
+  
+  op sameKind : Module TypeList TypeList ~> Bool [ditto] . 
+  eq sameKind(M, (Tp Tp' TpL), (Tp'' Tp''' TpL')) 
+    = sameKind(M, Tp, Tp'') and-then sameKind(M, Tp' TpL, Tp''' TpL') .
+  eq sameKind(M, nil, nil) = true .  
+  eq sameKind(M, TpL, TpL') = false [owise] .
+
+  op leastSort : Module TermList ~> TypeList [ditto] .
+  eq leastSort(M, (T, T', TL)) = leastSort(M, T) leastSort(M, (T', TL)) .
+  eq leastSort(M, empty) = nil .
+  
+  op getLabel : AttrSet -> Qid .
+  eq getLabel(label(L) AtS) = L .
+  eq getLabel(AtS) = 'no-label [owise] .
+
+  **** hasAttr checks whether the given operator has the given attribute
+  **** in its declaration in the given module
+
+  op hasAttr : Module Qid TypeList Attr -> Bool .
+  op hasAttr : Module OpDeclSet Qid TypeList Attr -> Bool .
+
+  eq hasAttr(M, G, TpL, At) = hasAttr(M, getOps(M), G, TpL, At) .
+  eq hasAttr(M, op F : TpL -> Tp [AtS] . ODS, G, TpL', At) 
+    = if (F == G) and-then sameKind(M, TpL, TpL')
+      then At in AtS
+      else hasAttr(M, ODS, G, TpL', At)
+      fi .
+  eq hasAttr(M, none, G, TpL, At) = false .
+
+endfm
+
+fmod MATCHING is
+  pr UNIT .
+
+  ---- metaMatch checks whether each of the equations in the set matchs. 
+  op metaMatch : Module EquationSet ~> Bool .
+
+  var  M : Module .
+  var  EqS : EquationSet .
+  vars T T' : Term .
+  vars TL TL' : TermList .
+
+  eq metaMatch(M, eq T = T' [none] . EqS) 
+    = metaMatch(M, T, T', nil, 0) =/= noMatch and-then metaMatch(M, EqS) .
+  eq metaMatch(M, none) = true . 
+endfm
+
+fmod MEMBERSHIP-ASSERTION is
+  pr EXT-TERM .
+  pr STRING .
+  
+  sort MembAssert .
+  ---- Each of the membership assertions can be in one of the following states:
+  ---- - pending: it remains as a proof obligation
+  ---- - non-maximal: there is another ma more general than it
+  ---- - proved: discharged by the ITP
+  sort MAStatus .
+  ops pending non-maximal proved : -> MAStatus .
+  ---- Each membership assertion is represented as a 5/6-tuple with the following components:
+  ---- - A string that represents the id of the ma, given by the CRC
+  ----   (currently is results from the concatenation of the name of the module and an index)
+  ---- - The Qid of the equation that generated the ma ('no-label if the eq has no label)
+  ---- - The Term and Sort defining the ma
+  ---- - The condition is included only if the equation that generated the ma was conditional
+  ---- - The ma status (initially pending, changed to non-maximal or proved when discarded)
+  op ma : String Qid Term Sort MAStatus -> MembAssert .
+  op cma : String Qid Term Sort Condition MAStatus -> MembAssert .
+endfm
+
+view MembAssert from TRIV to MEMBERSHIP-ASSERTION is
+  sort Elt to MembAssert .
+endv
+
+fmod MEMBERSHIP-ASSERTION-SET is
+  pr MATCHING .
+  pr DECL-META-PRETTY-PRINT .
+  pr (SET * (op empty to none, op _,_ to __)){MembAssert} * (sort Set{MembAssert} to MembAssertSet) .
+
+---(
+  sort MembAssertSet .
+  subsort MembAssert < MembAssertSet .
+  op none : -> MembAssertSet .
+  op __ : MembAssertSet MembAssertSet -> MembAssertSet [assoc comm id: none] .
+
+  eq MA MA = MA .
+---)
+
+  vars T T' T'' T''' T1 T1' T1'' T1''' T2 T2' T2'' T2''' : Term .
+  vars L L' L1 L1' L2 L2' QI : Qid .
+  var  MA MA' : MembAssert .
+  vars MAS MAS' : MembAssertSet .
+  var  M : Module .
+  vars Cd Cd1 Cd2 : Condition .
+  var  S : Sort .
+  var  Subst : Substitution .
+  var  QIL : QidList .
+  vars Status Status' : MAStatus .
+  var  All : Bool .
+  vars Id Id' : String .
+  
+  op pendingMAs : MembAssertSet -> MembAssertSet .
+  eq pendingMAs(ma(Id, L, T, S, pending) MAS)
+    = ma(Id, L, T, S, pending) pendingMAs(MAS) .
+  eq pendingMAs(cma(Id, L, T, S, Cd, pending) MAS)
+    = cma(Id, L, T, S, Cd, pending) pendingMAs(MAS) .
+  eq pendingMAs(MAS) = none [owise] .
+  
+  op mark : String MembAssertSet MAStatus -> MembAssertSet .
+  eq mark(Id, ma(Id, L, T, S, pending) MAS, Status)
+    = ma(Id, L, T, S, Status) MAS  .
+  eq mark(Id, cma(Id, L, T, S, Cd, pending) MAS, Status)
+    = cma(Id, L, T, S, Cd, Status) MAS .
+  eq mark(Id, MAS, Status) = MAS [owise] .
+  
+  op getId : MembAssert -> String .
+  eq getId(ma(Id, L, T, S, Status)) = Id .
+  eq getId(cma(Id, L, T, S, Cd, Status)) = Id .
+  
+  op getStatus : MembAssert -> MAStatus .
+  eq getStatus(ma(Id, L, T, S, Status)) = Status .
+  eq getStatus(cma(Id, L, T, S, Cd, Status)) = Status .
+  
+  op setStatus : MembAssert MAStatus -> MembAssert .
+  eq setStatus(ma(Id, L, T, S, Status), Status') = ma(Id, L, T, S, Status') .
+  eq setStatus(cma(Id, L, T, S, Cd, Status), Status') = cma(Id, L, T, S, Cd, Status') .
+
+  op status2qid : MAStatus -> Qid .
+  eq status2qid(pending) = 'pending .
+  eq status2qid(non-maximal) = 'non-maximal .
+  eq status2qid(proved) = 'proved .
+
+  op eMetaPrettyPrint : Module MembAssertSet Bool -> QidList .
+
+  eq eMetaPrettyPrint(M, ma(Id, L, T, S, Status) MAS, All)
+    = (if Status == pending or All
+       then '\n '\s '\s '\b 'ma '\o qid(Id) 
+            (if L =/= 'no-label  
+             then '\b 'for 'equation '\o L 
+             else nil
+             fi)
+            if All then '\s status2qid(Status) else nil fi
+            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) '. '\o
+       else nil
+       fi 
+       eMetaPrettyPrint(M, MAS, All)) .
+  eq eMetaPrettyPrint(M, cma(Id, L, T, S, Cd, Status) MAS, All)
+    = (if Status == pending or All
+       then '\n '\s '\s '\b 'cma '\o qid(Id) 
+            (if L =/= 'no-label  
+             then '\b 'for 'equation '\o L 
+             else nil
+             fi)
+            if All then '\s status2qid(Status) else nil fi
+            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) 
+            '\n '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o
+       else nil
+       fi 
+       eMetaPrettyPrint(M, MAS, All)) .
+  eq eMetaPrettyPrint(M, (none).MembAssertSet, All) = nil .
+  eq eMetaPrettyPrint(unitError(QIL), MAS:[MembAssertSet], All) = QIL .
+endfm
+
+fmod CRITICAL-PAIR is
+  pr EXT-TERM .
+  pr STRING .
+  
+  sort CritPair .
+  ---- Each of the critical pairs can be in one of the following states:
+  ---- - pending: it remains as a proof obligation
+  ---- - non-maximal: there is another cp more general than it
+  ---- - joined: after simplifying both terms they are equal
+  ---- - unfeasible: the condition of the cp is unfeasible (see WRLA'10 paper)
+  ---- - context-joinable: the cp is joinable when considering the context 
+  ----   provided by the condition of the cp (see WRLA'10 paper)
+  ---- - proved: discharged by the ITP
+  sort CPStatus .
+  ops pending non-maximal joined unfeasible context-joinable proved : -> CPStatus .
+  ---- Each critical pair is represented as a 6/7-tuple with the following components:
+  ---- - A string that represents the id of the cp, given by the CRC
+  ----   (currently it results from the concatenation of the name of the module and an index)
+  ---- - The qids of the equations that generated the cp ('no-label if the eq has no label)
+  ---- - The terms defining the cp
+  ---- - The condition is included only if at least one of the equations that generated the 
+  ----   cp was conditional
+  ---- - The cp status (initially pending, changed to one of the other possible states when discarded)
+  op cp : String Qid Qid Term Term CPStatus -> CritPair .
+  op ccp : String Qid Qid Term Term Condition CPStatus -> CritPair .
+
+  vars T T' : Term .
+  vars L L' : Qid .
+  var  Cd : Condition .
+  var  CPSt : CPStatus .
+
+  op cp : Qid Qid Term Term CPStatus -> CritPair .
+  op ccp : Qid Qid Term Term Condition CPStatus -> CritPair .
+  ops lhs rhs : CritPair -> Term .
+  eq lhs(cp(L, L', T, T', CPSt)) = T .
+  eq lhs(ccp(L, L', T, T', Cd, CPSt)) = T .
+  eq rhs(cp(L, L', T, T', CPSt)) = T' .
+  eq rhs(ccp(L, L', T, T', Cd, CPSt)) = T' .
+endfm
+
+view CritPair from TRIV to CRITICAL-PAIR is
+  sort Elt to CritPair .
+endv
+
+fmod CRITICAL-PAIR-SET is
+  pr MATCHING .
+  pr DECL-META-PRETTY-PRINT .
+  pr (SET * (op empty to none, op _,_ to __)){CritPair} * (sort Set{CritPair} to CritPairSet) .
+  
+---(
+  sort CritPairSet .
+  subsort CritPair < CritPairSet .
+  op none : -> CritPairSet .
+  op __ : CritPairSet CritPairSet -> CritPairSet [assoc comm id: none] .
+  
+  eq CP CP = CP .
+---)
+
+  vars T T' T'' T''' T1 T1' T1'' T1''' T2 T2' T2'' T2''' : Term .
+  vars L L' L1 L1' L2 L2' QI : Qid .
+  var  CP CP' : CritPair .
+  vars CPS CPS' : CritPairSet .
+  var  M : Module .
+  vars Cd Cd1 Cd2 : Condition .
+  var  S : Sort .
+  var  Subst : Substitution .
+  var  QIL : QidList .
+  vars Status Status' : CPStatus .
+  var  All : Bool .
+  vars Id Id' : String .
+
+  op mark : String CritPairSet CPStatus -> CritPairSet .
+  eq mark(Id, cp(Id, L, L', T, T', pending) CPS, Status)
+    = cp(Id, L, L', T, T', Status) CPS  .
+  eq mark(Id, ccp(Id, L, L', T, T', Cd, pending) CPS, Status)
+    = ccp(Id, L, L', T, T', Cd, Status) CPS .
+  eq mark(Id, CPS, Status) = CPS [owise] .
+  
+  op pendingCPs : CritPairSet -> CritPairSet .
+  eq pendingCPs(cp(Id, L, L', T, T', pending) CPS)
+    = cp(Id, L, L', T, T', pending) pendingCPs(CPS) .
+  eq pendingCPs(ccp(Id, L, L', T, T', Cd, pending) CPS)
+    = ccp(Id, L, L', T, T', Cd, pending) pendingCPs(CPS) .
+  eq pendingCPs(CPS) = none [owise] .
+  
+  op getStatus : CritPair -> CPStatus .
+  eq getStatus(cp(Id, L, L', T, T', Status)) = Status .
+  eq getStatus(ccp(Id, L, L', T, T', Cd, Status)) = Status .
+  
+  op getId : CritPair -> String .
+  eq getId(cp(Id, L, L', T, T', Status)) = Id .
+  eq getId(ccp(Id, L, L', T, T', Cd, Status)) = Id .
+  
+  op setStatus : CritPair CPStatus -> CritPair .
+  eq setStatus(cp(Id, L, L', T, T', Status), Status') = cp(Id, L, L', T, T', Status') .
+  eq setStatus(ccp(Id, L, L', T, T', Cd, Status), Status') = ccp(Id, L, L', T, T', Cd, Status') .
+  
+  op status2qid : CPStatus -> Qid .
+  eq status2qid(pending) = 'pending .
+  eq status2qid(non-maximal) = 'non-maximal .
+  eq status2qid(joined) = 'joined .
+  eq status2qid(unfeasible) = 'unfeasible .
+  eq status2qid(context-joinable) = 'context-joinable .
+  eq status2qid(proved) = 'proved .
+
+  op delete : CritPairSet -> CritPairSet .
+
+  eq delete(cp(Id, L, L', T, T', pending) CPS)
+    = if T == T'
+      then cp(Id, L, L', T, T', joined) delete(CPS)
+      else cp(Id, L, L', T, T', pending) delete(CPS)
+      fi .
+  eq delete(ccp(Id, L, L', T, T', Cd, pending) CPS)
+    = if T == T'
+      then ccp(Id, L, L', T, T', Cd, joined) delete(CPS)
+      else ccp(Id, L, L', T, T', Cd, pending) delete(CPS)
+      fi .
+  eq delete(CPS) = CPS [owise] .
+
+  op simplify : CritPairSet Module -> CritPairSet .
+
+  eq simplify(cp(Id, L, L', T, T', pending) CPS, M)
+    = cp(Id, L, L', getTerm(metaReduce(M, T)), getTerm(metaReduce(M, T')), pending)
+      simplify(CPS, M) .
+  eq simplify(ccp(Id, L, L', T, T', Cd, pending) CPS, M)
+    = ccp(Id, L, L', getTerm(metaReduce(M, T)), getTerm(metaReduce(M, T')), Cd, pending)
+      simplify(CPS, M) .
+  eq simplify(CPS, M) = CPS [owise] .
+
+  op maximalCPSet : CritPairSet Module -> CritPairSet .
+  op maximalCPSetAux : CritPair CritPairSet CritPairSet Module -> CritPairSet .
+  op moreGeneralCP : CritPair CritPair Module -> Bool .
+
+  ceq maximalCPSet(CP CPS, M)
+    = maximalCPSetAux(CP, CPS, none, M) 
+    if getStatus(CP) == pending .
+  eq maximalCPSet(CPS, M) = CPS [owise] .
+
+  eq maximalCPSetAux(CP, CP' CPS, CPS', M)
+    = if getStatus(CP') == pending
+      then if moreGeneralCP(CP, CP', M)
+           then maximalCPSetAux(CP, CPS, setStatus(CP', non-maximal) CPS', M)
+           else if moreGeneralCP(CP', CP, M)
+                then maximalCPSetAux(CP', CPS CPS', setStatus(CP, non-maximal), M)
+                else maximalCPSetAux(CP, CPS, CP' CPS', M)
+                fi
+           fi
+      else maximalCPSetAux(CP, CPS, CP' CPS', M)
+      fi .
+  ceq maximalCPSetAux(CP, none, CP' CPS, M)
+    = CP maximalCPSetAux(CP', CPS, none, M) 
+    if getStatus(CP') = pending .
+  eq maximalCPSetAux(CP, none, CPS, M) = CP CPS [owise] .
+
+  eq moreGeneralCP(cp(Id, L1, L1', T1, T1', Status), cp(Id', L2, L2', T2, T2', Status'), M)
+    = sameKind(M, leastSort(M, T1), leastSort(M, T2)) 
+      and-then 
+      (metaMatch(M, ((eq T1 = T2 [none].) (eq T1' = T2' [none].)))
+       or-else
+       metaMatch(M, ((eq T1 = T2' [none] .) (eq T1' = T2 [none] .)))) .
+  eq moreGeneralCP(cp(Id, L1, L1', T1, T1', Status), ccp(Id', L2, L2', T2, T2', Cd2, Status'), M)
+    = sameKind(M, leastSort(M, T1), leastSort(M, T2))
+      and-then 
+      (metaMatch(M, ((eq T1 = T2 [none].) (eq T1' = T2' [none] .)))
+       or-else
+       metaMatch(M, ((eq T1 = T2' [none] .) (eq T1' = T2 [none] .)))) .
+  eq moreGeneralCP(ccp(Id, L1, L1', T1, T1', Cd1, Status), cp(Id', L2, L2', T2, T2', Status'), M)
+    = false .
+  eq moreGeneralCP(ccp(Id, L1, L1', T1, T1', Cd1, Status), 
+                   ccp(Id', L2, L2', T2, T2', Cd2, Status'), M)
+    = sameKind(M, leastSort(M, T1), leastSort(M, T2)) 
+      and-then 
+      (metaMatch(M, ((eq T1 = T2 [none].) (eq T1' = T2' [none].) mgcpme(M, Cd1, Cd2)))
+       or-else
+       metaMatch(M, ((eq T1 = T2' [none].) (eq T1' = T2 [none].) mgcpme(M, Cd1, Cd2)))) .
+
+  op mgcpme : Module Condition Condition -> EquationSet .
+  eq mgcpme(M, T1 = T1' /\ Cd1, T2 = T2' /\ Cd2) 
+    = if sameKind(M, leastSort(M, T1), leastSort(M, T2))
+      then ((eq T1 = T2 [none] .) (eq T1' = T2' [none] .) mgcpme(M, Cd1, Cd2)) 
+      else (eq 'true.Bool = 'false.Bool [none] .)
+      fi .
+  eq mgcpme(M, T1 := T1' /\ Cd1, T2 := T2' /\ Cd2) 
+    = if sameKind(M, leastSort(M, T1), leastSort(M, T2))
+      then ((eq T1 = T2 [none] .) (eq T1' = T2' [none] .) mgcpme(M, Cd1, Cd2)) 
+      else (eq 'true.Bool = 'false.Bool [none] .)
+      fi .
+  eq mgcpme(M, T1 : S /\ Cd1, T2 : S /\ Cd2) 
+    = if sameKind(M, leastSort(M, T1), leastSort(M, T2))
+      then ((eq T1 = T2 [none] .) mgcpme(M, Cd1, Cd2)) 
+      else (eq 'true.Bool = 'false.Bool [none] .)
+      fi .
+  eq mgcpme(M, nil, nil) = none .
+  eq mgcpme(M, Cd1, Cd2) = (eq 'true.Bool = 'false.Bool [none] .) [owise] . ----- This is too restrictive. 
+
+  op eMetaPrettyPrint : Module Qid CritPairSet Bool -> QidList .
+
+  eq eMetaPrettyPrint(M, QI, cp(Id, L, L', T, T', Status) CPS, All)
+    = (if Status == pending or All
+       then '\s '\s '\b 'cp '\o qid(Id)
+            (if L =/= 'no-label and L' =/= 'no-label 
+             then '\b 'for '\o L '\b 'and '\o L' '\n 
+             else '\n
+             fi) 
+            if All then '\s status2qid(Status) '\n else nil fi
+            '\s '\s '\s '\s metaPrettyPrint(M, T) '\n 
+            '\s '\s '\s '\s QI '\o metaPrettyPrint(M, T') '. '\o '\n
+       else nil
+       fi 
+       eMetaPrettyPrint(M, QI, CPS, All)) .
+  eq eMetaPrettyPrint(M, QI, ccp(Id, L, L', T, T', Cd, Status) CPS, All)
+    = (if Status == pending or All
+       then '\s '\s '\b 'ccp '\o qid(Id)  
+            (if L =/= 'no-label and L' =/= 'no-label 
+             then '\b 'for '\o L '\b 'and '\o L' '\n 
+             else '\n 
+             fi)
+            if All then '\s status2qid(Status) '\n else nil fi
+            '\s '\s '\s '\s metaPrettyPrint(M, T) '\n 
+            '\s '\s '\s '\s '\b QI '\o metaPrettyPrint(M, T') '\n 
+            '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o '\n
+       else nil
+       fi 
+       eMetaPrettyPrint(M, QI, CPS, All)) .
+  eq eMetaPrettyPrint(M, QI, (none).CritPairSet, All) = nil .
+  eq eMetaPrettyPrint(unitError(QIL), QI, CPS:[CritPairSet], All) = QIL .
+endfm
+
+view CritPairSet from TRIV to CRITICAL-PAIR-SET is
+  sort Elt to CritPairSet .
+endv
+
+--------------------------------------------------------------------------------
+---- Context-Joinability and Unfeasible Conditional Critical Pairs
+--------------------------------------------------------------------------------
+---- 
+---- Suppose that you get a nontrivial \emph{conditional critical pair} of the form:
+---- $$ (u_1=v_1\wedge\ldots\wedge u_k=v_k\wedge v_{k+1}:=u_{k+1}\wedge\ldots\wedge v_{k+r}:=u_{k+r}) \Rightarrow t=t'$$
+---- 
+---- \noindent (of course the \emph{order} of ordinary and matching equations can be \emph{mixed}.)
+---- 
+---- Perform the following transformation:
+---- 
+---- \renewcommand{\labelenumi}{(\alph{enumi})}
+---- \begin{enumerate}
+---- \item Any $v_{i}:=u_{i}$ becomes a condition $u_i\rightarrow v_i$.
+---- \item Any $u_{i}=v_{i}$ where, say, $v_i$ is a \emph{ground term in canonical form} becomes $u_i\rightarrow v_i$.
+---- \item For all other $u_{i}:=v_{i}$ introduce a \emph{fresh new variable} $x_i$ of the smallest of the sorts of $u_i$ and $v_i$ 
+---- so that the rules are \emph{sort decreasing},\footnote{If the sorts are not comparable, then pick one of those sorts 
+---- non-deterministically. Or if $lub(ls(u_i),ls(v_i)$ is singleton, then pick $lnb$.} and \emph{two conditions} $u_i\rightarrow x_i$ 
+---- and $v_i\rightarrow x_i$.
+---- \end{enumerate}
+---- 
+---- Call $C$ the new condition so obtained, and $X$ the \emph{variables} in $C$ and $t$ and $t'$. Get the new $CCP$.
+---- 
+---- To check whether the CCP is \emph{context joinable}:
+---- 
+---- \renewcommand{\labelenumi}{(\roman{enumi})}
+---- \begin{enumerate}
+---- \item Add the new variables $x$ as constants $\overline{X}$.
+---- \item Add to the rules $R$ the new \emph{ground} rewrite rules $\overline{C}$ plus an equality operator $eq$ with rules 
+---- $eq(x,x)\rightarrow tt$. Call this theory $\hat{\cR}_{\overline{C}}$.
+---- \item In $\hat{\cR}_{\overline{C}}$, search $eq(\overline{t},\overline{t'})\Rightarrow ^{+} tt$ up to some predetermined 
+---- depth (using the \verb#search# command).
+---- \end{enumerate}
+---- 
+---- If the search is successful, then the CCP is context joinable. 
+
+fmod CRC-CONTEXT-JOINABILITY-UNFEASIBILITY is
+  pr CRITICAL-PAIR-SET .
+  pr 2TUPLE{RuleSet, OpDeclSet} * (op p1_ to getRls, op p2_ to getOps) .
+  pr 2TUPLE{TermList, OpDeclSet} * (op p1_ to getTerms, op p2_ to getOps) .
+  pr 2TUPLE{QidSet, Condition} * (op p2_ to getCondition, op p1_ to getVars) .
+  pr META-NARROWING-SEARCH * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) . 
+  
+  op joinability-depth : -> Nat .
+  eq joinability-depth = 10 .
+
+  vars QI QI' F : Qid .
+  var  VS : QidSet .
+  var  V : Variable .
+  var  Ct : Constant .
+  vars T T' T'' T''' : Term .
+  vars TL TL' : TermList .
+  var  TS : TermSet .
+  vars Cd Cd' : Condition .
+  var  N : Nat .
+  vars M M' M'' : Module .
+  var  Tp : Type .
+  var  EqS : EquationSet .
+  var  ODS : OpDeclSet .
+  var  CP : CritPair .
+  var  CPS : CritPairSet .
+  var  AtS : AttrSet .
+  var  MAS : MembAxSet .
+  var  RlS : RuleSet .
+  var  S : Sort .
+  var  K : Kind .
+  var  KS : KindSet .
+  var  Status CPSt : CPStatus .
+  vars Id Id' : String .
+    
+  op crcContextJoinableAndUnfeasibleCPs : Module CritPairSet -> CritPairSet .
+  op $crcContextJoinableAndUnfeasibleCPs : Module CritPair -> CritPair .
+  op crcContextJoinable : Module Term Term -> Bool .
+  op unfeasible : Module Module Module Condition -> Bool .
+
+  eq crcContextJoinableAndUnfeasibleCPs(M, ccp(Id, QI, QI', T, T', Cd, pending) CPS) 
+    = if preunfeasible(M, Cd)
+      then ccp(Id, QI, QI', T, T', Cd, unfeasible)
+      else $crcContextJoinableAndUnfeasibleCPs(M, ccp(Id, QI, QI', T, T', Cd, pending))
+      fi 
+      crcContextJoinableAndUnfeasibleCPs(M, CPS) .
+  eq crcContextJoinableAndUnfeasibleCPs(M, CPS) = CPS [owise] .
+  
+ ceq $crcContextJoinableAndUnfeasibleCPs(M, ccp(Id, QI, QI', T, T', Cd, pending))
+    = if crcContextJoinable(M'', getTerms(vars2cts(T)), getTerms(vars2cts(T')))
+      then ccp(Id, QI, QI', T, T', Cd, context-joinable)
+      else if unfeasible(M, M', M'', Cd')
+           then ccp(Id, QI, QI', T, T', Cd, unfeasible)
+           else ccp(Id, QI, QI', T, T', Cd, pending)
+           fi
+      fi
+    if Cd' := transform(M, Cd)            ---- new CCP
+    /\ M' := rulify(M)                    ---- turns equations into rules, and equational conditions into rewrites              
+    /\ M'' := addRls(                     ---- $\hat{\cR}_{\overline{C}}$
+               (getRls(groundRls(Cd'))
+                equalRls(getKinds(M))),
+               addOps(
+                 (op 'tt : nil -> '`[Thruth`] [none] .
+                  equalOps(getKinds(M))
+                  getOps(groundRls(Cd'))
+                  getOps(vars2cts(T))
+                  getOps(vars2cts(T'))), 
+                 addSorts('Thruth, M'))) .                  
+
+  eq crcContextJoinable(M, T, T')
+    = metaSearch(M, 'equal[T, T'], 'tt.`[Thruth`], nil, '+, joinability-depth, 0) =/= failure .
+
+  op preunfeasible : Module Condition -> Bool .
+  eq preunfeasible(M, T = T' /\ Cd)
+    = if ---- ground irreducible distinct terms 
+         vars(T) == none and-then getTerm(metaNormalize(M, T)) == getTerm(metaReduce(M, T))
+         and-then
+         vars(T') == none and-then getTerm(metaNormalize(M, T')) == getTerm(metaReduce(M, T'))
+         and-then T =/= T'
+      then true
+      else preunfeasible(M, Cd)
+      fi .
+  eq preunfeasible(M, T => T' /\ Cd) = preunfeasible(M, Cd) .
+  eq preunfeasible(M, T : S /\ Cd) = preunfeasible(M, Cd) .
+  eq preunfeasible(M, T := T' /\ Cd) = preunfeasible(M, Cd) .
+  eq preunfeasible(M, nil) = false .
+
+  eq unfeasible(M, M', M'', T => T' /\ Cd)
+    = ---- if T' :: Variable 
+      ---- then unfeasible(M, M', M'', Cd)
+      ---- else 
+           if | searchNormalForms(M'', getTerms(vars2cts(T)), leastSort(M, T), 0) | <= 1 
+           then unfeasible(M, M', M'', Cd) 
+           else checkUnfeasibility(M', restoreVars(searchNormalForms(M'', getTerms(vars2cts(T)), leastSort(M, T), 0))) 
+                or-else
+                unfeasible(M, M', M'', Cd)
+           fi
+      ---- fi 
+      .
+  eq unfeasible(M, M', M'', nil) = false . 
+  
+  op restoreVars : TermSet -> TermSet . ---- new vars start with ##
+  op restoreVarsAux : TermList -> TermList .
+  eq restoreVars(T | TS) = restoreVarsAux(T) | restoreVars(TS) .
+  eq restoreVars(emptyTermSet) = emptyTermSet .
+  eq restoreVarsAux((V, TL)) = (V, restoreVarsAux(TL)) .
+  eq restoreVarsAux((Ct, TL)) 
+    = if substr(string(Ct), 0, 2) == "##"
+      then qid(substr(string(getName(Ct)), 2, _-_(length(string(getName(Ct))), 2)) + ":" + string(getType(Ct)))
+      else Ct
+      fi,
+      restoreVarsAux(TL) .
+  eq restoreVarsAux((F[TL], TL')) = (F[restoreVarsAux(TL)], restoreVarsAux(TL')) .
+  eq restoreVarsAux(empty) = empty .
+               
+  op searchNormalForms : Module Term Type Nat -> TermSet .
+  eq searchNormalForms(M, T, Tp, N)
+    = if metaSearch(M, T, qid("X:" + string(Tp)), nil, '!, joinability-depth, N) =/= failure
+      then getTerm(metaSearch(M, T, qid("X:" + string(Tp)), nil, '!, joinability-depth, N))
+           | searchNormalForms(M, T, Tp, s N)
+      else emptyTermSet
+      fi .
+
+  op checkUnfeasibility : Module TermSet -> Bool .
+  op checkUnfeasibility : Module Term TermSet -> Bool .
+
+  eq checkUnfeasibility(M, T | TS) = checkUnfeasibility(M, T, TS) or-else checkUnfeasibility(M, TS) . 
+  eq checkUnfeasibility(M, emptyTermSet) = false .
+
+  eq checkUnfeasibility(M, T, T' | TS)
+    = if metaACUUnify(M, T, T') == empty ---- no unifiers in common... only C, LU, RU, CU, and ACU
+         and-then (strongly-irreducible(M, T) and-then strongly-irreducible(M, T')) 
+      then true
+      else checkUnfeasibility(M, T, TS)
+      fi .
+  eq  checkUnfeasibility(M, T, emptyTermSet) = false .
+  
+  op strongly-irreducible : Module Term -> Bool .
+  eq strongly-irreducible(M, T) 
+    = metaNarrowSearch(M, T, qid("X:" + string(leastSort(M, T))), none, '+, 1, 1) == empty . 
+  ----eq strongly-irreducible(M, T) 
+  ----  = metaNarrowSearchGenAll(
+  ----           M, 
+  ----           T,
+  ----           qid("X:" + string(leastSort(M, T))), 
+  ----           none, '+, 1, 1, full E-ACU-unify noStrategy) == empty . 
+
+  op groundRls : Condition -> Tuple{RuleSet, OpDeclSet} .
+  op groundRls : Condition RuleSet OpDeclSet -> Tuple{RuleSet, OpDeclSet} .
+  eq groundRls(Cd) = groundRls(Cd, none, none) .
+  eq groundRls(T => T' /\ Cd, RlS, ODS) 
+    = groundRls(Cd, rl getTerms(vars2cts(T)) => getTerms(vars2cts(T')) [none] . RlS, getOps(vars2cts(T)) getOps(vars2cts(T')) ODS) .
+  eq groundRls(Cd, RlS, ODS) = (RlS, ODS) [owise] .
+  
+  op transform : Module Condition -> Condition .
+  op transform : Module Condition Nat -> Condition .
+  
+  eq transform(M, Cd) = transform(M, Cd, 0) .
+  eq transform(M, T = T' /\ Cd, N) 
+    = if ---- T is irreducible but T' isn't
+         vars(T) == none and-then getTerm(metaNormalize(M, T)) == getTerm(metaReduce(M, T))
+         and-then
+         not (vars(T') == none and-then getTerm(metaNormalize(M, T')) == getTerm(metaReduce(M, T')))
+      then T' => T /\ transform(M, Cd, N)
+      else if ---- T' is irreducible but T isn't
+              not (vars(T) == none and-then getTerm(metaNormalize(M, T)) == getTerm(metaReduce(M, T)))
+              and-then
+              vars(T') == none and-then getTerm(metaNormalize(M, T')) == getTerm(metaReduce(M, T'))
+           then T => T' /\ transform(M, Cd, N)  
+           else ---- either none or both of them are irreducible
+                if | glbSorts(M, leastSort(M, T), leastSort(M, T')) | == 1
+                then T => qid("@X@" + string(N, 10) + ":" + string(glbSorts(M, leastSort(M, T), leastSort(M, T')))) 
+                     /\ T' => qid("@X@" + string(N, 10) + ":" + string(glbSorts(M, leastSort(M, T), leastSort(M, T'))))
+                     /\ transform(M, Cd, s N) 
+                else T => qid("@X@" + string(N, 10) + ":" + string(leastSort(M, T))) ---- should we use the kind instead of one of them?
+                     /\ T' => qid("@X@" + string(N, 10) + ":" + string(leastSort(M, T)))
+                     /\ transform(M, Cd, s N) 
+                fi                
+           fi
+      fi .
+  eq transform(M, T := T' /\ Cd, N) = T' => T /\ transform(M, Cd, N) .
+  eq transform(M, T => T' /\ Cd, N) = T => T' /\ transform(M, Cd, N) .
+  eq transform(M, T : S /\ Cd, N) = T : S /\ transform(M, Cd, N) .
+  eq transform(M, nil, N) = nil .
+    
+  op equalOps : KindSet -> OpDeclSet . ---- from MTT-transformations.1.5f.maude
+  eq equalOps(K ; KS) = (op 'equal : K K -> 'Thruth [none] .) equalOps(KS) .
+  eq equalOps(none) = none .
+  
+  op equalRls : KindSet -> RuleSet . ---- from MTT-transformations.1.5f.maude
+  eq equalRls(K ; KS) 
+    = (rl 'equal[qid("X:" + string(K)), qid("X:" + string(K))] => qid("tt.`[Thruth`]") [none] .)
+      equalRls(KS) .
+  eq equalRls(none) = none .
+
+  op vars2cts : Term -> Tuple{TermList, OpDeclSet} .
+  op vars2cts : Term OpDeclSet -> Tuple{TermList, OpDeclSet} .
+  op vars2cts : TermList OpDeclSet -> Tuple{TermList, OpDeclSet} .
+  eq vars2cts(TL) = vars2cts(TL, none) .
+  eq vars2cts(V, ODS) 
+    = (qid("##" + string(getName(V)) + "." + string(getType(V))),
+       op qid("##" + string(getName(V))) : nil -> getType(V) [none] . ODS) .  
+  eq vars2cts(Ct, ODS) = (Ct, ODS) .  
+  eq vars2cts(F[TL], ODS) = (F[getTerms(vars2cts(TL))], getOps(vars2cts(TL)) ODS) .  
+
+ ceq vars2cts((T, TL), ODS) 
+    = ((getTerms(vars2cts(T)), getTerms(vars2cts(TL))), (getOps(vars2cts(T)) getOps(vars2cts(TL)) ODS)) 
+    if TL =/= empty . 
+    
+  op rulify : Module -> Module .
+  op rulify : Module EquationSet -> RuleSet .
+  op rulify : Module MembAxSet -> MembAxSet .
+  op rulify : Module RuleSet -> RuleSet .
+  ---- takes a module an makes all its equations into rules
+  
+  eq rulify(M) = addRls(rulify(M, getEqs(M)), setRls(setEqs(setMbs(M, rulify(M, getMbs(M))), none), rulify(M, getRls(M)))) .
+  
+  eq rulify(M, eq T = T' [AtS] . EqS) = (rl T => T' [AtS] .) rulify(M, EqS) . 
+  eq rulify(M, ceq T = T' if Cd [AtS] . EqS) = (crl T => T' if transform(M, Cd) [AtS] .) rulify(M, EqS) . 
+  eq rulify(M, (none).EquationSet) = none .
+  
+  eq rulify(M, rl T => T' [AtS] . RlS) = (rl T => T' [AtS] .) rulify(M, RlS) . 
+  eq rulify(M, crl T => T' if Cd [AtS] . RlS) = (crl T => T' if transform(M, Cd) [AtS] .) rulify(M, RlS) .
+  eq rulify(M, (none).RuleSet) = none .
+  
+  eq rulify(M, mb T : S [AtS] . MAS) = (mb T : S [AtS] .) rulify(M, MAS) . 
+  eq rulify(M, cmb T : S if Cd [AtS] . MAS) = (cmb T : S if transform(M, Cd) [AtS] .) rulify(M, MAS) . 
+  eq rulify(M, (none).MembAxSet) = none .
+endfm
+
+-------------------------------------------------------------------------------
+---- confluence check
+-------------------------------------------------------------------------------
+
+**** The \texttt{confluenceCheck} function does the confluence check.
+
+**** The unification function may generate new variables, which will be of 
+**** the form X@:S for a variable X:S and X@S':S' for a variable X:S with
+**** S' each of the subsorts of S. We assume that these variables are not
+**** used in the original module. 
+
+**** Since to check the overlappings there cannot be common variables 
+**** between the terms, we generate a renamed copy of one of the
+**** equations just by renaming each variable using the \texttt{rename} 
+**** function presented in~\ref{basic-stuff}.
+
+view Substitution from TRIV to META-LEVEL is
+  sort Elt to Substitution .
+endv
+
+fmod CONFLUENCE-CHECK is
+  pr CRITICAL-PAIR-SET .
+  pr 2TUPLE{CritPairSet, CritPairSet} .
+  pr 2TUPLE{CritPairSet, Nat} * (op p1_ to getCPs, op p2_ to getIndex) .
+  pr 2TUPLE{Module, QidSet} * (op p1_ to getModule, op p2_ to getCts) .
+  pr AUXILIARY-FUNCTIONS .
+  inc META-NARROWING-SEARCH * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) . 
+  pr CRC-CONTEXT-JOINABILITY-UNFEASIBILITY .
+  
+  vars M M' : Module .
+  vars T T' T'' T''' T'''' T1 T1' T2 T2' T1'' T2'' LHS RHS : Term .
+  vars CP CP' : CritPair .
+  vars CPS CPS' CPS'' : CritPairSet .
+  vars Eq Eq' : Equation .
+  vars EqS EqS' EqS'' : EquationSet .
+  var  Subst : Substitution .
+  var  SubstS : SubstitutionSet .
+  vars AtS AtS' : AttrSet .
+  vars N N' N'' N''' : Nat .
+  vars X F S L L' L1 L1' L2 L2' : Qid .
+  vars TL TL' : TermList .
+  vars Cd Cd1 Cd2 Cond : Condition .
+  vars Sb Sb' : Substitution .
+  var  Ct : Constant .
+  var  V : Variable . 
+  vars Cx Cx' : Context .
+  var  Fgs : Flags .
+  var  RTS : ResultTripleSet .
+  ----var  RCS : ResultContextSet .
+  var  TpL : TypeList .
+  var  Tp : Type .
+  var  NeNL : NeNatList . 
+  var  ODS : OpDeclSet .
+  var  VS : QidSet .
+  var  Status : CPStatus .
+  vars Id Id' : String .
+
+**** We declare sorts for critical pairs (\texttt{CritPair}) and for sets of
+**** critical pairs (\texttt{CritPairSet}), and constructors for them.  The
+**** constructors for critical pairs (\texttt{cp}) and for conditional critical
+**** pairs (\texttt{ccp}) have, respectively, two and four arguments. The two
+**** arguments of \texttt{cp} and the first two of \texttt{ccp} are the terms
+**** forming the critical pair. The two last arguments in a conditional critical
+**** pair correspond to the condition, which is given following the conventions
+**** for conditions in membership axioms, equations, and rules in the
+**** \texttt{META-LEVEL} module.
+
+**** Given a specification $\mathcal{S}$, the \texttt{critPairs} function finds
+**** all the critical pairs between the equations in $\mathcal{S}$ considered
+**** as rules, oriented from left to right. 
+
+**** One critical pair is generated for each unifier for each of the possible
+**** nonvariable overlappings of the lefthand sides of any two equations in the
+**** module. These critical pairs are calculated by finding all the possible 
+**** such pairs for each of the equations in the module (\texttt{critPairs1}) 
+**** with a renamed copy of each one of the other equations in the module 
+**** (including itself \texttt{critPairs2}). For each pair of equations, their 
+**** left sides are unified at any nonvariable position of the term of the 
+**** (first equation \texttt{critPairs3}), and then a critical pair is 
+**** constructed for each one of the solutions of the unification problem 
+**** (\texttt{critPairs4}).
+
+**** As said above, the critical pair is formed by \texttt{critPairs4} for a 
+**** pair of equations with an overlapping at some position with some 
+**** substitution. In the cases when one or both of the equations involved are
+**** conditional, then the conjunction of the conditions with the substitution 
+**** applied to them is placed as the condition of the critical pair.
+
+---- nov 7th, 2008
+---- The computation of conditional critical pairs is accomplished using Santiago  
+---- Escobar's narrowing functionality.
+---- Given equations 
+----   l(X) = r(X, Y) if C(X, Y)
+----   l'(X') = r'(X', Y') if C'(X', Y')
+---- we narrow the term 
+----   # l(X) # r(X, Y) # C(X, Y) #    
+---- (with 2nd and 3rd args. frozen, all other frozen attributes are removed)
+---- using the rule
+----   l'(X') => # r'(X', Y') # C'(X', Y') #
+---- critPairs(M, Eq, Eq) prepares a module with the equation Eq modified as above
+---- and uses metaNarrowSearchGenAll to take a narrowing step on a term as the
+---- one above obtained from Eq'. 
+---- metaNarrowSearchGenAll returns a set of solutions of sort ResultContextSet.
+---- A result context is a 10-tuple with information on the narrowing; from 
+---- these results we take the resulting term with the substitution applied, 
+---- from which we build the critical pair.
+
+  op crcCritPairs : Module -> CritPairSet .
+  op crcCritPairs : Module EquationSet EquationSet Nat -> Tuple{CritPairSet, Nat} .
+
+  eq crcCritPairs(M) = getCPs(crcCritPairs(M, getEqs(M), getEqs(M), 0)) .
+  
+----    ---- Avenhaus & Loria-Saenz discard nonproper critical pairs, i.e., the critical pair of  
+----    ---- an equation with itself at the top. Notice that there is always (at least) such an
+----    ---- overlapping. They can discard these matches directly because they only consider the  
+----    ---- free case. In our case, there might be other matches of one rule with itself at the top.  
+----    ---- What we do is that, if there is a single overlap between an equation with itself, we do 
+----    ---- not generate the corresponding critical pair. Notice that if there is more than one 
+----    ---- we could look the trivial one and discard it, but we don't do this in that case.
+  ceq crcCritPairs(M, Eq EqS, Eq' EqS', N)
+    = (CPS CPS' CPS'', N''')
+    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Eq'), getCts(makeNarrowingModule(M, Eq, Eq')), 
+                      metaNarrowSearch(
+                        getModule(makeNarrowingModule(M, Eq, Eq')), 
+                        ---- makeNarrowingModule removes frozen attributes from M, removes eqs 
+                        ---- and rls from M, and leaves a prepared version of Eq as single rule
+                        '#_#_#_#[lhs(Eq'), rhs(Eq'), makeNarrowingCond(cond(Eq'))],
+                        qid("#V:" + string(getKind(M, leastSort(M, lhs(Eq'))))), 
+                        none, '+, 1, unbounded), N)
+    /\ (CPS', N'') := crcCritPairs(M, Eq, EqS', N') 
+    /\ (CPS'', N''') := crcCritPairs(M, EqS, Eq' EqS', N'') .
+  eq crcCritPairs(M, none, EqS, N) = (none, N) .
+  eq crcCritPairs(M, EqS, none, N) = (none, N) .
+    
+  op makeNarrowingModule : Module Equation Equation -> Tuple{Module, QidSet} . 
+  ---- Returns the modified module and the set of variables in the rhs and condition of the 
+  ---- 1st eq not in its lhs (it actually returns the set of constants, not variables).
+  ---- Constant names are generated just be adding a # in front of the variable's name.
+ ceq makeNarrowingModule(M, Eq, Eq')
+    = (setRls(
+         setEqs(
+           addOps(
+             (op '#_#_# : leastSort(M, lhs(Eq)) '#ConditionList -> leastSort(M, lhs(Eq)) [none] .
+              op '#_#_#_# : leastSort(M, lhs(Eq')) leastSort(M, rhs(Eq')) '#ConditionList -> leastSort(M, lhs(Eq')) [frozen(2 3)] .
+              op 'nil : nil -> '#ConditionList [none] .
+              op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+              opCondition(M, cond(Eq) /\ cond(Eq'))
+              opNewCts(VS)),
+             addSorts('#Condition ; '#ConditionList, removeFrozen(M))),
+           none),
+         rl T' => '#_#_#[vars2narrowCts(T'', VS), vars2narrowCts(T, VS)] [none] .),
+       vars2narrowCts(VS)) 
+     if T := makeNarrowingCond(cond(Eq))
+     /\ T' := getTerm(metaNormalize(M, lhs(Eq)))
+     /\ T'' := getTerm(metaNormalize(M, rhs(Eq)))
+     /\ VS := (vars(T'') ; vars(T)) \ vars(T') . ---- vars to be made constants
+
+  op vars2narrowCts : Term QidSet -> Term .
+  eq vars2narrowCts(V, VS) 
+    = if V in VS 
+      then qid("#" + string(getName(V)) + "#." + string(getType(V)))
+      else V
+      fi . 
+  eq vars2narrowCts(Ct, VS) = Ct . 
+  eq vars2narrowCts(F[TL], VS) = F[vars2narrowCts(TL, VS)] .
+  eq vars2narrowCts((T, TL), VS) = (vars2narrowCts(T, VS), vars2narrowCts(TL, VS)) .
+  eq vars2narrowCts(empty, VS) = empty .
+        
+  op vars2narrowCts : QidSet -> QidSet .
+  eq vars2narrowCts(V ; VS) = qid("#" + string(getName(V)) + "#." + string(getType(V))) ; vars2narrowCts(VS) .
+  eq vars2narrowCts(none) = none .
+
+  op opNewCts : QidSet -> OpDeclSet .
+  eq opNewCts(V ; VS) = (op qid("#" + string(getName(V)) + "#") : nil -> getType(V) [none] .) opNewCts(VS) .
+  eq opNewCts(none) = none .
+
+  op opCondition : Module Condition -> OpDeclSet .
+  eq opCondition(M, T => T' /\ Cond)
+    = (op '_=>_ : getKind(M, leastSort(M, T)) getKind(M, leastSort(M, T')) -> '#Condition [none] .)
+      opCondition(M, Cond) .
+  eq opCondition(M, T = T' /\ Cond)
+    = (op '_=_ : getKind(M, leastSort(M, T)) getKind(M, leastSort(M, T')) -> '#Condition [none] .)
+      opCondition(M, Cond) .
+  eq opCondition(M, T := T' /\ Cond)
+    = (op '_:=_ : getKind(M, leastSort(M, T)) getKind(M, leastSort(M, T')) -> '#Condition [none] .)
+      opCondition(M, Cond) .
+  eq opCondition(M, T : S /\ Cond)
+    = (op '_:_ : getKind(M, leastSort(M, T)) 'Sort -> '#Condition [none] .)
+      opCondition(M, Cond) .
+  eq opCondition(M, nil) = none .
+    
+  op prepNarrowingSols : Module Qid Qid QidSet ResultTripleSet Nat -> Tuple{CritPairSet, Nat} .
+  eq prepNarrowingSols(M, L, L', VS, {'#_#_#_#[T, T', T''], Tp, Sb} | RTS, N)
+    = (ccp(name(getName(M), N), L, L', getCPTerm(substitute(M, T, Sb), VS), getCPTerm(T', VS), 
+           makeCond(T'') /\ makeCond(getCPCond(substitute(M, T, Sb), VS)), pending)
+       getCPs(prepNarrowingSols(M, L, L', VS, RTS, s N)),
+       getIndex(prepNarrowingSols(M, L, L', VS, RTS, s N))) .
+  eq prepNarrowingSols(M, L, L', VS, empty, N) = (none, N) .
+  
+  eq ccp(Id, L, L', T, T', nil, Status) = cp(Id, L, L', T, T', Status) .
+
+  op getCPTerm : Term QidSet -> Term .
+  op $getCPTerm : Term -> Term .
+  op $getCPTerm : TermList -> TermList .
+  op getCPCond : Term QidSet -> Term .
+  op getCPCond : TermList QidSet -> TermList .
+  op restoreVars : TermList QidSet -> TermList .
+  
+  eq getCPTerm(T, VS) = restoreVars($getCPTerm(T), VS) .
+
+  eq $getCPTerm((Ct, TL)) = (Ct, $getCPTerm(TL)) .
+  eq $getCPTerm((V, TL)) = (V, $getCPTerm(TL)) .
+  eq $getCPTerm(('#_#_#[T, T'], TL)) = ($getCPTerm(T), $getCPTerm(TL)) .
+  eq $getCPTerm((F[TL], TL')) = (F[$getCPTerm(TL)], $getCPTerm(TL')) [owise] .
+  eq $getCPTerm(empty) = empty .
+  
+  eq getCPCond((Ct, TL), VS) = getCPCond(TL, VS) .
+  eq getCPCond((V, TL), VS) = getCPCond(TL, VS) .
+  eq getCPCond(('#_#_#[T, T'], TL), VS) = restoreVars(T', VS) .
+  eq getCPCond((F[TL], TL'), VS) 
+    = if getCPCond(TL, VS) =/= 'nil.#ConditionList then getCPCond(TL, VS) else getCPCond(TL', VS) fi 
+    [owise] .
+  eq getCPCond(empty, VS) = 'nil.#ConditionList .
+
+  eq restoreVars((Ct, TL), VS) 
+    = (if Ct in VS then qid(string(getName(Ct)) + ":" + string(getType(Ct))) else Ct fi, restoreVars(TL, VS)) .
+  eq restoreVars((V, TL), VS) = (V, restoreVars(TL, VS)) .
+  eq restoreVars((F[TL], TL'), VS) = (F[restoreVars(TL, VS)], restoreVars(TL', VS)) .
+  eq restoreVars(empty, VS) = empty .
+
+  op makeNarrowingCond : Condition -> Term .
+  op makeCond : Term -> Condition .
+  op makeCondAux : TermList -> Condition .
+  
+  eq makeNarrowingCond(T => T' /\ Cond) = '_/\_['_=>_[T, T'], makeNarrowingCond(Cond)] .
+  eq makeNarrowingCond(T : S /\ Cond) = '_/\_['_:_[T, S], makeNarrowingCond(Cond)] .
+  eq makeNarrowingCond(T = T' /\ Cond) = '_/\_['_=_[T, T'], makeNarrowingCond(Cond)] .
+  eq makeNarrowingCond(T := T' /\ Cond) = '_/\_['_:=_[T, T'], makeNarrowingCond(Cond)] .
+  eq makeNarrowingCond(nil) = 'nil.#ConditionList .
+  
+  eq makeCond('_/\_[TL]) = makeCondAux(TL) .
+  eq makeCond('_=>_[T, T']) = T => T' .
+  eq makeCond('_:_[T, T']) = T : T' .
+  eq makeCond('_=_[T, T']) = T = T' .
+  eq makeCond('_:=_[T, T']) = T := T' .
+  eq makeCond('nil.#ConditionList) = nil .
+
+  eq makeCondAux(('_/\_[TL], TL')) = makeCondAux((TL, TL')) .
+  eq makeCondAux(('_=>_[T, T'], TL)) = T => T' /\ makeCondAux(TL) .
+  eq makeCondAux(('_:_[T, T'], TL)) = T : T' /\ makeCondAux(TL) .
+  eq makeCondAux(('_=_[T, T'], TL)) = T = T' /\ makeCondAux(TL) .
+  eq makeCondAux(('_:=_[T, T'], TL)) = T := T' /\ makeCondAux(TL) .
+  eq makeCondAux(('nil.#ConditionList, TL)) = makeCondAux(TL) .
+  eq makeCondAux(empty) = nil .
+  
+  op getLabel : Equation -> Qid .
+  op getLabel : Rule -> Qid .
+  eq getLabel(eq LHS = RHS [AtS] .) = getLabel(AtS) .
+  eq getLabel(ceq LHS = RHS if Cond [AtS] .) = getLabel(AtS) .
+  eq getLabel(rl LHS => RHS [AtS] .) = getLabel(AtS) .
+  eq getLabel(crl LHS => RHS if Cond [AtS] .) = getLabel(AtS) .
+  
+  ---- removes frozen attributes
+  op removeFrozen : Module -> Module .
+  op removeFrozen : OpDeclSet -> OpDeclSet .
+  eq removeFrozen(M) = setOps(M, removeFrozen(getOps(M))) .
+  eq removeFrozen(op F : TpL -> Tp [frozen(NeNL) AtS] . ODS) 
+    = op F : TpL -> Tp [AtS] . removeFrozen(ODS) .
+  eq removeFrozen(ODS) = ODS .
+  
+  op confluenceCheck : Module -> CritPairSet .
+
+  eq confluenceCheck(M)
+    = crcContextJoinableAndUnfeasibleCPs(M, 
+        maximalCPSet(
+          delete(
+            simplify(
+              delete(
+                crcCritPairs(M)), 
+              M)), 
+          M)) .
+endfm
+
+-------------------------------------------------------------------------------
+---- descent-check.maude
+-------------------------------------------------------------------------------
+
+fmod DESCENT-CHECK is
+  pr MATCHING .
+  pr SUBSTITUTIONSET . 
+  pr EXT-BOOL .
+  pr EXT-TERM .
+  inc META-LEVEL .
+  inc MEMBERSHIP-ASSERTION-SET .
+  inc AUXILIARY-FUNCTIONS .
+
+  var  M : Module .
+  vars T T' T'' T1 T2 T1' T1'' T2' T2'' : Term .
+  var  EqS : EquationSet .
+  vars MA MA' : MembAssert .
+  vars MAS MAS' : MembAssertSet .
+  vars S S1 S2 : Sort .
+  var  Eq : Equation .
+  var  X L1 L2 : Qid .
+  var  Tp : Type .
+  var  TpS : TypeSet .
+  var  V : Variable .
+  var  VS : QidSet .
+  var  Subst : Substitution .
+  var  SubstS : SubstitutionSet .
+  vars AtS AtS' : AttrSet .
+  var  Cd : Condition .
+  var  N : Nat .
+  vars Id1 Id2 : String .
+  vars Status1 Status2 : MAStatus .
+
+  op eqInstanceSet : Module EquationSet -> EquationSet .
+
+  op instanceSet : Module Equation SubstitutionSet -> EquationSet .
+  op genSubstSet : Module QidSet Substitution -> SubstitutionSet .
+  op genSubstSetAux : Module Qid TypeSet QidSet Substitution -> SubstitutionSet .
+
+  eq eqInstanceSet(M, ((eq T = T' [AtS].) EqS))
+    = (instanceSet(M, (eq T = T' [AtS].), genSubstSet(M, vars(T), none))
+       eqInstanceSet(M, EqS)) .
+  eq eqInstanceSet(M, ((ceq T = T' if Cd [AtS].) EqS))
+    = (instanceSet(M, (ceq T = T' if Cd [AtS].), genSubstSet(M, vars(T), none))
+       eqInstanceSet(M, EqS)) .
+  eq eqInstanceSet(M, none) = none .
+
+  eq instanceSet(M, (eq T = T' [AtS].), (Subst | SubstS))
+    = ((eq substitute(M, T, Subst) = substitute(M, T', Subst) [AtS].)
+       instanceSet(M, (eq T = T' [AtS].), SubstS)) .
+  eq instanceSet(M, (ceq T = T' if Cd [AtS].), 
+       (Subst | SubstS))
+    = ((ceq substitute(M, T, Subst) = substitute(M, T', Subst)
+          if substitute(M, Cd, Subst) [AtS].)
+       instanceSet(M, (ceq T = T' if Cd [AtS].), SubstS)) .
+  eq instanceSet(M, Eq, empty) = none .
+
+  eq genSubstSet(M, V ; VS, Subst)
+    = genSubstSetAux(M, V, getType(V) ; lesserSorts(M, getType(V)), VS, Subst) .
+  eq genSubstSet(M, none, Subst) = Subst .
+
+  eq genSubstSetAux(M, V, (Tp ; TpS), VS, Subst)
+   = if getType(V) == Tp
+     then (genSubstSet(M, VS, Subst) |
+           genSubstSetAux(M, V, TpS, VS, Subst))
+     else (genSubstSet(M, VS, 
+             ((V <- qid(string(getName(V)) + "@" + string(Tp) + ":" + string(Tp))) ; Subst)) |
+           genSubstSetAux(M, V, TpS, VS, Subst)) 
+     fi .     
+  eq genSubstSetAux(M, V, none, VS, Subst) = empty .
+
+  op maximalMASet : MembAssertSet Module -> MembAssertSet .
+  op maximalMASetAux : MembAssert MembAssertSet MembAssertSet Module -> MembAssertSet .
+  op moreGeneralMA? : MembAssert MembAssert Module -> Bool .
+
+  eq maximalMASet((MA MAS), M) = maximalMASetAux(MA, MAS, none, M) .
+  eq maximalMASet(none, M) = none .
+  
+  eq maximalMASetAux(MA, (MA' MAS), MAS', M)
+    = if moreGeneralMA?(MA, MA', M)
+      then maximalMASetAux(MA, MAS, MAS', M)
+      else if moreGeneralMA?(MA', MA, M)
+           then maximalMASetAux(MA', (MAS MAS'), none, M)
+           else maximalMASetAux(MA, MAS, (MA' MAS'), M)
+           fi
+      fi .
+  eq maximalMASetAux(MA, none, (MA' MAS), M)
+    = (MA maximalMASetAux(MA', MAS, none, M)) .
+  eq maximalMASetAux(MA, none, none, M) = MA .
+
+  eq moreGeneralMA?(ma(Id1, L1, T1, S1, Status1), ma(Id2, L2, T2, S2, Status2), M)
+    = metaMatch(M, (eq T1 = T2 [none].)) and-then sortLeq(M, S1, S2) .
+
+  eq moreGeneralMA?(ma(Id1, L1, T1, S1, Status1),  
+                    cma(Id2, L2, T2, S2, T2' = T2'', Status2), M)
+    = sortLeq(M, S1, S2) and-then metaMatch(M, (eq T1 = T2 [none].)) .
+  eq moreGeneralMA?(cma(Id1, L1, T1, S1, T1' = T1'', Status1), 
+                    ma(Id2, L2, T2, S2, Status2), M)
+    = (T1' == T1'')
+      and-then
+      (sortLeq(M, S1, S2) and-then metaMatch(M, (eq T1 = T2 [none].))) .
+
+  eq moreGeneralMA?(cma(Id1, L1, T1, S1, T1' = T1'', Status1),
+                    cma(Id2, L2, T2, S2, T2' = T2'', Status2), M)
+    = (T1' == T1'')
+      and-then
+      (sortLeq(M, S1, S2)
+       and-then
+       metaMatch(M, ((eq T1 = T2 [none].) (eq T1' = T2 [none].)))) .
+
+  op descentCheck : Module -> MembAssertSet .
+  op descentCheck1 : Module EquationSet Nat -> MembAssertSet .
+
+  eq descentCheck(M)
+    = maximalMASet(descentCheck1(M, eqInstanceSet(M, getEqs(M)), 0), M) .
+
+  eq descentCheck1(M, (eq T = T' [AtS] . EqS), N)
+    = if sortLeq(M, leastSort(M, getTerm(metaReduce(M, T'))), leastSort(M, getTerm(metaNormalize(M, T))))
+      then descentCheck1(M, EqS, N)
+      else ma(name(getName(M), N), getLabel(AtS), T', leastSort(M, getTerm(metaNormalize(M, T))), pending) 
+           descentCheck1(M, EqS, s N)
+      fi .
+  eq descentCheck1(M, (ceq T = T' if Cd [AtS] . EqS), N)
+    = if sortLeq(M, leastSort(M, getTerm(metaReduce(M, T'))), leastSort(M, getTerm(metaNormalize(M, T))))
+      then descentCheck1(M, EqS, N)
+      else cma(name(getName(M), N), getLabel(AtS), T', leastSort(M, getTerm(metaNormalize(M, T))), Cd, pending)
+           descentCheck1(M, EqS, s N)
+      fi .
+  eq descentCheck1(M, none, N) = none .
+endfm
+
+-------------------------------------------------------------------------------
+---- crc.maude
+-------------------------------------------------------------------------------
+
+view Tuple`{CritPairSet`,CritPairSet`} 
+    from TRIV to 2TUPLE{CritPairSet, CritPairSet} is
+  sort Elt to Tuple{CritPairSet, CritPairSet} .
+endv
+
+view MembAssertSet from TRIV to MEMBERSHIP-ASSERTION-SET is 
+  sort Elt to MembAssertSet .
+endv
+
+fmod CHURCH-ROSSER-CHECK is
+  pr CONFLUENCE-CHECK .
+  pr DESCENT-CHECK .
+  pr 3TUPLE{Module, CritPairSet, MembAssertSet} .
+        
+  var  M : Module . 
+
+  ---- op CRCcheck : Module -> Tuple{Module, CritPairSet, MembAssertSet} .
+  ---- directly in $processCRCcheck
+  ---- eq CRCcheck(M) = (M, confluenceCheck($prepareModule(M, false)), descentCheck($prepareModuleNoIds(M, false))) .
+endfm
+
+-------------------------------------------------------------------------------
+---- coherence check
+-------------------------------------------------------------------------------
+
+**** CoherenceCheck 
+**** local coherence properties reduces to ensuring that the
+**** property is verified for all critical pairs\footnote{Note that we only
+**** check equational coherence, and thus the non-superposition case is
+**** verified.}. 
+
+fmod ChC-CONTEXT-JOINABILITY-UNFEASIBILITY is
+  pr CRC-CONTEXT-JOINABILITY-UNFEASIBILITY .
+  
+  vars QI QI' F : Qid .
+  var  VS : QidSet .
+  var  V : Variable .
+  var  Ct : Constant .
+  vars T T' T'' T''' : Term .
+  vars TL TL' : TermList .
+  var  TS : TermSet .
+  vars Cd Cd' : Condition .
+  var  N : Nat .
+  vars M M' M'' : Module .
+  var  Tp : Type .
+  var  EqS : EquationSet .
+  var  ODS : OpDeclSet .
+  var  CP : CritPair .
+  var  CPS : CritPairSet .
+  var  AtS : AttrSet .
+  var  MAS : MembAxSet .
+  var  RlS : RuleSet .
+  var  S : Sort .
+  var  K : Kind .
+  var  KS : KindSet .
+  var  Status : CPStatus .
+  vars Id Id' : String .
+    
+  op chcContextJoinable : Module Term Term -> Bool .
+  eq chcContextJoinable(M, T, T') 
+    = metaSearch(M, T, T', nil, '+, 1, 0) =/= (failure).ResultTriple? .
+    
+  op chcRemoveContextJoinableAndUnfeasibleCPs : Module CritPairSet -> CritPairSet . 
+  eq chcRemoveContextJoinableAndUnfeasibleCPs(M, CP CPS) 
+    = if chcRemovable(M, CP)
+      then chcRemoveContextJoinableAndUnfeasibleCPs(M, CPS)
+      else CP chcRemoveContextJoinableAndUnfeasibleCPs(M, CPS)
+      fi .
+  eq chcRemoveContextJoinableAndUnfeasibleCPs(M, none) = none .
+  
+  op chcRemovable : Module CritPair -> Bool .
+  op $chcRemovable : Module CritPair -> Bool .
+  
+  eq chcRemovable(M, cp(Id, QI, QI', T, T', Status)) = false .
+  eq chcRemovable(M, ccp(Id, QI, QI', T, T', Cd, Status))
+    = preunfeasible(M, Cd) 
+      or-else 
+      $chcRemovable(M, ccp(Id, QI, QI', T, T', Cd, Status)) .
+
+ ceq $chcRemovable(M, ccp(Id, QI, QI', T, T', Cd, Status))
+    = chcContextJoinable(M'', getTerms(vars2cts(T)), getTerms(vars2cts(T')))
+      or-else
+      unfeasible(M, M', M'', Cd')
+    if Cd' := transform(M, Cd)            ---- new CCP
+    /\ M' := rulify(M)                    ---- turns equations into rules, and equational conditions into rewrites              
+    /\ M'' := addRls(                     ---- $\hat{\cR}_{\overline{C}}$
+               (getRls(groundRls(Cd'))
+                equalRls(getKinds(M))),
+               addOps(
+                 (op 'tt : nil -> '`[Thruth`] [none] .
+                  equalOps(getKinds(M))
+                  getOps(groundRls(Cd'))
+                  getOps(vars2cts(T))
+                  getOps(vars2cts(T'))), 
+                 addSorts('Thruth, M'))) .                  
+endfm
+
+mod COHERENCE-CHECK is
+  pr SUBSTITUTIONSET .
+  pr EXT-TERM .
+  pr AUXILIARY-FUNCTIONS .
+  pr CRITICAL-PAIR-SET .
+  pr 2TUPLE{EquationSet, OpDeclSet} .
+  pr 2TUPLE{Module, CritPairSet} * (op p1_ to getModule, op p2_ to getCPs) .
+----  pr 2TUPLE{CritPairSet, Nat} * (op p1_ to getCPs, op p2_ to getIndex) .
+  pr UNIT-PROCESSING . 
+  pr CONFLUENCE-CHECK .
+  pr ChC-CONTEXT-JOINABILITY-UNFEASIBILITY .
+
+  vars M M' : Module .
+  vars T T' T'' T''' T'''' T1 T1' T2 T2' T1'' T2'' LHS RHS : Term .
+  vars CP CP' : CritPair .
+  vars CPS CPS' CPS'' : CritPairSet .
+  vars Eq Eq' : Equation .
+  vars EqS EqS' EqS'' : EquationSet .
+  vars Rl : Rule .
+  var  RlS : RuleSet .
+  var  Subst Sb Sb' : Substitution .
+  var  SubstS : SubstitutionSet .
+  vars AtS AtS' AtS1 AtS2 : AttrSet .
+  vars X F S L L' L1 L1' L2 L2' QI QI' : Qid .
+  var  TL : TermList .
+  vars Cd Cd1 Cd2 Cond : Condition .
+  var  TS : TermSet .
+  vars N N' N'' N''' : Nat .
+  var  RST? : [ResultTriple] .
+  var  VS : QidSet .
+  var  Tp : Type .
+  vars Cx Cx' : Context .
+  var  Fgs : Flags .
+  var  RCS : ResultContextSet .
+  var  Status CPSt : CPStatus .
+  vars Id Id' : String .
+  var  ODS : OpDeclSet .
+
+---- nov 7th, 2008
+---- The computation of conditional critical pairs is accomplished using Santiago  
+---- Escobar's narrowing functionality.
+---- Given an equation 
+----   l(X) = r(X, Y) if C(X, Y)
+---- and a rule 
+----   l'(X') => r'(X', Y') if C'(X', Y')
+---- we narrow the term 
+----   # l(X) # r(X, Y) # C(X, Y) #    (with 2nd and 3rd args. frozen)
+---- using the rule
+----   l'(X') -> # r'(X', Y') # C'(X', Y') #
+---- and then the term 
+----   # l'(X') # r'(X', Y') # C'(X', Y') #    (with 2nd and 3rd args. frozen)
+---- using the rule
+----   l(X) -> # r(X, Y) # C(X, Y) #
+---- (with all other frozen attributes removed).
+---- critPairs(M, Eq, Eq) prepares a module with the rule Eq modified as above
+---- and uses metaNarrowSearchGenAll to take a narrowing step on a term as the
+---- one above obtained from Eq'. 
+---- metaNarrowSearchGenAll returns a set of solutions of sort ResultContextSet.
+---- A result context is a 10-tuple with information on the narrowing; from 
+---- these results we take the resulting term with the substitution applied, 
+---- from which we build the critical pair.
+
+  op chcCritPairs : Module -> CritPairSet .
+  op chcCritPairs : Module EquationSet RuleSet Nat -> Tuple{CritPairSet, Nat} .
+
+  eq chcCritPairs(M) = getCPs(chcCritPairs(M, getEqs(M), getRls(M), 0)) .
+  
+  ceq chcCritPairs(M, Eq EqS, Rl RlS, N)
+    = (CPS CPS' CPS'', N) 
+    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Rl), getCts(makeNarrowingModule(M, Eq, Rl)), 
+                      metaNarrowSearch( ---- no ids and no lonely assocs 
+                        getModule(makeNarrowingModule(M, Eq, Rl)), 
+                        '#_#_#_#[lhs(Rl), rhs(Rl), makeNarrowingCond(cond(Rl))],
+                        qid("#V:" + string(getKind(M, leastSort(M, lhs(Rl))))), 
+                        none, '+, 1, unbounded), N) 
+    /\ (CPS', N'') := chcCritPairs(M, Eq, RlS, N') 
+    /\ (CPS'', N''') := chcCritPairs(M, EqS, Rl RlS, N'') .
+  eq chcCritPairs(M, none, RlS, N) = (none, N) .
+  eq chcCritPairs(M, EqS, none, N) = (none, N) .
+  
+  op makeNarrowingModule : Module Equation Rule -> Tuple{Module, QidSet} . 
+  op makeNarrowingModule : Module Rule Equation -> Tuple{Module, QidSet} . 
+ ceq makeNarrowingModule(M, Eq, Rl)
+    = (setRls(
+         setEqs(
+           addOps(
+             (op '#_#_# : leastSort(M, lhs(Eq)) '#ConditionList -> leastSort(M, lhs(Eq)) [none] .
+              op '#_#_#_# : leastSort(M, lhs(Rl)) leastSort(M, rhs(Rl)) '#ConditionList -> leastSort(M, lhs(Rl)) [frozen(2 3)] .
+              op 'nil : nil -> '#ConditionList [none] .
+              op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+              opCondition(M, cond(Eq) /\ cond(Rl))
+              opNewCts(VS)),
+             addSorts('#Condition ; '#ConditionList, removeFrozen(M))),
+           none),
+         rl T => '#_#_#[vars2narrowCts(T', VS), vars2narrowCts(makeNarrowingCond(cond(Eq)), VS)] [none] .),
+       vars2narrowCts(VS)) 
+     if T := getTerm(metaNormalize(M, lhs(Eq)))
+     /\ T' := getTerm(metaNormalize(M, rhs(Eq)))
+     /\ VS := (vars(T') ; vars(makeNarrowingCond(cond(Eq)))) \ vars(T) . ---- vars to be made constants
+ ceq makeNarrowingModule(M, Rl, Eq)
+    = (setRls(
+         setEqs(
+           addOps(
+             (op '#_#_# : leastSort(M, lhs(Rl)) '#ConditionList -> leastSort(M, lhs(Rl)) [none] .
+              op '#_#_#_# : leastSort(M, lhs(Eq)) leastSort(M, rhs(Eq)) '#ConditionList -> leastSort(M, lhs(Eq)) [frozen(2 3)] .
+              op 'nil : nil -> '#ConditionList [none] .
+              op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+              opCondition(M, cond(Rl) /\ cond(Eq))
+              opNewCts(VS)),
+             addSorts('#Condition ; '#ConditionList, M)), -------- we do not remove the frozenness information in this case
+           none),
+         rl T => '#_#_#[vars2narrowCts(T', VS), vars2narrowCts(makeNarrowingCond(cond(Rl)), VS)] [none] .),
+       vars2narrowCts(VS)) 
+     if T := getTerm(metaNormalize(M, lhs(Rl)))
+     /\ T' := getTerm(metaNormalize(M, rhs(Rl)))
+     /\ VS := (vars(T') ; vars(makeNarrowingCond(cond(Rl)))) \ vars(T) . ---- vars to be made constants
+
+  op prepNarrowingSols : Module Equation Rule QidSet ResultContextSet Nat -> Tuple{CritPairSet, Nat} .
+  op prepNarrowingSols : Module Rule Equation QidSet ResultContextSet Nat -> Tuple{CritPairSet, Nat} .
+  eq prepNarrowingSols(M, Eq, Rl, VS,
+       {
+        T, Tp, 
+        Sb, Sb', --- computed subs and applied subst
+        Cx, Cx', --- Original and WithSubst
+        '#_#_#_#[T', T'', T'''], T'''', --- TermWithSubst and ContextWithTermAndSubt
+        N, --- highest index of variable
+        Fgs
+       } | RCS, N')
+    = (ccp(name(getName(M), N'), getLabel(Eq), getLabel(Rl), getCPTerm(T', VS), T'', makeCond(T''') /\ makeCond(getCPCond(T', VS)), pending)
+       getCPs(prepNarrowingSols(M, Eq, Rl, VS, RCS, s N')),
+       getIndex(prepNarrowingSols(M, Eq, Rl, VS, RCS, s N'))) .
+  eq prepNarrowingSols(M, Rl, Eq, VS,
+       {
+        T, Tp, 
+        Sb, Sb', --- computed subs and applied subst
+        Cx, Cx', --- Original and WithSubst
+        '#_#_#_#[T', T'', T'''], T'''', --- TermWithSubst and ContextWithTermAndSubt
+        N, --- highest index of variable
+        Fgs
+       } | RCS, N')
+    = (ccp(name(getName(M), N'), getLabel(Eq), getLabel(Rl), T'', getCPTerm(T', VS), makeCond(T''') /\ makeCond(getCPCond(T', VS)), pending)
+       getCPs(prepNarrowingSols(M, Rl, Eq, VS, RCS, s N')),
+       getIndex(prepNarrowingSols(M, Rl, Eq, VS, RCS, s N'))) .
+  eq prepNarrowingSols(M, Rl, Eq, VS, empty, N) = (none, N) .
+  
+  op rewriteCPs : Module CritPairSet -> CritPairSet .
+  eq rewriteCPs(M, ccp(Id, L, L', T, T', Cd, pending) CPS)
+----    = if metaSearch(M, lhs(CP), getTerm(metaReduce(M, rhs(CP))), nil, '+, 1, 0) == (failure).ResultTriple?
+    = if metaSearch(addOps(getOps(vars2cts((T, T'))), M), getTerms(vars2cts(T)), getTerms(vars2cts(T')), nil, '+, 1, 0) == (failure).ResultTriple?
+      then ccp(Id, L, L', T, T', Cd, pending) rewriteCPs(M, CPS)
+      else ccp(Id, L, L', T, T', Cd, joined) rewriteCPs(M, CPS)
+      fi .
+  eq rewriteCPs(M, cp(Id, L, L', T, T', pending) CPS)
+----    = if metaSearch(M, lhs(CP), getTerm(metaReduce(M, rhs(CP))), nil, '+, 1, 0) == (failure).ResultTriple?
+    = if metaSearch(addOps(getOps(vars2cts((T, T'))), M), getTerms(vars2cts(T)), getTerms(vars2cts(T')), nil, '+, 1, 0) == (failure).ResultTriple?
+      then cp(Id, L, L', T, T', pending) rewriteCPs(M, CPS)
+      else cp(Id, L, L', T, T', joined) rewriteCPs(M, CPS)
+      fi .
+  eq rewriteCPs(M, CPS) = CPS [owise] .
+
+  op chcSimplify : CritPairSet Module -> CritPairSet .
+  eq chcSimplify(cp(Id, L, L', T, T', CPSt) CPS, M)
+    = cp(Id, L, L', getTerm(metaReduce(M, T)), getTerm(metaReduce(M, T')), CPSt)
+      chcSimplify(CPS, M) .
+  eq chcSimplify(ccp(Id, L, L', T, T', Cd, CPSt) CPS, M)
+    = ccp(Id, L, L', getTerm(metaReduce(M, T)), getTerm(metaReduce(M, T')), simplifyCond(M, Cd), CPSt)
+      chcSimplify(CPS, M) .
+  eq chcSimplify(none, M) = none .
+
+  op simplifyCond : Module Condition -> Condition .
+  eq simplifyCond(M, T = T' /\ Cd) 
+    = if getTerm(metaReduce(M, T)) == getTerm(metaReduce(M, T'))
+      then simplifyCond(M, Cd)
+      else if getTerm(metaReduce(M, T)) == 'true.Bool
+           then getTerm(metaReduce(M, T')) = getTerm(metaReduce(M, T)) /\ simplifyCond(M, Cd)
+           else getTerm(metaReduce(M, T)) = getTerm(metaReduce(M, T')) /\ simplifyCond(M, Cd)
+           fi 
+      fi . 
+  eq simplifyCond(M, T := T' /\ Cd) 
+    = getTerm(metaReduce(M, T)) := getTerm(metaReduce(M, T')) /\ simplifyCond(M, Cd) . 
+  eq simplifyCond(M, Cd) = Cd [owise] . 
+
+  op groundEqs : Module Condition -> Tuple{EquationSet, OpDeclSet} .
+  op groundEqs : Module Condition EquationSet OpDeclSet -> Tuple{EquationSet, OpDeclSet} .
+  eq groundEqs(M, Cd) = groundEqs(M, Cd, none, none) .
+  eq groundEqs(M, T => T' /\ Cd, EqS, ODS) 
+    = groundEqs(M, Cd, eq getTerms(vars2cts(getTerm(metaReduce(M, T)))) 
+                         = getTerms(vars2cts(getTerm(metaReduce(M, T')))) [none] . EqS, 
+        getOps(vars2cts(getTerm(metaReduce(M, T)))) 
+        getOps(vars2cts(getTerm(metaReduce(M, T')))) ODS) .
+  ---- I'm assuming the = and := conditions have been converted into =>
+  eq groundEqs(M, Cd, EqS, ODS) = (EqS, ODS) [owise] .
+  
+  op ChCcheck : Module -> Tuple{Module, CritPairSet} .
+
+  eq ChCcheck(M) 
+    = (M, 
+       chcRemoveContextJoinableAndUnfeasibleCPs(M, 
+         maximalCPSet(
+           rewriteCPs(M, 
+             delete(
+               chcSimplify(
+                 chcCritPairs(M), 
+                 M))), 
+           M))) .
+endm
+
+-------------------
+------SIGN
+-------------------
+
+fmod CRC-SIGN is
+  including FULL-MAUDE-SIGN .
+
+  op CRC help . : -> @Command@ .
+  op trust . : -> @Command@ .
+  
+  op show state . : -> @Command@ .
+  op check Church-Rosser . : -> @Command@ .
+  op ccr . : -> @Command@ .                                     ---- alias 
+  op check Church-Rosser_. : @ModExp@ -> @Command@ .
+  op ccr_. : @ModExp@ -> @Command@ .                            ---- alias
+  op show critical pairs . : -> @Command@ .
+  op show cps . : -> @Command@ .                            ---- alias
+  op show all critical pairs . : -> @Command@ .
+  op show all cps . : -> @Command@ .                        ---- alias
+  op show membership assertions . : -> @Command@ .
+  op show mas . : -> @Command@ .                            ---- alias
+  op show all membership assertions . : -> @Command@ .
+  op show all mas . : -> @Command@ .                        ---- alias
+  op submit . : -> @Command@ .
+----  op submit critical pair_. : @Token@ -> @Command@ .
+----  op submit cp_. : @Token@ -> @Command@ .                   ---- alias
+----  op submit membership assertion_. : @Token@ -> @Command@ .
+----  op submit ma_. : @Token@ -> @Command@ .                   ---- alias
+  op select proof_. : @ModExp@ -> @Command@ .
+endfm
+
+fmod ChC-SIGN is
+  including FULL-MAUDE-SIGN .
+
+  op ChC help . : -> @Command@ .
+  op show state . : -> @Command@ .
+  op check coherence . : -> @Command@ .
+  op check coherence_. : @ModExp@ -> @Command@ .
+  op check ground coherence . : -> @Command@ .
+  op check ground coherence_. : @ModExp@ -> @Command@ .
+  op cch . : -> @Command@ .
+  op cch_. : @ModExp@ -> @Command@ .
+  op show critical pairs . : -> @Command@ .
+  op show cps . : -> @Command@ .                            ---- alias
+  op show all critical pairs . : -> @Command@ .
+  op show all cps . : -> @Command@ .                        ---- alias
+  op submit . : -> @Command@ .
+----  op submit critical pair_. : @Token@ -> @Command@ .
+----  op submit cp_. : @Token@ -> @Command@ .                   ---- alias
+----  op submit membership assertion_. : @Token@ -> @Command@ .
+----  op submit ma_. : @Token@ -> @Command@ .                   ---- alias
+  op select proof _. : @ModExp@ -> @Command@ .
+endfm
+
+
+fmod META-CRChC-SIGN is
+  inc META-LEVEL .
+  pr META-FULL-MAUDE-SIGN .
+  pr UNIT .
+
+  ops CRC-GRAMMAR ChC-GRAMMAR : -> FModule .
+  eq CRC-GRAMMAR 
+    = addImports((including 'CRC-SIGN .), GRAMMAR) .
+  eq ChC-GRAMMAR 
+    = addImports((including 'ChC-SIGN .), GRAMMAR) .
+endfm
+
+---- A rewrite theory R is coherent if:
+---- (i) all conditional critical pairs are joinable and
+---- (ii) for any equation l' -> r' if C' in E, for each x in Var(l') such that x is
+----      non-frozen in l', then either
+----      (a) x is such that x not in vars(C'), x is also non-frozen in r', and x is linear
+----          in both l' and r', or
+----      (b) the sort s of x is such that no rewriting with ->_{R,A} is possible for
+----          terms of such sort s.
+
+fmod ChC-NON-OVERLAPPING-CHECK is
+  pr EXT-SORT .
+  pr EXT-DECL .
+  pr EXT-TERM .
+  pr DESCENT-CHECK .
+  
+  var  M : Module .
+  var  F : Qid .
+  vars S S' : Sort .
+  var  SS : SortSet .
+  var  TyL : TypeList .
+  vars Tp Tp' : Type .
+  var  TyS TpS : TypeSet .
+  var  SSDS : SubsortDeclSet .
+  var  ODS : OpDeclSet .
+  var  AtS : AttrSet .
+  vars T T' : Term .
+  var  Eq : Equation .
+  var  EqS : EquationSet .
+  var  Rl : Rule .
+  var  RlS : RuleSet .
+  vars VS VS' : QidSet .
+  vars VL VL' VL'' : QidList .
+  vars V V' : Variable .
+  var  C : Constant .
+  var  Ty : Type .
+  var  TL : TermList .
+  var  Subst : Substitution .
+  var  SubstS : SubstitutionSet .   
+  var  NL : NatList .
+  var  N : Nat .
+  var  Cd : Condition .
+
+  op closure : Sort Module -> TypeSet .
+  op closureAux : TypeSet SubsortDeclSet OpDeclSet -> TypeSet .
+
+  eq closure(S, M) = closureAux(S, getSubsorts(M), getOps(M)) .
+  eq closureAux(S ; TyS, subsort S' < S . SSDS, ODS)
+    =  closureAux(S ; S' ; TyS, SSDS, ODS) .
+  eq closureAux(S ; TyS, SSDS, op F : TyL -> S [AtS] . ODS)
+    =  closureAux(S ; list2set(TyL) ; TyS, SSDS, ODS) .
+  eq closureAux(TyS, SSDS, ODS) = TyS [owise] .
+
+  op specializations : Module Term -> TermSet .
+  op specializations : Module Term SubstitutionSet -> TermSet .
+
+  eq specializations(M, T) = specializations(M, T, genSubstSet(M, vars(T), none)) .
+
+  eq specializations(M, T, (Subst | SubstS)) 
+    = substitute(M, T, Subst) | specializations(M, T, SubstS) .
+  eq specializations(M, T, empty) = emptyTermSet .
+  
+  sort NonOverlappingCheckSolution .
+  op ok : -> NonOverlappingCheckSolution [ctor] .
+  op ((_,_,_)) : Equation Variable Rule -> NonOverlappingCheckSolution [ctor] .
+  
+  op nonOverlappingCheck : Module -> NonOverlappingCheckSolution .
+  op nonOverlappingCheck : Module EquationSet RuleSet -> NonOverlappingCheckSolution .
+  op nonOverlappingCheck : Module Equation QidSet RuleSet -> NonOverlappingCheckSolution .
+  op nonOverlappingCheckAux : Module Equation Variable RuleSet -> NonOverlappingCheckSolution .
+  op nonOverlappingCheck : Module Equation Variable Rule QidSet -> NonOverlappingCheckSolution .
+   
+ ceq nonOverlappingCheck(M) 
+    = nonOverlappingCheck(M, getEqs(M), getRls(M)) 
+    if getEqs(M) =/= none /\ getRls(M) =/= none .
+  eq nonOverlappingCheck(M) = ok [owise] .
+  
+ ceq nonOverlappingCheck(M, Eq EqS, RlS) 
+    = if (intersection(VS, vars(cond(Eq))) == none
+          and-then
+          (non-frozen(M, rhs(Eq), VS)
+           and-then
+           (linear(lhs(Eq), VS)
+            and-then
+            linear(rhs(Eq), VS))))
+      then nonOverlappingCheck(M, EqS, RlS)
+      else if nonOverlappingCheck(M, Eq, VS, RlS) == ok
+           then nonOverlappingCheck(M, EqS, RlS)
+           else nonOverlappingCheck(M, Eq, VS, RlS)
+           fi
+      fi 
+    if VS := non-frozen(M, lhs(Eq)) . ---- non-frozen variables in lhs(Eq)
+  eq nonOverlappingCheck(M, none, RlS) = ok .
+  
+  eq nonOverlappingCheck(M, Eq, (V ; VS), RlS)
+    = if nonOverlappingCheckAux(M, Eq, V, RlS) == ok 
+      then nonOverlappingCheck(M, Eq, VS, RlS)
+      else nonOverlappingCheckAux(M, Eq, V, RlS)
+      fi .
+  eq nonOverlappingCheck(M, Eq, none, RlS) = ok .
+      
+  eq nonOverlappingCheckAux(M, Eq, V, Rl RlS)
+    = if nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl))))) == ok 
+      then nonOverlappingCheckAux(M, Eq, V, RlS)
+      else nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl)))))
+      fi .
+  eq nonOverlappingCheckAux(M, Eq, VS, none) = ok .
+      
+  eq nonOverlappingCheck(M, Eq, V, Rl, TpS)
+    = if sortLeqSome(M, TpS, getType(V)) 
+      then (Eq, V, Rl) ---- counterexample
+      else ok 
+      fi .
+
+  op sortLeqSome : Module TypeSet Type -> Bool .
+  eq sortLeqSome(M, Tp ; TpS, Tp') = sortLeq(M, Tp, Tp') or-else sortLeqSome(M, TpS, Tp) .
+  eq sortLeqSome(M, none, Tp) = false .
+
+  ---- linear(T, Vs) returns true if all variables in Vs are linear in T
+  op linear : Term QidSet -> Bool .
+  eq linear(T, VS) = intersection(VS, nonLinear(T)) == none .
+  
+  ---- nonLinear(T) returns the set of repeated variables in T
+  op nonLinear : Term -> QidSet .
+  op nonLinearAux : QidList -> QidSet .
+  op varList : TermList -> QidList .
+  eq nonLinear(T) = nonLinearAux(varList(T)) .
+  eq nonLinearAux(VL V VL' V VL'') = V ; nonLinearAux(VL VL' VL'') .
+  eq nonLinearAux(VL) = none [owise] . 
+  eq varList(V) = V .
+  eq varList(C) = nil .
+  eq varList(F[TL]) = varList(TL) .
+  eq varList((T, TL)) = varList(T) varList(TL) .
+  eq varList(empty) = nil .
+
+  ---- non-frozen(M, OPDS, T, Vs) true if all variables in Vs are non-frozen in T 
+  op non-frozen : Module Term QidSet -> Bool .
+  op non-frozen : Module Term -> QidSet . ---- returns all variables with non-frozen occurrences in the term
+  op non-frozen : Module OpDeclSet Term -> QidSet .
+  op non-frozen : Module NatList Nat TermList -> QidSet .
+  op get : NzNat TermList -> QidSet .
+
+  eq non-frozen(M, T, VS)
+    = intersection(VS, vars(T)) subset non-frozen(M, T) .
+    
+  eq non-frozen(M, T) = non-frozen(M, getOps(M), T) .
+
+ ceq non-frozen(M, op F : TyL -> Ty [frozen(NL) AtS] . ODS, F[TL])
+    = non-frozen(M, NL, 1, TL)
+    if sameKind(M, TyL Ty, eLeastSort(M, TL) leastSort(M, F[TL])) .
+  eq non-frozen(M, ODS, F[TL]) = non-frozen(M, ODS, TL) [owise] .
+ ceq non-frozen(M, ODS, (T, TL)) = non-frozen(M, ODS, T) ; non-frozen(M, ODS, TL) if TL =/= empty .
+  eq non-frozen(M, ODS, empty) = none .
+  eq non-frozen(M, ODS, V) = V .
+  eq non-frozen(M, ODS, C) = none .
+
+ ceq non-frozen(M, NL, N, TL)
+    = if occurs(N, NL) then none else non-frozen(M, get(N, TL)) fi ;
+      non-frozen(M, NL, s N, TL) 
+    if N < size(TL) .
+  eq non-frozen(M, NL, N, TL) = none [owise] .
+
+  eq get(s 0, (T, TL)) = T .
+  eq get(s s N, (T, TL)) = get(s N, TL) .
+  
+  op vars : Condition -> QidSet .
+  eq vars(T = T' /\ Cd) = vars(T) ; vars(T') ; vars (Cd) .
+  eq vars(T := T' /\ Cd) = vars(T) ; vars(T') ; vars (Cd) .
+  eq vars(T => T' /\ Cd) = vars(T) ; vars(T') ; vars (Cd) .
+  eq vars(T : S /\ Cd) = vars(T) ; vars (Cd) .
+  eq vars((nil).Condition) = none .
+
+---(
+  ---- nonFrozen(M, OPDS, T, Vs) returns the set of those variables in Vs that are non-frozen 
+  op nonFrozen : Module OpDeclSet Term QidSet -> QidSet .
+  op frozen : Module OpDeclSet Term -> QidSet .
+  op vars : NatList TermList -> QidSet .
+  eq nonFrozen(M, ODS, T, VS)
+    = VS \ frozen(M, ODS, T) .
+  ceq frozen(M, op F : TyL -> Ty [frozen(NL) AtS] . ODS, F[TL])
+    = vars(NL, TL)
+    if sameKind(M, TyL Ty, eLeastSort(M, TL) leastSort(M, F[TL])) .
+  eq frozen(M, ODS, F[TL]) = frozen(M, ODS, TL) [owise] .
+  ceq frozen(M, ODS, (T, TL)) = frozen(M, ODS, T) ; frozen(M, ODS, TL) if TL =/= empty .
+  eq frozen(M, ODS, empty) = none .
+  eq frozen(M, ODS, V) = none .
+  eq frozen(M, ODS, C) = none .
+  eq vars(N NL, TL) = vars(get(N, TL)) ; vars(NL, TL) .
+  eq vars(nil, TL) = none . 
+---)
+  
+  op lhs : RuleSet -> TermSet .
+  ceq lhs(Rl RlS) = lhs(Rl) | lhs(RlS) if RlS =/= none .
+  eq lhs((none).RuleSet) = emptyTermSet .
+endfm
+
+---(
+fmod EXT-MAP{X :: TRIV, Y :: TRIV} is
+  protecting MAP{X, Y} .
+  pr SET{X} .
+  
+  var  D : X$Elt .
+  var  R : Y$Elt .
+  var  M : Map{X,Y} .
+
+  op domain : Map{X,Y} -> Set{X} .
+  eq domain(((D |-> R), M)) = (D, domain(M)) . 
+  eq domain(empty) = empty .
+endfm 
+
+view Oid from TRIV to CONFIGURATION is
+  sort Elt to Oid .
+endv
+---)
+
+mod CRChC-TOOLS is
+  pr DATABASE-HANDLING .
+  pr CHURCH-ROSSER-CHECK .
+  pr COHERENCE-CHECK .
+  pr ChC-NON-OVERLAPPING-CHECK .
+  pr (LIST-AND-SET{Qid}) 
+       * (sort NeList{Qid} to NeQidList, sort List{Qid} to QidList,
+          sort NeSet{Qid} to NeQidSet, sort Set{Qid} to QidSet)
+       * (op empty to none, 
+          op _,_ to _;_ [prec 43]) .
+  pr 2TUPLE{Nat, TermSet} .
+  pr (2TUPLE * (op `(_`,_`) to `[_`,_`])){Nat, TermList} .
+  pr CRC-HELP .
+  pr ChC-HELP .
+  pr MAP{String, String} .
+  
+  var  VS : QidSet .
+  var  S : Sort .
+  vars ME ME' : ModuleExpression .
+  vars MN MN' MN'' MN''' : ModuleName .
+  vars DB DB' : Database .
+  vars M M' M'' : Module .
+  var  CP : CritPair .
+  vars CPS CPS' CPS'' CPS''' : CritPairSet .
+  var  MA : MembAssert .
+  var  MAS : MembAssertSet .
+  vars QIL QIL' : QidList .
+  vars Atts Atts' Atts'' : AttributeSet .
+  var  X@FM : DatabaseClass .
+----  var  X@CRC : CRC .
+----  var  X@ChC : ChC .
+  vars O O' O'' O''' O3 O4 O5 : Oid .
+  vars T T' T'' T''' : Term .  
+  var  V : Variable .
+  var  TS : TermSet .
+  var  TL : TermList .
+  var  ODS : OpDeclSet .
+  var  Eq : Equation .
+  var  EqS : EquationSet .
+  var  Rl : Rule .
+  var  RlS : RuleSet .
+  var  MbS : MembAxSet .
+  var  Ct : Constant .
+  vars QI QI' F L L' : Qid .
+  var  Vb : Variable .
+  vars Tp Tp' : Type .
+  var  TpL : TypeList .
+  var  AtS : AttrSet .
+  var  N : Nat .
+  var  Cd : Condition .
+  var  VT : [Tuple{Module, CritPairSet, MembAssertSet}] .
+  var  NL : NatList .
+  vars B B' B'' : Bool .
+  var  Status : CPStatus .
+  var  MAStat : MAStatus .
+  vars Id Id' : String .
+  var  Reg CPReg MAReg : Map{String, String} .
+ 
+**** The processing of the checking commands is handled by the following function
+**** \texttt{processChCcheck}. Given a module
+**** expression and a database, it just calls the \texttt{checking} function
+**** presented in Section~\ref{CohCh-specification} with the flat form of the
+**** specified module in the database, and then gives the output as a list of
+**** quoted identifiers ready to be passed to the read-eval-print loop.
+ 
+  sort Error .
+  op errorMsg : QidList -> Error [ctor] .
+  op noncoherent : Module QidList -> Error [ctor] .
+  op unsupported : String -> Error [ctor] .
+  
+  sorts CRCProcessResult ChCProcessResult .
+  subsorts Error Tuple{Module, CritPairSet, MembAssertSet} < CRCProcessResult .
+  subsorts Error Tuple{Module, CritPairSet} < ChCProcessResult .
+  
+  ---- TODO: What happen with only commutative or commutative and identity atributes ?
+  op $prepareModule : Module Bool -> Module .
+  ---- The 2nd arg. indicates whether we are in the ground case or not
+  eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
+  eq $prepareModule(M, false) = removeLonelyAssocs(removeIdsUnif(acuCohComplete(removeNonExecs(M)))) .
+  
+  op $prepareModuleNoIds : Module Bool -> Module .
+  ---- The 2nd arg. indicates whether we are in the ground case or not
+  eq $prepareModuleNoIds(M, true) = $prepareModuleNoIds(freezeNonCtors(M), false) .
+  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)))) .
+  
+  op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
+  op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .
+  op $processCRCcheck : [Module] -> CRCProcessResult .
+
+  eq processCRCcheck(ME, DB) = $processCRCcheck(evalModExp(ME, DB)) .
+
+  eq $processCRCcheck(< DB ; ME >) = $processCRCcheck(getFlatModule(ME, DB)) .
+
+  eq $processCRCcheck(M)   
+    = if coveredCase(M) == ok
+      then ---- CRCcheck(M)
+           (M, confluenceCheck($prepareModule(M, false)), descentCheck($prepareModuleNoIds(M, false))) 
+      else coveredCase(M)
+      fi .
+  eq $processCRCcheck(unitError(QIL)) = errorMsg(QIL) .
+    
+  op processChCcheck : ModuleExpression Database Bool -> ChCProcessResult .
+  op $processChCcheck : Tuple{Database, ModuleExpression} Bool -> ChCProcessResult .
+  op $processChCcheck : [Module] Bool -> ChCProcessResult .
+  op $processChCcheck : Module NonOverlappingCheckSolution -> ChCProcessResult .
+
+  eq processChCcheck(ME, DB, B) = $processChCcheck(evalModExp(ME, DB), B) .
+
+  eq $processChCcheck(< DB ; ME >, B) = $processChCcheck(getFlatModule(ME, DB), B) .
+
+  eq $processChCcheck(M, B)   
+    = if coveredCase(M) == ok
+      then if nonOverlappingCheck($prepareModule(M, B)) == ok
+           then ChCcheck($prepareModule(M, B))
+           else $processChCcheck(M, nonOverlappingCheck($prepareModule(M, B)))
+           fi  
+      else coveredCase(M)
+      fi .
+  eq $processChCcheck(unitError(QIL), B) = errorMsg(QIL) .
+
+  eq $processChCcheck(M, (Eq, V, Rl))
+    = noncoherent(M, 
+        'Rule 
+        if label(Rl) :: Qid then label(Rl) else eMetaPrettyPrint(M, Rl) '\n fi  
+        'can 'be 'applied 'under 'the 'non-frozen 'and 'non-linear 'variable 
+        V 
+        'of 'equation 
+        if label(Eq) :: Qid then label(Eq) else eMetaPrettyPrint(M, Eq) '\n fi) .
+
+  op freezeNonCtors : Module -> Module .
+  op $freezeNonCtors : OpDeclSet -> OpDeclSet .
+  op $frozenPositions : NeTypeList -> NeNatList .
+  op $frozenPositions : TypeList Nat -> NatList .
+  
+  eq freezeNonCtors(M) = setOps(M, $freezeNonCtors(getOps(M))) .
+  eq $freezeNonCtors(op F : TpL -> Tp [ctor AtS] . ODS)
+    = op F : TpL -> Tp [ctor AtS] . $freezeNonCtors(ODS) .
+  eq $freezeNonCtors(op F : TpL -> Tp [frozen(NL) AtS] . ODS)
+    = op F : TpL -> Tp [frozen(NL) AtS] . $freezeNonCtors(ODS) .
+  eq $freezeNonCtors(op F : TpL -> Tp [AtS] . ODS)
+    = op F : TpL -> Tp [if $frozenPositions(TpL) =/= nil then frozen($frozenPositions(TpL)) else none fi AtS] . $freezeNonCtors(ODS) [owise] .
+  eq $freezeNonCtors(none) = none .
+
+  eq $frozenPositions(TpL) = $frozenPositions(TpL, 1) . 
+  eq $frozenPositions(Tp TpL, N) = N $frozenPositions(TpL, s N) .
+  eq $frozenPositions(nil, N) = nil .
+
+  sort CoveredCaseResult .
+  subsort Error < CoveredCaseResult .
+  op ok : -> CoveredCaseResult [ctor] .
+  
+  op coveredCase : Module -> CoveredCaseResult . 
+  ---- it returns either ok or a message with a text describing the problem
+  ---- OLD: nil if applicable; an error message otherwise
+  eq coveredCase(M)
+    = if specialAttr(getOps(M))
+      then unsupported("The use of built-ins is not supported by the checker.")  
+      else if attr(getOps(M), owise)
+           then unsupported("The use of the owise attribute is not supported by the checker.")  
+           else if attr(getOps(M), idem)
+                then unsupported("The use of the idem attribute is not supported by the checker.")  
+                else if attr(getOps(M), iter)
+                     then unsupported("The use of the iter attribute is not supported by the checker.")
+                     else if singleVbleInLHSs(getRls(M))
+                          then unsupported("The module has rules with single variables in their left-hand sides.")
+                          else if singleVbleInLHSs(getEqs(M))
+                               then unsupported("The module has equations with single variables in their left-hand sides.")
+                               else if not order-sorted(M)
+                                    then unsupported("The checker only covers the order-sorted case.")
+                                    else ok
+                                    fi
+                               fi
+                          fi
+                     fi
+                fi
+           fi
+      fi .
+  
+  op order-sorted : Module -> Bool .
+  op order-sorted : EquationSet -> Bool .
+  op order-sorted : RuleSet -> Bool .
+  op order-sorted : Condition -> Bool .
+  eq order-sorted(M) 
+    = getMbs(M) == none and-then order-sorted(getEqs(M)) and-then order-sorted(getRls(M)) .
+  eq order-sorted(Eq EqS) = order-sorted(cond(Eq)) and-then order-sorted(EqS) .
+  eq order-sorted((none).EquationSet) = true .
+  eq order-sorted(Rl RlS) = order-sorted(cond(Rl)) and-then order-sorted(RlS) .
+  eq order-sorted((none).RuleSet) = true .
+  eq order-sorted(T : S /\ Cd) = false .
+  eq order-sorted(Cd) = true [owise] .
+  
+  op unregisterProofs : Oid Oid CritPairSet Map{String, String} -> Configuration .
+  op unregisterProofs : Oid Oid MembAssertSet Map{String, String} -> Configuration .
+      
+----  op genMsgs : Oid Oid [Module] -> Msg .
+----  eq genMsgs(O, O', unitError(QIL)) = to O from O' : errorMsg(QIL) .
+
+---(           
+  obsolete command: 
+  crl [ctor-split] :
+     < O : X@ChC | db : DB, input : ('ctor-split_-_on_.['token[T], 'token[T'], 'token[T'']]), 
+        output : QIL, default : MN, chc : (MN', CPS, CPS'), Atts >
+     => < O : X@ChC | db : DB, input : nilTermList, 
+        output : (QIL 
+                  eMetaPrettyPrint(M, '=>, 
+                    instantiate(M, 
+                      getCP(downQid(T), downQid(T'), CPS'),
+                      downQid(T''),
+                      genTestSets(M, downQid(T''))))), 
+        default : MN, chc : (MN', CPS, CPS'), Atts >
+     if M := getFlatModule(modExp(evalModExp(MN', DB)), database(evalModExp(MN', DB))) .
+           
+  op getCP : Qid Qid CritPairSet -> CritPairSet .
+  eq getCP(QI, QI', cp(Id, QI, QI', T, T', Status) CPS) = cp(Id, QI, QI', T, T', Status) getCP(QI, QI', CPS) .
+  eq getCP(QI, QI', ccp(Id, QI, QI', T, T', Cd, Status) CPS) = ccp(Id, QI, QI', T, T', Cd, Status) getCP(QI, QI', CPS) .
+  eq getCP(QI, QI', CPS) = none [owise] .
+  
+  op instantiate : Module CritPairSet Qid TermSet -> CritPairSet .
+  eq instantiate(M, CP CPS, V, TS)
+    = substitute(M, CP, V, TS) instantiate(M, CPS, V, TS) .
+  eq instantiate(M, none, V, TS) = none .
+---)
+  
+  op substitute : Module CritPair Variable TermSet -> CritPairSet .
+  eq substitute(M, cp(Id, QI, QI', T, T', Status), V, T'' | TS)
+    = cp(Id, QI, QI', substitute(M, T, V <- T''), substitute(M, T', V <- T''), Status)
+      substitute(M, cp(Id, QI, QI', T, T', Status), V, TS) .
+  eq substitute(M, ccp(Id, QI, QI', T, T', Cd, Status), V, T'' | TS)
+    = ccp(Id, QI, QI', substitute(M, T, V <- T''), substitute(M, T', V <- T''), substitute(M, Cd, V <- T''), Status) 
+      substitute(M, ccp(Id, QI, QI', T, T', Cd, Status), V, TS) .
+  eq substitute(M, cp(Id, QI, QI', T, T', Status), V, emptyTermSet) = none .
+  
+  ---- ctorEqs returns those equations with a constructor at the top
+  op ctorEqs : Module -> EquationSet .
+  op ctorEqs : Module EquationSet -> EquationSet .
+ 
+  eq ctorEqs(M) = ctorEqs(M, getEqs(M)) .
+
+  eq ctorEqs(M, Eq EqS) 
+    = if ctor(M, getOps(M), lhs(Eq)) 
+      then Eq 
+      else none
+      fi
+      ctorEqs(M, EqS) .
+  eq ctorEqs(M, none) = none .
+  
+  ---- chReq returns those equations that are not either left-linear, 
+  ---- right-linear, or regular.  
+  op chReq : EquationSet -> EquationSet .
+  ---- left-linear checks whether the equation is left-linear
+  op left-linear : Equation -> Bool .
+  ---- left-linear checks whether the equation is right-linear
+  op right-linear : Equation -> Bool .
+  ---- left-linear checks whether the equation is regular
+  op regular : Equation -> Bool .
+  ---- linear checks whether there are vbles repeated in the term
+  op linear : Term -> Bool .
+  ---- vbList returns a list with the variables in the term 
+  ---- the order is not important, a multiset could be used.
+  op vbList : Term -> QidList .
+  ---- repeated checks whether there are repeated qids in the given list.
+  op repeated : QidList -> Bool .
+  
+  eq chReq(Eq EqS) 
+    = if left-linear(Eq) and-then right-linear(Eq) and-then regular(Eq) 
+      then none
+      else Eq
+      fi
+      chReq(EqS) .
+  eq chReq(none) = none .
+ 
+  eq left-linear(Eq) = linear(lhs(Eq)) . 
+  eq right-linear(Eq) = linear(rhs(Eq)) . 
+  eq regular(Eq) = makeSet(vbList(lhs(Eq))) == makeSet(vbList(rhs(Eq))) . 
+
+  eq linear(T) = not repeated(vbList(T)) .
+  
+  eq vbList(Vb) = Vb . 
+  eq vbList(Ct) = nil .
+  eq vbList(F[TL]) = vbList(TL) .
+  eq vbList((T, TL)) = vbList(T) vbList(TL) .
+  
+  eq repeated(QI QIL) = occurs(QI, QIL) or-else repeated(QIL) .
+  eq repeated(nil) = false .
+  
+  ---- test set generation 
+  
+   op genTestSets : Module Variable -> TermSet .
+   op testsForType : Module Type Nat OpDeclSet TermSet -> Tuple{Nat, TermSet} .
+   op testGivenArity : Nat TypeList -> Tuple{Nat, TermList} .
+   op testGivenArity : Nat TypeList TermList -> Tuple{Nat, TermList} .
+
+   eq genTestSets(M, V) = p2(testsForType(M, getType(V), 0, getOps(M), emptyTermSet)) .
+   
+   eq testsForType(M, Tp, N, ((op F : nil -> Tp' [ctor AtS] .) ODS), TS)
+     = if sortLeq(M, Tp', Tp)
+       then testsForType(M, Tp, N, ODS, TS | qid(string(F) + "." + string(Tp')))
+       else testsForType(M, Tp, N, ODS, TS)
+       fi .
+   eq testsForType(M, Tp, N, ((op F : TpL -> Tp' [ctor AtS] .) ODS), TS)
+     = if sortLeq(M, Tp', Tp)
+       then testsForType(M, Tp, p1(testGivenArity(N, TpL)), ODS,
+              (TS | (F[p2(testGivenArity(N, TpL, empty))])))
+       else testsForType(M, Tp, N, ODS, TS)
+       fi
+     [owise] .       
+   eq testsForType(M, Tp, N, ((op F : TpL -> Tp' [AtS] .) ODS), TS)
+     = (N, TS)
+     [owise] .
+
+   eq testGivenArity(N, (Tp TpL), TL) 
+     = testGivenArity(N + 1, TpL, (TL, qid("#" + string(N, 10) + ":" + string(Tp)))) .
+   eq testGivenArity(N, nil, TL) = [N, TL] .
+endm
+

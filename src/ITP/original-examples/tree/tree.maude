@@ -1,0 +1,35 @@
+fmod NATURAL is
+  sorts Natural .
+  op 0 : -> Natural [ctor].
+  op s : Natural -> Natural [ctor].
+
+  var M N : Natural .
+
+  op _+_ : Natural Natural -> Natural [assoc comm].
+  eq N + 0 = N .
+  eq N + s(M) = s(N + M) .
+endfm
+
+fmod TREE is
+  protecting QID .
+  protecting NATURAL .
+  pr NAT .
+
+  sorts Tree .
+  subsort Qid < Tree .
+  op _#_ : Tree Tree -> Tree [ctor] .
+
+  var I : Qid .
+  vars N M : Natural .
+  vars T T' : Tree .
+
+  op leaves : Tree -> Nat .
+  eq leaves(I) = s(0) .
+  eq leaves(T # T') = leaves(T) + leaves(T') .
+
+  op inner : Tree -> Nat .
+  eq inner(I) = 0 .
+  eq inner(T # T') = s(inner(T) + inner(T')) .
+endfm
+
+

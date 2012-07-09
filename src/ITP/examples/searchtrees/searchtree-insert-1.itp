@@ -1,0 +1,264 @@
+select ITP-TOOL .
+loop init-itp .
+
+(goal insert-searchtree : SEARCHTREE |- A{I:Int? ; ST:STree?}
+      ((((I:Int?): Int) & ((ST:STree?): STree))
+            => ((insert(ST:STree?, I:Int?)): NeSTree)) .)
+
+-------------------------------------
+--- lemma nonempty-insert
+-------------------------------------
+(lem nonempty-insert : A{I:Int? ; L:STree?}
+     ((((I:Int?) : Int) & ((L:STree?) : Tree))
+     =>
+      ((insert(L:STree?, I:Int?)) : NeTree)) .)
+
+(ind on L:STree? .)
+----------
+--- case 1
+----------
+(auto .)
+----------
+--- case 2
+----------
+(auto .)
+(split on (V0#2*Int? < I*Int?) .)
+(auto .)
+(auto .)
+(split on (V0#2*Int? > I*Int?) .)
+(auto .)
+(auto .)
+
+-------------------------------------
+--- lemma stree-is-tree
+-------------------------------------
+(lem stree-is-tree : A{L:STree?}
+     (((L:STree?) : STree)
+      =>
+      ((L:STree?) : Tree)) .)
+
+(ind on L:STree? .)
+(auto .)
+(auto .)
+(auto .)
+(auto .)
+(auto .)
+
+-------------------------------------
+--- lemma nestree-is-netree
+-------------------------------------
+(lem stree-is-tree : A{L:STree?}
+     (((L:STree?) : NeSTree)
+      =>
+      ((L:STree?) : NeTree)) .)
+
+(ind on L:STree? .)
+(auto .)
+(auto .)
+(auto .)
+(auto .)
+
+-------------------------------------
+--- lemma max-insert
+-------------------------------------
+(lem max-insert : A{I:Int? ; I':Int? ; L:STree?}
+     ((((I:Int?): Int) & ((I':Int?): Int) & ((L:STree?): NeSTree) & 
+      ((max(L:STree?) < I:Int?)= (true)) & ((I:Int? > I':Int?)= (true)))
+      => 
+      ((max(insert(L:STree?, I':Int?)) < I:Int?) = (true))) .)
+
+(ind on L:STree? .)
+----------
+--- case 1
+----------
+(auto .)
+(split on (V0#0*Int? < I'*Int?) .)
+--- case V0#0*Int? < I'*Int? = true 
+(auto .)
+--- case V0#0*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#0*Int? > I'*Int?) .)
+--- case V0#0*Int? > I'*Int? = true 
+(auto .)
+--- case V0#0*Int? > I'*Int? = false [=>  V0#0*Int? = I'*Int?] 
+(auto .)
+----------
+--- case 2
+----------
+(auto .)
+(split on (V0#0*Int? < I'*Int?) .)
+--- case V0#0*Int? < I'*Int? = true 
+(auto .)
+--- case V0#0*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#0*Int? > I'*Int?) .)
+--- ---  case V0#0*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#0*Int? > I'*Int? = false [=>  V0#0*Int? = I'*Int?]
+(auto .)
+
+----------
+--- case 3
+----------
+(auto .)
+(split on (V0#1*Int? < I'*Int?) .)
+--- case V0#1*Int? < I'*Int? = true 
+(auto .)
+--- case V0#1*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#1*Int? > I'*Int?) .)
+--- ---  case V0#1*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#1*Int? > I'*Int? = false [=>  V0#1*Int? = I'*Int?]
+(auto .)
+
+----------
+--- case 4
+---------- 
+(auto .)
+(split on (V0#1*Int? < I'*Int?) .)
+--- case V0#1*Int? < I'*Int? = true 
+(auto .)
+--- case V0#1*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#1*Int? > I'*Int?) .)
+--- ---  case V0#1*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#1*Int? > I'*Int? = false [=>  V0#1*Int? = I'*Int?]
+(auto .)
+
+-------------------------------------
+--- lemma min-insert
+-------------------------------------
+(lem min-insert : A{I:Int? ; I':Int? ; L:STree?}
+     ((((I:Int?): Int) & ((I':Int?): Int) & ((L:STree?): NeSTree) & 
+      ((I:Int? < min(L:STree?))= (true)) & ((I:Int? < I':Int?)= (true)))
+      => 
+      ((I:Int? < min(insert(L:STree?, I':Int?))) = (true))) .)
+
+
+(ind on L:STree? .)
+----------
+--- case 1
+----------
+(auto .)
+(split on (V0#0*Int? < I'*Int?) .)
+--- case V0#0*Int? < I'*Int? = true 
+(auto .)
+--- case V0#0*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#0*Int? > I'*Int?) .)
+--- case V0#0*Int? > I'*Int? = true 
+(auto .)
+--- case V0#0*Int? > I'*Int? = false [=>  V0#0*Int? = I'*Int?] 
+(auto .)
+----------
+--- case 2
+----------
+(auto .)
+(split on (V0#0*Int? < I'*Int?) .)
+--- case V0#0*Int? < I'*Int? = true 
+(auto .)
+--- case V0#0*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#0*Int? > I'*Int?) .)
+--- ---  case V0#0*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#0*Int? > I'*Int? = false [=>  V0#0*Int? = I'*Int?]
+(auto .)
+
+----------
+--- case 3
+----------
+(auto .)
+(split on (V0#1*Int? < I'*Int?) .)
+--- case V0#1*Int? < I'*Int? = true 
+(auto .)
+--- case V0#1*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#1*Int? > I'*Int?) .)
+--- ---  case V0#1*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#1*Int? > I'*Int? = false [=>  V0#1*Int? = I'*Int?]
+(auto .)
+
+----------
+--- case 4
+---------- 
+(auto .)
+(split on (V0#1*Int? < I'*Int?) .)
+--- case V0#1*Int? < I'*Int? = true 
+(auto .)
+--- case V0#1*Int? < I'*Int? = false 
+(auto .)
+(split on (V0#1*Int? > I'*Int?) .)
+--- ---  case V0#1*Int? > I'*Int? = true 
+(auto .)
+--- ---  case V0#1*Int? > I'*Int? = false [=>  V0#1*Int? = I'*Int?]
+(auto .)
+
+-------------------------------------
+--- main goal
+-------------------------------------
+(ind on ST:STree? .)
+----------
+--- case 1
+----------
+(auto .)
+----------
+--- case 2
+---------- 
+(auto .)
+(split on (V0#0*Int? > I*Int?) .)
+--- --- case V0#0*Int? > I*Int? = true
+(auto .)
+--- --- case V0#0*Int? > I*Int? = false
+(auto .)
+(split on (V0#0*Int? < I*Int?) .)
+--- --- case V0#0*Int? < I*Int? = true
+(auto .)
+--- --- case V0#0*Int? < I*Int? = false [==> V0#0*Int? = I*Int?]
+(auto .)
+----------
+--- case 3
+----------
+(auto .)
+(split on (V0#0*Int? > I*Int?) .)
+--- --- case V0#0*Int? > I*Int? = true
+(auto .)
+--- --- case V0#0*Int? > I*Int? = false
+(auto .)
+(split on (V0#0*Int? < I*Int?) .)
+--- --- --- case V0#0*Int? < I*Int? = true
+(auto .)
+--- --- --- case V0#0*Int? < I*Int? = false [==> V0#0*Int? = I*Int?]
+(auto .)
+----------
+--- case 4
+----------
+(auto .)
+(split on (V0#1*Int? < I*Int?) .)
+--- --- case V0#1*Int? < I*Int? = true
+(auto .)
+--- --- case V0#0*Int? > I*Int? = false
+(auto .)
+(split on (V0#1*Int? > I*Int?) .)
+--- --- --- case V0#0*Int? < I*Int? = true
+(auto .)
+--- --- --- case V0#0*Int? < I*Int? = false [==> V0#0*Int? = I*Int?]
+(auto .)
+----------
+--- case 5
+----------
+(auto .)
+(split on (V0#1*Int? < I*Int?) .)
+--- --- case V0#1*Int? < I*Int? = true
+(auto .)
+--- --- case V0#1*Int? < I*Int? = false
+(auto .)
+(split on (V0#1*Int? > I*Int?) .)
+--- --- --- case V0#1*Int? > I*Int = true 
+(auto .)
+--- --- --- case V0#1*Int? > I*Int = false [==> V0#1*Int? = I*Int?]
+(auto .)
+

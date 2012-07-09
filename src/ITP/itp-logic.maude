@@ -1,0 +1,292 @@
+fmod ITP-LOGIC is
+  pr ITP-EXT-TERM .
+  pr SET{String}
+   * (sort NeSet{String} to NeStringSet,
+      sort Set{String} to StringSet,
+      op empty : -> Set{String} to none,
+      op _,_ : Set{String} Set{String} -> Set{String} to _;_) .
+
+  --- Sort for lists of variables.
+  sorts NeVarList VarList .
+  subsort EmptyCommaList < VarList < TermList .
+  subsort Variable < NeVarList < VarList .
+  subsort NeVarList < NeTermList .
+  op _,_ : VarList VarList -> VarList [ctor ditto].
+  op _,_ : NeVarList VarList -> NeVarList [ctor ditto].
+  op _,_ : VarList NeVarList -> NeVarList [ctor ditto].
+
+  ---------
+  --- sort: Membership
+  ---------
+  sort Membership .
+  op sortP : Term Sort -> Membership [ctor].
+
+  ---------
+  --- sort: Equality
+  ---------
+  sort Equality .
+  op equality : Term Term -> Equality [ctor].
+
+  ---------
+  --- sort: Atomic
+  ---------
+  sort Atomic .
+  subsort Equality < Atomic .
+  subsort Membership < Atomic .
+  ---------
+  --- sort: ConjAtomic
+  ---------
+  sort ConjAtomic .
+  subsort Atomic < ConjAtomic .
+  op trueFormula : -> ConjAtomic [ctor].
+  op conjunction : ConjAtomic ConjAtomic -> ConjAtomic [ctor assoc comm] .
+
+  ----------
+  ---- sort: Formula
+  ----------
+  sort Formula .
+  subsort ConjAtomic < Formula .
+  op falseFormula : -> Formula [ctor].
+  op negation : Formula -> Formula .
+  op conjunction : Formula Formula -> Formula [assoc comm] .
+  op disjunction : Formula Formula -> Formula [assoc comm] .
+  op implication : Formula Formula -> Formula .
+  op AQuantification : VariableSet Formula -> Formula .
+  op EQuantification : VariableSet Formula -> Formula .
+
+  --- The ITPMode is used to modify ITP input and output to accomadate the
+  --- different front end interfaces.
+  sort ITPMode .
+  --- Interface for ITP Web front-end at UCM.
+  op ucm : -> ITPMode [ctor].
+  --- Iterface for ITP Maude front-end at UIUC.
+  op uiuc : -> ITPMode [ctor].
+endfm
+
+fmod ITP-LOGIC-OPS is
+  protecting ITP-LOGIC .
+  protecting ITP-EXT-TERM .
+  protecting ITP-EXT-MOD .
+  protecting META-MODULE-EXT .
+
+  var Alpha Beta : Formula .
+  var Eq : Equation .
+  var EqC : EqCondition .
+  var F : Qid .
+  var GT : GroundTerm .
+  var Mb : MembAx .
+  var M : FModule .
+  var S : Sort .
+  var SB : Substitution .
+  var T T' : Term .
+  var TL TL' : TermList .
+  var V : Variable .
+  var VS VS' : VariableSet .
+
+  --- Return variables in formula that appear in outermost univeral
+  --- quantifier.  This function is recursive to capture nested quantifiers.
+  op getAQuantVars : Formula -> VariableSet .
+  eq getAQuantVars(AQuantification(VS, Alpha)) = VS ; getAQuantVars(Alpha) .
+  eq getAQuantVars(Alpha) = none [owise].
+
+  --- Returns variables appearing in outermost quantifiers.
+  op getOuterBoundVars : Formula -> VariableSet .
+  eq getOuterBoundVars(AQuantification(VS, Alpha))
+   = VS ; getOuterBoundVars(Alpha) .
+  eq getOuterBoundVars(EQuantification(VS, Alpha))
+   = VS ; getOuterBoundVars(Alpha) .
+  eq getOuterBoundVars(Alpha) = none [owise].
+
+  --- Returns true if formula has given variables in outermost universal
+  --- quantifier.
+  op hasAQuantVars : VariableSet Formula ~> Bool .
+  eq hasAQuantVars(VS, AQuantification(VS', Alpha))
+   = hasAQuantVars(VS \ VS', Alpha) .
+  eq hasAQuantVars(VS, Alpha) = (VS == none) [owise].
+
+  --- Partial function which returns the formula after removing all of the
+  --- variables in set from an outermost universally quantified formula.
+  op stripAQuantVars : VariableSet Formula ~> Formula .
+  eq stripAQuantVars(VS, AQuantification(VS ; VS', Alpha)) 
+   = AQuantification(VS', Alpha) .
+  eq stripAQuantVars(none, Alpha) = Alpha .
+
+  --- Partial function which returns the formula after removing all of the
+  --- variables in set from an outermost existentially quantified formula.
+  op stripEQuantVars : VariableSet Formula ~> Formula .
+  eq stripEQuantVars(VS, EQuantification(VS ; VS', Alpha)) = Alpha .
+
+  --- Returns formula inside outermost universal quantifier(s).
+  --- The expression
+  ---   "AQuantification(getAQuantVars(Alpha), getAQuantFormula(Alpha))"
+  --- is logically equivalent to Alpha.
+  op getAQuantFormula : Formula -> Formula .
+  eq getAQuantFormula(AQuantification(VS, Alpha)) = getAQuantFormula(Alpha) .
+  eq getAQuantFormula(Alpha) = Alpha [owise].
+
+  --- Returns antecedents of a formula if it is an implication and
+  --- trueFormula otherwise.
+  op getAllAntc : Formula ~> Formula .
+  eq getAllAntc(implication(Alpha, Beta))
+   = conjunction(Alpha, getAllAntc(Beta)) .
+  eq getAllAntc(Alpha) = trueFormula [owise].
+
+  --- Returns consequent of formula.
+  --- The expression "implication(getAllAntc(Alpha), getConseq(Alpha))" is
+  --- logically equivalent to Alpha.
+  op getConseq : Formula ~> Formula .
+  eq getConseq(implication(Alpha, Beta)) = getConseq(Beta) [owise].
+  eq getConseq(Alpha) = Alpha [owise].
+
+  --- Returns free variables in formula.
+  op free-vars : Formula -> VariableSet .
+  op free-vars : Formula VariableSet -> VariableSet .
+  eq free-vars(trueFormula) = none .
+  eq free-vars(falseFormula) = none .
+  eq free-vars(equality(T, T')) = vars-itp((T, T')) .
+  eq free-vars(sortP(T, S)) = vars-itp(T) .
+  eq free-vars(negation(Alpha)) = free-vars(Alpha) .
+  eq free-vars(conjunction(Alpha, Beta))
+   = free-vars(Alpha) ; free-vars(Beta) .
+  eq free-vars(disjunction(Alpha, Beta))
+   = free-vars(Alpha) ; free-vars(Beta) .
+  eq free-vars(implication(Alpha, Beta))
+   = free-vars(Alpha) ; free-vars(Beta) .
+  eq free-vars(AQuantification(VS, Alpha)) = free-vars(Alpha) \ VS .
+  eq free-vars(EQuantification(VS, Alpha)) = free-vars(Alpha) \ VS .
+
+  --- Applies substitution to all free variables in formula.
+  --- TODO: Figure out how to avoid variable capture.
+  op substitute : Formula Substitution -> Formula .
+  eq substitute(trueFormula, SB) = trueFormula .
+  eq substitute(falseFormula, SB) = falseFormula .
+  eq substitute(negation(Alpha), SB)
+   = negation(substitute(Alpha, SB)).
+  eq substitute(conjunction(Alpha, Beta), SB)
+   = conjunction(substitute(Alpha, SB), substitute(Beta, SB)) .
+  eq substitute(disjunction(Alpha, Beta), SB)
+   = disjunction(substitute(Alpha, SB), substitute(Beta, SB)) .
+  eq substitute(implication(Alpha, Beta), SB)
+   = implication(substitute(Alpha, SB), substitute(Beta, SB)) .
+  eq substitute(equality(T, T'), SB)
+   = equality(substitute(T, SB), substitute(T', SB)) .
+  eq substitute(sortP(T, S), SB)
+   = sortP(substitute(T, SB), S) .
+  ceq substitute(AQuantification(VS, Alpha), SB)
+    = AQuantification(VS, substitute(Alpha, removeBindings(SB, VS)))
+   if intersection(VS, rhs-vars(SB)) = none .
+  ceq substitute(EQuantification(VS, Alpha), SB)
+    = EQuantification(VS, substitute(Alpha, removeBindings(SB, VS)))
+   if intersection(VS, rhs-vars(SB)) = none .
+
+  --- Calls metaReduce on each term in the formula.
+  op reduce : Formula Module ~> Formula .
+  eq reduce(trueFormula, M) = trueFormula .
+  eq reduce(falseFormula, M) = falseFormula .
+  eq reduce(conjunction(Alpha, Beta), M)
+   = conjunction(reduce(Alpha, M), reduce(Beta, M)) .
+  eq reduce(disjunction(Alpha, Beta), M)
+   = disjunction(reduce(Alpha, M), reduce(Beta, M)) .
+  eq reduce(implication(Alpha, Beta), M)
+   = implication(reduce(Alpha, M), reduce(Beta, M)) .
+  eq reduce(equality(T, T'), M)
+   = equality(getTerm(metaReduce(M, T)), getTerm(metaReduce(M, T'))) .
+  eq reduce(sortP(T, S), M)
+   = sortP(getTerm(metaReduce(M, T)), S) .
+  eq reduce(AQuantification(VS, Alpha), M)
+   = AQuantification(VS, reduce(Alpha, M)) .
+  eq reduce(EQuantification(VS, Alpha), M)
+   = EQuantification(VS, reduce(Alpha, M)) .
+
+  --- Calls metaNormalize on each term in the formula.
+  op normalize : Formula Module ~> Formula .
+  eq normalize(trueFormula, M) = trueFormula .
+  eq normalize(falseFormula, M) = falseFormula .
+  eq normalize(conjunction(Alpha, Beta), M)
+   = conjunction(normalize(Alpha, M), normalize(Beta, M)) .
+  eq normalize(disjunction(Alpha, Beta), M)
+   = disjunction(normalize(Alpha, M), normalize(Beta, M)) .
+  eq normalize(implication(Alpha, Beta), M)
+   = implication(normalize(Alpha, M), normalize(Beta, M)) .
+  eq normalize(equality(T, T'), M)
+   = equality(getTerm(metaNormalize(M, T)), getTerm(metaNormalize(M, T'))) .
+  eq normalize(sortP(T, S), M)
+   = sortP(getTerm(metaNormalize(M, T)), S) .
+  eq normalize(AQuantification(VS, Alpha), M)
+   = AQuantification(VS, normalize(Alpha, M)) .
+  eq normalize(EQuantification(VS, Alpha), M)
+   = EQuantification(VS, normalize(Alpha, M)) .
+
+  --- Returns a formula that is equivalent to the given condition.
+  op condToFormula : EqCondition -> Formula .
+  eq condToFormula((T = T') /\ EqC)
+   = conjunction(equality(T, T'), condToFormula(EqC)) .
+  eq condToFormula((T := T') /\ EqC)
+   = conjunction(equality(T', T), condToFormula(EqC)) .
+  eq condToFormula((T : S) /\ EqC)
+   = conjunction(sortP(T, S), condToFormula(EqC)) .
+  eq condToFormula(nil) = trueFormula .
+
+  --- Converts a conjunction of atoms or true formula to a condition.
+  op formulaToCond : ConjAtomic -> EqCondition .
+  eq formulaToCond(equality(T, T'))
+   = if T == T' then
+       nil
+     else
+       T = T'
+     fi .
+  eq formulaToCond(sortP(T, S)) = (T : S) .
+  eq formulaToCond(conjunction(Alpha, Beta))
+   = formulaToCond(Alpha) /\ formulaToCond(Beta) .
+  eq formulaToCond(trueFormula) = nil .
+
+  --- Converts equation to universally quantified formula.
+  op eqToFormula : Equation ~> Formula .
+  eq eqToFormula(Eq)
+   = AQuantification(vars-itp((lhs(Eq), rhs(Eq))) ; vars-itp(condition(Eq)),
+                     implication(condToFormula(condition(Eq)),
+                                 equality(lhs(Eq), rhs(Eq)))) .
+
+  --- Converts membership to universally quantified formula.
+  op mbToFormula : MembAx ~> Formula .
+  eq mbToFormula(Mb)
+   = AQuantification(vars-itp(term(Mb)) ; vars-itp(condition(Mb)),
+                     implication(condToFormula(condition(Mb)),
+                                 sortP(term(Mb), sort(Mb)))) .
+endfm
+
+--- Provides equations for automatically simplifying ITP formulas.
+fmod ITP-LOGIC-SIMPLIFY is
+  including ITP-LOGIC .
+
+  var Alpha Beta Delta : Formula .
+  var VS VS' : VariableSet .
+
+  --- logical equivalences
+  eq negation(falseFormula) = trueFormula .
+  eq negation(trueFormula) = falseFormula .
+  eq negation(negation(Alpha)) = Alpha .
+  ---
+  eq disjunction(trueFormula, Alpha) = trueFormula .
+  eq disjunction(Alpha, Alpha) = Alpha .
+  eq conjunction(trueFormula, Alpha) = Alpha .
+  eq conjunction(Alpha, Alpha) = Alpha .
+  eq implication(trueFormula, Alpha) = Alpha .
+  eq implication(falseFormula, Alpha) = trueFormula .
+  eq implication(Alpha, trueFormula) = trueFormula .
+  eq implication(Alpha, implication(Beta, Delta))
+   = implication(conjunction(Alpha, Beta), Delta) .
+
+  eq implication(Alpha, conjunction(Beta, Delta))
+   = conjunction(implication(Alpha, Beta),
+                 implication(Alpha, Delta)) .
+  ---
+  eq AQuantification(VS, trueFormula) = trueFormula .
+  eq AQuantification(none, Alpha) = Alpha .
+  eq AQuantification(VS, AQuantification(VS', Alpha))
+   = AQuantification(VS ; VS', Alpha) .
+  eq EQuantification(VS, trueFormula) = trueFormula .
+  eq EQuantification(none, Alpha) = Alpha .
+  eq EQuantification(VS, EQuantification(VS', Alpha))
+     = EQuantification(VS ; VS', Alpha) .
+endfm

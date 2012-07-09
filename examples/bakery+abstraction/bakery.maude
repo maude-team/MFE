@@ -1,0 +1,730 @@
+---- Hay alg�n error en el ChC, los cps deber�an ser condicionales.
+
+---- by Francisco Duran
+---- checked using Maude 2.6, Full Maude 2.6b and MFE
+
+---(
+duran@atenea02:~/workspaceMaude/formal-environment$ ../../Maude/Maude26++/maude-ceta-2.6-32 mfe.maude examples/bakery.maude 
+             \||||||||||||||||||/
+           --- Welcome to Maude ---
+             /||||||||||||||||||\
+        Maude-ceta 2.6 built: Mar 29 2011 12:16:02
+         With CETA and termination checker extensions 
+        Copyright 1997-2010 SRI International
+           Thu May 19 01:08:01 2011
+
+        Full Maude 2.6b March 20st 2011
+
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3l - November 24th 2010
+    Coherence Checker 3l - November 24th 2010
+    Maude Termination Tool 1.5h January 1st 2011
+
+set include BOOL off
+
+The bakery protocol is a classical solution by Lamport to the problem of achieving 
+mutual exclusion between processes, as originally stated by Dijkstra, and then extended 
+by Knuth. The algorithm is based on the procedure commonly used in bakeries and deli 
+shops, in which every customer gets a number when entering the store. Each client 
+takes as its number the successor of the maximum of the numbers of the clients in 
+the store. The next client to be served is the one with the smallest number.
+
+In our specification, processes are represented as terms of sort BProcess. The elements 
+of sort BProcess are constructed by an operator <_,_,_>, which takes the identifier of 
+the process (a natural number of sort Nat), the mode it is currently in (a constant of 
+sort Mode), and the number it has been assigned (of sort Nat). The state of the bakery 
+is represented as a term of sort GBState, constructed by an operator [[_]] whose 
+argument is a term of sort BState, which represents a multiset of processes. 
+
+A process can be in modes sleep, wait or crit. The rules describe how each process goes 
+from being sleeping to waiting, from waiting to its critical section, and then back to 
+sleeping. When a process is in the sleep mode it has a 0 number; a process in wait or 
+crit mode has a number greater than zero.
+---)
+ 
+(set include BOOL off .)
+
+(fmod MNAT is
+   protecting TRUTH-VALUE .
+   sort MNat .                                    ---- natural numbers
+   op 0 : -> MNat [ctor] .
+   op s_ : MNat -> MNat [ctor] .
+   op _<_ : MNat MNat -> Bool .                   ---- less-than operator 
+   ops min max : MNat MNat -> MNat [assoc comm] . ---- minimum and maximum 
+   ops 1 2 3 4 5 : -> MNat .
+   vars N N' : MNat .
+   eq 1 = s 0 . eq 2 = s 1 . eq 3 = s 2 . eq 4 = s 3 . eq 5 = s 4 .
+   eq [MNat-1] : N < 0 = false .
+   eq [MNat-2] : 0 < s N = true .
+   eq [MNat-3] : s N < s N' = N < N' .
+   eq [MNat-4] : min(0, N) = 0 .
+   eq [MNat-5] : min(s N, s N') = s min(N, N') .
+   eq [MNat-6] : max(0, N) = N .
+   eq [MNat-7] : max(s N, s N') = s max(N, N') .
+ endfm)
+
+(mod BAKERY is 
+   protecting MNAT . 
+   ---- protecting BOOL-OPS .
+   sorts Id Mode BProcess BState GBState .
+   ops sleep wait crit : -> Mode [ctor] .                       ---- possible process modes 
+   op <_`,_`,_> : MNat Mode MNat -> BProcess [ctor] .           ---- (bakery) process constructor
+   subsort BProcess < BState .                                  
+   op __ : BState BState -> BState [ctor assoc comm id: none] . ---- a BState is a multiset of BProcesses
+   op none : -> BState [ctor] .
+   op `[`[_`]`] : BState -> GBState [ctor] .                    ---- a bakery state
+   var  P : Mode . 
+   vars I N M : MNat . 
+   var  BSt : BState .
+
+   ---- initial state
+   op initial : MNat -> BState .
+   eq initial(s N) = < s N, sleep, 0 > initial(N) .
+   eq initial(0) = none .
+
+   ---- max of the numbers assigned to processes (0 if none)
+   op maxNumber : BState -> MNat .
+----   op maxNumber : BState MNat -> MNat .
+   eq [max-1] : maxNumber(< I, P, N > BSt) 
+     = max(N, maxNumber(BSt)) .
+   eq [max-2] : maxNumber(none) = 0 .
+
+   ---- min. of the nonzero numbers assigned to processes (0 if none)
+   op minNzNumber : BState -> MNat .
+   op minNzNumber : BState MNat -> MNat .
+   eq [min-1] : minNzNumber(< I, P, 0 > BSt) = minNzNumber(BSt) .
+   eq [min-2] : minNzNumber(< I, P, s N > BSt) 
+     = minNzNumber(BSt, s N) .
+   eq [min-3] : minNzNumber(none) = 0 .
+   eq [min-4] : minNzNumber(< I, P, 0 > BSt, M) = minNzNumber(BSt, M) .
+   eq [min-5] : minNzNumber(< I, P, s N > BSt, M) 
+     = minNzNumber(BSt, min(M, s N)) .
+   eq [min-6] : minNzNumber(none, M) = M .
+
+   rl [sleep2wait] : [[ < I, sleep, 0 > BSt ]] 
+     => [[ < I, wait, s maxNumber(BSt) > BSt ]] .
+  crl [wait2crit] : [[ < I, wait, N > BSt ]] 
+     => [[ < I, crit, N > BSt ]] 
+     if N = minNzNumber(< I, wait, N > BSt) .
+   rl [crit2sleep] : < I, crit, N >  
+     => < I, sleep, 0 > .
+ endm)
+
+---- Introduced module MNAT
+
+---- Introduced module BAKERY
+
+---- We want to prove the specification operational terminating, Church-Rosser and coherent. 
+---- We can proceed in different orders, starting by one property or the other. The 
+---- tools would keep track of the checks, recording pending goals and informing of 
+---- submitted proof obligations. 
+
+---- We start with the Church-Rosser checker. 
+
+(select tool CRC .)
+---(
+The CRC has been set as current tool.
+---)
+
+(check Church-Rosser BAKERY .)
+---(
+Church-Rosser check for BAKERY
+    All critical pairs have been joined.
+    The specification is locally-confluent.
+    The module is sort-decreasing.
+---)
+
+---- All critical pairs have been joined, and therefore the specification is locally
+---- confluent. If terminating, this would imply confluence. All equations are also
+---- sort-decreasing, so a proof of termination would imply the Church-Rosser property.
+---- We ask the CRC to submit the pending proof obligations. 
+
+(submit .)
+---(
+The termination goal for the functional part of BAKERY has been submitted to
+    MTT.
+- Depending on whether the extra hooks are available or not you get 
+Warning: The Maude Termination Tool is not fully available. Please use the
+    trust command to assume that the BAKERY module is terminating.
+- or
+Warning: A proof of the termination of functional part of module BAKERY has not
+    been found.
+---)
+
+---- If you are running the official version of Maude and the version you have doesn't 
+---- include the hooks to the external termination tools, you would get this message. 
+---- In one case or the other, we can select the MTT and complete its proof.  
+
+(select tool MTT .)
+---(
+The MTT has been set as current tool.
+---)
+
+---- We can see the state of the tool by using a show state command.
+
+(show state .)
+---(
+State of the tool:
+- Termination check for BAKERY :
+    Termination has not been proved yet.
+---)
+
+---- A proof of the termination of this specification can be found at
+---- \cite{Duran-Meseguer:2011-jlap}. Instead of completing the proof here, 
+---- let us used the trust command to indicate the tool that it can assume 
+---- the existence of a proof of the termination of the current module and 
+---- proceed. 
+
+(trust .)
+---(
+The functional part of module BAKERY is assumed terminating.
+Success: The module is therefore Church-Rosser.
+Success: The module BAKERY is Church-Rosser.
+---)
+
+---- When the MTT receives the trust command or finds a proof for its goal, 
+---- it informs all requesters of the current goal. In this case, the CRC 
+---- was expecting it. When it receives the corresponding message it concludes 
+---- on the confluence of the BAKERY module, and with it on the satisfaction 
+---- of the Church-Rosser property.
+
+---- The only pending property is ground conherence.
+
+(select tool ChC .)
+---(
+The ChC has been set as current tool.
+---)
+
+(check ground coherence BAKERY .)
+---(
+Ground coherence checking of BAKERY
+    All critical pairs have been rewritten and no rewrite with rules can happen at non-overlapping
+    positions of equations left-hand sides.
+    The sufficient-completeness, termination and Church-Rosser properties must still be checked.
+---)  
+
+---- However, the termination and Church-Rosser properties of the functional 
+---- part of the module are required, being left as proof obligations. We can 
+---- use the submit command to delegate their proofs. In fact, these proofs 
+---- were already completed, and the submition of the proof obligations results
+---- in corresponding positive answers from the CRC and MTT. With these 
+---- messages the check for the ground-coherence property is completed.  
+
+(submit .)
+---(
+The Church-Rosser goal for BAKERY has been submitted to CRC.
+The Sufficient-Completeness goal for BAKERY has been submitted to SCC.
+The termination goal for the functional part of BAKERY has been submitted to MTT.
+Success: The equational theory of BAKERY does not have counterexamples for sufficient completeness.
+    However,this is under the assumption that it is ground weakly-normalizing and ground sort-decreasing.
+Church-Rosser check for BAKERY
+    All critical pairs have been joined.
+    The specification is locally-confluent.
+    The specification is terminating, and therefore confluent.
+    The module is sort-decreasing.
+    Success: The module is therefore Church-Rosser.
+The functional part of module BAKERY has been checked terminating.
+The module BAKERY has been checked Church-Rosser.
+---)
+
+(select tool SCC .) 
+---(
+The SCC has been set as current tool.
+---)
+
+----(scc BAKERY .)
+---(
+Success: The equational theory of BAKERY is sufficiently complete under the
+    assumption that it is ground weakly-normalizing and ground sort-decreasing.
+---)
+
+----set trace on .
+----set trace eqs off .
+
+(submit .)
+---(
+The sort-decreasingness goal for BAKERY has been submitted to CRC.
+The termination goal for the functional part of BAKERY has been submitted to MTT.
+Church-Rosser check for BAKERY
+    The module is sort-decreasing.
+The module BAKERY has been checked sufficiently-complete.
+Success: The module BAKERY is ground-coherent.
+---)
+
+eof
+
+(mod ABSTRACT-BAKERY is
+   including BAKERY .
+   var  P : Mode .
+   var  BSt : BState .
+   vars I N : MNat .
+    
+  ceq [AB] : 
+     [[ BSt ]] 
+     = [[ dec(BSt) ]] 
+     if 1 < minNzNumber(BSt) . ---- no one has number 1 and at least one has number different from 0
+
+   op dec : BState -> BState . ---- decreases (by 1) the number of each of the processes in the BState
+   op dec : MNat -> MNat .
+   eq dec(< I, P, N > BSt) = < I, P, dec(N) > dec(BSt) .
+   eq dec(none) = none .
+   eq dec(0) = 0 .
+   eq dec(s N) = N .
+ endm)
+
+(select tool CRC .)
+---(
+The CRC has been set as current tool.
+---)
+
+(check Church-Rosser ABSTRACT-BAKERY .)
+---(
+Church-Rosser check for ABSTRACT-BAKERY
+    All critical pairs have been joined.
+    The specification is locally-confluent.
+    The module is sort-decreasing.
+---)
+
+(submit .)
+---(
+The termination goal for the functional part of ABSTRACT-BAKERY has been
+    submitted to MTT.
+Warning: The Maude Termination Tool is not fully available. Please use the
+    trust command to assume that the ABSTRACT-BAKERY module is terminating.
+---)
+
+(select tool MTT .)
+---(
+The MTT has been set as current tool.
+---)
+
+(show state .)
+---(
+State of the tool:
+- Termination check for ABSTRACT-BAKERY :
+    Termination has not been proved yet.
+- Termination check for BAKERY :
+    The specification has been proved terminating.
+---)
+
+(trust .)
+---(
+The functional part of module ABSTRACT-BAKERY has been checked terminating.
+Success: The module is therefore Church-Rosser.
+Success: module ABSTRACT-BAKERY is Church-Rosser.
+---)
+
+(select tool ChC .)
+---(
+The ChC has been set as current tool.
+---)
+
+(check ground coherence ABSTRACT-BAKERY .)
+---(
+Rule crit2sleep can be applied under the non-frozen and non-linear variable BSt:BState of equation AB
+---)
+
+(mod BAKERY is 
+   protecting MNAT . 
+   ---- protecting BOOL-OPS .
+   sorts Id Mode BProcess BState GBState .
+   ops sleep wait crit : -> Mode [ctor] .
+   op <_`,_`,_> : MNat Mode MNat -> BProcess [ctor] .
+   subsort BProcess < BState .
+   op __ : BState BState -> BState [ctor assoc comm id: none] .
+   op none : -> BState [ctor] .
+   op `[`[_`]`] : BState -> GBState [ctor] .
+   var P : Mode . vars I N M : MNat . var BSt : BState .
+
+   ---- initial state
+   op initial : MNat -> BState .
+   eq initial(s N) = < s N, sleep, 0 > initial(N) .
+   eq initial(0) = none .
+
+   ---- max of the numbers assigned to processes (0 if none)
+   op maxNumber : BState -> MNat .
+   op maxNumber : BState MNat -> MNat .
+   eq [max-1] : maxNumber(< I, P, N > BSt) 
+     = max(N, maxNumber(BSt)) .
+   eq [max-2] : maxNumber(none) = 0 .
+
+   ---- min. of the nonzero numbers assigned to processes (0 if none)
+   op minNzNumber : BState -> MNat .
+   op minNzNumber : BState MNat -> MNat .
+   eq [min-1] : minNzNumber(< I, P, 0 > BSt) = minNzNumber(BSt) .
+   eq [min-2] : minNzNumber(< I, P, s N > BSt) 
+     = minNzNumber(BSt, s N) .
+   eq [min-3] : minNzNumber(none) = 0 .
+   eq [min-4] : minNzNumber(< I, P, 0 > BSt, M) = minNzNumber(BSt, M) .
+   eq [min-5] : minNzNumber(< I, P, s N > BSt, M) 
+     = minNzNumber(BSt, min(M, s N)) .
+   eq [min-6] : minNzNumber(none, M) = M .
+
+   rl [sleep2wait] : [[ < I, sleep, 0 > BSt ]] 
+     => [[ < I, wait, s maxNumber(BSt) > BSt ]] .
+  crl [wait2crit] : [[ < I, wait, N > BSt ]] 
+     => [[ < I, crit, N > BSt ]] 
+     if N = minNzNumber(< I, wait, N > BSt) .
+   rl [crit2sleep] : [[ < I, crit, N > BSt ]] 
+     => [[ < I, sleep, 0 > BSt ]] .
+----   rl [crit2sleep] : < I, crit, N >  
+----     => < I, sleep, 0 > .
+ endm)
+
+(select tool CRC .)
+---(
+The CRC has been set as current tool.
+---)
+
+(check Church-Rosser ABSTRACT-BAKERY .)
+---(
+Church-Rosser check for ABSTRACT-BAKERY
+    All critical pairs have been joined.
+    The specification is locally-confluent.
+    The module is sort-decreasing.
+---)
+
+(submit .)
+---(
+The termination goal for the functional part of ABSTRACT-BAKERY has been
+    submitted to MTT.
+The MTT proof for ABSTRACT-BAKERY has been reset.
+Warning: The Maude Termination Tool is not fully available. Please use the
+    trust command to assume that the ABSTRACT-BAKERY module is terminating.
+---)
+
+(select tool MTT .)
+---(
+The MTT has been set as current tool.
+---)
+
+(trust .)
+---(
+The functional part of module ABSTRACT-BAKERY has been checked terminating.
+Success: The module is therefore Church-Rosser.
+Success: module ABSTRACT-BAKERY is Church-Rosser.
+---)
+
+(select tool ChC .)
+---(
+The ChC has been set as current tool.
+---)
+
+(check ground coherence ABSTRACT-BAKERY .)
+---(
+The ChC for ABSTRACT-BAKERY has been reset.
+Ground coherence checking of ABSTRACT-BAKERY
+    The following critical pairs cannot be rewritten:
+  ccp ABSTRACT-BAKERY31 for AB and crit2sleep
+    [[dec(BSt:BState)< I:MNat,crit,dec(N:MNat)>]]
+    =>[[BSt:BState < I:MNat,sleep,0 >]]
+    if s 0 < minNzNumber(BSt:BState < I:MNat,crit,N:MNat >)= true .
+  ccp ABSTRACT-BAKERY34 for AB and sleep2wait
+    [[dec(BSt:BState)< I:MNat,sleep,0 >]]
+    =>[[BSt:BState < I:MNat,wait,s maxNumber(BSt:BState)>]]
+    if s 0 < minNzNumber(BSt:BState)= true .
+  ccp ABSTRACT-BAKERY36 for AB and wait2crit
+    [[< I:MNat,wait,dec(N:MNat)>]]
+    =>[[< I:MNat,crit,N:MNat >]]
+    if N:MNat = minNzNumber(< I:MNat,wait,N:MNat >)/\ s 0 < minNzNumber(<
+    I:MNat,wait,N:MNat >)= true .
+  ccp ABSTRACT-BAKERY37 for AB and wait2crit
+    [[dec(BSt:BState)< I:MNat,wait,dec(N:MNat)>]]
+    =>[[BSt:BState < I:MNat,crit,N:MNat >]]
+    if N:MNat = minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)/\ s 0 <
+    minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)= true .
+    The termination and Church-Rosser properties must still be checked.
+
+In atenea02, March 22nd 2011:
+The ChC for ABSTRACT-BAKERY has been reset.
+Ground coherence checking of ABSTRACT-BAKERY
+	The following critical pairs cannot be rewritten:
+  cp ABSTRACT-BAKERY31 for AB and crit2sleep
+    [[dec(BSt:BState)< I:MNat,crit,dec(N:MNat)>]]
+    =>[[BSt:BState < I:MNat,sleep,0 >]].
+  cp ABSTRACT-BAKERY34 for AB and sleep2wait
+    [[dec(BSt:BState)< I:MNat,sleep,0 >]]
+    =>[[BSt:BState < I:MNat,wait,s maxNumber(BSt:BState)>]].
+	The termination and Church-Rosser properties must still be checked.
+---)
+
+(submit .)
+---(
+The Church-Rosser goal for ABSTRACT-BAKERY has been submitted to CRC.
+The goal for critical pair ABSTRACT-BAKERY31 has been submitted to ITP.
+The goal for critical pair ABSTRACT-BAKERY34 has been submitted to ITP.
+The goal for critical pair ABSTRACT-BAKERY36 has been submitted to ITP.
+The goal for critical pair ABSTRACT-BAKERY37 has been submitted to ITP.
+The termination goal for the functional part of ABSTRACT-BAKERY has been
+    submitted to MTT.
+Church-Rosser check for ABSTRACT-BAKERY
+    All critical pairs have been joined.
+    The specification is locally-confluent.
+    The specification is terminating, and therefore confluent.
+    The module is sort-decreasing.
+    Success: The module is therefore Church-Rosser.
+The functional part of module ABSTRACT-BAKERY has been checked terminating.
+The module ABSTRACT-BAKERY has been checked Church-Rosser.
+
+=================================
+label-sel: ABSTRACT-BAKERY31#0@0
+=================================
+A{BSt:BState ; I:MNat ; N:MNat}
+ s 0 < minNzNumber(BSt:BState < I:MNat,crit,N:MNat >)  = true
+ ==>[[dec(BSt:BState)< I:MNat,crit,dec(N:MNat)>]]
+  =[[BSt:BState < I:MNat,sleep,0 >]]
+
++++++++++++++++++++++++++++++++++
+
+=================================
+label-sel: ABSTRACT-BAKERY34#1@0
+=================================
+A{BSt:BState ; I:MNat}  s 0 < minNzNumber(BSt:BState)  = true
+ ==>[[dec(BSt:BState)< I:MNat,sleep,0 >]]
+  =[[BSt:BState < I:MNat,wait,s maxNumber(BSt:BState)>]]
+
++++++++++++++++++++++++++++++++++
+
+=================================
+label-sel: ABSTRACT-BAKERY36#2@0
+=================================
+A{I:MNat ; N:MNat}
+ s 0 < minNzNumber(< I:MNat,wait,N:MNat >)  = true
+ & N:MNat = minNzNumber(< I:MNat,wait,N:MNat >)
+ ==>[[< I:MNat,wait,dec(N:MNat)>]]
+  =[[< I:MNat,crit,N:MNat >]]
+
++++++++++++++++++++++++++++++++++
+
+=================================
+label-sel: ABSTRACT-BAKERY37#3@0
+=================================
+A{BSt:BState ; I:MNat ; N:MNat}
+ s 0 < minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)  = true
+ & N:MNat = minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)
+ ==>[[dec(BSt:BState)< I:MNat,wait,dec(N:MNat)>]]
+  =[[BSt:BState < I:MNat,crit,N:MNat >]]
+
++++++++++++++++++++++++++++++++++
+
+*********************************
+1 < min(MSet N) <= min(MSet)
+*********************************
+Let us consider the first goal
+
+=================================
+label-sel: ABSTRACT-BAKERY31#0@0
+=================================
+A{BSt:BState ; I:MNat ; N:MNat}
+ s 0 < minNzNumber(BSt:BState < I:MNat, crit, N:MNat >)  = true
+ ==> [[ dec(BSt:BState) < I:MNat, crit, dec(N:MNat) > ]]
+  => [[ BSt:BState < I:MNat, sleep, 0 > ]]
+
+The first observation is that if a process is in the crit state it cannot have 
+number 0, and therefore for
+s 0 < minNzNumber(BSt:BState < I:MNat, crit, N:MNat >)  = true
+we can consider two cases: (1) minNzNumber(BSt:BState) = 0 or (2) minNzNumber(BSt:BState) =/= 0
+
+(1) minNzNumber(BSt:BState) = 0
+in this case 
+s 0 < minNzNumber(BSt:BState < I:MNat, crit, N:MNat >)  = true
+iff 
+s 0 < minNzNumber(< I:MNat, crit, N:MNat >)  = true
+
+minNzNumber(BSt:BState) = 0
+implies 
+dec(BSt:BState) = BSt:BState
+
+By adding equations 
+  minNzNumber(#BSt.BState) = 0
+  dec(#BSt.BState) = #BSt.BState if minNzNumber(#BSt.BState) = 0
+the "constantified" lhs of the cp 
+  [[ dec(#BSt.BState) < #I.MNat, crit, dec(#N.MNat) > ]] 
+is simplified to 
+  [[ #BSt.BState < #I.MNat, crit, dec(#N.MNat) > ]] 
+which can be rewriten using rule
+   rl [crit2sleep] : [[ < I, crit, N > BSt ]] 
+     => [[ < I, sleep, 0 > BSt ]] .
+to 
+  [[ #BSt.BState < #I.MNat, sleep, 0 > ]] 
+thus closing the cp
+
+(2) minNzNumber(BSt:BState) =/= 0
+in this case
+s 0 < minNzNumber(BSt:BState < I:MNat, crit, N:MNat >)  = true
+iff
+s 0 < minNzNumber(BSt:BState) = true
+and 
+s 0 < minNzNumber(< I:MNat, crit, N:MNat >)  = true
+
+By adding the equation 
+s 0 < minNzNumber(#BSt.BState) = true
+to the module, the term  
+[[ #BSt.BState < #I.MNat, crit, #N.MNat > ]]
+is reduced to 
+[[ dec(#BSt.BState) < #I.MNat, sleep, 0 > ]]
+
+Rule 
+   rl [crit2sleep] : [[ < I, crit, N > BSt ]] 
+     => [[ < I, sleep, 0 > BSt ]] .
+can then be used to rewrite the term 
+[[ dec(#BSt.BState) < #I.MNat, crit, dec(#N.MNat) > ]]
+to 
+[[ dec(#BSt.BState) < #I.MNat, sleep, 0 > ]]
+and thus joining the critical pair.
+
+*********************************
+Let us consider the second goal
+
+=================================
+label-sel: ABSTRACT-BAKERY34#1@0
+=================================
+A{BSt:BState ; I:MNat}  s 0 < minNzNumber(BSt:BState)  = true
+ ==> [[ dec(BSt:BState) < I:MNat, sleep, 0 > ]]
+  => [[ BSt:BState < I:MNat, wait, s maxNumber(BSt:BState) > ]]
+
+We extend the module BAKERY-ABS with the equation
+s 0 < minNzNumber(#BSt.BState)  = true
+In this module, given that 
+s 0 < minNzNumber(BSt:BState)  = true
+implies (?)
+s 0 < minNzNumber(BSt:BState < I:MNat, wait, s maxNumber(BSt:BState) >)  = true
+we have 
+[[ #BSt.BState < #I.MNat, wait, s maxNumber(#BSt.BState) > ]]
+= 
+[[ dec(#BSt.BState < #I.MNat, wait, s maxNumber(#BSt.BState) >) ]]
+= 
+[[ dec(#BSt.BState) dec(< #I.MNat, wait, s maxNumber(#BSt.BState) >) ]]
+= 
+[[ dec(#BSt.BState) < #I.MNat, wait, maxNumber(#BSt.BState) > ]]
+
+The lhs of the cp 
+[[ dec(#BSt.BState) < #I.MNat, sleep, 0 > ]]
+can be rewritten with the rule 
+   rl [sleep2wait] : [[ < I, sleep, 0 > BSt ]] 
+     => [[ < I, wait, s maxNumber(BSt) > BSt ]] .
+to 
+[[ dec(#BSt.BState) < #I.MNat, wait, s maxNumber(dec(#BSt.BState)) > ]]
+which is simplified
+by proving maxNumber(dec(#BSt.BState)) = dec(maxNumber(#BSt.BState)) given s 0 < minNzNumber(#BSt.BState)  = true
+to
+[[ dec(#BSt.BState) < #I.MNat, wait, maxNumber(#BSt.BState) > ]]
+and then close the cp
+
+*********************************
+Let us consider the third goal
+
+=================================
+label-sel: ABSTRACT-BAKERY36#2@0
+=================================
+A{I:MNat ; N:MNat}
+ s 0 < minNzNumber(< I:MNat,wait,N:MNat >)  = true
+ & N:MNat = minNzNumber(< I:MNat,wait,N:MNat >)
+ ==>[[< I:MNat,wait,dec(N:MNat)>]]
+  =[[< I:MNat,crit,N:MNat >]]
+
+By adding equations
+ s 0 < minNzNumber(< #I.MNat,wait,#N.MNat >)  = true
+ minNzNumber(< #I.MNat,wait,#N.MNat >) = #N.MNat  ----------- check how this equality is included
+we can rewrite 
+[[< #I.MNat,wait,dec(#N.MNat)>]]
+to 
+[[< #I.MNat,crit,dec(#N.MNat)>]]
+using rule
+  crl [wait2crit] : [[ < I, wait, N > BSt ]] 
+     => [[ < I, crit, N > BSt ]] 
+     if N = minNzNumber(< I, wait, N > BSt) .
+
+and 
+[[< #I.MNat,crit,#N.MNat >]]
+can be simplified (given s 0 < minNzNumber(< #I.MNat,wait,#N.MNat >)  = true) to 
+[[dec(< #I.MNat,crit,#N.MNat >)]]
+=
+[[< #I.MNat,crit,dec(#N.MNat) >]]
+Thus closing the cp
+
+*********************************
+Let us consider the fourth goal
+
+=================================
+label-sel: ABSTRACT-BAKERY37#3@0
+=================================
+A{BSt:BState ; I:MNat ; N:MNat}
+ s 0 < minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)  = true
+ & N:MNat = minNzNumber(BSt:BState < I:MNat,wait,N:MNat >)
+ ==>[[dec(BSt:BState)< I:MNat,wait,dec(N:MNat)>]]
+  =[[BSt:BState < I:MNat,crit,N:MNat >]]
+
+By adding equations
+ s 0 < minNzNumber(#BSt.BState < #I.MNat, wait, #N.MNat >)  = true
+ minNzNumber(#BSt.BState < #I.MNat, wait, #N.MNat >) = #N.MNat  ----------- check how this equality is included
+we can rewrite 
+[[ dec(#BSt.BState) < #I.MNat, wait, dec(#N.MNat) > ]]
+to 
+[[ dec(#BSt.BState) < #I.MNat, crit, dec(#N.MNat) > ]]
+using rule
+  crl [wait2crit] : [[ < I, wait, N > BSt ]] 
+     => [[ < I, crit, N > BSt ]] 
+     if N = minNzNumber(< I, wait, N > BSt) .
+
+and 
+[[ #BSt.BState < #I.MNat,crit,#N.MNat > ]]
+can be simplified (given s 0 < minNzNumber(#BSt.BState < #I.MNat,wait,#N.MNat >)  = true) to 
+[[ dec(#BSt.BState < #I.MNat,crit,#N.MNat >)]]
+=
+[[ dec(#BSt.BState) dec(< #I.MNat, crit, #N.MNat >) ]]
+=
+[[ dec(#BSt.BState) < #I.MNat, crit, dec(#N.MNat) > ]]
+Thus closing the cp
+
+---- In atenea02, March 22nd 2011:
+
+The Church-Rosser goal for ABSTRACT-BAKERY has been submitted to CRC.
+The goal for critical pair ABSTRACT-BAKERY31 has been submitted to ITP.
+The goal for critical pair ABSTRACT-BAKERY34 has been submitted to ITP.
+The termination goal for the functional part of ABSTRACT-BAKERY has been
+    submitted to MTT.
+Church-Rosser check for ABSTRACT-BAKERY
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The specification is terminating, and therefore confluent.
+	The module is sort-decreasing.
+	Success: The module is therefore Church-Rosser.
+The functional part of module ABSTRACT-BAKERY has been checked terminating.
+The module ABSTRACT-BAKERY has been checked Church-Rosser.
+
+=================================
+label-sel: ABSTRACT-BAKERY31#0@0
+=================================
+A{BSt:BState ; I:MNat ; N:MNat}
+ [[dec(BSt:BState)< I:MNat,crit,dec(N:MNat)>]]
+  =[[BSt:BState < I:MNat,sleep,0 >]]
+
++++++++++++++++++++++++++++++++++
+
+=================================
+label-sel: ABSTRACT-BAKERY34#1@0
+=================================
+A{BSt:BState ; I:MNat}
+ [[dec(BSt:BState)< I:MNat,sleep,0 >]]
+  =[[BSt:BState < I:MNat,wait,s maxNumber(BSt:BState)>]]
+
++++++++++++++++++++++++++++++++++
+
+---)
+
+(select tool ITP .)
+(trust ABSTRACT-BAKERY31#0@0 .)
+---(
+Goal ABSTRACT-BAKERY31#0@0 trusted. The critical pair ABSTRACT-BAKERY31 has
+    been discharged.
+---)
+
+(trust ABSTRACT-BAKERY34#1@0 .)
+---(
+Goal ABSTRACT-BAKERY34#1@0 trusted. The critical pair ABSTRACT-BAKERY34 has
+    been discharged.
+Success: The module ABSTRACT-BAKERY is ground-coherent.
+---)
+(show global state .)

@@ -1,0 +1,149 @@
+\def\filedate{2006/05/16}
+\def\fileversion{1.02}
+\ProvidesPackage{AMMALanguages}
+             [\filedate\space\fileversion\space(Davide Di Ruscio and Frédéric Jouault)]
+\typeout{}
+\typeout{----------------------}
+\typeout{AMMA Languages Formatting Package}
+\typeout{----------------------}
+\typeout{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage{listings}
+\usepackage{color}
+%\usepackage{xspace}
+%\usepackage{amsmath}
+
+\definecolor{gray}{rgb}{0.94,0.94,0.94}
+\definecolor{blue}{rgb}{0,0,0.5}
+%\lstloadlanguages{HTML,XML}
+\lstset{
+ % backgroundcolor=\color{gray},
+  breaklines=true,
+  frame=single,
+  framerule=0pt,
+  language=,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showtabs=false,
+  tabsize=4,
+  basicstyle=\ttfamily\scriptsize,
+  %basicstyle=\scriptsize,
+  commentstyle=\ttfamily\itshape\bfseries,
+  identifierstyle=\ttfamily\scriptsize,
+%\bfseries,
+  numberstyle=\ttfamily\tiny
+}
+
+
+
+\definecolor{keywordColor}{rgb}{.5, 0, .33}
+%\definecolor{keywordColor}{rgb}{0, 0, 0}
+\definecolor{commentColor}{rgb}{0, .3, 0}
+\definecolor{backgroundColor}{rgb}{.9, .9, .9}
+\definecolor{emphColor}{rgb}{.16, 0, 1}
+\definecolor{numberColor}{rgb}{.09, .62, .28}
+  %[breaklines,mathescape,rulesepcolor=\color{black}]
+\lstdefinestyle{AMMA}{
+        backgroundcolor=\color{backgroundColor},
+        basicstyle=\scriptsize,
+%        keywordstyle=\color{[rgb]{.5, 0, .33}}\bfseries,
+        keywordstyle=\color{keywordColor}\bfseries,
+        stringstyle=\color{blue}\ttfamily,
+%       commentstyle=\color{[rgb]{0, 0.5, 0}}\ttfamily,
+        commentstyle=\color{commentColor}\ttfamily,
+        emphstyle=\color{emphColor},
+%       numberstyle=\color{numberColor},
+        tabsize=2,
+        frame=,
+        breaklines=true,
+%       postbreak={(*@$\hookrightarrow$@*)},
+%       postbreak={(*@$\nearrow$@*)},
+%       postbreak=\mbox{{\color{red}\tiny$\rightarrow$}},
+        postbreak=\mbox{{\color{red}\tiny$\hookrightarrow$}},
+}
+\lstdefinelanguage{TCS}{
+        morekeywords={main,template,isDefined,addToContext,primitiveTemplate,for,default,using,context},
+        morekeywords={operators,priority,operatorTemplate,source,storeOpTo,storeRightTo},
+        morekeywords={symbols,leftSpace,rightSpace,leftNone,rightNone},
+        morekeywords={nbNL,indentIncr},
+        morekeywords={as,refersTo,separator},
+        sensitive=true,
+        morecomment=[l]{--},
+        morestring=[b]",
+}
+
+\lstdefinelanguage{KM3}{
+        morekeywords={package,class,oppositeOf,container,ordered,abstract,extends,reference,attribute,enumeration,literal,datatype},
+        emph={Boolean,Integer,String},
+        sensitive=true,
+        morecomment=[l]{--},
+        morestring=[b]",
+}
+
+\lstdefinelanguage{ATL}{
+        morekeywords={rule,module,from,to,create,uses, using, do, helper, def},
+        emph={Boolean,Integer,String,Sequence},
+        sensitive=true,
+        morecomment=[l]{--},
+        morestring=[b]',
+}
+
+\lstdefinelanguage{ANTLR}{
+        morekeywords={},
+% we use emph for (some) terminals
+        emph={LCURLY,RCURLY,NAME},
+        sensitive=true,
+        morecomment=[l]{//},
+        morestring=[b]",
+}
+
+\lstdefinelanguage{SPL}{
+        morekeywords={service,processing,registration,return,forward,incoming},
+        emph={uri,response},
+        sensitive=true,
+        morecomment=[l]{//},
+        morestring=[b]',
+}
+
+\lstdefinelanguage{XASM}{
+        morekeywords={asm,endasm,is,choose,in,do,forall,and,or,then,endchoose,enddo,if,endif,then,universes,universe,function,
+ exists,not,extend,endextend},
+        emph={Boolean,Integer,String,Sequence},
+        sensitive=true,
+        morecomment=[l]{--},
+        morestring=[b]',
+}
+
+\lstdefinelanguage{ASP}{
+        morekeywords={node, prop, edge, not, relation, nodet, edget, propt, metanode, metaprop, metaedge},
+        sensitive=true,
+        morecomment=[l]{//},
+        morestring=[b]',
+}
+
+\lstdefinelanguage{Maude}{
+        morekeywords={fmod, endfm, mod, omod, tmod, endm, endom, endtm, is, pr, protecting, crl, rl},
+        morekeywords={op, ops, eq, ceq, mb, cmb, sort, sorts, class, subsort, subsorts, subclass, subclasses, vars, var, if},
+        sensitive=true,
+        morecomment=[l]{---},
+        morestring=[b]",
+}
+
+\lstdefinelanguage{MaudeCommand}{
+        morekeywords={Maude, result},
+        sensitive=true,
+        morecomment=[l]{---},
+        morestring=[b]",
+}
+
+\lstdefinelanguage{OCL20}{
+        morekeywords={context, inv, body},
+        emph={Boolean,Integer,String,Sequence, Bag, self, Set},
+        sensitive=true,
+        morecomment=[l]{--},
+        morestring=[b]',
+}
+\endinput

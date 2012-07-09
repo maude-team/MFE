@@ -1,0 +1,11 @@
+--- Created by Camilo Rocha
+--- July 7 of 2011
+
+--- Consider the following proof script:
+
+(set include BOOL off .)
+load 2bakery.maude
+(select tool SCC .)
+(scc 2BAK-SYNTAX .)   
+
+--- The check fails because the prelude we are using is not the one addapted for the SCC ... BUG!

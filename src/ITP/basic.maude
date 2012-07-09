@@ -1,0 +1,439 @@
+--- names and types.
+fmod META-TERM-EXT is
+  pr META-TERM .
+
+  var Q : Qid .
+  var St : String .
+  var Tp : Type .
+
+  --- Returns a variable with the string as it's name and specified type.
+  op genVar : String Type -> Variable .
+  eq genVar(St, Tp) = qid(St + ":" + string(Tp)) .
+
+  --- Returns a variable with the specified Qid and type
+  op genVar : Qid Type -> Variable .
+  eq genVar(Q, Tp) = genVar(string(Q), Tp) .
+endfm
+
+--- Defines sets of variables, terms, and types along with some useful
+--- operations on them.  It should be noted that these operations are
+--- hardly complete, but just what is necessary for use by the
+--- completeness checker.
+fmod TERM-COLLECTIONS is
+  pr META-MODULE .
+  pr ITP-EXT-TERM .
+
+  var Cond       : Condition .
+  var GT         : GroundTerm .
+  var Q          : Qid .
+  var S          : Sort .
+  var T T'       : Term .
+  var TL TL'     : TermList .
+  var Tp         : Type .
+  var TpL        : TypeList .
+  var V          : Variable .
+  var VS         : VariableSet .
+
+  --- Converts the type list to a set.
+  op toTypeSet : TypeList -> TypeSet .
+  eq toTypeSet(Tp TpL) = Tp ; toTypeSet(TpL) .
+  eq toTypeSet(nil) = none .
+
+  --- Returns a set containing the variables refered to in the list of terms.
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Renamed as it generates conflicts with FM
+**************************************************************
+  ----------------------------
+  --- vars --> vars-itp ---
+  ----------------------------
+  op vars-itp : TermList -> VariableSet .
+  eq vars-itp(TL) = $vars(TL, none) .
+
+  op $vars : TermList VariableSet -> VariableSet .
+  eq $vars((GT, TL), VS) = $vars(TL, VS) .
+  eq $vars((Q[TL], TL'), VS) = $vars((TL, TL'), VS) .
+  eq $vars((V, TL), VS) = $vars(TL, V ; VS) .
+  eq $vars(empty, VS) = VS .
+
+  --- Returns a set containing all the variables refered to in the condition.
+  op vars-itp : Condition -> VariableSet .
+  eq vars-itp(Cond) = $vars(Cond, none) .
+
+  --- Tail recursive implementation of vars-itp (above).
+  op $vars : Condition VariableSet -> VariableSet .
+  eq $vars(T  = T' /\ Cond, VS) = $vars(Cond, $vars((T, T'), VS)) .
+  eq $vars(T : S   /\ Cond, VS) = $vars(Cond, $vars(T, VS)) .
+  eq $vars(T := T' /\ Cond, VS) = $vars(Cond, $vars((T, T'), VS)) .
+  eq $vars(T => T' /\ Cond, VS) = $vars(Cond, $vars((T, T'), VS)) .
+  eq $vars((nil).Condition, VS) = VS .
+endfm
+
+--- Provides operations for getting and setting properties of the major
+--- components of a module.
+fmod META-MODULE-EXT is
+  pr ITP-EXT-MOD .
+  pr META-TERM-EXT .
+  pr CONVERSION .
+  pr TERM-COLLECTIONS .
+
+  var A        : Attr .
+  var AS AS'   : AttrSet .
+  var EqCond   : EqCondition .
+  var Eq       : Equation .
+  var Eqs Eqs' : EquationSet .
+  var H        : Header .
+  var IL       : ImportList .
+  var Mb       : MembAx .
+  var Mbs Mbs' : MembAxSet .
+  var N        : Nat .
+  var NeNL     : NeNatList .
+  var Op       : OpDecl .
+  var Ops Ops' : OpDeclSet .
+  var Q        : Qid .
+  var S S'     : Sort .
+  var SS       : SortSet .
+  var SSDS     : SubsortDeclSet .
+  var T T'     : Term .
+  var Tp       : Type .
+  var TpL      : TypeList .
+
+  --- Return true iff the attribute is in the attribute set.
+  op member : Attr AttrSet -> Bool .
+  eq member(A, A AS) = true .
+  eq member(A, AS) = false [owise].
+
+  --- SubsortDecl getters
+  op subsort : SubsortDecl -> Type .
+  eq subsort(subsort S < S' .) = S .
+
+  op supersort : SubsortDecl -> Type .
+  eq supersort(subsort S < S' .) = S' .
+
+  --- Returns all subsorts of the given sort in the set.
+  op subsorts : Sort SubsortDeclSet -> SortSet .
+  eq subsorts(S, (subsort S' < S .) SSDS) = S' ; subsorts(S, SSDS) .
+  eq subsorts(S, SSDS) = none [owise].
+
+  --- Extracts implicit memberships from non-polymorphic op declarations.
+  op mbs : OpDeclSet -> MembAxSet .
+  ceq mbs(Op Ops) = (mb term(Op) : S [none].) mbs(Ops)
+   if S := resultType(Op)
+   /\ poly-args(attrSet(Op)) = nil .
+  eq mbs(Ops) = none [owise].
+
+  op newMb : Term Sort EqCondition AttrSet -> MembAx .
+  eq newMb(T, S, EqCond, AS)
+   = if EqCond == nil then
+       (mb T : S [AS].)
+     else
+       (cmb T : S if EqCond[AS].)
+     fi .
+
+  --- Returns variables in membership term and condition.
+  op vars-itp : MembAx -> VariableSet .
+  eq vars-itp(Mb) = $vars(condition(Mb), vars-itp(term(Mb))) .
+
+  op newEq : Term Term EqCondition AttrSet -> Equation .
+  eq newEq(T, T', EqCond, AS)
+   = if EqCond == nil then
+       (eq T = T' [AS].)
+     else
+       (ceq T = T' if EqCond [AS].)
+     fi .
+
+  --- Returns variables in equation lhs, rhs, and condition.
+  op vars-itp : Equation -> VariableSet .
+  eq vars-itp(Eq) = $vars(condition(Eq), vars-itp((lhs(Eq), rhs(Eq)))) .
+
+  --- Return the properties of rule .
+  op newRule : Term Term Condition AttrSet -> Rule .
+  eq newRule(T, T', EqCond, AS) =
+     if EqCond == nil then
+       rl T => T' [AS].
+     else
+       crl T => T' if EqCond [AS].
+     fi .
+
+  op lhs : Rule -> Term .
+  eq lhs(rl T => T'[AS].) = T .
+  eq lhs(crl T => T' if EqCond[AS].) = T .
+
+  op rhs : Rule -> Term .
+  eq rhs(rl  T => T' [AS].) = T' .
+  eq rhs(crl T => T' if EqCond [AS].) = T' .
+
+  op condition : Rule -> EqCondition .
+  eq condition(rl  T => T' [AS].) = nil .
+  eq condition(crl T => T' if EqCond [AS].) = EqCond .
+
+  op attrSet : Rule -> AttrSet .
+  eq attrSet(rl  T => T'[AS].) = AS .
+  eq attrSet(crl T => T' if EqCond[AS].) = AS .
+endfm
+
+--- Provides methods working with substitutions and terms.
+fmod TERM-SUBST is
+  pr TERM-COLLECTIONS .
+  pr META-MODULE-EXT .
+  pr META-LEVEL .
+  pr ITP-EXT-TERM .
+
+  var Eq         : Equation .
+  var Mb         : MembAx .
+  var N          : Nat .
+  var ST ST'     : String .
+  var Sub        : Substitution .
+  var T          : Term .
+  var V          : Variable .
+  var VS VS'     : VariableSet .
+
+  --- Creates a variable whose name is the first string with the number
+  --- appended and whose type is the second string.
+  op nextVar : String Nat String ~> Variable .
+  eq nextVar(ST, N, ST')
+   = qid(ST + string(N, 10) + ":" + ST') .
+
+  --- Creates a variable distinct from variables in set using nextVar.
+  op nextFreeVar : String Nat String VariableSet -> Variable .
+  eq nextFreeVar(ST, N, ST', VS)
+   = if nextVar(ST, N, ST') in VS then
+       nextFreeVar(ST, N + 1, ST', VS)
+     else
+       nextVar(ST, N, ST')
+     fi .
+
+  --- If the variable is in the set, return it.  Otherwise, return a
+  --- modified form guaranteed to not be in the set.
+  op nextFreeVar : Variable VariableSet -> Variable .
+  eq nextFreeVar(V, VS)
+   = if V in VS then
+       nextFreeVar(string(getName(V)), 0, string(getType(V)), VS)
+     else
+       V
+     fi .
+
+  --- Generates a substitution, by taking each variable in the first set,
+  --- and if it is a member of the 2nd set, returning a substitution
+  --- where the variable is replaced by a new variable not in the 2nd set.
+  op freeVarSubst : VariableSet VariableSet -> Substitution .
+  eq freeVarSubst(V ; VS, V ; VS')
+   = (V <- nextFreeVar(V, V ; VS')) ;
+     freeVarSubst(VS, V ; VS' ; nextFreeVar(V, VS')) .
+  eq freeVarSubst(VS, VS') = none [owise].
+
+  --- Applies substitution to terms in equation.
+  op substitute : Equation Substitution -> Equation .
+  eq substitute(Eq, Sub)
+   = newEq(substitute(lhs(Eq), Sub),
+           substitute(rhs(Eq), Sub),
+           substitute(condition(Eq), Sub),
+           attrSet(Eq)) .
+
+  --- Applies substitution to terms in membership.
+  op substitute : MembAx Substitution -> MembAx .
+  eq substitute(Mb, Sub)
+   = newMb(substitute(term(Mb), Sub),
+           sort(Mb),
+           substitute(condition(Mb), Sub),
+           attrSet(Mb)) .
+
+  --- Renames variables in term to be distinct from variables in set.
+  op fixTerm : Term VariableSet -> Term .
+  eq fixTerm(T, VS) = substitute(T, freeVarSubst(vars-itp(T), VS)) .
+endfm
+
+--- Provides methods for filtering a set of operators basaed on the result
+--- type or whether they are constructors.
+fmod MODULE-FILTERS is
+  pr META-MODULE-EXT .
+  pr EXT-BOOL .
+
+  --- Abstract datatype that decides if filter should accept an op
+  --- declaration.
+  sort OpDeclFilter .
+  op accept : OpDeclFilter OpDecl ~> Bool .
+
+  --- Abstract datatype that decides if filter should accept an membership
+  --- axiom.
+  sort MembAxFilter .
+  op accept : MembAxFilter MembAx ~> Bool .
+
+  var AS     : AttrSet .
+  var HL     : HookList .
+  var M      : Module .
+  var Mb     : MembAx .
+  var Mbs    : MembAxSet .
+  var MF     : MembAxFilter .
+  var OF OF' : OpDeclFilter .
+  var Op     : OpDecl .
+  var Ops    : OpDeclSet .
+  var S      : Sort .
+  var Tp     : Type .
+
+  --- Return operator declarations that OpDeclFilter accepts.
+  op filter : OpDeclFilter OpDeclSet -> OpDeclSet .
+  ceq filter(OF, Op Ops) = Op filter(OF, Ops)
+   if accept(OF, Op) = true .
+  eq filter(OF, Ops) = none [owise].
+
+  --- Return membership axioms that MembAxFilter accepts.
+  op filter : MembAxFilter MembAxSet -> MembAxSet .
+  ceq filter(MF, Mb Mbs) = Mb filter(MF, Mbs)
+   if accept(MF, Mb) = true .
+  eq filter(MF, Mbs) = none [owise].
+
+  --- Accepts op iff. argument does not.
+  op not_ : OpDeclFilter -> OpDeclFilter [ctor prec 53].
+  eq accept(not OF, Op) = accept(OF, Op) =/= true .
+
+  --- Accepts op iff. both filters accept it.
+  op _and_ : OpDeclFilter OpDeclFilter -> OpDeclFilter
+             [ctor prec 55 gather(e E)].
+  eq accept(OF and OF', Op)
+   = (accept(OF, Op) == true) and-then (accept(OF', Op) == true) .
+
+  --- Accepts membership iff. filter does not.
+  op not_ : MembAxFilter -> MembAxFilter [ctor prec 53].
+  eq accept(not MF, Mb) = accept(MF, Mb) =/= true .
+
+  --- Accepts op if it is a constructor.
+  op ctor : -> OpDeclFilter [ctor].
+  eq accept(ctor, Op) = member(ctor, attrSet(Op)) .
+
+  --- Accepts op iff. result type is a sort.
+  op sortResult : -> OpDeclFilter [ctor].
+  eq accept(sortResult, Op) = resultType(Op) :: Sort .
+
+  --- Accepts op iff. the result type equals given type.
+  op opResultType : Module Type -> OpDeclFilter [ctor].
+  eq accept(opResultType(M, Tp), Op) = resultType(Op) == Tp .
+
+  op special : -> OpDeclFilter [ctor].
+  ceq accept(special, Op) = true
+   if special(HL) AS := attrSet(Op) .
+  --- As a temporary hack, we treat format as a special attribute for
+  --- operators.
+  ceq accept(special, Op) = true
+   if format(QIL:QidList) AS := attrSet(Op) .
+
+  --- Accepts membership iff. the result type is a subtype of given type.
+  op mbResultSubtype : Module Sort -> MembAxFilter [ctor].
+  eq accept(mbResultSubtype(M, S), Mb) = subtype?(M, sort(Mb), S) .
+
+  op nonexec : -> MembAxFilter [ctor].
+  ceq accept(nonexec, Mb) = true
+   if member(nonexec, attrSet(Mb)) .
+endfm
+
+fmod CLAUSE is
+  pr TERM-SUBST .
+
+  sort Clause .
+
+  --- Constructors of Clause:
+
+  --- Asserts true
+  op trueClause : -> Clause [ctor].
+  --- Asserts false.
+  op falseClause : -> Clause [ctor].
+  --- Asserts that two terms are equal.
+  op ((_=_))  : Term Term -> Clause [ctor comm prec 20].
+  --- Asserts that Term has the specified Sort.
+  op ((_:_))  : Term Sort -> Clause [ctor prec 20].
+  --- Asserts that 1st Term rewrites to 2nd Term in 0 or more rewrites.
+  op ((_=>_)) : Term Term -> Clause [ctor prec 20].
+
+  --- The rest of the operators have usual first order logic meanings.
+  op not_ : Clause -> Clause [ctor prec 30].
+  op _and_     : Clause Clause -> Clause [ctor assoc comm prec 40].
+  op _or_      : Clause Clause -> Clause [ctor assoc comm prec 50].
+  op _implies_ : Clause Clause -> Clause [assoc prec 60].
+  op ((exists_)_) : VariableSet Clause -> Clause [ctor prec 70].
+  --- Note that since sorts may be empty "(forall V:S) false" is true when S
+  --- is empty.
+  op ((forall_)_) : VariableSet Clause -> Clause [ctor prec 70].
+
+  var C       : Clause .
+  var C'      : Clause .
+  var C''     : Clause .
+  var Cond    : Condition .
+  var S       : Sort .
+  var Sub     : Substitution .
+  var T       : Term .
+  var T'      : Term .
+  var VS VS'  : VariableSet .
+  var K       : Kind .
+
+  eq trueClause and C = C .
+  eq trueClause or C = trueClause .
+  eq falseClause and C = falseClause .
+  eq falseClause or C = C .
+  eq not trueClause = falseClause .
+  eq not falseClause = trueClause .
+  eq C and C = C .
+  eq C or C = C .
+  eq not not C = C .
+  eq C and not C = falseClause .
+  eq C or not C = trueClause .
+  eq (exists none) C = C .
+  eq (forall none) C = C .
+  eq (exists VS) (exists VS') C = (exists VS ; VS') C .
+  eq (forall VS) (forall VS') C = (forall VS ; VS') C .
+  eq (exists VS) falseClause = falseClause .
+  eq (forall VS) trueClause = trueClause .
+  eq trueClause implies C = C .
+
+  --- Eliminates a type constraint at the kind level.  One question to ask is
+  --- what if the kind is empty?  I believe this axiom is still valid,
+  --- because then T cannot really exist either.
+  eq (T : K) = trueClause .
+
+  --- These equations are debatable, their goal
+  --- is to move not to the inside.
+  eq not (C and C') = not C or not C' .
+  eq not (C or C') = not C and not C' .
+  eq C implies C' = not C or C' .
+
+  --- Returns the free variables in a clause.
+  op varsC : Clause -> VariableSet .
+  eq varsC(trueClause)    = none .
+  eq varsC(falseClause)   = none .
+  eq varsC((T : S))       = vars-itp(T) .
+  eq varsC((T = T'))      = vars-itp((T, T')) .
+  eq varsC((T => T'))     = vars-itp((T, T')) .
+  eq varsC(not C)         = varsC(C) .
+  eq varsC(C and C')      = varsC(C) ; varsC(C') .
+  eq varsC(C or C')       = varsC(C) ; varsC(C') .
+  eq varsC(C implies C')  = varsC(C) ; varsC(C') .
+  eq varsC((exists VS) C) = varsC(C) \ VS .
+  eq varsC((forall VS) C) = varsC(C) \ VS .
+
+  op condToClause : Condition -> Clause .
+  eq condToClause((T =  T') /\ Cond) = (T = T') and condToClause(Cond) .
+  eq condToClause((T := T') /\ Cond) = (T = T') and condToClause(Cond) .
+  eq condToClause((T :  S)  /\ Cond) = (T : S)  and condToClause(Cond) .
+  eq condToClause((T => T') /\ Cond) = (T => T') and condToClause(Cond) .
+  eq condToClause(nil) = trueClause .
+
+  op substituteC : Clause Substitution -> Clause .
+  eq substituteC(trueClause, Sub) = trueClause .
+  eq substituteC(falseClause, Sub) = falseClause .
+  eq substituteC((T : S), Sub)
+   = (substitute(T, Sub) : S) .
+  eq substituteC((T = T'), Sub)
+   = (substitute(T, Sub) = substitute(T', Sub)) .
+  eq substituteC((T => T'), Sub)
+   = (substitute(T, Sub) = substitute(T', Sub)) .
+  eq substituteC(not C, Sub) = not substituteC(C, Sub) .
+  eq substituteC(C and C', Sub)
+   = substituteC(C, Sub) and substituteC(C', Sub) .
+  eq substituteC(C or C', Sub)
+   = substituteC(C, Sub) or substituteC(C', Sub) .
+  eq substituteC(C implies C', Sub)
+   = substituteC(C, Sub) implies substituteC(C', Sub) .
+  eq substituteC((exists VS) C, Sub)
+   = (exists VS) substituteC(C, removeBindings(Sub, VS)) .
+  eq substituteC((forall VS) C, Sub)
+   = (forall VS) substituteC(C, removeBindings(Sub, VS)) .
+endfm

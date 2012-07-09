@@ -1,0 +1,101 @@
+fmod BAKERY-SYNTAX is
+ pr NAT .
+ sorts ProcIdle ProcWait Proc ProcIdleSet ProcWaitSet ProcSet .
+ subsorts ProcIdle < ProcIdleSet .
+ subsorts ProcWait < ProcWaitSet .
+ subsorts ProcIdle ProcWait < Proc < ProcSet .
+ subsorts ProcIdleSet < ProcWaitSet < ProcSet .
+ op idle : -> ProcIdle [ctor] .
+ op wait : Nat -> ProcWait [ctor] .
+ op crit : Nat -> Proc [ctor] .
+ op none : -> ProcIdleSet [ctor] .
+ op __ : ProcIdleSet ProcIdleSet -> ProcIdleSet [ctor assoc comm id: none] .
+ op __ : ProcWaitSet ProcWaitSet -> ProcWaitSet [ditto] .
+ op __ : ProcSet ProcSet -> ProcSet [ditto] .
+
+ sort State .
+ op _:_[_] : Nat Nat ProcSet -> State [ctor] .
+endfm
+
+mod BAKERY is
+ pr BAKERY-SYNTAX .
+ var Ps : ProcSet .
+ vars N M : Nat .
+
+ rl [in] : N : M [idle Ps] => s(N) : M [wait(N) Ps] .
+
+ rl [serve] : N : M [wait(M) Ps] => N : M [crit(M) Ps] .
+
+ rl [leave] : N : M [crit(M) Ps] => N : s(M) [idle Ps] .
+endm
+
+fmod BAKERY-PROPS is
+ pr BAKERY-SYNTAX .
+
+ ops init mutex good-state bounded-tickets unique-tickets : State -> [Bool] .
+
+ sort NatBag .
+ subsort Nat < NatBag .
+ op mtbag : -> NatBag .
+ op __ : NatBag NatBag -> NatBag [assoc comm id: mtbag] .
+
+ var Is : ProcIdleSet .     var Ws : ProcWaitSet .     vars Ps Ps' : ProcSet .
+ vars N M M' N' : Nat .     var P : Proc .
+ vars NB NB' NB'' : NatBag .
+
+ eq [1] : bounded-tickets(N : M [Ps]) = sub-bag(tickets(Ps),tickets-below(N)) .
+
+ op sub-bag : NatBag NatBag -> Bool .
+ eq [a.1] : sub-bag(NB,NB NB') = true .
+ eq [a.2] : sub-bag(N NB,N NB') = sub-bag(NB,NB') .
+ceq [a.3] : sub-bag(N NB,NB') = false if in?(N,NB') .
+
+ op tickets : ProcSet -> NatBag .
+ eq [b.1] : tickets(Is) = mtbag .
+ eq [b.2] : tickets(idle Ps) = tickets(Ps) .
+ eq [b.3] : tickets(wait(N) Ps) = N tickets(Ps) .
+ eq [b.4] : tickets(crit(N) Ps) = N tickets(Ps) .
+
+ op tickets-below : Nat -> NatBag .
+ eq [c.1] : tickets-below(0) = mtbag .
+ eq [c.2] : tickets-below(s(N)) = N tickets-below(N) .
+
+ eq [2] : init(0 : 0 [Is]) = true .
+ eq [3] : unique-tickets(N : M [Ps]) = set?(tickets(Ps)) .
+
+--- Some bags are sets 
+ op set? : NatBag -> Bool .
+ eq [d.1] : set?(mtbag) = true .
+ceq [d.2] : set?(N NB) = set?(NB) if in?(N,NB) = false .
+ eq [d.3] : set?(N N NB) = false .
+
+--- Bag membership
+ op in? : Nat NatBag -> Bool .
+ eq [e.1] : in?(N,mtbag) = false .
+ eq [e.2] : in?(N, M NB) = =(N,M) or in?(N,NB) .
+
+--- Equality enrichment
+ op = : Nat Nat -> Bool [comm] .
+ eq [f.1] : =(N,N) = true .
+ eq [f.2] : =(0,0) = true .
+ eq [f.3] : =(s(N),0) = false .
+ eq [f:4] : =(s(N),s(N')) = =(N,N') .
+ eq [f:5] : =(s(N),N) = false .
+
+--- Innequality (for theorem proving purposes)
+ op <= : Nat Nat -> Bool .
+ eq [g.1] : <=(N,N) = true .
+ eq [g.2] : <=(0,N) = true .
+ eq [g.3] : <=(s(N),s(M)) = <=(N,M) .
+ eq [g.4] : <=(s(N),0) = false .
+
+ eq [4.1] : good-state(N : M [Ws]) = true .
+ eq [4.2] : good-state(N : M [crit(M) Ws]) = true .
+ eq [4.3] : good-state(N : M [crit(M') crit(N') Ps]) = false .
+
+ eq [5.1] : mutex(N : M [Ws]) = true .
+ eq [5.2] : mutex(N : M [crit(M') Ws]) = true .
+ eq [5.3] : mutex(N : M [crit(M') crit(N') Ps]) = false .
+endfm
+
+eof

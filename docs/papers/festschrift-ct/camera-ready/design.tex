@@ -1,0 +1,302 @@
+\section{The Design of MFE}
+\label{sec.design}
+
+The object-oriented model of MFE consists of three classes: 
+the class \texttt{Proof} of proof objects that keep the state of specific proof requests,
+the class \texttt{Tool} of tool objects that manage proof objects, and
+a class \texttt{Controller}
+that inherits from the Full Maude's \texttt{DatabaseClass} 
+and provides a centralized entry point for 
+handling requests to the formal environment.
+
+The \texttt{Controller} object orchestrates the behavior of the 
+environment with the user and of the environment 
+with its tools. 
+The user interacts with the environment via commands
+that are encapsulated as messages in the object configuration. Each
+tool object and the controller object have a module defining 
+the grammar of the commands it can handle. 
+The controller handles any command it can parse;
+since this object extends Full Maude, it handles its own commands
+and Full Maude ones.
+If the controller receives a command it cannot parse, it
+will delegate it to the current {\em active} tool. 
+If the active tool can parse the delegated command, 
+then it notifies the controller and handles the command.
+Otherwise, it notifies the failure to the controller
+that in turn will notify the failure to the requester.
+
+Classes \texttt{Proof} and \texttt{Tool} define some basic 
+functionality for tools and, as we will see in 
+Section~\ref{sec.extend} for a sample tool,  
+are provided to simplify the task of 
+incorporating new tools to the environment. 
+However, tools can be added to the environment by 
+defining the expected interaction with the controller object 
+without using classes \texttt{Proof} and \texttt{Tool}. This was 
+the case, for example, with the ITP tool that does not use in MFE the 
+infrastructure provided by classes \texttt{Proof} and \texttt{Tool}.
+
+In the following subsections we describe in more detail 
+the object-based model of MFE and its interaction mechanism.
+
+\subsection{Proof Objects}
+
+Proof objects maintain 
+the state of specific proof requests to a tool object. 
+Every proof object maintains
+in its state the information of the module associated to the proof obligation
+and a set of object identifiers corresponding to the objects 
+submitting the proof obligation. 
+
+\begin{small}
+\begin{verbatim}
+  class Proof | module : Module, requester : Set{Oid} .
+\end{verbatim}
+\end{small}
+%
+The concept of a proof object representing the state of
+a proof requirement, is key for enabling tools 
+in MFE with support for 
+multiple proof requirements. Namely, handling a ``new
+proof'' command corresponds to instantiating a proof object
+with the appropriate attribute data. 
+Commands that incrementally modify the status of a proof
+obligation result in updates to the attributes of the proof
+object.
+For example, a CRC proof object will keep track of confluence and/or 
+sort-decreasingness checks, and will be updated every time a new proof 
+obligation is discharged; when all proof obligations have been proved, 
+it will realize the check's completion and will inform all its requesters. 
+
+A subclass of \texttt{Proof} may be defined
+for each tool in the environment, adding the additional attributes and 
+behavior required by the specific tool.  
+Proof obligation objects, for instance, can be extended with
+additional attributes for keeping track of dependencies
+of subgoals that should be handled by other tools, timeouts, number of attempts, 
+or any other required information.
+
+\subsection{Tool Objects}
+
+A tool object is responsible for maintaining the life cycle of
+its proof objects. When a tool object receives a request for a new proof,
+it tries to create a new proof object for it and, if successful, 
+it sets the new proof object
+as active so that any command from the user or message from other 
+tools in the environment are forwarded to it. 
+There is exactly one tool object
+for each tool in the formal environment. 
+
+Every tool object
+has an attribute \texttt{grammar} that defines the grammar of user commands
+the tool can handle.
+Tools may rely on other tools, hence a tool object has
+attribute \texttt{tools} with a map from tool names to the object identifiers of the corresponding tools in the environment. If proof obligations are due, this attribute will be used to submit them to the appropriate tools. 
+The references of proof objects associated to a tool object are
+maintained with a map from module names to object identifiers in attribute \texttt{reg}.
+In MFE, a tool may perform several analyses on a module, so
+that the information of such analyses is kept in the
+attributes of the corresponding proof object.
+A tool object also keeps in attribute \texttt{current} 
+a reference to one of its proof
+objects, if any, which is referred by the tool as its {\em active}
+proof obligation.
+
+\begin{small}
+\begin{verbatim}
+  class Tool | grammar : Module, 
+               tools : Map{ToolName, Oid}, 
+               reg : Map{ModuleName, Oid}, 
+               current : Oid, 
+               index : Nat .
+\end{verbatim}
+\end{small}
+%
+Integration and interoperability of tools within MFE revolves around modules, and therefore, typically, the ``new goal'' commands 
+have a module expression as parameter, although in general commands
+may have other parameters. For example, a check of the Church-Rosser property would take just the module to be checked as parameter.
+However, one can perform checks of coherence in the coherence checker with the option of checking coherence or ground coherence via an additional parameter. 
+The decision of whether a new proof object is generated or not for a module when attempting different kinds of checks is up to the tool developer. 
+
+Despite this flexibility, in the general approach a tool object will create a new proof object for a module $M$ whenever there is no record of $M$ being previously handled by the tool, namely, if name of module $M$ is not in the domain of the {\tt reg} attribute. More precisely, when a proof is requested, the \texttt{reg} attribute is checked: if there is a proof for a module with such a name, then the module itself is compared with the current one, to make sure that the module has not changed. In case there is some parameter, as for example an alternative transformation for a termination proof, if the proof has not succeeded before then the check is attempted: the existing proof object is replaced with the one corresponding to the new proof. 
+
+The different tools may perform tool specific checks on a parameter module $M$ and if these checks succeed, then a new proof 
+object is instantiated with a unique object identifier, with $M$ as associated module (in attribute {\tt module}), and the corresponding
+reference of the requesting object (in attribute \texttt{requester}). 
+The remaining attributes of the proof
+object are set according to the purpose
+of the tool. 
+%Additionally, the registry {\tt reg},
+%the active proof object {\tt current}, and counter {\tt index}
+%attributes are updated accordingly. 
+%A tool object may send some messages, for instance, to the user
+%or to other tools.
+
+See Section~\ref{sec.extend} for an example of this behavior in the case of SCC. %the Sufficient Completeness Checker.
+
+%{\small
+%\begin{verbatim}
+%crl [check] :
+%   < O : Tool | reg : MNReg, current: O'', index: N, Atts > 
+%   (to O from O' : check M)
+%=> < O : Tool | reg : (MNReg, M |-> s(N)), current: po(s(N)), index: s(N), Atts >
+%   < po(s(N)) : Goal | module : M, requester : O', processAttributes(M) >
+%   processMessages(O',O,...)
+%if not getName(M) in domain of MNReg 
+%/\ admisibleModule(M) .
+%\end{verbatim}
+%}
+
+\subsection{The Controller Object}
+
+The task of the controller object is twofold: it provides a centralized
+entry point for handling user requests 
+and it manages the tools that are available in the environment.
+
+The \texttt{Controller} class inherits from Full Maude's \texttt{DatabaseClass}, 
+and in addition to its module database and all the functionality for handling 
+all Full Maude commands, the controller object stores information on
+the tools available in MFE. This is achieved by using the attribute
+{\tt tools} that is a map from tool names into object identifiers.
+In the attribute {\tt current-tool} the controller object maintains a 
+reference to the active tool:
+
+\begin{small}
+\begin{verbatim}
+  class Controller | current-tool : Oid, tools : Map{ToolName, Oid} .
+  subclass Controller < DatabaseClass .
+\end{verbatim}
+\end{small}
+%
+The controller object is {\em the singleton} instance {\tt mfe} of
+class {\tt Controller}.
+To handle a command, the object \texttt{mfe} first tries using its
+grammar (which extends that of Full Maude). If the command
+can be parsed with its grammar, then \texttt{mfe} handles
+the request. Otherwise, it delegates the command to the 
+active tool and waits for an answer.
+The user can select the active tool via a ``select'' command.
+The answer to the delegated request can be either affirmative or not,
+meaning that the tool can parse the command and will
+handle it, or that the given command does not conform to the grammar
+and therefore cannot be handled by the tool.
+Because of the way user and tool interaction has been designed and
+implemented in MFE, there is no need to enforce a policy of
+uniqueness of commands among its tools: if two tools share
+a command syntax, then such command will be handled by the controller
+object or else by the active tool. This simplifies the integration of
+existing tools, because most of their implementations can directly be used 
+and because all proof scripts available are still usable after adding 
+the appropriate selection and submission commands. 
+
+The \verb~Controller~ class adds the following commands to those available in Full Maude:
+\begin{description}
+\item[\verb~(select tool <tool-name> .)~] sets the tool \verb~<tool-name>~ as active tool.
+\item[\verb~(MFE help .)~] shows information on the commands available.
+\item[\verb~(show global state .)~] shows the state of the framework.
+\end{description}
+%
+To illustrate the way in which the behavior of the controller object works, we present the
+{\tt select-tool} rewrite rule that implements tool selection in MFE for the
+controller:
+%\newline
+%{\small
+%%\begin{verbatim}
+%\verb~  (select tool <tool-name> .)~
+%%\end{verbatim}
+%}
+%\newline
+%%\noindent 
+% in MFE. %, which takes as parameter the name of a tool.
+
+\begin{small}
+\begin{verbatim}
+ var X@Controller : Controller .   var Ct : Constant .       
+ var TS : Map{ToolName, Oid} .     var QIL : QidList .       
+ var Atts : AttributeSet .         var O : Oid .  
+   
+ crl [select-tool] :
+    < mfe : X@Controller | input : ('select`tool_.[Ct]), 
+       output : QIL, 
+       current-tool : O, 
+       tools : TOOLS, 
+       Atts >
+    => < mfe : X@Controller | input : nilTermList, 
+          output : QIL 'The getName(Ct) 'has 'been 'set 'as 'active 'tool., 
+          current-tool : TOOLS[qid2tool(getName(Ct))], 
+          tools : TOOLS, 
+          Atts > 
+    if TOOLS[qid2tool(getName(Ct))] =/= null .
+\end{verbatim}
+\end{small}
+%
+When the result of parsing a ``select tool'' command in the grammar of the controller is placed 
+in the \texttt{input} attribute of the \texttt{mfe} object, and it corresponds to a tool in
+the environment (see the condition in rule \texttt{select-tool}),
+then such a tool is set as the active one. Functions \texttt{getName} and \texttt{qid2tool} 
+return the name of a given constant and transforms a quoted identifier into a tool name, respectively. 
+A second rule (omitted here) handles the case in which the argument of the select command 
+does not correspond to a tool in the environment; this rule reports on 
+the situation by creating an error message.
+
+\subsection{User Interaction and Tool Interoperability}
+
+In the object configuration of MFE, user interaction is achieved via commands
+and tool interoperability via messages. Upon successful parsing, commands 
+are converted into messages. With this approach, requests from users and from 
+tools are handled in a uniform manner by just distinguishing the requester. 
+
+MFE internal messages identify their contents with ``to-from''
+information and name the different operations offered by 
+the tools and their answers.
+% and are of two types depending on their contents.
+%A {\em parsing message} is a message having as contents 
+%the meta-representation of an user command. 
+%An (MFE) {\em internal message} is a message
+%that corresponds to the commands available from
+%each tool in  the formal environment. 
+%The following is the syntax of messages in MFE:
+Using the following syntax for messages, each tool defines 
+its corresponding message bodies.
+
+\begin{small}
+\begin{verbatim}
+  sort MFEMsgBody .
+  op to_from_:_ : Oid Oid MFEMsgBody -> Msg [ctor] .
+\end{verbatim}
+\end{small}
+%
+If a user command parses in the controller's grammar, then the controller handles the command.
+If it fails, then the input is submitted to the active tool.
+The tool is expected to return an ``input parsed'' message indicating whether or not
+it is able to parse the command or not. Rewrite rule {\tt input}, below,
+defines the behavior of a tool object that is able to parse the
+input command. Observe that when a tool object can parse
+a command, it sends two messages. Namely, it creates a copy of
+the original message but with a parsed version 
+of the input command and it sends the requester an output message
+indicating that the input can be parsed.
+
+\begin{small}
+\begin{verbatim}
+  var  X@Tool : Tool .               vars  O O' : Oid .
+  var  Atts : AttributeSet .         var  QIL : QidList .
+  var  G : Module .
+ 
+ crl [input] :
+    < O : X@Tool | grammar : G, Atts >
+    (to O from O' : input(QIL))
+    => < O : X@Tool | grammar : G, Atts >
+       (to O from O' : getTerm(metaParse(G, QIL, '@Input@)))
+       (to O' from O : input-parsed(QIL, true))
+    if RP:ResultPair := metaParse(G, QIL, '@Input@) .
+\end{verbatim}
+\end{small}
+%
+If the tool cannot parse the input, then another rule (omitted here)
+sends the requester an \texttt{input-parsed} message with its second argument 
+set to \texttt{false}. When the controller receives the \texttt{input-parsed} 
+message, with \texttt{true} or \texttt{false}, it proceeds either by letting 
+the corresponding tool resolve the command or by displaying an error 
+message. 

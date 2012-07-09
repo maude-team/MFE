@@ -1,0 +1,570 @@
+--- Equality Enrichment Module
+
+--- examples: red eq-enrich(upModule('PEANO, false)) .
+---           red enrich(upModule('PEANO, false)) .
+
+fmod AUX is
+  pr CONVERSION .
+
+  var Str  : String .
+  var FRes : FindResult . 
+
+--- alpha - removes _ from a string
+  op alpha : String -> String .
+  ceq alpha(Str) = if FRes == notFound
+                   then Str
+                   else (substr(Str,0,FRes)) + alpha(substr(Str,FRes + 1, length(Str)))
+                   fi 
+  if FRes := find(Str,"_",0) .
+
+endfm
+
+fmod TYPES-AUX is
+  pr META-LEVEL .
+  pr CONVERSION .
+
+--- Meta-Level Sorts
+  sorts KindOpDeclSet KindOpDeclSetSet NEKindOpDeclSetSet .
+  sorts EKindOpDeclSet EKindOpDeclSetSet NEEKindOpDeclSetSet .
+
+  subsorts KindOpDeclSet < NEKindOpDeclSetSet < KindOpDeclSetSet  .
+  subsorts EKindOpDeclSet < NEEKindOpDeclSetSet < EKindOpDeclSetSet .
+
+--- Working with Kinds and Types
+  op _::_ : Kind OpDeclSet -> KindOpDeclSet [ctor] . 
+  op none : -> KindOpDeclSetSet [ctor] .
+  op __ : NEKindOpDeclSetSet NEKindOpDeclSetSet -> NEKindOpDeclSetSet [ctor assoc comm id: none] . 
+  op __ : KindOpDeclSetSet KindOpDeclSetSet -> KindOpDeclSetSet [assoc comm id: none] . 
+  op _[_]::_ : Type TypeList OpDeclSet -> EKindOpDeclSet [ctor] . 
+  op none : -> EKindOpDeclSetSet [ctor] .
+  op __ : NEEKindOpDeclSetSet NEEKindOpDeclSetSet -> NEEKindOpDeclSetSet [ctor assoc comm id: none] . 
+  op __ : EKindOpDeclSetSet EKindOpDeclSetSet -> EKindOpDeclSetSet [assoc comm id: none] . 
+  op typeListLength : TypeList -> NzNat .
+  op setNewSorts : EKindOpDeclSetSet -> SortSet .
+  op removeOps : OpDeclSet -> OpDeclSet .
+
+  vars Tp Tp' Tp'' : Type .
+  vars TpL TpL' TpL'' : TypeList .
+  var K : Kind . 
+  var OPDS OPDS' : OpDeclSet .
+  var KOPDS : KindOpDeclSetSet .
+  var EKOPDS : EKindOpDeclSetSet .
+  vars FRes FRes' : FindResult .
+  var Str : String .
+  var N : NzNat .
+  var M : Module .
+  var AtS : AttrSet .
+  var F : Qid .
+  var FS : QidSet .
+
+--- typeListLength - returns the length of a type list
+  eq typeListLength(nil) = 0 .
+  eq typeListLength(Tp TpL) = 1 + typeListLength(TpL) .
+
+--- fromTypeListToString - concat a list of types into a String
+  op fromTypeListToString : TypeList -> String .
+  eq fromTypeListToString(nil) = "" .
+  eq fromTypeListToString(Tp TpL) = string(Tp) + fromTypeListToString(TpL) .
+
+--- setTopSort - create a new top sort if there is not top sort
+  op setTopSort : TypeList -> Type .
+  eq setTopSort(Tp)  = Tp .
+  eq setTopSort(TpL) = qid(fromTypeListToString(TpL)) [owise] .
+
+--- setNewSorts - list all the new top sorts
+  eq setNewSorts(none)
+   = none .
+  eq setNewSorts((Tp [ Tp ] :: OPDS) EKOPDS)
+   = setNewSorts(EKOPDS) .
+  eq setNewSorts((Tp [ TpL ] :: OPDS) EKOPDS)
+   = Tp ; setNewSorts(EKOPDS) [owise] .
+
+--- setNewSubsortDeclSet - for each new top sort, set the dependencies
+--- with respect to the rest of sorts in the SCC
+  op setNewSubsortDeclSet : EKindOpDeclSetSet -> SubsortDeclSet .
+  eq setNewSubsortDeclSet(none)
+   = none .
+  eq setNewSubsortDeclSet((Tp [ nil ] :: OPDS) EKOPDS)
+   = setNewSubsortDeclSet(EKOPDS) .
+  eq setNewSubsortDeclSet((Tp [ Tp ] :: OPDS) EKOPDS)
+   = setNewSubsortDeclSet(EKOPDS) .
+  eq setNewSubsortDeclSet((Tp [ Tp' TpL ] :: OPDS) EKOPDS)
+   = (subsort Tp' < Tp .) setNewSubsortDeclSet((Tp [ TpL ] :: OPDS) EKOPDS) [owise] .
+
+--- processKinds - set the Top Sort is exists, if not create one
+  op processKinds : KindOpDeclSetSet -> EKindOpDeclSetSet .
+  eq processKinds(none)
+   = none .
+  ceq processKinds((K :: OPDS) KOPDS)
+   = (setTopSort(TpL) [ TpL ] :: OPDS) processKinds(KOPDS)
+  if TpL := extractTypes(string(K)) .
+
+--- extractTypes - given a Kind as a String "'`[S1`,S2`,S3`]" extracts
+--- the different maximal types as a list of Qids: 'S1 'S2 'S3
+  op extractTypes : String -> TypeList .
+  ceq extractTypes(Str) = if (substr(Str,0,2) == "`[")
+                          then extractTypes(substr(Str,2, N))
+                          else if (FRes =/= notFound) 
+                               then (qid(substr(Str,0,FRes)) 
+                                    extractTypes(substr(Str,FRes + 2,N)))
+			       else qid(substr(Str,0,FRes'))
+                               fi
+                          fi
+  if FRes  := find(Str,"`,",0)
+  /\ FRes' := find(Str,"`]",0)
+  /\ N     := length(Str) .
+
+--- getConstByKind - get all the different constructors group by kind
+  op getConstrByKind : Module KindOpDeclSetSet OpDeclSet -> KindOpDeclSetSet .
+  ceq getConstrByKind(M, (K :: OPDS) KOPDS, (op F : TpL -> Tp [ctor AtS] .) OPDS') 
+   = getConstrByKind(M, (K :: (OPDS (op F : TpL -> Tp [ctor AtS] .))) KOPDS, OPDS') 
+   if K = getKind(M, Tp) .
+  eq getConstrByKind(M, KOPDS, OPDS) 
+   = getConstrByKind'(M, KOPDS, OPDS)  [owise] .
+
+--- getConstByKind1 - we have to create the new kindset or we have finished
+--- because there is no more constructor operators
+  op getConstrByKind' : Module KindOpDeclSetSet OpDeclSet -> KindOpDeclSetSet .
+  eq getConstrByKind'(M, KOPDS, ((op F : TpL -> Tp [ctor AtS] .) OPDS)) 
+   = getConstrByKind(M, (getKind(M, Tp) :: (op F : TpL -> Tp [ctor AtS] .)) KOPDS, OPDS) .
+  eq getConstrByKind'(M, KOPDS, OPDS) 
+   = KOPDS [owise] .
+
+--- isMaximalTyping - tell us if a typing is maximal with respect to another
+  op isMaximalTyping : Module TypeList TypeList -> Bool .
+  eq isMaximalTyping(M, nil, nil)
+   = false .
+  eq isMaximalTyping(M, Tp TpL, Tp' TpL')
+   = if intersection(Tp' ; lesserSorts(M, Tp'),Tp) =/= none
+     then isMaximalTyping(M, TpL, TpL')
+     else true
+     fi .
+
+--- getMaximalTypings - filter non maximal typings
+  op getMaximalTypings : Module EKindOpDeclSetSet -> EKindOpDeclSetSet .
+  eq getMaximalTypings(M, none) 
+   = none .
+  ceq getMaximalTypings(M, (Tp'' [ TpL'' ] :: (op F : TpL -> Tp [ctor AtS] .) (op F : TpL' -> Tp' [ctor AtS] .) OPDS) EKOPDS) 
+   = getMaximalTypings(M, (Tp'' [ TpL'' ] :: (op F : TpL' -> Tp' [ctor AtS] .) OPDS) EKOPDS)
+  if isMaximalTyping(M, TpL Tp, TpL' Tp') = false .
+  eq getMaximalTypings(M, (Tp [ TpL ] :: OPDS) EKOPDS) 
+   = (Tp [ TpL ] :: OPDS) getMaximalTypings(M, EKOPDS) [owise] .
+
+--- removeOps - remove Ops by its qid
+  op removeOps : QidSet OpDeclSet -> OpDeclSet .
+  eq removeOps((F ; FS), (op F : TpL -> Tp [AtS] .) OPDS)
+   = removeOps((F ; FS), OPDS) .
+  eq removeOps(FS, OPDS)
+   = OPDS [owise] .
+
+endfm
+
+fmod EQUALITY-ENRICHMENT is
+---  pr META-LEVEL .
+---  pr CONVERSION .
+  pr AUX .
+  pr TYPES-AUX .
+
+--- Simulating State Monad in Maude
+  sorts STMEquationSet STMTerm STMTermList .
+
+  op _,_ : EquationSet Nat -> STMEquationSet .
+  op _,_ : Term Nat -> STMTerm .
+  op _;_ : TermList Nat -> STMTermList .
+
+--- eq-enrich - Equality Enrichment
+  op eq-enrich : Module -> Module .
+  op enrich : Module -> Module .
+
+--- Meta-Level Variables
+  var M : Module .
+  var S : Sort .
+  vars T T' : Term .
+  vars T1 T2 T3 : Term .
+  var TL : TermList .
+  var Cd : Condition .
+  var H : Header . 
+  vars IL IL' : ImportList .
+  vars SS SS' : SortSet .
+  vars SSDS SSDS' : SubsortDeclSet .
+  vars OPD OPD' : OpDecl .
+  vars OPDS OPDS' : OpDeclSet .
+  var MAS : MembAxSet .
+  vars EqS0 EqS EqS' EqS'' : EquationSet .
+  var RlS : RuleSet .
+  var KS : KindSet .
+  vars AtS AtS' : AttrSet .
+  vars F F' : Qid .
+  vars Tp Tp' Tp'' : Type .
+  vars TpL TpL' : TypeList .
+  vars N N' N'' N''' : Nat .
+  vars N1 N2 N3 N4 N5 : Nat .
+  var NL NL' : NatList .
+  vars ME ME' : ModuleExpression .
+  var KOPDS KOPDS' : KindOpDeclSetSet .
+  var EKOPDS EKOPDS' : EKindOpDeclSetSet .
+
+--- Auxiliar Operators
+
+--- addSort - add a set of sorts to a given functional module
+  op addSort : Module SortSet ~> Module .
+  eq addSort (fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm, SS')
+   = fmod H is IL sorts (SS ; SS') . SSDS OPDS MAS EqS endfm .
+
+--- addImports - add an import list to a given functional module
+  op addImports : Module ImportList ~> Module .
+  eq addImports (fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm, IL')
+   = fmod H is (IL IL') sorts SS . SSDS OPDS MAS EqS endfm .
+
+--- addOps - add a set of operators to a given functional module
+  op addOps : Module OpDeclSet ~> Module .
+  eq addOps (fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm, OPDS')
+   = fmod H is IL sorts SS . SSDS (OPDS OPDS') MAS EqS endfm .
+
+--- addEqs - add a set of equations to a given functional module
+  op addEqs : Module EquationSet ~> Module .
+  eq addEqs (fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm, EqS')
+   = fmod H is IL sorts SS . SSDS OPDS MAS (EqS EqS') endfm .
+
+--- addEqualityOps - add equality operator
+  op addEqualityOps : EKindOpDeclSetSet -> OpDeclSet .
+  eq addEqualityOps(none)
+   = none .
+  eq addEqualityOps((Tp [ TpL ] :: OPDS) EKOPDS)
+   = (op '_==_ : Tp Tp -> 'Bool [comm] .)
+     (op '_=/=_ : Tp Tp -> 'Bool [comm] .)
+     (op 'if_then_else_fi : 'Bool Tp Tp -> Tp [strat (1 0)] .)
+     addEqualityOps(EKOPDS) .
+
+--- addInFOps - add in-f and f-root equations for AC constructors
+  op addInFOps : EKindOpDeclSetSet -> OpDeclSet .
+  eq addInFOps(none)
+   = none .
+  eq addInFOps((Tp [ TpL ] :: none) EKOPDS)
+   = addInFOps(EKOPDS) .
+  eq addInFOps((Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc comm AtS] .) OPDS) EKOPDS)
+   = (op qid("in-" + alpha(string(F)) + "-" + string(Tp')) : Tp Tp -> 'Bool [none] .)
+     (op qid(alpha(string(F)) + "-" + string(Tp') + "-root") : Tp -> 'Bool [none] .)
+     addInFOps((Tp [ TpL ] :: OPDS) EKOPDS) .
+  eq addInFOps((Tp [ TpL ] :: OPD OPDS) EKOPDS)
+   = addInFOps((Tp [ TpL ] :: OPDS) EKOPDS) [owise] .
+
+  op addRootFOps : EKindOpDeclSetSet -> OpDeclSet .
+  eq addRootFOps(none)
+   = none .
+  eq addRootFOps((Tp [ TpL ] :: none) EKOPDS)
+   = addRootFOps(EKOPDS) .
+  eq addRootFOps((Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc comm AtS] .) OPDS) EKOPDS)
+   = addRootFOps((Tp [ TpL ] :: OPDS) EKOPDS) .
+  eq addRootFOps((Tp [ TpL ] :: OPD OPDS) EKOPDS)
+   = addRootFOps'((Tp [ TpL ] :: OPD OPDS) EKOPDS) [owise] .
+
+--- addRootFOps' - A case
+  op addRootFOps' : EKindOpDeclSetSet -> OpDeclSet .
+  eq addRootFOps'((Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .) OPDS) EKOPDS)
+   = (op qid(alpha(string(F)) + "-" + string(Tp') + "-root") : Tp -> 'Bool [none] .)
+      addRootFOps((Tp [ TpL ] :: OPDS) EKOPDS) .
+  eq addRootFOps'((Tp [ TpL ] :: OPD OPDS) EKOPDS)
+   = addRootFOps((Tp [ TpL ] :: OPDS) EKOPDS) [owise] .
+
+--- addEqualityEqs - for all kinds, add equality equations
+  op addEqualityEqs : Module EKindOpDeclSetSet Nat -> STMEquationSet .
+  eq addEqualityEqs(M, none, N)
+   = (none, N) .
+--- x:s == x:s  = true
+--- x:s =/= y:s = not (x:s == y:s)
+--- if true then x else y fi = x
+--- if false then x else y fi = y
+  ceq addEqualityEqs(M, (Tp [ TpL ] :: none) EKOPDS, N)
+   = ((eq '_==_[qid("X-" + string(N, 10) + ":" + string(Tp)), qid("X-" + string(N, 10) + ":" + string(Tp))] = 'true.Bool [none] .) 
+      (eq '_=/=_[qid("X-" + string(N, 10) + ":" + string(Tp)), qid("X-" + string(s N, 10) + ":" + string(Tp))] = 'not_['_==_[qid("X-" + string(N, 10) + ":" + string(Tp)), qid("X-" + string(s N, 10) + ":" + string(Tp))]] [none] .)
+      (eq 'if_then_else_fi['true.Bool, qid("X-" + string(N, 10) + ":" + string(Tp)), qid("X-" + string(s N, 10) + ":" + string(Tp))] = qid("X-" + string(N, 10) + ":" + string(Tp)) [none] .)
+      (eq 'if_then_else_fi['false.Bool, qid("X-" + string(N, 10) + ":" + string(Tp)), qid("X-" + string(s N, 10) + ":" + string(Tp))] = qid("X-" + string(s N, 10) + ":" + string(Tp)) [none] .)
+      EqS,N') 
+  if (EqS,N') := addEqualityEqs(M, EKOPDS, s s N) .
+  ceq addEqualityEqs(M, (Tp [ TpL ] :: OPD OPDS) EKOPDS, N)
+   = (EqS EqS',N'')
+  if (EqS,N')   := addOPDOPDSEqualityEqs(M, OPD, OPDS, N)
+  /\ (EqS',N'') := addEqualityEqs(M, (Tp [ TpL ] :: OPDS) EKOPDS,N') .
+
+--- addOPDOPDSEqualityEqs - add all the equalities related with an
+--- operator and a set of operators
+  op addOPDOPDSEqualityEqs : Module OpDecl OpDeclSet Nat -> STMEquationSet .
+  ceq addOPDOPDSEqualityEqs(M, OPD, OPD' OPDS, N)
+   =  (EqS EqS', N2)
+  if (EqS,N1) := addOPDOPDEqualityEqs(M, OPD, OPD', N) 
+  /\ (EqS',N2) := addOPDOPDSEqualityEqs(M, OPD, OPDS, N1) .
+  eq addOPDOPDSEqualityEqs(M, op F : nil -> Tp [ctor AtS] ., none, N)
+   = (none, N) .
+--- eq(f(x1,x2),f(x1,y2)) = eq(x2,y2)
+--- eq(f(x1,x2),y) = false if or(in-f(x1,y),f-root(x1)) = false commented, more general
+--- eq(f(x1,x2),f(y1,y2)) = false if and(not(in-f(x1,f(y1,y2))),not(f-root(x1))) = true
+--- f-root(f(x1,...,xn)) = true
+  ceq addOPDOPDSEqualityEqs(M, op F : Tp Tp -> Tp [ctor assoc comm AtS] ., none, N)
+   = ((eq '_==_[T, T1]  = T2 [none] .)
+      (eq qid(alpha(string(F)) + "-" + string(Tp) + "-root")[T]  = 'true.Bool [none] .) 
+      (ceq '_==_[T, T3]  = 'false.Bool 
+         if '_and_['not_[qid("in-" + alpha(string(F)) + "-" + string(Tp))[qid("X-" + string(N,10) + ":" + string(Tp)),T3]],
+                   'not_[qid(alpha(string(F)) + "-" + string(Tp) + "-root")[qid("X-" + string(N,10) + ":" + string(Tp))]]] = 'true.Bool [none] .)
+     EqS, N5)
+  if (T,N1)   := constrTerm(M, op F : Tp Tp -> Tp [ctor assoc comm AtS] ., N)
+  /\ (T1,N2)  := constrPartTerm(M, op F : Tp Tp -> Tp [ctor assoc comm AtS] ., N, s s s N)
+  /\ (T2,N3)  := constrAssocCommEq(Tp Tp, N) 
+  /\ (T3,N4)  := constrTerm(M, op F : Tp Tp -> Tp [ctor assoc comm AtS] ., N1)
+  /\ (EqS,N5) := addSubtermEqualityEqs(M, op F : Tp Tp -> Tp [ctor assoc comm AtS] ., Tp Tp,N4,N4) .
+  eq addOPDOPDSEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., none, N)
+   = addOPDOPDSEqualityEqs'(M, op F : TpL -> Tp [ctor AtS] ., none, N) [owise] .
+
+
+
+--- addOPDOPDSEqualityEqs' - cases C, A and Empty
+  op addOPDOPDSEqualityEqs' : Module OpDecl OpDeclSet Nat -> STMEquationSet .
+--- eq(f(x1,x2),f(x1,y2)) = eq(x2,y2)
+--- eq(f(x1,x2),f(y1,x2)) = eq(x1,y1)
+--- eq(f(x1,x2),f(y1,y2)) = false if or(eq(x1,y1),or(f-root(x1),f-root(y1))) = false
+--- f-root(f(x1,...,xn)) = true
+  ceq addOPDOPDSEqualityEqs'(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., none,N)
+   = ((eq '_==_[T, T1]  = '_==_[qid("X-" + string(s N,10) + ":" + string(Tp)),qid("X-" + string(s s N,10) + ":" + string(Tp))] [none] .)
+     (eq qid(alpha(string(F)) + "-" + string(Tp) + "-root")[T]  = 'true.Bool [none] .) 
+     (eq '_==_[T, T2]  = '_==_[qid("X-" + string(N,10) + ":" + string(Tp)),qid("X-" + string(s s N,10) + ":" + string(Tp))] [none] .)
+     (ceq '_==_[T, T3]  = 'false.Bool 
+       if '_and_['not_['_==_[qid("X-" + string(N,10) + ":" + string(Tp)),qid("X-" + string(s s N,10) + ":" + string(Tp))]], 
+          '_and_['not_[qid(alpha(string(F)) + "-" + string(Tp) + "-root")[qid("X-" + string(N,10) + ":" + string(Tp))]],
+                 'not_[qid(alpha(string(F)) + "-" + string(Tp) + "-root")[qid("X-" + string(s s N,10) + ":" + string(Tp))]]]] = 'true.Bool [none] .)
+     EqS,N5) 
+  if (T,N1)   := constrTerm(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., N)
+  /\ (T1,N2)  := constrPartTerm(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., N, s s N)
+  /\ (T2,N3)  := constrInvPartTerm(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., s N, s s N) 
+  /\ (T3,N4)  := constrTerm(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., N1)
+  /\ (EqS,N5) := addSubtermEqualityEqs(M, op F : Tp Tp -> Tp [ctor assoc AtS] ., Tp Tp,N4,N4) [owise] .
+--- eq(f(x1,x2),f(y1,y2)) = or(and(eq(x1,y1),eq(x2,y2)),and(eq(x1,y2),eq(x2,y1)))
+  ceq addOPDOPDSEqualityEqs'(M, op F : Tp Tp -> Tp' [ctor comm AtS] ., none,N)
+   = ((eq '_==_[T, T1]  = T2 [none] .) EqS,N4)
+  if (T,N1)   := constrTerm(M, op F : Tp Tp -> Tp' [ctor comm AtS] ., N)
+  /\ (T1,N2)  := constrTerm(M, op F : Tp Tp -> Tp' [ctor comm AtS] ., N1)
+  /\ (T2,N3)  := constrCommAnd(Tp Tp, N) 
+  /\ (EqS,N4) := addSubtermEqualityEqs(M, op F : Tp Tp -> Tp' [ctor comm AtS] ., Tp Tp,N2,N2) [owise] .
+--- eq(f(x1,...,xn),f(y1,...,yn)) = and(eq(x1,y1),and(eq(x2,y2),...))
+  ceq addOPDOPDSEqualityEqs'(M, op F : TpL -> Tp [ctor AtS] ., none, N)
+   = ((eq '_==_[T, T1]  = T2 [none] .) EqS,N4)
+  if (T,N1)   := constrTerm(M, op F : TpL -> Tp [ctor AtS] ., N)
+  /\ (T1,N2)  := constrTerm(M, op F : TpL -> Tp [ctor AtS] ., N1)
+  /\ (T2,N3)  := constrAnd(TpL, N, N + typeListLength(TpL))
+  /\ (EqS,N4) := addSubtermEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., TpL,N2,N2) [owise] .
+
+--- addOPDOPDEqualityEqs - add all the equalities related with two
+--- operators
+  op addOPDOPDEqualityEqs : Module OpDecl OpDecl Nat -> STMEquationSet .
+--- eq(f(x1,...,xn),g(y1,...,yn)) = false
+  ceq addOPDOPDEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., op F' : TpL' -> Tp' [ctor AtS'] ., N)
+   = ((eq '_==_[T, T1]  = 'false.Bool [none] .), N2) 
+  if (T,N1)  := constrTerm(M, op F : TpL -> Tp [ctor AtS] ., N) 
+  /\ (T1,N2) := constrTerm(M, op F' : TpL' -> Tp' [ctor AtS'] ., N1) .
+
+--- constrTerm - Construct a Term from its operators
+  op constrTerm : Module OpDecl Nat -> STMTerm .
+  eq constrTerm(M, op F : nil -> Tp [ctor AtS] ., N)
+   = (qid(string(F) + "." + string(Tp)), N) .
+  ceq constrTerm(M, op F : Tp TpL -> Tp' [ctor AtS] ., N)
+   = (F [TL], N1) 
+  if (TL ; N1) := listVars(Tp TpL, N) .
+
+--- constrPartTerm - Construct a Term from its operators where the
+--- first variable uses N' and the rest s N'
+  op constrPartTerm : Module OpDecl Nat Nat -> STMTerm .
+  eq constrPartTerm(M, op F : nil -> Tp [ctor AtS] ., N', N)
+   = (qid(string(F) + "." + string(Tp)), N) .
+  ceq constrPartTerm(M, op F : Tp TpL -> Tp' [ctor AtS] ., N', N)
+   = (F [TL], N1) 
+  if (TL ; N1) := listPartVars(Tp TpL, N', N) .
+
+--- constrInvPartTerm - Construct a Term from its operators where the
+--- last variable uses N' and the rest s N'
+  op constrInvPartTerm : Module OpDecl Nat Nat -> STMTerm .
+  eq constrInvPartTerm(M, op F : nil -> Tp [ctor AtS] ., N', N)
+   = (qid(string(F) + "." + string(Tp)), N) .
+  ceq constrInvPartTerm(M, op F : Tp TpL -> Tp' [ctor AtS] ., N', N)
+   = (F [TL], N1)
+  if (TL ; N1) := listInvPartVars(Tp TpL, N', N) .
+
+--- constrAnd - Construct an nested And Term.
+  op constrAnd : TypeList Nat Nat -> STMTerm .
+  eq constrAnd(Tp nil, N', N)
+   = ('_and_['_==_[qid("X-" + string(N',10) + ":" + string(Tp)), qid("X-" + string(N,10) + ":" + string(Tp))], 'true.Bool], s N) .
+  ceq constrAnd(Tp TpL, N', N)
+   = ('_and_['_==_[qid("X-" + string(N',10) + ":" + string(Tp)), qid("X-" + string(N,10) + ":" + string(Tp))], T], N1) 
+  if (T,N1) := constrAnd(TpL, s N', s N) [owise] .
+
+--- constrCommAnd - Construct an nested Or And Term
+  op constrCommAnd : TypeList Nat -> STMTerm .
+  eq constrCommAnd(Tp Tp, N)
+   = ('_or_['_and_['_==_[qid("X-" + string(N,10) + ":" + string(Tp)), qid("X-" + string(s s N,10) + ":" + string(Tp))], '_==_[qid("X-" + string(s N,10) + ":" + string(Tp)), qid("X-" + string(s s s N,10) + ":" + string(Tp))]], '_and_['_==_[qid("X-" + string(N,10) + ":" + string(Tp)), qid("X-" + string(s s s N,10) + ":" + string(Tp))], '_==_[qid("X-" + string(s N,10) + ":" + string(Tp)), qid("X-" + string(s s N,10) + ":" + string(Tp))]]], s s s s N) .
+
+--- constrAssocCommEq - Construct an Equality removing the equal first
+--- variable
+  op constrAssocCommEq : TypeList Nat -> STMTerm .
+  eq constrAssocCommEq(Tp Tp, N)
+   = ('_==_[qid("X-" + string(s N,10) + ":" + string(Tp)), qid("X-" + string(s s s N,10) + ":" + string(Tp))], s s s s N) .
+
+--- addSubtermEqualityEqs - add false considering the subterm relation.
+--- eq(f(x1,...,xn), xi) = false
+--- if comm then there is only one equation eq(f(x1,...,xn),x1) = false
+  op addSubtermEqualityEqs : Module OpDecl TypeList Nat Nat -> STMEquationSet .
+  eq addSubtermEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., nil, N', N)
+   = (none, N) .
+  ceq addSubtermEqualityEqs(M, op F : TpL -> Tp [ctor comm AtS] ., Tp' TpL', N', N)
+   = if sortLeq(M, Tp', Tp) == true then ((eq '_==_[T, qid("X-" + string(N,10) + ":" + string(Tp'))]  = 'false.Bool [none] .), N1) else (none, N) fi
+  if (T, N1) := constrTerm(M, op F : TpL -> Tp [ctor AtS] ., N') .
+  ceq addSubtermEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., Tp' TpL', N', N)
+   = if sortLeq(M, Tp', Tp) == true then ((eq '_==_[T, qid("X-" + string(N,10) + ":" + string(Tp'))]  = 'false.Bool [none] .) EqS,N2) else (EqS, N2) fi
+  if (T, N1)  := constrTerm(M, op F : TpL -> Tp [ctor AtS] ., N')
+  /\ (EqS,N2) := addSubtermEqualityEqs(M, op F : TpL -> Tp [ctor AtS] ., TpL', N', s N) [owise] .
+
+--- listVars - Construct a list of Vars separated by comma
+  op listVars : TypeList Nat -> STMTermList .
+  eq listVars(Tp nil, N)
+   = (qid("X-" + string(N,10) + ":" + string(Tp)) ; s N) .
+  ceq listVars(Tp TpL, N)
+   = ((qid("X-" + string(N,10) + ":" + string(Tp)) , TL) ; N1) 
+  if (TL ; N1) := listVars(TpL, s N) [owise] .
+
+--- listPartVars - Construct a list of Vars separated by comma where
+--- first variable uses N' and the rest s N'
+  op listPartVars : TypeList Nat Nat -> STMTermList .
+  eq listPartVars(Tp nil, N', N)
+   = (qid("X-" + string(N',10) + ":" + string(Tp)) ; N) .
+  ceq listPartVars(Tp TpL, N', N)
+   = ((qid("X-" + string(N',10) + ":" + string(Tp)) , TL) ; N1)
+  if (TL ; N1) := listVars(TpL, N) [owise] .
+
+--- listInvPartVars - Construct a list of Vars separated by comma where
+--- last variable uses N' and the rest N
+  op listInvPartVars : TypeList Nat Nat -> STMTermList .
+  eq listInvPartVars(Tp nil, N', N)
+   = (qid("X-" + string(N',10) + ":" + string(Tp)) ; N) .
+  ceq listInvPartVars(Tp TpL, N', N)
+   = ((qid("X-" + string(N,10) + ":" + string(Tp)) , TL) ; N1)
+  if (TL ; N1) := listInvPartVars(TpL, N', s N) [owise] .
+
+--- addFSortEqs - for all top sorts and sort f assoc (and possible
+--- comm), add fsort equations
+  op addFSortEqs : Module EKindOpDeclSetSet EKindOpDeclSetSet Nat -> STMEquationSet .
+  eq addFSortEqs(M, none, EKOPDS', N)
+   = (none, N) .
+  eq addFSortEqs(M, (Tp [ TpL ] :: none) EKOPDS, EKOPDS', N)
+   = addFSortEqs(M, EKOPDS, EKOPDS', N) .
+  ceq addFSortEqs(M, (Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .) OPDS) EKOPDS, (Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .) OPDS') EKOPDS', N)
+   = (EqS' EqS, N2)
+  if (EqS,N1)  := addFSortEqs(M, (Tp [ TpL ] :: OPDS) EKOPDS, (Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .) OPDS') EKOPDS', N)
+  /\ (EqS',N2) := addKFSortEqs(M, (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .), Tp [ TpL ] :: OPDS',N1) .
+  eq addFSortEqs(M, (Tp [ TpL ] :: OPD OPDS) EKOPDS, EKOPDS', N)
+   = addFSortEqs(M, (Tp [ TpL ] :: OPDS) EKOPDS, EKOPDS', N) [owise] .
+
+--- addKFSortEqs - for all symbol in the top sort, add negative fsort equations
+--- fsort(g(x1,...,xn)) = false
+  op addKFSortEqs : Module OpDecl EKindOpDeclSet Nat -> STMEquationSet .
+  eq addKFSortEqs(M, OPD, Tp [ TpL ] :: none, N)
+   = (none, N) . 
+  ceq addKFSortEqs(M, op F : Tp' Tp' -> Tp' [ctor assoc AtS] ., (Tp [ TpL ] :: OPD OPDS'), N)
+   = ((eq qid(alpha(string(F)) + "-" + string(Tp') + "-root")[T]  = 'false.Bool [none] .) EqS,N2)
+  if (T,N1)   := constrTerm(M, OPD, N)
+  /\ (EqS,N2) := addKFSortEqs(M, (op F : Tp' Tp' -> Tp' [ctor assoc AtS] .), (Tp [ TpL ] :: OPDS'), N1) .
+
+--- addInFEqs - for all kinds and sort f assoc and comm, add in-f
+--- equations
+--- in-f(x:s,y:s) = false if f-root(x:s) = true
+--- in-f(x:s,f(x:s,y)) = true if f-root(x:s) = false
+--- in-f(x:s,f(y1,y2)) = or(eq(x:s,y1),in-f(x:s,y2)) if or(f-root(x:s),f-root(y1)) = false
+--- in-f(x:s,y) = eq(x:s,y) if or(f-root(x:s),f-root(y)) = false
+  op addInFEqs : Module EKindOpDeclSetSet Nat -> STMEquationSet .
+  eq addInFEqs(M, none, N)
+   = (none, N) .
+  eq addInFEqs(M, (Tp [ TpL ] :: none) EKOPDS, N)
+   = addInFEqs(M, EKOPDS, N) .
+  ceq addInFEqs(M, (Tp [ TpL ] :: (op F : Tp' Tp' -> Tp' [ctor assoc comm AtS] .) OPDS) EKOPDS, N)
+    = ((ceq qid("in-" + alpha(string(F)) + "-" + string(Tp'))[qid("X-" + string(N,10) + ":" + string(Tp')), qid("X-" + string(s N,10) + ":" + string(Tp))]  = 'false.Bool 
+          if  qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(N,10) + ":" + string(Tp'))] = 'true.Bool [none] .)
+       (ceq qid("in-" + alpha(string(F)) + "-" + string(Tp'))[qid("X-" + string(N,10) + ":" + string(Tp')), T]  = 'true.Bool 
+          if 'not_[qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(N,10) + ":" + string(Tp'))]] = 'true.Bool [none] .)
+       (ceq qid("in-" + alpha(string(F)) + "-" + string(Tp'))[qid("X-" + string(s N,10) + ":" + string(Tp)), T1]  
+          = '_or_['_==_[qid("X-" + string(s N,10) + ":" + string(Tp)),
+                        qid("X-" + string(N1,10) + ":" + string(Tp'))], 
+                  qid("in-" + alpha(string(F)) + "-" + string(Tp'))[qid("X-" + string(s N,10) + ":" + string(Tp)),qid("X-" + string(s N1,10) + ":" + string(Tp'))]] 
+          if '_and_['not_[qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(s N,10) + ":" + string(Tp))]],
+                    'not_[qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(N1,10) + ":" + string(Tp'))]]] = 'true.Bool [none] .)
+       (ceq qid("in-" + alpha(string(F)) + "-" + string(Tp'))[qid("X-" + string(s N,10) + ":" + string(Tp)), qid("X-" + string(N2,10) + ":" + string(Tp))]  = '_==_[qid("X-" + string(s N,10) + ":" + string(Tp)),qid("X-" + string(N2,10) + ":" + string(Tp))] 
+          if '_and_['not_[qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(s N,10) + ":" + string(Tp))]],
+                    'not_[qid(alpha(string(F)) + "-" + string(Tp') + "-root")[qid("X-" + string(N2,10) + ":" + string(Tp))]]] = 'true.Bool [none] .)
+     EqS,N3)
+  if (T, N1)  := constrPartTerm(M, op F : Tp' Tp' -> Tp' [ctor assoc comm AtS] ., N, s s N) 
+  /\ (T1,N2)  := constrTerm(M, op F : Tp' Tp' -> Tp' [ctor assoc comm AtS] ., N1)  
+  /\ (EqS,N3) := addInFEqs(M, (Tp [ TpL ] :: OPDS) EKOPDS, s N2) .
+  eq addInFEqs(M, (Tp [ TpL ] :: OPD OPDS) EKOPDS, N)
+   = addInFEqs(M, (Tp [ TpL ] :: OPDS) EKOPDS, N) [owise] .
+
+--- eq-enrich - Protecting equality Enrichment of the input theory
+  ceq eq-enrich(M) 
+   = fmod qid("EQ-" + string(getName(M))) is 
+       (protecting getName(M) .) 
+       (protecting 'BOOL-OPS .) 
+       sorts setNewSorts(EKOPDS) .
+       setNewSubsortDeclSet(EKOPDS) 
+       addEqualityOps(EKOPDS)
+       addInFOps(EKOPDS)
+       addRootFOps(EKOPDS)
+       none 
+       EqS
+       EqS'
+       EqS''
+     endfm
+  if EKOPDS      := getMaximalTypings(M,processKinds(getConstrByKind(M, none, getOps(M))))
+  /\ (EqS,N)     := addEqualityEqs(M, EKOPDS, 0)
+  /\ (EqS',N1)   := addFSortEqs(M, EKOPDS, EKOPDS, N)
+  /\ (EqS'',N2)  := addInFEqs(M, EKOPDS, N1) .
+
+--- enrich - Equality Enrichment of the input theory
+  ceq enrich(fmod H is IL sorts SS . SSDS OPDS MAS EqS0 endfm) 
+   = fmod qid("EQ-" + string(getName(M))) is 
+       nil
+       sorts (getSorts(M) ; setNewSorts(EKOPDS)) .
+       getSubsorts(M) 
+       setNewSubsortDeclSet(EKOPDS)
+       removeOps(('_==_ ; '_=/=_ ; 'if_then_else_fi), getOps(M))
+       addEqualityOps(EKOPDS)
+       addInFOps(EKOPDS)
+       addRootFOps(EKOPDS)
+       none 
+       getEqs(M)
+       EqS
+       EqS'
+       EqS''
+     endfm
+  if M           := (fmod H is IL sorts SS . SSDS OPDS MAS EqS0 endfm)
+  /\ EKOPDS      := getMaximalTypings(M,processKinds(getConstrByKind(M, none, getOps(M))))
+  /\ (EqS,N)     := addEqualityEqs(M, EKOPDS, 0)
+  /\ (EqS',N1)   := addFSortEqs(M, EKOPDS, EKOPDS, N)
+  /\ (EqS'',N2)  := addInFEqs(M, EKOPDS, N1) .
+  ceq enrich(mod H is IL sorts SS . SSDS OPDS MAS EqS0 RlS endm) 
+   = mod qid("EQ-" + string(getName(M))) is 
+       nil
+       sorts (getSorts(M) ; setNewSorts(EKOPDS)) .
+       getSubsorts(M) 
+       setNewSubsortDeclSet(EKOPDS)
+       removeOps(('_==_ ; '_=/=_ ; 'if_then_else_fi), getOps(M))
+       addEqualityOps(EKOPDS)
+       addInFOps(EKOPDS)
+       addRootFOps(EKOPDS)
+       none 
+       getEqs(M)
+       EqS
+       EqS'
+       EqS''
+       getRls(M)
+     endm
+  if M           := (mod H is IL sorts SS . SSDS OPDS MAS EqS0 RlS endm)
+  /\ EKOPDS      := getMaximalTypings(M,processKinds(getConstrByKind(M, none, getOps(M))))
+  /\ (EqS,N)     := addEqualityEqs(M, EKOPDS, 0)
+  /\ (EqS',N1)   := addFSortEqs(M, EKOPDS, EKOPDS, N)
+  /\ (EqS'',N2)  := addInFEqs(M, EKOPDS, N1) .
+
+endfm

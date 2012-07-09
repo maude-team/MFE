@@ -1,0 +1,118 @@
+---- Last changes:
+----
+---- Feb 21st, 2011: A new command 
+----     (check termination functional part [<module-name>] .)
+----   has been added. It checks the termination of the functional part of the module, 
+----   not taking into account rules. 
+
+
+load termcheck.maude
+load MTT-transformations.1.5i.maude
+
+-------------------------------------------------------------------------------
+---- file: mtt.maude
+---- author: Francisco Duran
+---- last modified by Francisco Duran on January 1st, 2011
+----
+---- commands available:
+
+fmod MTT-HELP is
+  pr EXT-QID-LIST .
+  op mtt-help : -> QidList .
+  eq mtt-help 
+    = '\t string2qidList("(MTT help .)") '\n
+      '\t '\t string2qidList("shows the commands available for the MTT.") '\n
+
+      '\t string2qidList("(ct .) / (check termination .)") '\n
+      '\t '\t string2qidList("checks the termination of the current module. TODO: add path-selection capabilities") '\n
+
+      '\t string2qidList("(ct <module> .) / (check termination <module> .)") '\n
+      '\t '\t string2qidList("checks the termination of the specified module. TODO: add path-selection capabilities") '\n
+
+      '\t string2qidList("(ctf .) / (check termination functional part .)") '\n
+      '\t '\t string2qidList("checks the termination of the functional part of the current module.") '\n ----  TODO: add path-selection capabilities
+      
+      '\t string2qidList("(ctf <module> .) / (check termination functional part <module> .)") '\n
+      '\t '\t string2qidList("checks the termination of the functional part of the specified module.") '\n  ---- TODO: add path-selection capabilities
+
+      '\t string2qidList("(show state .)") '\n
+      '\t '\t string2qidList("shows the state of the MTT.") '\n
+
+      '\t string2qidList("(show proof .)") '\n
+      '\t '\t string2qidList("shows the termination proof for the last check termination") '\n
+      '\t '\t string2qidList("command.") '\n
+
+      '\t string2qidList("(select proof <module> .)") '\n
+      '\t '\t string2qidList("sets the specified module as the current module of the MTT.") '\n 
+
+      '\t string2qidList("(trust .)") '\n
+      '\t '\t string2qidList("Assumes that the current module has been proved terminating.") '\n .
+endfm
+
+
+fmod TERMINATION-CHECKER is
+  pr TERMINATION-CHECK .
+  pr PROC-TPDB .
+        
+  var  M : Module . 
+  var  PP : Path .
+  vars CONDITIONS CONTEXT : Bool .
+  var  Str : String .
+
+  op terminationCheck : Module Path Bool Bool -> String .
+
+  eq terminationCheck(M, PP, CONDITIONS, CONTEXT) 
+    = termCheck("aprove", replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", " "), "\\s", " "), 30) .
+----    = termCheck(replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", ""), "\\s", ""), "AProVE", "30") .
+endfm
+
+
+-------------------
+------SIGN
+-------------------
+
+fmod MTT-SIGN is
+  including FULL-MAUDE-SIGN .
+  inc TPDB-SIGN .
+
+  op MTT help . : -> @Command@ .
+  op show state . : -> @Command@ .
+  op trust . : -> @Command@ .
+
+  op check termination . : -> @Command@ .
+  op check termination functional part . : -> @Command@ .
+  op check termination using_. : @Path@ -> @Command@ .
+  op check termination functional part using_. : @Path@ -> @Command@ .
+  op ct . : -> @Command@ .                                      ---- alias 
+  op ctf . : -> @Command@ .                                     ---- alias 
+  op ctu_. : @Path@ -> @Command@ .                                      ---- alias 
+  op ctfu_. : @Path@ -> @Command@ .                                     ---- alias 
+  op check termination_. : @ModExp@ -> @Command@ .
+  op check termination functional part_. : @ModExp@ -> @Command@ .
+  op check termination_using_. : @ModExp@ @Path@ -> @Command@ .
+  op check termination functional part_using_. : @ModExp@ @Path@ -> @Command@ .
+  op ct_. : @ModExp@ -> @Command@ .                             ---- alias
+  op ctf_. : @ModExp@ -> @Command@ .                            ---- alias
+  op ctu__. : @ModExp@ @Path@ -> @Command@ .                             ---- alias
+  op ctfu__. : @ModExp@ @Path@ -> @Command@ .                            ---- alias
+  op show proof . : -> @Command@ .
+  op select proof_. : @ModExp@ -> @Command@ .
+  op trust . : -> @Command@ .
+endfm
+
+
+fmod META-MTT-SIGN is
+  pr META-FULL-MAUDE-SIGN .
+  inc UNIT .
+
+  ops MTT-GRAMMAR : -> FModule .
+  eq MTT-GRAMMAR = addImports((including 'MTT-SIGN .), GRAMMAR) .
+endfm
+
+
+mod MTT-TOOL is
+  pr DATABASE-HANDLING .
+  pr TERMINATION-CHECKER .
+  pr MTT-HELP .
+  pr MAP{String, String} .
+endm

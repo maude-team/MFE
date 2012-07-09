@@ -1,0 +1,74 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English: 
+--- If we reverse the list that results from appending a list L2 to a list L1, 
+--- we obtain the same list that the list that results after appending the reverse 
+--- of L1 to the reverse of L2.
+
+--- ITP :
+(goal ordlist-reverse-append : 
+   ORDLIST |- A{L1:List? ; L2:List?}
+((((L1:List?): List) & ((L2:List?): List))
+=>           
+((reverse(append(L1:List?, L2:List?))) 
+             = (append(reverse(L2:List?), reverse(L1:List?))))) .)
+
+----------
+--- lemma: ordlist-append
+----------
+(lem ordlist-append : 
+   A{L1:List? ; L2:List?}((((L1:List?): List) & ((L2:List?): List))
+      => ((append(L1:List?, L2:List?)): List)) .)
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+----------
+--- lemma: ordlist-append-nil
+----------
+(lem ordlist-append-nil :
+   A{L:List?}(((L:List?): List) => (append(L:List?, nil)) = (L:List?)) .)
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+----------
+--- lemma: ordlist-append-assoc
+----------
+(lem ordlist-append-assoc : 
+ A{L1:List? ; L2:List? ; L3:List?}
+((((L1:List?): List) & ((L2:List?): List) & ((L3:List?): List))
+ => ((append(L1:List?, append(L2:List?, L3:List?)))
+      = (append(append(L1:List?, L2:List?), L3:List?)))) .)
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+----------
+--- lemma: ordlist-reverse
+----------
+(lem ordlist-reverse :
+A{L1:List?}
+  (((L1:List?): List) => ((reverse(L1:List?)): List)) .)
+
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+
+---------
+--- goal: ordlist-reverse-append
+---------
+(ind on L1:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)

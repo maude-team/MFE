@@ -1,0 +1,34 @@
+ (set include BOOL off .)
+---- set include BOOL off
+
+ (set include TRUTH-VALUE on .)
+---- set include TRUTH-VALUE on
+
+ (fmod MBOOL is
+    op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+    op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+    op not_ : Bool -> Bool [prec 53] .
+    vars A B C : Bool .
+    eq true and A = A .
+    eq false and A = false .
+    eq not true = false .
+    eq not false = true .
+    eq not not A = A .
+    eq A or B = not (not A and not B) .
+  endfm)
+---- Introduced module MBOOL
+
+(select tool CRC .)
+---- The CRC has been set as current tool.
+  
+(check Church-Rosser .)
+ 
+---(
+Church-Rosser checking of MBOOL
+Checking solution:
+All critical pairs have been joined.
+The specification is locally-confluent.
+The specification is sort-decreasing.
+---)
+
+(submit .)

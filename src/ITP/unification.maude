@@ -1,0 +1,330 @@
+--- in ext-term 
+
+*** TODO
+*** The existance of module UNIFICATION needs to be validated
+*** since there are built-in unification routines available from
+*** core Maude.
+*** 07/17 : Camilo has sent an email to J.Hendrix asking him if the
+*** module can be disposed of, so the ITP could use Maude's built-in
+*** algorithms
+fmod UNIFICATION is
+  pr META-LEVEL .
+  pr ITP-EXT-TERM .
+  pr EXT-BOOL .
+  pr CONVERSION .
+
+  sort ITPSubstitutionSet .
+  subsort Substitution < ITPSubstitutionSet .
+  op emptyITPSubstitutionSet : -> ITPSubstitutionSet .
+  op substitutionSet : ITPSubstitutionSet ITPSubstitutionSet -> ITPSubstitutionSet 
+          [assoc comm id: emptyITPSubstitutionSet] .
+
+  sorts UnifPair UnifTuple Disjunction .
+  subsort UnifTuple < Disjunction .
+
+  sorts CommEq CommEqSet .
+  subsort CommEq < CommEqSet .
+  op commEq : Term Term -> CommEq [comm] .
+  op emptyCommEqSet : -> CommEqSet .
+  op commEqSet : CommEqSet CommEqSet -> CommEqSet 
+          [assoc comm id: emptyCommEqSet] .
+
+  sorts QidListSet .
+  subsort QidList < QidListSet .
+  op emptyQidListSet : -> QidListSet .
+  op qidListSet : QidListSet QidListSet -> QidListSet 
+          [assoc comm id: emptyQidListSet] .
+
+  op unify : Module Term Term -> ITPSubstitutionSet .
+
+  op failure : -> Disjunction .
+  op disjunction : Disjunction Disjunction -> Disjunction
+          [assoc comm id: failure] .
+  op unifPair : Module Disjunction -> UnifPair .
+  op unifTuple : CommEqSet Substitution -> UnifTuple .
+  op unifTuple2 :  MembAxSet Substitution Substitution -> UnifTuple .
+  op commEqBreak : TermList TermList -> CommEqSet .  
+
+  op substituteCommEqSet : CommEqSet Substitution -> CommEqSet .
+  op getUnifSolution : UnifPair -> ITPSubstitutionSet .
+
+  op unifTuplesNonVar : Module MembAx UnifTuple -> Disjunction .
+  op unifTuplesNonVar1 : QidListSet TermList UnifTuple -> Disjunction .
+  op unifTuplesNonVar2 : QidList TermList UnifTuple -> UnifTuple .
+  op unifTuplesVar : Module Qid Qid Qid UnifTuple -> Disjunction .
+  op unifTuplesVar1 : SortSet Qid UnifTuple -> Disjunction .
+
+  op getMaximalArities : Module Qid Int Sort -> QidListSet .
+  op arityOfFunctions : Module OpDeclSet Qid Int Sort -> QidListSet .
+  op maximalSortListSet : Module QidListSet -> QidListSet .
+  op maximalSortListSet1 : Module QidListSet QidListSet -> QidListSet .
+  op maximalSortList? : Module QidList QidListSet -> Bool .
+
+  op greaterCommEq : CommEq CommEq -> Bool .
+
+  var QI F G X Y : Qid .
+  vars S S' S1 S2 : Sort .
+  vars TP TP1 TP2 : Type .
+  var So : Sort .
+  vars SL SL' : QidList .
+  var SS : SortSet .
+  vars SLS SLS' : QidListSet .
+  var M : Module .
+  vars C C' C1 C2 : Constant .
+  vars V V' V1 V2 : Variable .
+  vars T T' T'' T'''  T1 T1' : Term .
+  vars TL TL' : TermList .
+  var CEqS : CommEqSet .
+  var D : Disjunction .
+  var UT : UnifTuple .
+  vars Subst Subst' : Substitution .
+  var SubstS : ITPSubstitutionSet .
+  var MAS : MembAxSet .
+  vars N I N1 N2 N3 N4 : Int .
+  var AtS : AttrSet .
+  var IL : ImportList .
+  var SD : SortSet .
+  var SSDS : SubsortDeclSet .
+  var ODS : OpDeclSet .
+  var EqS : EquationSet .
+  var RlS : RuleSet .
+  var NeTL NeTL' : NeTermList .
+  var GT : GroundTerm .
+
+
+**************************************************************
+*** 07/20/2010 (Camilo Rocha)
+*** Moved from ext-term.itp since it is only used here and
+*** generates name conflicts with FM
+**************************************************************
+  -----------------------------
+  --- length --> length-itp ---
+  -----------------------------
+  op length-itp : TermList -> Nat .
+  eq length-itp(TL) = $length(TL, 0) .
+
+  op $length : TermList Nat -> Nat .
+  eq $length(empty, N) = N .
+  eq $length((T, TL), N) = $length(TL, N + 1) .
+
+  -------------------------------
+  --- occurs? --> occurs-itp? ---
+  -------------------------------
+  op occurs-itp? : Variable TermList -> Bool .
+  eq occurs-itp?(V, (V', TL)) = V == V' or-else occurs-itp?(V', TL) .
+  eq occurs-itp?(V, (GT, TL)) = occurs-itp?(V, TL) .
+  eq occurs-itp?(V, (F[TL], TL')) = occurs-itp?(V, (TL, TL')) .
+  eq occurs-itp?(V, empty) = false .
+
+*********** END CODE MOVED *****************************
+
+-------------------------------------------------------------------
+--- by M. Clavel, August 2004
+-------------------------------------------------------------------
+op multiUnify : Module Term TermList -> ITPSubstitutionSet .
+op commEqAux : Term NeTermList Nat -> CommEqSet .
+
+eq multiUnify(M, T, TL)
+   = getUnifSolution(
+	unifPair(M, unifTuple(commEqAux(T, TL, 0), none))) .
+
+eq commEqAux(T, T', N) 
+   = commEq(renameVar(T, ("#" + string(N, 10))), T') .
+eq commEqAux(T, (T', NeTL), N)
+   = commEqSet(
+	commEq(renameVar(T, ("#" + string(N, 10))), T'),
+	commEqAux(T, NeTL, N + 1)) .
+
+-------------------------------------------------------------------
+--- end
+-------------------------------------------------------------------
+
+  eq unify(M, T, T') 
+    = getUnifSolution(
+         unifPair(M, unifTuple(commEq(T, T'), none))) .
+--------------------------------
+--- deletion of trivial equation
+--------------------------------
+  eq unifPair(M, 
+        disjunction(unifTuple(commEqSet(commEq(T, T), CEqS), Subst), D))
+    = unifPair(M, disjunction(unifTuple(CEqS, Subst), D)) .
+
+-------------------------------------------
+--- decomposition
+-------------------------------------------
+  eq unifPair(M, 
+      disjunction(
+         unifTuple(commEqSet(commEq(F[TL], G[TL']), CEqS), Subst), D))
+   = if (F =/= G) or-else (length-itp(TL) =/= length-itp(TL'))
+     then unifPair(M, D)
+     else unifPair(M, 
+                  disjunction(
+                     unifTuple(
+                        commEqSet(commEqBreak(TL, TL'), CEqS), Subst), D))
+     fi .
+--------------------
+--- clash of symbols
+--------------------
+
+  ceq unifPair(M, 
+        disjunction(
+            unifTuple(commEqSet(commEq(C1, C2), CEqS), Subst), D))
+    = unifPair(M, D)
+      if C1 =/= C2 .
+
+  eq unifPair(M, 
+       disjunction(
+         unifTuple(commEqSet(commEq(C, F[TL]), CEqS), Subst), D))
+    = unifPair(M, D) .
+
+------------
+--- merging
+------------
+
+  ceq unifPair(M, 
+         disjunction(
+            unifTuple( 
+               commEqSet(commEq(V, T), commEq(V, T'), CEqS), Subst), D))
+    = unifPair(M, 
+         disjunction(
+            unifTuple(
+               commEqSet(commEq(V, T), commEq(T, T'), CEqS), Subst), D))
+      if greaterCommEq(commEq(V, T'), commEq(T, T')) .
+
+---------------------
+--- check / eliminate
+---------------------
+  ceq unifPair(M, 
+         disjunction(
+            unifTuple(
+               commEqSet(commEq(V, T), CEqS), Subst), D))
+    = if occurs-itp?(V, T) 
+      then unifPair(M, D)
+      else if sortLeq(M, leastSort(M, T), getType(V)) == false
+	      then unifPair(M, D)
+               else unifPair(M, 
+                   disjunction(
+                      unifTuple(
+                          substituteCommEqSet(CEqS, V <- T),
+                             substitute-rhs(Subst, V <- T); (V <- T)),
+                          D))
+           fi
+      fi
+      if V =/= T .
+
+--------------
+--- transition
+-------------- 
+
+  eq unifPair(M, disjunction(unifTuple(emptyCommEqSet, Subst), D))
+    = unifPair(M, disjunction(unifTuple2(none, none, Subst), D)) .
+  
+------------------------------------
+------------------------------------
+--- unification auxiliary functions
+------------------------------------
+------------------------------------
+
+-------------------
+--- getUnifSolution
+-------------------
+  eq getUnifSolution(
+        unifPair(M, disjunction(unifTuple2(none, none, Subst), D)))
+    = substitutionSet(Subst, getUnifSolution(unifPair(M, D))) .
+  eq getUnifSolution(unifPair(M, failure)) = emptyITPSubstitutionSet .
+  
+---------------
+--- commEqBreak
+---------------
+  eq commEqBreak(T, T') = commEq(T, T') .
+  eq commEqBreak((T, NeTL), (T', NeTL'))
+    = commEqSet(commEq(T, T'), commEqBreak(NeTL, NeTL')) .
+  
+-----------------
+--- greaterCommEq
+-----------------
+  ceq greaterCommEq(commEq(T, T'), commEq(T1, T1'))
+    = (max(N1, N2) > max(N3, N4))
+      or-else
+      (max(N1, N2) == max(N3, N4))
+       and-then
+       _>_(_-_(max(N1, N2), min(N1, N2)),
+           _-_(max(N3, N4), min(N3, N4)))
+       if N1 := fnCount(T) /\ N2 := fnCount(T')
+	  /\ N3 := fnCount(T1) /\ N4 := fnCount(T1') .
+
+  --- Returns the total number of function symbols occuring in all the the
+  --- terms in the list.
+  op fnCount : TermList -> Nat .
+  eq fnCount(TL) = $fnCount(TL, 0) .
+
+  --- Tail recursive implementation of fnCount above.
+  op $fnCount : TermList Nat -> Nat .
+  eq $fnCount((V, TL), N) = $fnCount(TL, N) .
+  eq $fnCount((C, TL), N) = $fnCount(TL, N + 1) .
+  eq $fnCount((F[TL], TL'), N) = $fnCount((TL, TL'), N + 1) .
+  eq $fnCount(empty, N) = N .
+
+  eq substituteCommEqSet(emptyCommEqSet, Subst) = emptyCommEqSet .
+  eq substituteCommEqSet(commEqSet(commEq(T, T'), CEqS), Subst)  
+    = commEqSet(commEq(substitute(T, Subst), substitute(T', Subst)),
+                substituteCommEqSet(CEqS, Subst)) .
+
+op test : -> Module .
+eq test = 
+   (fmod 'ORDLIST is
+  protecting 'BOOL .
+  protecting 'INT .
+  sorts 'Bool? ; 'Int? ; 'List ; 'List? ; 'NeList ; 'OrdList .
+  subsort 'Bool < 'Bool? .
+  subsort 'Int < 'Int? .
+  subsort 'List < 'List? .
+  subsort 'NeList < 'List .
+  subsort 'NeList < 'List? .
+  subsort 'OrdList < 'List? .
+  op '_:_ : 'Int? 'List? -> 'List? [none] .
+  op 'append : 'List? 'List? -> 'List? [none] .
+  op 'delete : 'Int? 'List? -> 'List? [none] .
+  op 'isMember : 'Int? 'List? -> 'Bool? [none] .
+  op 'nil : nil -> 'List? [none] .
+  op 'ord-insert : 'Int? 'List? -> 'List? [none] .
+  op 'ord-isMember : 'Int? 'List? -> 'Bool? [none] .
+  op 'reverse : 'List? -> 'List? [none] .
+  mb 'nil.List? : 'List [none] .
+  mb 'nil.List? : 'OrdList [none] .
+  cmb '_:_['I:Int?,'L:List?] : 'NeList if 'I:Int? : 'Int /\ 'L:List? : 'List [none] .
+  cmb '_:_['I:Int?,'nil.List?] : 'OrdList if 'I:Int? : 'Int [none] .
+  cmb '_:_['I:Int?,'_:_['J:Int?,'L:List?]] : 'OrdList if 'I:Int? : 'Int /\ 'J:Int? : 'Int /\ 'L:List? : 'List /\ '_<=_['I:Int?,'J:Int?] = 'true.Bool /\
+    '_:_['J:Int?,'L:List?] : 'OrdList [none] .
+  eq 'append['nil.List?,'L:List?] = 'L:List? [none] .
+  eq 'append['_:_['I:Int?,'L1:List?],'L2:List?] = '_:_['I:Int?,'append['L1:List?,'L2:List?]] [none] .
+  eq 'delete['I:Int?,'nil.List?] = 'nil.List? [none] .
+  eq 'isMember['I:Int?,'nil.List?] = 'false.Bool [none] .
+  eq 'ord-insert['I:Int?,'nil.List?] = '_:_['I:Int?,'nil.List?] [none] .
+  eq 'ord-isMember['I:Int?,'nil.List?] = 'false.Bool [none] .
+  eq 'reverse['nil.List?] = 'nil.List? [none] .
+  eq 'reverse['_:_['I:Int?,'L:List?]] = 'append['reverse['L:List?],'_:_['I:Int?,'nil.List?]] [none] .
+  ceq 'delete['I:Int?,'_:_['J:Int?,'L:List?]] = 'L:List? if '_<=_['I:Int?,'J:Int?] = 'true.Bool /\ '_<=_['J:Int?,'I:Int?] = 'true.Bool [none] .
+  ceq 'delete['I:Int?,'_:_['J:Int?,'L:List?]] = '_:_['J:Int?,'delete['I:Int?,'L:List?]] if '_<_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'delete['I:Int?,'_:_['J:Int?,'L:List?]] = '_:_['J:Int?,'delete['I:Int?,'L:List?]] if '_>_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'true.Bool if 'I:Int? = 'J:Int? [none] .
+  ceq 'isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'isMember['I:Int?,'L:List?] if '_<_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'isMember['I:Int?,'L:List?] if '_>_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'ord-insert['I:Int?,'_:_['J:Int?,'L:List?]] = '_:_['I:Int?,'_:_['J:Int?,'L:List?]] if '_<=_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'ord-insert['I:Int?,'_:_['J:Int?,'L:List?]] = '_:_['J:Int?,'ord-insert['I:Int?,'L:List?]] if '_>_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'ord-isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'false.Bool if
+  '_<_['I:Int?,'J:Int?] = 'true.Bool [none] .
+  ceq 'ord-isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'true.Bool if 'I:Int? = 'J:Int? [none] .
+  ceq 'ord-isMember['I:Int?,'_:_['J:Int?,'L:List?]] = 'ord-isMember['I:Int?,'L:List?] if '_>_['I:Int?,'J:Int?] = 'true.Bool [none] .
+endfm) .
+
+endfm
+
+---(
+red unify(test, 'nil.List?, '_:_['I*:Int?, 'V:List?]) .
+red unify(test, '_:_['I:Int?, 'nil.List?], '_:_['I*:Int?, 'V:List?]) . 
+red unify(test, '_:_['I:Int?, 'nil.List?], '_:_['I*:Int?, 'V:List?]) . 
+red unify(test, '_:_['I1:Int?, '_:_['I2:Int?, 'L:List?]], '_:_['I*:Int?, 'V:List?]) .
+red unify(test, '_:_['I1:Int?, '_:_['I2:Int?, 'L:List?]], '_:_['I*:Int?, 'nil.List?]) .
+)
+ 

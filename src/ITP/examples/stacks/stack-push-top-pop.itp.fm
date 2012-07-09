@@ -1,0 +1,12 @@
+select ITP-TOOL .
+loop init-itp .
+
+----If we push the element at top of a non empty stack S 
+--- on the stack that results from S after popping its top element, 
+--- we always obtain the same stack S.
+
+(goal push-top-pop : STACK |- A{S:NeStack}
+      ((push(top(S:NeStack),pop(S:NeStack))) = (S:NeStack)) .)
+
+(ind on S:NeStack .)
+(auto .) 

@@ -1,0 +1,794 @@
+--- This file contains the ITP versions of modules in the prelude which we
+--- allow users to import.
+--- Note: when adding new sorts to this module.  Consider updating the
+--- module ITP-BUILTIN-OPS below.
+fmod ITP-BUILTIN-OPS is
+  pr ITP-EXT-MOD .
+
+  sort SubsortFlag .
+  op include-subsort-decls : -> SubsortFlag [ctor].
+  op omit-subsort-decls : -> SubsortFlag [ctor].
+
+  var K : Kind .
+  var M : Module .
+  var S : Sort .
+  var SF : SubsortFlag .
+  var SSDS : SubsortDeclSet .
+
+  --- Returns true if the type is a sort whose elements are constructed
+  --- from the constructor operators and memberships.
+  op algebraic-sort? : Type -> Bool .
+  eq algebraic-sort?('Sort) = false .
+  eq algebraic-sort?('Kind) = false .
+  eq algebraic-sort?('Constant) = false .
+  eq algebraic-sort?('Variable) = false .
+  eq algebraic-sort?('Qid) = false .
+  eq algebraic-sort?('Char) = false .
+  eq algebraic-sort?('FiniteFloat) = false .
+  eq algebraic-sort?('Float) = false .
+  eq algebraic-sort?(K) = false .
+  eq algebraic-sort?(S) = true [owise].
+
+  --- Returns the constructor memberships for the given sort in the module.
+  --- The subsort flag controls whether we add memberships from subsort
+  --- declarations or not.
+  op ctor-mbs-with-sort : Sort Module SubsortFlag ~> MembAxSet .
+  eq ctor-mbs-with-sort('String, M, SF)
+   = (mb '_+_['C:Char, 'S:String] : 'String [none].)
+     (mb '"".String : 'String [none].) .
+  eq ctor-mbs-with-sort(S, M, include-subsort-decls)
+   = ctor-mbs-with-sort(S, getMbs(M))
+     mbs-from-ops(M, ctor-ops-with-sort(S, getOps(M)))
+     mbs-from-subsorts(S, getSubsorts(M)) [owise].
+  eq ctor-mbs-with-sort(S, M, omit-subsort-decls)
+   = ctor-mbs-with-sort(S, getMbs(M))
+     mbs-from-ops(M, ctor-ops-with-sort(S, getOps(M))) [owise].
+endfm
+
+set include BOOL off .
+set include BOOL-OPS off .
+fmod ITP-BOOL is
+  sort Bool .
+  op true : -> Bool [ctor special (id-hook SystemTrue)] .
+  op false : -> Bool [ctor special (id-hook SystemFalse)] .
+
+  op if_then_else_fi : Bool Universal Universal -> Universal
+        [poly (2 3 0)
+         special (id-hook BranchSymbol
+                  term-hook 1 (true)
+                  term-hook 2 (false))] .
+
+  var A B : Bool .
+
+  op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+  eq true and A = A .
+  eq false and A = false .
+  eq A and A = A .
+
+  op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+  eq true or A = true .
+  eq false or A = A .
+  eq A or A = A .
+
+  op _xor_ : Bool Bool -> Bool [assoc comm prec 57] .
+  eq false xor A = A .
+  eq true xor A = not A .
+  eq A xor A = false .
+
+  op not_ : Bool -> Bool [prec 53] .
+  eq not true = false .
+  eq not false = true .
+
+  op _==_ : Bool Bool -> Bool [comm prec 51].
+  eq true == A = A .
+  eq false == A = not A .
+
+  op _=/=_ : Bool Bool -> Bool [comm prec 51].
+  eq (A =/= B) = not (A == B) .
+
+  op _implies_ : Bool Bool -> Bool [gather (e E) prec 61] .
+  eq true implies A = A .
+  eq false implies A = true .
+  eq A implies true = true .
+  eq A implies false = not A .
+endfm
+
+fmod ITP-NAT is
+  protecting ITP-BOOL .
+  sorts Zero NzNat Nat .
+  subsort Zero NzNat < Nat .
+  op 0 : -> Zero [ctor] .
+
+  op s_ : Nat -> NzNat
+        [ctor iter
+         special (id-hook SuccSymbol
+                  term-hook zeroTerm (0))] .
+
+  var M N M1 M2 N1 N2 P : Nat .
+  var NzN : NzNat .
+
+  op _+_ : NzNat Nat -> NzNat
+        [assoc comm prec 33
+         special (id-hook ACU_NumberOpSymbol (+)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op _+_ : Nat Nat -> Nat [ditto] .
+  eq 0 + N = N           [label def-+-0].
+  eq s(M) + N = s(M + N) [label def-+-1].
+
+  op sd : Nat Nat -> Nat
+        [comm
+         special (id-hook CUI_NumberOpSymbol (sd)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  eq sd(0, N) = N .
+  eq sd(s M, s N) = sd(M, N) .
+
+  op _*_ : NzNat NzNat -> NzNat
+        [assoc comm prec 31
+         special (id-hook ACU_NumberOpSymbol (*)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op _*_ : Nat Nat -> Nat [ditto] .
+  eq    0 * N = 0         [label def-*-0].
+  eq s(M) * N = N + M * N [label def-*-1].
+
+  op _quo_ : Nat NzNat -> Nat
+        [prec 31 gather (E e)
+         special (id-hook NumberOpSymbol (quo)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op _rem_ : Nat NzNat -> Nat
+        [prec 31 gather (E e)
+         special (id-hook NumberOpSymbol (rem)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  ceq N rem NzN = sd(N, NzN) rem NzN if NzN <= N .
+  ceq N rem NzN = N if NzN <= N = false .
+
+  op _^_ : Nat Nat -> Nat
+        [prec 29  gather (E e)
+         special (id-hook NumberOpSymbol (^)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op _^_ : NzNat Nat -> NzNat [ditto] .
+  eq M ^ 0 = 1 .
+  eq M ^ (s N) = M * (M ^ N) .
+
+  op modExp : Nat Nat NzNat ~> Nat
+        [special (id-hook NumberOpSymbol (modExp)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op gcd : NzNat Nat -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (gcd)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op gcd : Nat Nat -> Nat [ditto] .
+
+  op lcm : NzNat NzNat -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (lcm)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op lcm : Nat Nat -> Nat [ditto] .
+
+  op min : NzNat NzNat -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (min)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op min : Nat Nat -> Nat [ditto] .
+  eq min(M, N) = if M <= N then M else N fi .
+
+  op max : NzNat Nat -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (max)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op max : Nat Nat -> Nat [ditto] .
+  eq max(M, N) = if M <= N then N else M fi .
+
+  op _xor_ : Nat Nat -> Nat
+        [assoc comm prec 55
+         special (id-hook ACU_NumberOpSymbol (xor)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op _&_ : Nat Nat -> Nat
+        [assoc comm prec 53
+         special (id-hook ACU_NumberOpSymbol (&)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op _|_ : NzNat Nat -> NzNat
+        [assoc comm prec 57
+         special (id-hook ACU_NumberOpSymbol (|)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  op _|_ : Nat Nat -> Nat [ditto] .
+
+  --- Equality on natural numbers.
+  op _==_ : Nat Nat -> Bool [comm prec 51].
+  eq 0 == 0 = true .
+  eq 0 == s(N) = false .
+  eq s(M) == s(N) = M == N .
+
+  op _=/=_ : Nat Nat -> Bool [comm prec 51].
+  eq M =/= N = not(M == N) .
+
+  op _>>_ : Nat Nat -> Nat
+        [prec 35 gather (E e)
+         special (id-hook NumberOpSymbol (>>)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  eq M >> 0 = M [label def->>-0].
+  eq 0 >> 1 = 0 [label def->>-1].
+  eq 1 >> 1 = 0 [label def->>-2].
+  eq (s s N) >> 1 = s (N >> 1) [label def->>-3].
+  eq N >> (s NzN) = (N >> 1) >> NzN [label def->>-4].
+
+  op _<<_ : Nat Nat -> Nat
+        [prec 35 gather (E e)
+         special (id-hook NumberOpSymbol (<<)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+  eq M << 0 = M [label def-<<-0].
+  eq M << s N = (2 * M) << N [label def-<<-1].
+
+  op _<_ : Nat Nat -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (<)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _<=_ : Nat Nat -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (<=)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+  eq 0 <= N = true [label nat-<=-0].
+  eq s M <= s N = M <= N [label nat-<=-1].
+
+  op _>_ : Nat Nat -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (>)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+  eq s M > s N = M > N [label nat->-1].
+  eq 0 > N = false [label nat->-2].
+  eq NzN > 0 = true [label nat->-3].
+
+  op _>=_ : Nat Nat -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (>=)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _divides_ : NzNat Nat -> Bool
+        [prec 51
+         special (id-hook NumberOpSymbol (divides)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  --- Number theory lemmas (perhaps should be proven).
+  eq s s N rem 2 = N rem 2
+     [label lem-rem-2 metadata "|cat:lem|"].
+  eq M >> (N + P) = M >> N >> P
+     [label lem-def->>-+ metadata "|cat:lem|"].
+  eq M ^ (N + P) = M ^ N * M ^ P
+     [label lem-dist-^-+ metadata "|cat:lem|"].
+  eq N rem 2 ^ P >> P = 0
+     [label lem-N-rem-shr-2^P metadata "|cat:lem|"].
+  eq N rem 2 ^ P + ((N >> P) rem NzN << P) = N rem (2 ^ P * NzN)
+     [label lem-rem-* metadata "|cat:lem|"].
+  eq (N + (M << P)) rem (2 ^ P * NzN)
+   = N rem 2 ^ P + (((N >> P) + M) rem NzN << P)
+     [label lem-rem-*-2 metadata "|cat:lem|"].
+  eq (M + (N << P)) >> P = (M >> P) + N
+     [label lem-+-<<->> metadata "|cat:lem|"].
+  eq M << N + P = (M << N) << P
+     [label lem-shl-+ metadata "|cat:lem|"].
+  ceq sd(N, M * 2 ^ P) >> P = sd(N >> P, M)
+   if M * 2 ^ P <= N
+      [label lem-sd-shr metadata "|cat:lem|"].
+  eq (N <= M >> P) = (N * 2 ^ P <= M)
+     [label lem-leq->> metadata "|cat:lem|"].
+
+  ceq M + N <= B:Nat + P:Nat + Q:Nat = false
+   if 2 <= B:Nat = false
+   /\ M <= P:Nat = false
+   /\ N <= Q:Nat = false
+      [label lem-leq-+-3 metadata "|cat:lem|"].
+  ceq Q:Nat * 2 ^ P <= M + (N << P) = false
+   if 2 ^ P <= M = false
+   /\ Q:Nat <= N = false
+      [label lem-square-+ metadata "|cat:lem|"].
+  ceq M <= N = true
+   if N <= M = false
+      [label lem-<=-false->true metadata "|cat:lem|" nonexec].
+  ceq s M <= N = true
+   if N <= M = false
+      [label lem-<=-false->true-succ metadata "|cat:lem|" nonexec].
+  ceq M <= P = true
+   if M <= N /\ N <= P
+      [label lem-<=-trans metadata "|cat:lem|" nonexec].
+  ceq M <= P = false
+   if M <= N = false /\ N <= P = false
+      [label lem-<=-trans-false metadata "|cat:lem|" nonexec].
+
+  eq N <= N = true 
+     [label lem-<=-reflexive metadata "|cat:lem|"].
+
+  ceq (M1 + M2) <= (N1 + N2) = true
+   if M1 <= N1 /\ M2 <= N2
+      [label lem-+<=+ metadata "|cat:lem|"].
+
+  ceq (M1 + M2) <= s (N1 + N2) = true
+   if M1 <= N1 /\ M2 <= s N2
+      [label lem-+<=s+ metadata "|cat:lem|"].
+
+  ceq (M1 + M2) <= (N1 + N2) = false
+   if N1 <= M1 /\ M2 <= N2 = false
+      [label lem-+<=+-false metadata "|cat:lem|"].
+
+  ceq M + P = N + P
+   if M <= N /\ N <= M
+      [label lem-<=-two-+ metadata "|cat:lem|" nonexec].
+endfm
+
+fmod ITP-INT is
+  pr ITP-NAT .
+  sorts NzInt Int .
+  subsorts NzNat < NzInt Nat < Int .
+
+  op -_ : NzNat -> NzInt
+        [ctor
+         special (id-hook MinusSymbol
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op -_ : NzInt -> NzInt [ditto] .
+  op -_ : Int -> Int [ditto] .
+
+  var I J K : Int .
+  var M N : Nat .
+  var NzN : NzNat .
+
+  op _+_ : Int Int -> Int
+        [assoc comm prec 33
+         special (id-hook ACU_NumberOpSymbol (+)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _-_ : Int Int -> Int
+        [prec 33 gather (E e)
+         special (id-hook NumberOpSymbol (-)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _*_ : NzInt NzInt -> NzInt
+        [assoc comm prec 31
+         special (id-hook ACU_NumberOpSymbol (*)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op _*_ : Int Int -> Int [ditto] .
+
+  op _quo_ : Int NzInt -> Int
+        [prec 31 gather (E e)
+         special (id-hook NumberOpSymbol (quo)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _rem_ : Int NzInt -> Int
+        [prec 31 gather (E e)
+         special (id-hook NumberOpSymbol (rem)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _^_ : Int Nat -> Int
+        [prec 29 gather (E e)
+         special (id-hook NumberOpSymbol (^)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op _^_ : NzInt Nat -> NzInt [ditto] .
+
+  op abs : NzInt -> NzNat
+        [special (id-hook NumberOpSymbol (abs)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op abs : Int -> Nat [ditto] .
+
+  op gcd : NzInt Int -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (gcd)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op gcd : Int Int -> Nat [ditto] .
+
+  op lcm : NzInt NzInt -> NzNat
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (lcm)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op lcm : Int Int -> Nat [ditto] .
+
+  op min : NzInt NzInt -> NzInt
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (min)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op min : Int Int -> Int [ditto] .
+
+  op max : NzInt NzInt -> NzInt
+        [assoc comm
+         special (id-hook ACU_NumberOpSymbol (max)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op max : Int Int -> Int [ditto] .
+  op max : NzNat Int -> NzNat [ditto] .
+  op max : Nat Int -> Nat [ditto] .
+
+  op ~_ : Int -> Int
+        [special (id-hook NumberOpSymbol (~)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _xor_ : Int Int -> Int
+        [assoc comm prec 55
+         special (id-hook ACU_NumberOpSymbol (xor)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _&_ : Nat Int -> Nat
+        [assoc comm prec 53
+         special (id-hook ACU_NumberOpSymbol (&)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op _&_ : Int Int -> Int [ditto] .
+
+  op _|_ : NzInt Int -> NzInt
+        [assoc comm prec 57
+         special (id-hook ACU_NumberOpSymbol (|)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+  op _|_ : Int Int -> Int [ditto] .
+
+  op _>>_ : Int Nat -> Int
+        [prec 35 gather (E e)
+         special (id-hook NumberOpSymbol (>>)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  op _<<_ : Int Nat -> Int
+        [prec 35 gather (E e)
+         special (id-hook NumberOpSymbol (<<)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  --- Basic simplification equations.
+  eq I * (J - K) = I * J - I * K [label distrib-times-minus] .
+  eq I + (J - K) = I + J + - K [label distrib-times-minus] .
+
+  --- Extend equality to integers.
+  op _==_ : Int Int -> Bool [ditto].
+  eq (- M == - N) = (M == N) .
+  eq (- NzN == N) = false .
+
+  op _=/=_ : Int Int -> Bool [comm prec 51].
+  eq I =/= J = not(I == J) .
+
+  op _<_ : Int Int -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (<)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _<=_ : Int Int -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (<=)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _>_ : Int Int -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (>)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _>=_ : Int Int -> Bool
+        [prec 37
+         special (id-hook NumberOpSymbol (>=)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _divides_ : NzInt Int -> Bool
+        [prec 51
+         special (id-hook NumberOpSymbol (divides)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+endfm
+
+fmod ITP-RAT is
+  protecting ITP-INT .
+  sorts PosRat NzRat Rat .
+  subsorts NzInt < NzRat Int < Rat .
+  subsorts NzNat < PosRat < NzRat .
+
+  op _/_ : NzInt NzNat -> NzRat
+        [ctor prec 31 gather (E e)
+         special (id-hook DivisionSymbol
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  op-hook minusSymbol (-_ : NzNat ~> Int))] .
+
+  var I J : Int .
+  var NzI NzJ : NzInt .
+  var N M : NzNat .
+  var K L : Int .
+  var Z : Nat .
+  var NzR : NzRat .
+  var R R' R'' : Rat .
+
+  op _/_ : NzNat NzNat -> PosRat [ctor ditto] .
+  op _/_ : PosRat PosRat -> PosRat [ditto] .
+  op _/_ : NzRat NzRat -> NzRat [ditto] .
+  op _/_ : Rat NzRat -> Rat [ditto] .
+  eq 0 / NzR = 0 .
+  eq I / - N = - I / N .
+  eq (I / N) / (J / M) = (I * M) / (J * N) .
+  eq (I / N) / J = I / (J * N) .
+  eq I / (J / M) = (I * M) / J .
+
+  op -_ : NzRat -> NzRat [ditto] .
+  op -_ : Rat -> Rat [ditto] .
+  eq - (I / N) = - I / N .
+
+  op _+_ : PosRat PosRat -> PosRat [ditto] .
+  op _+_ : PosRat Nat -> PosRat [ditto] .
+  op _+_ : Rat Rat -> Rat [ditto] .
+  --- Figure out better way to handle this.
+  eq (I / N) + (J / M) = (I * M + J * N) / (N * M)
+     [label def-add-rat-1 nonexec].
+  eq I / N + K = (I + K * N) / N .
+
+  op _-_ : Rat Rat -> Rat [ditto] .
+  eq I / N - J / M = (I * M - J * N) / (N * M) .
+  eq I / N - K = (I - K * N) / N .
+  eq K - J / M = (K * M - J ) / M .
+
+  op _*_ : PosRat PosRat -> PosRat [ditto] .
+  op _*_ : NzRat NzRat -> NzRat [ditto] .
+  op _*_ : Rat Rat -> Rat [ditto] .
+  eq R * 0 = 0 .
+  eq (I / N) * (J / M) = (I * J) / (N * M).
+  eq (I / N) * K = (I * K) / N .
+
+  op _quo_ : PosRat PosRat -> Nat [ditto] .
+  op _quo_ : Rat NzRat -> Int [ditto] .
+  eq (I / N) quo NzR = I quo (N * NzR) .
+  eq K quo (J / M) = (K * M) quo J .
+
+  op _rem_ : Rat NzRat -> Rat [ditto] .
+  eq (I / N) rem (J / M) = ((I * M) rem (J * N)) / (N * M) .
+  eq K rem (J / M) = ((K * M) rem J) / M .
+  eq (I / N) rem J = (I rem (J * N)) / N .
+
+  op _^_ : PosRat Nat -> PosRat [ditto] .
+  op _^_ : NzRat Nat -> NzRat [ditto] .
+  op _^_ : Rat Nat -> Rat [ditto] .
+  eq (I / N) ^ Z = (I ^ Z) / (N ^ Z) .
+
+  op abs : NzRat -> PosRat [ditto] .
+  op abs : Rat -> Rat [ditto] .
+  eq abs(I / N) = abs(I) / N .
+
+  op gcd : NzRat Rat -> PosRat [ditto] .
+  op gcd : Rat Rat -> Rat [ditto] .
+  eq gcd(I / N, R) = gcd(I, N * R) / N .
+
+  op lcm : NzRat NzRat -> PosRat [ditto] .
+  op lcm : Rat Rat -> Rat [ditto] .
+  eq lcm(I / N, R) = lcm(I, N * R) / N .
+
+  op min : PosRat PosRat -> PosRat [ditto] .
+  op min : NzRat NzRat -> NzRat [ditto] .
+  op min : Rat Rat -> Rat [ditto] .
+  eq min(I / N, R) = min(I, N * R) / N .
+
+  op max : PosRat Rat -> PosRat [ditto] .
+  op max : NzRat NzRat -> NzRat [ditto] .
+  op max : Rat Rat -> Rat [ditto] .
+  eq max(I / N, R) = max(I, N * R) / N .
+
+  op _==_ : Rat Rat -> Bool [ditto].
+  eq ((I / N) == R) = (I == R * N) .
+
+  op _<_ : Rat Rat -> Bool [ditto] .
+  eq (I / N) < R = I < (R * N) .
+  eq R < (I / N) = (R * N) < I .
+
+  op _<=_ : Rat Rat -> Bool [ditto] .
+  eq (I / N) <= R = I <= (R * N) .
+  eq R <= (I / N) = (R * N) <= I .
+
+  op _>_ : Rat Rat -> Bool [ditto] .
+  eq (I / N) > R = I > (R * N) .
+  eq R > (I / N) = (R * N) > I .
+
+  op _>=_ : Rat Rat -> Bool [ditto] .
+  eq (I / N) >= R = I >= (R * N) .
+  eq R >= (I / N) = (R * N) >= I .
+
+  op _divides_ : NzRat Rat -> Bool [ditto] .
+  eq (I / N) divides K = I divides N * K .
+  eq R divides (J / M) = R * M divides J .
+
+  op trunc : PosRat -> Nat .
+  op trunc : Rat -> Int .
+  eq trunc(K) = K .
+  eq trunc(I / N) = I quo N .
+
+  op frac : Rat -> Rat .
+  eq frac(K) = 0 .
+  eq frac(I / N) = (I rem N) / N .
+
+  op floor : PosRat -> Nat .
+  op floor : Rat -> Int .
+  eq floor(K) = K .
+  eq floor(N / M) = N quo M .
+  eq floor(- N / M) = - (((N + M) - 1) quo M) .
+
+  op ceiling : PosRat -> NzNat .
+  op ceiling : Rat -> Int .
+  eq ceiling(K) = K .
+  eq ceiling(N / M) = ((N + M) - 1) quo M .
+  eq ceiling(- N / M) = - (N quo M) .
+
+  ----------------------------------
+  --- Basic simplification equations
+  ----------------------------------
+  eq R + 0 = R .
+  eq (R + R') - R = R' .
+  eq R + - R = 0 .
+  eq R - R' = R + - R' .
+
+  eq 1 * R = R [label lem-*-1 metadata "|cat:lem|"].
+  eq 2 * R = R + R .
+  eq R * (R' / NzR) = (R * R') / NzR .
+  eq (NzR * R) / NzR = R .
+
+  eq I / (N + N) + I / (N + N) = I / N .
+  eq (I / N) + (J / N) = (I + J) / N .
+  eq R / 1 = R [label lem-/-1 metadata "|cat:lem|"].
+  eq 2 / (N + N) = 1 / N [label lem-2-div-2 metadata "|cat:lem|"].
+endfm
+
+fmod ITP-STRING is
+  protecting ITP-NAT .
+
+  sort Char .
+  op <Strings> : -> Char [special (id-hook StringSymbol)] .
+
+  op ascii : Char -> Nat
+        [special (id-hook StringOpSymbol (ascii)
+                  op-hook stringSymbol (<Strings> : ~> Char)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op char : Nat ~> Char
+        [special (id-hook StringOpSymbol (char)
+                  op-hook stringSymbol (<Strings> : ~> Char)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  sort FindResult .
+  subsort Nat < FindResult .
+  op notFound : -> FindResult [ctor] .
+
+  sort String .
+  subsort Char < String .
+  op <Strings> : -> String [ditto] .
+
+  var N : Nat .
+  var FR FR' : FindResult .
+  var St St' : String .
+
+  op _==_ : FindResult FindResult -> Bool [ditto].
+  eq notFound == notFound = true .
+  eq notFound == N = false .
+
+  op _=/=_ : FindResult FindResult -> Bool [ditto].
+  eq FR =/= FR' = not (FR == FR') .
+
+  op _==_ : String String -> Bool [comm prec 51].
+  eq St == St'
+   = if (length(St) > 0) and (length(St') > 0) then
+           (ascii(substr(St, 0, 1)) == (ascii(substr(St', 0, 1))))
+       and (substr(St, 1, length(St)) == substr(St, 1, length(St')))
+     else
+       (length(St) == 0) and (length(St') == 0)
+     fi .
+
+  op _=/=_ : String String -> Bool [comm prec 51].
+  eq St =/= St' = not (St == St') .
+
+  op _+_ : String String -> String
+        [prec 33 gather (E e)
+         special (id-hook StringOpSymbol (+)
+                  op-hook stringSymbol (<Strings> : ~> String))] .
+
+  op length : String -> Nat
+        [special (id-hook StringOpSymbol (length)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op substr : String Nat Nat -> String
+        [special (id-hook StringOpSymbol (substr)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  op-hook succSymbol (s_ : Nat ~> NzNat))] .
+
+  op find : String String Nat -> FindResult
+        [special (id-hook StringOpSymbol (find)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook notFoundTerm (notFound))] .
+
+  op rfind : String String Nat -> FindResult
+        [special (id-hook StringOpSymbol (rfind)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  op-hook succSymbol (s_ : Nat ~> NzNat)
+                  term-hook notFoundTerm (notFound))] .
+
+  op _<_ : String String -> Bool
+        [prec 37
+         special (id-hook StringOpSymbol (<)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _<=_ : String String -> Bool
+        [prec 37
+         special (id-hook StringOpSymbol (<=)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _>_ : String String -> Bool
+        [prec 37
+         special (id-hook StringOpSymbol (>)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+
+  op _>=_ : String String -> Bool
+        [prec 37
+         special (id-hook StringOpSymbol (>=)
+                  op-hook stringSymbol (<Strings> : ~> String)
+                  term-hook trueTerm (true)
+                  term-hook falseTerm (false))] .
+endfm
+
+fmod ITP-QID is
+  protecting ITP-STRING .
+  sort Qid .
+  op <Qids> : -> Qid [special (id-hook QuotedIdentifierSymbol)] .
+
+  var Q Q' : Qid .
+
+  op _==_ : Qid Qid -> Bool [comm prec 51].
+  eq Q == Q' = string(Q) == string(Q') .
+
+  op _=/=_ : Qid Qid -> Bool [comm prec 51].
+  eq Q =/= Q' = not (Q == Q') .
+
+  op string : Qid -> String
+        [special (id-hook QuotedIdentifierOpSymbol (string)
+                  op-hook quotedIdentifierSymbol (<Qids> : ~> Qid)
+                  op-hook stringSymbol (<Strings> : ~> String))] .
+
+  op qid : String ~> Qid
+        [special (id-hook QuotedIdentifierOpSymbol (qid)
+                  op-hook quotedIdentifierSymbol (<Qids> : ~> Qid)
+                  op-hook stringSymbol (<Strings> : ~> String))] .
+endfm
+
+----set include BOOL on .
+set include BOOL-OPS on .

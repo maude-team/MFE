@@ -1,0 +1,486 @@
+load ext-term
+load ext-mod
+load basic
+load cong
+load itp-logic
+load unification
+load show-itp
+load itp-builtins
+load check
+load itp-parser
+load itp-reduce
+load itp-tool
+
+fmod ITP-HELP is  
+  pr EXT-QID-LIST .
+  pr ITP-BANNER .
+  ops itp-help itp-help-goal itp-help-proof itp-help-header itp-help-help : -> QidList .
+  eq itp-help-header =
+      string2qidList("Commands available from the") '\n '\n
+      '\t '\t string2qidList(itp-banner) .
+  eq itp-help-goal =
+      '\s '\u 'Goal 'commands: '\o '\n '\n
+      '\s '\s '`( '\! 'a-inst '\o '<name> '\! 'with '\o '<subs> '. '`) '\n
+      '\s '\s '`( '\! 'auto '\o '. '`) '\n
+      '\s '\s '`( '\! 'cnj '\o '. '`) '\n 
+      '\s '\s '`( '\! 'cns '\o '. '`) '\n 
+      '\s '\s '`( '\! 'cov 'on '\o '<pattern> '. '`) '\n 
+      '\s '\s '`( '\! 'cov* 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '`( '\! 'cov-split 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '`( '\! 'cov-split* 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '`( '\! 'cov 'using '\o '<names> '\! 'on '\o '<pattern> '. '`) '\n 
+      '\s '\s '`( '\! 'cov* 'using '\o '<names> '\! 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '`( '\! 'cov-split 'using '\o '<names> '\! 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '`( '\! 'cov-split* 'using '\o '<names> '\! 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '`( '\! 'ctor-def '\o '<name> ': 'A '`{ '<x>:<s> '`} '\n
+      '\s '\s '\s '\s '`( 'E '`{ '<y1> '`} ' '<t1>=<x> '& '<cond1> '`) '...
+      '`( 'E '`{ '<yn> '`} ' '<tn>=<x> '& '<condn> '`) ' '. '`) '\n
+      '\s '\s '`( '\! 'ctor-term-split '\o '<var> '. '`) '\n
+      '\s '\s '`( '\! 'def-equiv '\o '<p> '\! 'on '\o '<var> '. '`) '\n
+      '\s '\s '`( '\! 'disable '\o '<rule-name> '. '`) '\n
+      '\s '\s '`( '\! 'e-inst 'with '\o '<sub> '. '`) '\n
+      '\s '\s '`( '\! 'enable '\o '<rule-name> '. '`) '\n
+      '\s '\s '`( '\! 'equiv-propagate '\o '. '`) '\n
+      '\s '\s '`( '\! 'eq-split 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '`( '\! 'eq-split* 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '`( '\! 'goal '\o '<label> '\! ': '\o '<mod-name> '\! '|- '\o '<formula> '. '`) '\n
+      '\s '\s '`( '\! 'imp '\o '. '`) '\n
+      '\s '\s '`( '\! 'ind 'on '\o '<var> '. '`) '\n
+      '\s '\s '`( '\! 'ind* 'on '\o '<var> '. '`) '\n
+      '\s '\s '`( '\! 'lem '\o '<name> '\! ': '\o '<formula> '. '`) '\n
+      '\s '\s '`( '\! 'red '\o '<term> '. '`) '\n
+      '\s '\s '`( '\! 'sel '\o '<goal-name> '. '`) '\n
+      '\s '\s '`( '\! 'set-default-constructor '\o '<name> '. '`) '\n
+      '\s '\s '`( '\! 'show-all '\o '<name> '. '`) '\n
+      '\s '\s '`( '\! 'show-hyps '\o '<name> '. '`) '\n
+      '\s '\s '`( '\! 'show-rules 'with '\o '<name> '. '`) '\n
+      '\s '\s '`( '\! 'split 'on '\o '<bool-formula> '. '`) '\n .
+
+  eq itp-help-proof =
+      '\s '\u 'Proof 'commands: '\o '\n '\n
+      '\s '\s '`( '\! 'new-goal '\o '<label> '\! ': '\o '<mod-name> '\! '|- '\o '<formula> '. '`) '\n
+      '\s '\s '`( '\! 'sel-proof '\o '<proof-id> '. '`) '\n
+      '\s '\s '`( '\! 'ITP 'show 'state '\o '. '`) '\n 
+      '\s '\s '`( '\! 'ITP 'trust '\o '<goal-name> '. '`) .
+
+  eq itp-help-help =
+      '\s '\u 'Help 'commands: '\o '\n '\n 
+      '\s '\s '`( '\! 'ITP 'help '\o '. '`) '\n .
+
+  eq itp-help = itp-help-header '\n '\n itp-help-goal '\n itp-help-proof '\n itp-help-help .
+endfm
+
+mod ITP-EXTENDED-SYNTAX is
+  pr ITP-TOOL .
+  pr MAP{Oid,String} .
+
+  var  Atts : AttributeSet .
+  var  N    : Nat .
+  var  O    : Oid .
+  var  PS   : ProofState .
+  var  S    : String .
+
+  --- default user for the ITP
+  op itp-stdin : -> Oid [ctor] .
+  --- Messages for/from the ITP
+  sort MsgContents .
+  op to_from_:_ : Oid Oid MsgContents -> Msg [ctor] .
+
+  --- Command messages to the ITP
+  op itp-cmd : Input -> MsgContents [ctor] .
+  op itp-goal-registered : String String -> MsgContents [ctor] .
+  op itp-goal-proved : String -> MsgContents [ctor] .
+  op itp-output : QidList -> MsgContents [ctor] .
+  op itp-show-state : -> MsgContents [ctor] .
+  op itp-show-current-goal : -> MsgContents [ctor] .
+
+  --- For ITPBroker instances (although there will be just one, as for
+  --- the current design)
+  op null-itp : -> Oid [ctor] .
+  op itp : Nat -> Oid [ctor] .
+  op itp-count :_ : Nat -> Attribute [ctor] .
+  op itp-default :_ : Oid -> Attribute [ctor] .
+  op itp-map :_ : Map{Oid,String} -> Attribute .
+  --- For ITP instances
+  op from :_ : Oid -> Attribute [ctor] .
+  op mainGoal :_ : String -> Attribute [ctor] .
+  op itp-trusted :_ : Bool -> Attribute [ctor] .
+
+  --- Some projections
+  op getFrom : AttributeSet -> Oid .
+  eq getFrom((from : O), Atts) = O .
+  op getMainGoalLabel : AttributeSet -> String .
+  eq getMainGoalLabel(mainGoal : S, Atts) = S .
+  op getProofState : AttributeSet -> ProofState .
+  eq getProofState(proofState : PS, Atts) = PS .
+  op getDefaultGoalLabel : AttributeSet -> String .
+  eq getDefaultGoalLabel(defaultGoal : S, Atts) = S .
+endm
+
+mod ITP-EXTENDED-HELPERS is
+  pr ITP-EXTENDED-SYNTAX .
+
+  var  Atts       : AttributeSet .
+  var  Cond       : Condition .
+  var  Conf       : Configuration .
+  var  SelFormula : Formula .
+  var  ITPMap     : Map{Oid,String} .
+  vars Mod Mod'   : Module .
+  var  SelMod     : Module .
+  var  N          : Nat .
+  vars From O     : Oid .
+  var  PS         : ProofState .
+  var  NewLabel S : String .
+  vars T T'       : Term .
+
+  --- Creates the attributes of a new proof with the given parameters. 
+  --- It assumes that the given module has been 'fixed', as implemented by 
+  --- function fixExternalModule defined in this module.
+  --- compare to exec goal NewLabel : .... in ITP-TOOL
+  op new-proof : Oid String Module Formula -> AttributeSet .
+  op new-proof : Oid String Module Condition Term Term -> AttributeSet .
+  op new-proof : Oid String Module Term Term -> AttributeSet .
+  eq new-proof(From, NewLabel, SelMod, SelFormula)
+   = (defaultGoal : (NewLabel + AT + "0"),
+      from : From,
+      mainGoal : (NewLabel + AT + "0"),
+      mode : uiuc,
+      proofState : ps(new-goal(NewLabel + AT + "0", SelMod, SelFormula)),
+      itp-trusted : false) .
+  eq new-proof(From, NewLabel, SelMod, Cond, T, T')
+   = new-proof(From, NewLabel, SelMod, eqToFormula(ceq T = T' if Cond [none].)) .
+  eq new-proof(From, NewLabel, SelMod, T, T')
+   = new-proof(From, NewLabel, SelMod, nil, T, T') .
+
+  --- Checks if a proof has been finished
+  op qed? : AttributeSet -> Bool .
+  eq qed?((proofState : PS, Atts))
+   = if PS == emptyProofState then true else false fi .
+
+  --- returns the default attributes for a proof with the by-default value
+  op itp-proof-def-atts : -> AttributeSet .
+  eq itp-proof-def-atts
+   = defaultGoal : "", goalName : "", mode : uiuc, proofState : emptyProofState .
+
+  --- returns true if the given index corresponds to a proof
+  op is-a-proof? : Configuration Nat -> Bool .
+  eq is-a-proof?(< O : ITPBroker | itp-map : (itp(N) |-> S, ITPMap), Atts > Conf, N) = true .
+  eq is-a-proof?(Conf, N) = false [owise] .
+
+  op hasElmInRange? : Map{Oid, String} String -> Bool .
+  eq hasElmInRange?((ITPMap, O |-> S), S) = true .
+  eq hasElmInRange?(ITPMap, S) = false [owise] .
+
+  --- 'Fixes' an external module, i.e., a module sent by another tool.
+  --- Compare with parseModule in itp-parser.maude
+  op fixExternalModule : Module ~> ParseModuleResult .
+ ceq fixExternalModule(Mod) = module(Mod)
+  if Mod' := fixupModule(Mod)
+  /\ wellFormed(Mod')
+  /\ isParameterized?(Mod') = false .
+ ceq fixExternalModule(Mod) 
+   = parse-module-error('The 'module getName(Mod) 'must 'be 'a 'functional 
+       'module '.)
+  if Mod :: FModule = false .
+ ceq fixExternalModule(Mod) 
+   = parse-module-error('The 'module getName(Mod) 'must 'be 'unparameterized '.)
+  if Mod :: FModule
+  /\ isParameterized?(Mod) .
+ ceq fixExternalModule(Mod) 
+    = parse-module-error('We 'could 'not 'flatten 'the 'module getName(Mod) '.  
+        'You 'may 'want 'to 'check 'that 'you 'do 'not 'use 'unsupported 
+        'builtins 'like '_==_ 'or 'many 'of 'the 'builtin 'arithmetic 
+        'operators '.)
+  if Mod :: FModule 
+  /\ wellFormed(fixupModule(Mod)) =/= true .
+
+  --- Transforms a system module into a functional module by dropping
+  --- the rewrite rules
+  op toFModule : Module -> FModule .
+  eq toFModule(FMod:FModule) = FMod:FModule .
+  eq toFModule(
+       mod H:Header is IL:ImportList sorts SS:SortSet .
+         SDS:SubsortDeclSet Ops:OpDeclSet MAS:MembAxSet EqS:EquationSet RS:RuleSet 
+       endm)
+   =   fmod H:Header is IL:ImportList sorts SS:SortSet .
+         SDS:SubsortDeclSet Ops:OpDeclSet MAS:MembAxSet EqS:EquationSet
+        endfm .
+endm
+
+---------------------------------------
+---- Extended Pretty print facilty ----
+---------------------------------------
+mod ITP-EXTENDED-PRETTY-PRINT is
+  pr ITP-EXTENDED-SYNTAX .
+  pr FULL-MAUDE .
+
+  var  Atts   : AttributeSet .
+  var  B B'   : Bool .
+  var  Conf   : Configuration .
+  var  N      : Nat .
+  var  O      : Oid .
+  var  PS     : ProofState .
+  var  QIL    : QidList .
+  var  S      : String .
+ 
+  --- Constant for displying spaces
+  op SPACE-QID : -> Qid .
+  eq SPACE-QID = '\s .
+
+  op getQidListOfSpaces : Nat -> QidList .
+  op $getQidListOfSpaces : Nat QidList -> QidList .
+  eq getQidListOfSpaces(N) = $getQidListOfSpaces(N, nil) .
+  eq $getQidListOfSpaces(0, QIL) = QIL .
+  eq $getQidListOfSpaces(s(N), QIL) 
+   = $getQidListOfSpaces(N, QIL SPACE-QID) .
+
+  op toFixedLengthQidList : String Nat -> QidList .
+  op toFixedLengthQidList : Oid Nat -> QidList .
+
+  eq toFixedLengthQidList(S, N)
+   = if length(S) < N
+       then string2qidList(S) getQidListOfSpaces(N + -(length(S)))
+       else string2qidList(substr(S, 0, N))
+     fi .
+  eq toFixedLengthQidList(O, N)
+   = metaPrettyPrint(['MFE], upTerm(O)) .
+
+  op pretty-print-header : -> QidList .
+  eq pretty-print-header
+   = toFixedLengthQidList("Proof", 7)
+     toFixedLengthQidList("Goal", 42)
+     toFixedLengthQidList("State", 10)
+     toFixedLengthQidList("Source", 10) '\n 
+     toFixedLengthQidList("-----", 7)
+     toFixedLengthQidList("----------------------------------------", 42)
+     toFixedLengthQidList("--------", 10)
+     toFixedLengthQidList("--------", 10) .
+
+  op pretty-print-itp-instance : Object Bool -> QidList .
+  eq pretty-print-itp-instance(
+       < itp(N) : ITP | from : O, mainGoal : S, proofState : PS, itp-trusted : B', Atts >, B)
+   = if B then '\! else nil fi
+     toFixedLengthQidList(string(N,10) + if B then "*" else "" fi, 7)
+     toFixedLengthQidList(S, 40)
+     toFixedLengthQidList("", 2)
+     if number-of-goals(PS) == 0 
+     then '\g toFixedLengthQidList("PROVED!", 10) '\o
+     else 
+       if B' == true
+         then '\b toFixedLengthQidList("Trusted", 10) '\o
+         else '\y toFixedLengthQidList("Open(" + string(number-of-goals(PS), 10) + ")" , 10) '\o
+       fi
+     fi 
+   if B then '\! else nil fi
+   toFixedLengthQidList(O, 10) '\o '\n .
+endm
+
+--- Executes the itp commands that arrive via a message with the
+--- command itself pre-compiled. It distinguishes between the
+--- new ITP commands, and the old ones. The new commands are
+--- interpreted by the function itp-exec while the old ones
+--- are delegated to itp-exec-older-cmds.
+mod ITP-EXTENDED-EXEC is
+  pr ITP-EXTENDED-HELPERS .
+  pr ITP-HELP .
+
+  vars Atts Atts' : AttributeSet .
+  vars Atts''     : AttributeSet .
+  vars B          : Bool .
+  vars Cond       : Condition .
+  vars Conf       : Configuration .
+  vars SelFormula : Formula .
+  vars Cmd        : Input .
+  var  ITPMap     : Map{Oid,String} .
+  vars Mod Mod'   : Module .
+  vars SelMod     : Module .
+  vars N N'       : Nat .
+  vars O O' From  : Oid .
+  vars O''        : Oid .
+  vars PS         : ProofState .
+  vars QIL Msg    : QidList .
+  vars NewLabel S : String .
+  vars T T'       : Term .
+
+  --- First itp-exec is tried, and if it does not apply to the
+  --- given paramteres, then itp-exec-older-cmds is invoked with
+  --- the same parameters
+  op itp-exec : Oid Input Configuration -> Configuration .
+
+ ceq itp-exec(
+       From, 
+       new-goal NewLabel : SelMod |- SelFormula .,
+       < O : ITPBroker | itp-count : N, itp-default : O', itp-map : ITPMap, Atts > Conf)
+  = < O : ITPBroker | itp-count : s(N), itp-default : itp(N), Atts, itp-map : (itp(N) |-> S, ITPMap) >
+    < itp(N) : ITP | Atts' > (to From from O : itp-goal-registered(NewLabel, S))
+    (to itp-stdin from O : itp-output(meta-pretty-print(S, PS))) Conf
+  if Atts' := new-proof(From, 
+       NewLabel + if From == itp-stdin then "" else "#" + string(N, 10) fi, SelMod, SelFormula)
+  /\ S :=  getMainGoalLabel(Atts')
+  /\ PS := getProofState(Atts') .
+
+  --- registering a goal when there are no ITP instances is equivalent
+  --- to new-goal ... see above
+  eq itp-exec(
+       From, 
+       goal NewLabel : SelMod |- SelFormula .,
+       < O : ITPBroker | itp-count : 0, Atts > Conf)
+   = itp-exec(
+       From, 
+       new-goal NewLabel : SelMod |- SelFormula .,
+       < O : ITPBroker | itp-count : 0, Atts > Conf) .
+
+  --- Added for backwards compatibility. See exec(goal ... in ITP-TOOL:
+  --- this implementation does the same thing but at a higher level.
+  --- Case in which there is at least one ITP instance. Then, there
+  --- are two subcases:
+  --- - the current goal has been closed, then a new goal is created
+  --- - the current goal has not been closed, then the goal is
+  ---   added as a lemma to the current goal. 
+  --- This behaviour conforms to the semantics of the ITP
+  eq itp-exec(
+       From, 
+       goal NewLabel : SelMod |- SelFormula .,
+       < O : ITPBroker | itp-count : s(N), itp-default : O', Atts > < O' : ITP | Atts' > Conf)
+   = itp-exec(
+       From, 
+       if qed?(Atts')
+         then new-goal NewLabel : SelMod |- SelFormula .
+         else lem NewLabel : SelFormula .
+       fi,
+       < O : ITPBroker | itp-count : s(N), itp-default : O', Atts >
+       < O' : ITP | Atts' > Conf) .
+
+  --- Translates the internal show-itp-state command into an external 
+  --- itp-show-state command
+  eq itp-exec(
+       From, 
+       ITP show state ., 
+       < O : ITPBroker | Atts > Conf)
+   = < O : ITPBroker | Atts > (to O from From : itp-show-state) Conf .
+
+  --- Translates the internal show-itp-state command into an external 
+  --- itp-show-state command
+  eq itp-exec(
+       From, 
+       ITP help ., 
+       < O : ITPBroker | Atts > Conf)
+   = < O : ITPBroker | Atts > (to From from O : itp-output(itp-help)) Conf .
+
+  --- Tries to switch to another goal. If the given goal does not
+  --- exist, then a warning message is generated and the state of the
+  --- proof remains the same. Otherwise, it compiles the request into
+  --- a new message so the corresponding equation shows the current
+  --- goal.
+  eq itp-exec(
+       From,
+       sel-proof S ., 
+       < O : ITPBroker | itp-default : O', Atts > Conf)
+   = if rat(S,10) :: Nat
+       then
+         if is-a-proof?(< O : ITPBroker | itp-default : O', Atts > Conf, rat(S,10)) == true
+           then < O : ITPBroker | itp-default : itp(rat(S,10)), Atts > Conf
+             (to itp-stdin from O : itp-show-current-goal)
+           else < O : ITPBroker | itp-default : O', Atts > Conf
+             (to itp-stdin from O : itp-output('No 'such 'proof 'exists! '\n))
+         fi
+       else < O : ITPBroker | itp-default : O', Atts > Conf
+         (to itp-stdin from O : itp-output('Bad 'proof 'identifier! '\n))
+     fi .
+
+  --- Marks the given main goal as trusted; if there is not main goal
+  --- with that name, then there is a message sent to the requester informing
+  --- about the problem. When trusted for the first time, a message is sent
+  --- to the requester of the proof obligation informing about the conclusion
+  --- of the proof
+ ceq itp-exec(
+       From, 
+       trust S ., 
+       < O : ITPBroker | itp-map : ITPMap, Atts > Conf)
+   = < O : ITPBroker | itp-map : ITPMap, Atts > Conf
+     to From from O : itp-output('Goal string2qidList(S) 'does 'not 'exist.)
+  if hasElmInRange?(ITPMap, S) = false .
+
+  eq itp-exec(
+       From, 
+       trust S ., 
+       < O : ITPBroker | itp-map : (O' |-> S, ITPMap), Atts > 
+       < O' : ITP | proofState : PS, itp-trusted : B, mainGoal : S, from : O'', Atts' > Conf)
+   = < O : ITPBroker | itp-map : (O' |-> S, ITPMap), Atts > 
+     < O' : ITP | proofState : PS, itp-trusted : true, mainGoal : S, from : O'', Atts' > Conf
+     if PS == ps(nil)
+       then to From from O : itp-output('Goal string2qidList(S) 'has 'been 'proved 'already.)
+       else
+         if B == true
+           then to From from O : itp-output('Goal string2qidList(S) 'has 'been 'trusted 'before.)
+           else (to O'' from O : itp-goal-proved(S))
+                (to From from O : itp-output('Goal string2qidList(S) 'trusted.))
+         fi
+     fi .
+
+  --- For the execution of all remaining commands, the function that
+  --- performs the execution is itp-exec-older-cmds
+  eq itp-exec(From, Cmd, Conf)
+   = itp-exec-older-cmds(From, Cmd, Conf) [owise] .
+
+  --- delegates to the ITP the execution of previous existing commands.
+  --- If there is no by-default proof an error is passed to the user;
+  --- otherwise, it process the command
+
+  op itp-exec-older-cmds : Oid Input Configuration -> Configuration .
+
+  eq itp-exec-older-cmds(
+       From, 
+       Cmd,
+       < O : ITPBroker | itp-default : null-itp, Atts > Conf)
+   = < O : ITPBroker | itp-default : null-itp, Atts > Conf
+     (to itp-stdin from O : itp-output('The 'proof 'is 'not 'set.  'Please 'select 'a 'proof.)) . 
+
+ ceq itp-exec-older-cmds(
+       From, 
+       Cmd,
+       < O : ITPBroker | itp-default : O', Atts > < O' : ITP | Atts' > Conf)
+   = < O : ITPBroker | itp-default : O', Atts > < O' : ITP | Atts'' > Conf
+     (to itp-stdin from O : itp-output(Msg)) 
+     if qed?(Atts'') == true and-then O'' =/= itp-stdin
+       then (to O'' from O : itp-goal-proved(S))
+       else none
+     fi
+  if next(Atts'', Msg) := exec(Cmd, Atts') 
+   /\ PS := getProofState(Atts'') 
+   /\ S := getMainGoalLabel(Atts'')
+   /\ O'' := getFrom(Atts'') .
+
+  eq itp-exec-older-cmds(
+       From, 
+       Cmd, 
+       < O : ITPBroker | Atts > Conf)
+   = < O : ITPBroker | Atts > Conf
+     (to itp-stdin from O :
+       itp-output('The 'given 'command 'has 'no 'effect 'on 'the
+         'state 'of 'current 'proof.)) [owise] .
+endm
+
+
+**********************************************************
+*** ITP's Interface for dealing with external messages ***
+**********************************************************
+mod ITP is
+  pr ITP-EXTENDED-EXEC .
+  pr ITP-EXTENDED-PRETTY-PRINT .
+
+  vars Atts Atts' : AttributeSet .
+  vars Cmd        : Input .
+  vars O O' O''   : Oid .
+
+-------------------------------
+---- ITP command execution ----
+--------------------------------------------------------------
+---- Rule for executing ITP's commands; it takes as input ----
+---- a command that has benn parsed by the ITP, with its  ----
+---- corresponding 'fixes' for the module where the proof ----
+---- is going to take place. ---------------------------------
+--------------------------------------------------------------
+
+
+endm

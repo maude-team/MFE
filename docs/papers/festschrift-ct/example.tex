@@ -1,0 +1,349 @@
+\section{Using MFE}
+\label{sec.example}
+
+In this section, we illustrate some features and commands of 
+MFE on the classical example of the
+readers and writers, using a slightly modified version of the 
+presentation in~\cite[Sections 12.3 and 12.4]{CDELMMT:2007-book}.\footnote{The changes introduced are due to the different treatment of built-ins by the different tools. To avoid conflicts we do not use any built-in in the example. We set the automatic inclusion of the \texttt{BOOL} module off and, although not used, the automatic inclusion of module \texttt{TRUTH-VALUE} on.}
+In fact, a similar proof can be found in~\cite{CDELMMT:2007-book},
+but using the tools in isolation and with no support for keeping track of the pending proof obligations. 
+
+In this specification, a state is represented by a term \verb~< R, W >~ 
+where \verb~R~ and \verb~W~ are, respectively, the number of readers and
+writers accessing a critical resource. In the system, there should not be more 
+than one writer, or writers and readers at the same time. 
+To obtain this behavior, a writer can only access the critical resource if no 
+nobody else is using it, and a reader can gain access to the critical resource only if there are 
+no writers using it. Readers and writers can leave the critical resource at any time.
+
+The following modules \verb~MBOOL~ and \verb~MNAT~ define, respectively, sorts 
+\verb~MBool~ and \verb~MNat~ of Boolean values and natural numbers. 
+
+\begin{small}
+\begin{verbatim}
+ (fmod MBOOL is
+    sort MBool .
+    ops true false : -> MBool [ctor] .
+  endfm) 
+
+ (fmod MNAT is
+    sort MNat .
+    op 0 : -> MNat [ctor] .
+    op s : MNat -> MNat [ctor] .
+  endfm) 
+\end{verbatim}
+\end{small}
+%
+The readers-writers system can be specified as follows.
+
+\begin{small}
+\begin{verbatim}
+ (mod READERS-WRITERS is
+    protecting MNAT .
+    sort Config .
+    op <_`,_> : MNat MNat -> Config [ctor] .
+    vars R W : MNat .
+    rl [wrt+] : < 0, 0 > => < 0, s(0) > .
+    rl [wrt-] : < R, s(W) > => < R, W > .
+    rl [rdr+] : < R, 0 > => < s(R), 0 > .
+    rl [rdr-] : < s(R), W > => < R, W > .
+  endm)
+\end{verbatim}
+\end{small}
+%
+Before reducing or rewriting any term in this module, we must check the expected 
+execution requirements, namely, the equations being ground 
+terminating and Church-Rosser, and the rules being ground coherent with respect to the equations.
+We can perform all these checks in MFE. 
+During the verification process, tools keep record of pending proof obligations, 
+are able to submit them to appropriate tools in the environment, 
+and complete their proofs upon
+reception of messages announcing the discharging of assumptions.
+In fact, we can choose to complete the proof in different orders. For example, 
+we could check first the termination, then the Church-Rosser property, and then
+its coherence, or we could choose to directly attempt the coherence proof and let
+the submission of the proof obligations help in the process. 
+
+Let us do first the Church-Rosser proof. 
+To carry such a check we first select the CRC tool.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool CRC .)
+  CRC has been set as current tool.
+\end{verbatim}
+\end{small}
+%
+Since there are no equations in \verb~READERS-WRITERS~, this
+module is trivially (ground) Church-Rosser.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (check Church-Rosser .)
+  Church-Rosser check for READERS-WRITERS
+      There are no critical pairs.
+      The specification is confluent.
+      The module is sort-decreasing.
+      Success: The module is therefore Church-Rosser.
+\end{verbatim}
+\end{small}
+%
+We now check module \verb~READERS-WRITERS~ ground coherent. We select the ChC tool:
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool ChC .)
+  ChC has been set as current tool.
+\end{verbatim}
+\end{small}
+%
+and then issue the checking command:
+
+\begin{small}
+\begin{verbatim}
+  Maude> (check coherence .)
+  Coherence checking of READERS-WRITERS
+      All critical pairs have been rewritten and no rewrite with rules 
+      can happen at non-overlapping positions of equations left-hand sides.
+      The termination and Church-Rosser properties must still be checked.
+\end{verbatim}
+\end{small}
+%
+The coherence property assumes the ground termination and 
+ground Church-Rosser properties of equations in module \verb~READERS-WRITERS~.
+We use command \verb~(submit .)~
+to ask the environment to submit the pending proof obligations to the 
+corresponding tools. 
+
+\begin{small}
+\begin{verbatim}
+  Maude> (submit .)
+  The Church-Rosser goal for READERS-WRITERS has been submitted to CRC.
+  The termination goal for the functional part of READERS-WRITERS has been
+      submitted to MTT.
+  Success: The functional part of module READERS-WRITERS is terminating.
+  Church-Rosser check for READERS-WRITERS
+      There are no critical pairs.
+      The specification is confluent.
+      The module is sort-decreasing.
+      Success: The module is therefore Church-Rosser.
+  The functional part of module READERS-WRITERS has been checked terminating.
+  The module READERS-WRITERS has been checked Church-Rosser.
+  Success: The module READERS-WRITERS is coherent.
+\end{verbatim}
+\end{small}
+%
+The ground termination and Church-Rosser properties of the functional part of module
+\verb~READERS-WRITERS~ are checked, answers to the requests are received, 
+and the coherence checker automatically completes the proof and sends to the
+controller object the success message. 
+The proof of the Church-Rosser property was already in the 
+environment, and therefore the answer is directly returned without further
+checking. When requested, the termination proof is attempted and it succeeds. 
+When ChC receives all the messages informing of successful discharging of both proof
+obligations, it completes the proof and sends the corresponding success message. 
+
+We are now ready to prove some properties of module \verb~READERS-WRITERS~. 
+For instance, we verify mutual exclusion in \verb~READERS-WRITERS~, that is, 
+at most one reader or one writer uses the critical resource at a particular time.
+We could do this by using Maude's \verb~search~ command or its LTL model checker. However, 
+since the reachable state space is infinite for any initial state, we first need to define an abstraction of the
+system and proof its correctness. 
+We use the following predicates and abstraction, 
+in which all states having readers are collapsed to a simpler state (it is not relevant
+to know how many readers are using the critical resource, 
+but whether there is any or not using the critical resource).
+
+\begin{small}
+\begin{verbatim}
+  (mod READERS-WRITERS-PREDS is
+     protecting MBOOL .
+     protecting READERS-WRITERS .
+     ops mutex one-writer : Config -> MBool [frozen] .
+     vars M N : MNat .
+     eq mutex(< s(N), s(M) >) = false .
+     eq mutex(< 0, N >) = true .
+     eq mutex(< N, 0 >) = true .
+     eq one-writer(< N, s(s(M)) >) = true .
+     eq one-writer(< N, s(0) >) = true .
+     eq one-writer(< N, 0 >) = true .
+   endm)
+\end{verbatim}
+\end{small}
+%
+\begin{small}
+\begin{verbatim}
+  (mod READERS-WRITERS-ABS is
+     including READERS-WRITERS-PREDS .
+     var N : MNat .
+     eq [abs] : < s(s(N)), 0 > = < s(0), 0 > .
+   endm)
+\end{verbatim}
+\end{small}
+%
+To check both the execution and the invariant-preservation properties
+of this abstraction, we need to check:
+the equations being ground confluent, sort-decreasing, and terminating;
+the equations being sufficiently complete; and
+the rules being ground coherent with respect the equations.
+
+The use of CRC, ChC, SCC, and MTT to carry on these proofs is presented in~\cite[Section 12.4]{CDELMMT:2007-book}. Here we show how the different proofs can be 
+completed inside the environment without the need of switching between 
+execution environments.  
+
+We start by checking the sufficient completeness of \verb~READERS-WRITERS-ABS~: 
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool SCC .)
+  SCC has been set as current tool.
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+  Maude> (scc READERS-WRITERS-ABS .)
+  Checking sufficient completeness of READERS-WRITERS-ABS ...
+  To complete the proof the specification must be proved ground 
+  sort-decreasing and weakly-terminating.
+\end{verbatim}
+\end{small}
+%
+We then submit these assumptions to other tools in the environment. 
+
+\begin{small}
+\begin{verbatim}
+  Maude> (submit .)
+  The sort-decreasingness goal for READERS-WRITERS-ABS has been submitted 
+      to CRC.
+  The termination goal for the functional part of READERS-WRITERS-ABS has      
+      been submitted to MTT.
+  Success: Module READERS-WRITERS-ABS is sort-decreasing.
+  Success: The functional part of module READERS-WRITERS-ABS is terminating.
+  Success: Module READERS-WRITERS-ABS is sufficiently complete.
+\end{verbatim}
+\end{small}
+%
+CRC has not requested a termination proof for \texttt{READERS-WRITERS-ABS}, and therefore has not been informed of the result of the termination proof. Let us just do that. We first select the CRC tool as active tool.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool CRC .)
+  CRC has been set as current tool.
+\end{verbatim}
+\end{small}
+%
+By requesting the CRC's, we realize that the check was completed, and that 
+only ground termination is necessary to complete the ground confluence proof 
+and, with it, obtain a ground Church-Rosser proof for \texttt{READERS-WRITERS-ABS}.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (show state .)
+  State of the tool:
+  - Church-Rosser check for READERS-WRITERS :
+      There are no critical pairs.
+      The specification is confluent.
+      The module is sort-decreasing.
+      The module is therefore Church-Rosser.
+  - Church-Rosser check for READERS-WRITERS-ABS :
+      All critical pairs have been joined.
+      The specification is locally-confluent.
+      The module is sort-decreasing.
+\end{verbatim}
+\end{small}
+%
+We submit the pending proof obligation. 
+
+\begin{small}
+\begin{verbatim}
+  Maude> (submit .)
+  The termination goal for the functional part of READERS-WRITERS-ABS has
+      been  submitted to MTT.
+  The functional part of module READERS-WRITERS-ABS has been checked 
+      terminating.
+  Success: The module READERS-WRITERS-ABS has been checked Church-Rosser.
+\end{verbatim}
+\end{small}
+%
+Then, we check module \verb~READERS-WRITERS-ABS~ ground coherent.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool ChC .)
+  ChC has been set as current tool.
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+  Maude> (check ground coherence READERS-WRITERS-ABS .)
+  Ground coherence checking of READERS-WRITERS-ABS
+  The following critical pairs cannot be rewritten:
+    cp READERS-WRITERS-ABS1 for abs and rdr-
+      < s(0),0 >
+      => < s(#1:MNat), 0 > .
+  The termination and Church-Rosser properties must still be checked.
+\end{verbatim}
+\end{small}
+%
+A critical pair is returned by the ChC tool in the form of a reachability goal.
+Also, ground termination and Church-Rosser proofs must be 
+obtained. Some of these proofs have already been found, but ChC has not been informed. 
+We submit the pending proof obligations.
+
+\begin{small}
+\begin{verbatim}
+  Maude> (submit .)
+  The Church-Rosser goal for READERS-WRITERS-ABS has been submitted to CRC.
+  The goal for critical pair READERS-WRITERS-ABS1 has been submitted to ITP.
+  The termination goal for the functional part of READERS-WRITERS-ABS has 
+      been submitted to MTT.
+  The module READERS-WRITERS-ABS has been checked Church-Rosser.
+  The functional part of module READERS-WRITERS-ABS has been checked 
+      terminating.
+\end{verbatim}
+\end{small}
+%
+The ITP does not provide methods to prove the joinability of critical pairs. 
+However, we can carry on a proof by reasoning by cases and using Maude's searching 
+command as in~\cite[Section 12.4]{CDELMMT:2007-book}. We can then use the 
+\verb~(trust .)~ command to inform the tool that the proof was completed out of the 
+ITP. 
+
+\begin{small}
+\begin{verbatim}
+  Maude> (select tool ITP .)
+  ITP has been set as current tool.
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+  Maude> (trust .)
+  Eliminated current goal.
+  The critical pair READERS-WRITERS-ABS1 has been trusted.
+  Success: The module READERS-WRITERS-ABS is ground-coherent.
+\end{verbatim}
+\end{small}
+%
+Now that the abstraction has been proved correct, we can check 
+both invariants:
+
+\begin{small}
+\begin{verbatim}
+  Maude> (search in READERS-WRITERS-ABS :
+            < 0, 0 > =>* C:Config 
+            such that mutex(C:Config) = false .)
+  No solution.
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+  Maude> (search in READERS-WRITERS-ABS :
+            < 0, 0 > =>* C:Config 
+            such that one-writer(C:Config) = false .)
+  No solution.
+\end{verbatim}
+\end{small}

@@ -1,0 +1,107 @@
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- deleting an element in a ordered lists with
+--- returns always an ordered lists.
+
+--- ITP:
+(goal ordlist-delete : 
+    ORDLIST |- 
+      A{E:Int? ; L:List?}
+        ((((E:Int?): Int) & ((L:List?): OrdList))
+       => ((delete(E:Int?, L:List?)): OrdList)) .)
+
+----------
+--- lemma: ordlist-list-delete: 
+----------
+(lem ordlist-list-delete : A{E:Int? ; L:List?}
+     ((((E:Int?): Int) &  ((L:List?): List))
+   => ((delete(E:Int?, L:List?)): List)) .)
+
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (E*Int? > V0#0*Int?) .)
+--- --- case true 
+(auto .)
+--- --- case false
+(auto .)
+(split on (E*Int? < V0#0*Int?) .)
+--- --- --- case true 
+(auto .)
+--- --- --- case false
+(auto .)
+
+----------
+--- lemma: ordlist-delete-aux
+----------
+(lem ordlist-delete-aux : A{E1:Int? ; E2:Int? ; L:List?}
+     ((((E1:Int?): Int) & ((E2:Int?): Int) &  ((L:List?): List) &
+       ((E1:Int? : L:List?): OrdList))
+   => ((E1:Int? : delete(E2:Int?, L:List?)): OrdList)) .)
+
+---(
+
+(ind on L:List? .)
+--- base case:
+(auto .)
+--- inductive case:
+(auto .)
+(split on (E2*Int? < V0#0*Int?) .)
+--- --- case (E2*Int? < V0#0*Int?) = true
+(auto .)
+(ctor-term-split on (E1*Int? : V0#0*Int? : V0#1*List?) OrdList .)
+(auto .)
+--- --- case (E2*Int? < V0#0*Int?) = false 
+(auto .)
+(split on (E2*Int? > V0#0*Int?) .)
+--- --- --- case (E2*Int? > V0#0*Int?) = true
+(auto .)
+(ctor-term-split on (E1*Int? : V0#0*Int? : V0#1*List?) OrdList .)
+(auto .)
+--- --- --- case (E2*Int? > V0#0*Int?) = false 
+(auto .)
+(ctor-split on V0#1*List? List .)
+--- --- --- --- case V0#1*List? = nil 
+(auto .)
+--- --- --- --- case V0#1*List? = V1#0:Int? : V1#1:List?
+(auto .)
+(ctor-term-split on (E1*Int? : V0#0*Int? : V1#0*Int? : V1#1*List?) OrdList .)
+(auto .)
+(ctor-term-split on (V0#0*Int? : V1#0*Int? : V1#1*List?) OrdList .)
+(auto .)
+
+---------
+--- goal: ordlist-delete
+---------
+(ind on L:List? .)
+--- --- base cases:
+--- --- 1. empty list
+(auto .)
+--- --- 2. unary list
+(auto .)
+(split on (E*Int? > V0#0*Int?) .)
+--- --- ---  E*Int? > V0#0*Int? = true 
+(auto .)
+--- --- ---  E*Int? > V0#0*Int? = false 
+(split on (E*Int? < V0#0*Int?) .)
+--- --- ---  --- E*Int? < V0#0*Int? = true 
+(auto .)
+--- --- ---  --- E*Int? < V0#0*Int? = false 
+(auto .)
+--- ---  inductive case:
+(auto .)
+(split on (E*Int? > V0#0*Int?) .)
+--- ---  --- case E*Int? > V0#0*Int? = true
+(auto .) 
+--- ---  --- case E*Int? > V0#0*Int? = false
+(auto .)
+(split on (E*Int? < V0#0*Int?) .)
+--- --- ---  --- E*Int? < V0#0*Int? = true 
+(auto .)
+--- --- ---  --- E*Int? < V0#0*Int? = false
+(auto .)
+)

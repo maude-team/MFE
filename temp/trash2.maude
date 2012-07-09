@@ -1,0 +1,14 @@
+red getVariants(fmod 'GOTCHA1! is
+   nil
+   sorts 'A ; 'B ; 'Tuple .
+   subsort 'A < 'B .
+   op '<_> : '`[B`] -> '`[Tuple`] [none] .
+   op 'e : nil -> 'B [none] .
+   op 'f : 'B 'B -> 'B [assoc comm id('e.B)] .
+   op 'g : 'A -> 'A [none] .
+   op 'g : 'B -> 'B [none] .
+   op 'k : 'B -> 'B [none] .
+   none
+   eq 'f['e.B,'X:B] = 'X:B [label('idEq1) metadata("variant")] .
+ endfm, '<_>['f['Y:B,'g['X:B]]], 1, irreducible ACUUnify)
+  .

@@ -1,0 +1,120 @@
+--- Source:
+--- Computing Constructor Forms with Non-Terminating
+--- Rewrite Programs -Extended Version-
+--- Authors: I. Gnaedig & H. Kirchner
+
+--- This is the first example in the paper
+--- and in the technical report. The case treated
+--- there is the syntactic case, as in this
+--- example. The next example deals with a similar
+--- but AC specification.
+mod BOOLEAN is
+ sort Boolean .
+ ops 0 1 : -> Boolean [ctor metadata "rctor"] .
+ op NOT_ : Boolean -> Boolean [ctor] .
+ ops _OR_ _AND_ : Boolean Boolean -> Boolean [ctor] .
+
+ vars X Y : Boolean .
+
+ rl 1 AND X => X .
+ rl 0 AND X => 0 .
+ rl 1 OR X => 1 .
+ rl 0 OR X => X . 
+ rl 1 AND X => NOT( NOT( 1 AND X ) ) . 
+ rl NOT 1 => 0 .
+ rl NOT 0 => 1 .
+ rl NOT (X AND Y) => (NOT X) OR (NOT Y) .
+endm
+
+--- Same as BOOLEAN but with OR and AND with
+--- AC axioms.
+mod BOOLEAN-AC is
+ sort Boolean .
+ ops 0 1 : -> Boolean [ctor metadata "rctor"] .
+ op NOT_ : Boolean -> Boolean [ctor] .
+ ops _OR_ _AND_ : Boolean Boolean -> Boolean [ctor assoc comm] .
+
+ vars X Y : Boolean .
+
+ rl 1 AND X => X .
+ rl 0 AND X => 0 .
+ rl 0 OR X => X .
+ rl 1 OR X => 1 . 
+ rl 1 AND X => NOT( NOT( 1 AND X ) ) . 
+ rl NOT 0 => 1 .
+ rl NOT 1 => 0 .
+ rl NOT (X AND Y) => (NOT X) OR (NOT Y) .
+endm
+
+--- Second example in the paper and in
+--- the technical report
+mod QUOT is
+ sort Nat2 .
+ op 0 : -> Nat2 [ctor metadata "rctor"] .
+ op s : Nat2 -> Nat2 [ctor metadata "rctor"] .
+ op error : -> Nat2 [ctor metadata "rctor"] .
+ op quot : Nat2 Nat2 Nat2 -> Nat2 [ctor] .
+
+ vars X Y Z : Nat2 .
+
+ rl quot(0, s(Y), s(Z)) => 0 .
+ rl quot(s(X), s(Y), Z) => quot(X,Y,Z) .
+ rl quot(X,0,s(Z)) => s(quot(X,s(Z),s(Z))) .
+ rl quot(X,Y,0) => error .
+ rl quot(error,Y,Z) => error .
+ rl quot(X,error,Z) => error .
+ rl quot(X,Y,error) => error .
+endm
+
+--- First example in section 7 of the technical report
+mod IF is
+ sort Expression .
+ ops tt ff c : -> Expression [ctor metadata "rctor"] .
+ op f : Expression -> Expression [ctor] .
+ op if : Expression Expression Expression -> Expression [ctor] .
+
+ vars X Y : Expression .
+
+ rl f(X) => if(X,c,f(tt)) .
+ rl if(tt,X,Y) => X .
+ rl if(ff,X,Y) => Y .
+ rl if(c,X,Y) => c .
+endm
+
+--- Second example in section 7 of the technical report
+mod LENGTH is
+ sort List2 .
+ ops 0 nil : -> List2 [ctor metadata "rctor"] .
+ op s : List2 -> List2 [ctor metadata "rctor"] .
+ ops length length1 : List2 -> List2 [ctor] .
+ op cons : List2 List2 -> List2 [ctor metadata "rctor"] .
+
+ vars X Y : List2 .
+
+ rl length(nil) => 0 .
+ rl length(cons(X,Y)) => s(length1(Y)) .
+ rl length1(X) => length(X) .
+ rl length(0) => s(0) .
+ rl length(s(X)) => s(length(X)) .
+endm
+
+--- Second example in section 7 of the technical report
+--- with sorts
+mod LENGTH-SORTS is
+ sort Nat2 .
+ sort List2 .
+ subsort Nat2 < List2 .
+ op 0 : -> Nat2 [ctor metadata "rctor"] .
+ op s : Nat2 -> Nat2 [ctor metadata "rctor"] .
+ op nil : -> List2 [ctor metadata "rctor"] .
+ ops length length1 : List2 -> Nat2 [ctor] .
+ op cons : Nat2 List2 -> List2 [ctor metadata "rctor"] .
+
+ var X : Nat2 . var Y : List2 .
+
+ rl length(nil) => 0 .
+ rl length(cons(X,Y)) => s(length1(Y)) .
+ rl length1(Y) => length(Y) .
+ rl length(0) => s(0) .
+ rl length(s(X)) => s(length(X)) .
+endm

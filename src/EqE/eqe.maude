@@ -1,0 +1,34 @@
+load eqEnrich_2012-07-02.maude
+
+fmod EqE-BANNER is
+  pr STRING .
+  op eqe-banner : -> String .
+  eq eqe-banner = "Equality Enrichments 0.999 - July 2nd 2012" .
+endfm
+
+fmod EqE-HELP is
+  pr META-LEVEL .
+  pr EXT-QID-LIST .
+
+  op eqe-help : -> QidList .
+  eq eqe-help =
+      string2qidList("Commands available in the EqE tool:") '\n 
+      '\t '`( '\! 'ee  '\o '. '`) '\s '/ '\s '`( '\! 'enrich '\o '. '`) '\n '\t '\t 'Enriches 'the 'current 'module 'with 'equationally 'defined '_==_ '`, '\s '\n 
+      '\t '\t '_=/=_ '`, '\s 'and 'if_then_else_fi 'operators. '\n
+      '\t '`( '\! 'ee '<module-name> '\o '. '`) '\s '/ '\s '`( '\! 'enrich '<module-name> '\o '. '`) '\n '\t '\t 'Enriches '<module-name> 'with 'equationally 'defined '== '`, '\s '=/= '`, '\s '\n 
+      '\t '\t 'and 'if_then_else_fi 'operators. '\n
+      '\t '`( '\! 'EqE 'help '\o '. '`) '\n '\t '\t 'Shows 'this 'help 'information. '\n .
+
+endfm
+
+fmod EqE-SIGN is
+  including FULL-MAUDE-SIGN .
+  ops ee_. enrich_. : @ModExp@ -> @Command@ [ctor] .
+  ops ee`. enrich`. : -> @Command@ [ctor] .
+----  op ee+_. : @ModExp@ -> @Command@ [ctor] .
+  op EqE help . : -> @Command@ [ctor] .
+----  op show state . : -> @Command@ [ctor] .
+----  op submit . : -> @Command@ [ctor] .
+----  op trust . : -> @Command@ [ctor] .
+----  op EqE select_. : @ModExp@  -> @Command@ [ctor] .
+endfm
