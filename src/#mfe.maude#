@@ -16,7 +16,7 @@
 ---- - Add support for joinability properties
 ---- - Add support for rechability properties
 
----- Latest changes
+---- Latest changes 
 ---- - July 20th, 2011
 ----   - Rule free-constructors added to module MFE-CRC for handling messages of free constructors 
 ----     which is not used by the CRC
