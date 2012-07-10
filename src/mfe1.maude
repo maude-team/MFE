@@ -8,7 +8,7 @@
 ----   in more resettings than required. For example, for ground coherence all defined operators are made
 ----   frozen, what discards any previous proof of the C-R or termination properties. Perhaps we can store 
 ----   both the original module and the one internally used by the tools
--------SCC
+-------SCC 
 ---- - Add commands for checking deadlock freedom and terminalness of rewrite constructors
 ---- - Add commands for context-sensitive equational completeness and freeness
 ---- - Add commands for strategy-based rewrite deadlock freedom and terminalness of rewrite constructors
