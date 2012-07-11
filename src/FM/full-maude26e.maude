@@ -35,6 +35,7 @@ endfm
 )
 
 ---- to do:
+---- - commands remove ids and remove non-handled ids
 ---- - continue .
 ---- - show search graph .
 ---- - show path <number> .
