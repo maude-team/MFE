@@ -205,7 +205,7 @@ fmod ChC-HELP is
       '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
       '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
-      '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
+      '\t '\t string2qidList("sets the specified module as the current module of the ChC.") '\n .
 endfm
 
 ---- main changes from 3d:
