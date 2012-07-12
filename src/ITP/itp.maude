@@ -20,52 +20,104 @@ fmod ITP-HELP is
       '\t '\t string2qidList(itp-banner) .
   eq itp-help-goal =
       '\s '\u 'Goal 'commands: '\o '\n '\n
-      '\s '\s '`( '\! 'a-inst '\o '<name> '\! 'with '\o '<subs> '. '`) '\n
+      '\s '\s '`( '\! 'a-inst '\o '<label> '\! 'with '\o '<subs> '. '`) '\n
+      '\s '\s '\s '\s 'instantiates 'a 'labeled 'universally 'quantified 'formula 'with 'a 'substitution '\n
       '\s '\s '`( '\! 'auto '\o '. '`) '\n
+      '\s '\s '\s '\s 'applies 'the 'auto 'strategy '\n
       '\s '\s '`( '\! 'cnj '\o '. '`) '\n 
+      '\s '\s '\s '\s 'splits 'a 'conjunction 'into 'two 'subgoals '\n
       '\s '\s '`( '\! 'cns '\o '. '`) '\n 
+      '\s '\s '\s '\s 'performs 'universal 'quantifier 'elimination '\n
       '\s '\s '`( '\! 'cov 'on '\o '<pattern> '. '`) '\n 
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'by 'assuming 'the 'module '\n
+      '\s '\s '\s '\s 'has 'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov* 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'and 'then 'the 'auto 'strategy 'by 'assuming '\n
+      '\s '\s '\s '\s 'the 'module 'has 'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov-split 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'split 'patterns 'by 'assuming '\n
+      '\s '\s '\s '\s 'the 'module 'has 'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov-split* 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'split 'patterns 'and 'then 'the 'auto '\n 
+      '\s '\s '\s '\s 'strategy 'by 'assuming 'the 'module 'has 'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov 'using '\o '<names> '\! 'on '\o '<pattern> '. '`) '\n 
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'alternative 'constructors 'by 'assuming '\n 
+      '\s '\s '\s '\s 'the 'module 'has 'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov* 'using '\o '<names> '\! 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'alternative 'constructors 'and 'then '\n
+      '\s '\s '\s '\s 'the 'auto 'strategy 'by 'assuming 'the 'module 'has 'no 'equational '\n
+      '\s '\s '\s '\s 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'cov-split 'using '\o '<names> '\! 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'alternative 'constructors 'and 'split '\n 
+      '\s '\s '\s '\s 'patterns 'by 'assuming 'the 'module 'has 'no 'equational 'attributes 'in '\n
+      '\s '\s '\s '\s 'the 'operators '\n
       '\s '\s '`( '\! 'cov-split* 'using '\o '<names> '\! 'on '\o '<pattern> '\! 'split '\o '<split-patterns> '. '`) '\n
+      '\s '\s '\s '\s 'applies 'cover 'set 'induction 'with 'alternative 'constructors 'and 'split '\n
+      '\s '\s '\s '\s 'patterns 'and 'then 'the 'auto 'command 'by 'assuming 'the 'module 'has '\n
+      '\s '\s '\s '\s  'no 'equational 'attributes 'in 'the 'operators '\n
       '\s '\s '`( '\! 'ctor-def '\o '<name> ': 'A '`{ '<x>:<s> '`} '\n
       '\s '\s '\s '\s '`( 'E '`{ '<y1> '`} ' '<t1>=<x> '& '<cond1> '`) '...
       '`( 'E '`{ '<yn> '`} ' '<tn>=<x> '& '<condn> '`) ' '. '`) '\n
+      '\s '\s '\s '\s 'adds 'an 'alternative 'constructor 'declaration '\n
       '\s '\s '`( '\! 'ctor-term-split '\o '<var> '. '`) '\n
+      '\s '\s '\s '\s 'performs 'constructor 'splitting '\n
       '\s '\s '`( '\! 'def-equiv '\o '<p> '\! 'on '\o '<var> '. '`) '\n
-      '\s '\s '`( '\! 'disable '\o '<rule-name> '. '`) '\n
+      '\s '\s '\s '\s 'defines 'an 'equivalence 'relation 'on 'a 'commutative 'symbol 'of 'a 'sort '\n
+      '\s '\s '`( '\! 'disable '\o '<label> '. '`) '\n
+      '\s '\s '\s '\s 'disables 'an 'equation 'for 'rewriting '\n
       '\s '\s '`( '\! 'e-inst 'with '\o '<sub> '. '`) '\n
+      '\s '\s '\s '\s 'performs 'existential 'instantiation '\n
       '\s '\s '`( '\! 'enable '\o '<rule-name> '. '`) '\n
+      '\s '\s '\s '\s 'enables 'an 'equation 'for 'rewriting '\n
       '\s '\s '`( '\! 'equiv-propagate '\o '. '`) '\n
+      '\s '\s '\s '\s 'propagates 'facts 'implied 'by 'transitivity 'of 'an 'equivalence 'relation '\n
       '\s '\s '`( '\! 'eq-split 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '\s '\s 'instantiates 'universally 'quantified 'variables 'to 'better 'match 'the '\n
+      '\s '\s '\s '\s 'left 'hand 'side 'of 'the 'equations '\n
       '\s '\s '`( '\! 'eq-split* 'on '\o '<pattern> '. '`) '\n
+      '\s '\s '\s '\s 'instantiates 'universally 'quantified 'variables 'to 'better 'match 'the '\n
+      '\s '\s '\s '\s 'left 'hand 'side 'of 'the 'equations 'and 'then 'the 'auto 'strategy '\n
       '\s '\s '`( '\! 'goal '\o '<label> '\! ': '\o '<mod-name> '\! '|- '\o '<formula> '. '`) '\n
+      '\s '\s '\s '\s 'introduces 'a 'goal '\n
       '\s '\s '`( '\! 'imp '\o '. '`) '\n
+      '\s '\s '\s '\s 'adds 'the 'hypothesis 'as 'equations 'of 'the 'module '\n
       '\s '\s '`( '\! 'ind 'on '\o '<var> '. '`) '\n
+      '\s '\s '\s '\s 'inducts 'structurally 'on 'a 'variable '\n
       '\s '\s '`( '\! 'ind* 'on '\o '<var> '. '`) '\n
+      '\s '\s '\s '\s 'inducts 'structurally 'on 'a 'variable 'and 'then 'applies 'the 'auto 'strategy '\n
       '\s '\s '`( '\! 'lem '\o '<name> '\! ': '\o '<formula> '. '`) '\n
+      '\s '\s '\s '\s 'introduces 'a 'lemma '\n
       '\s '\s '`( '\! 'red '\o '<term> '. '`) '\n
+      '\s '\s '\s '\s 'reduces 'a 'term '\n
       '\s '\s '`( '\! 'sel '\o '<goal-name> '. '`) '\n
+      '\s '\s '\s '\s 'selects 'a 'goal '\n
       '\s '\s '`( '\! 'set-default-constructor '\o '<name> '. '`) '\n
+      '\s '\s '\s '\s  '\n
       '\s '\s '`( '\! 'show-all '\o '<name> '. '`) '\n
+      '\s '\s '\s '\s 'shows 'all 'goals 'in 'a 'proof '\n
       '\s '\s '`( '\! 'show-hyps '\o '<name> '. '`) '\n
+      '\s '\s '\s '\s 'shows 'hypothesis 'in 'a 'proof '\n
       '\s '\s '`( '\! 'show-rules 'with '\o '<name> '. '`) '\n
-      '\s '\s '`( '\! 'split 'on '\o '<bool-formula> '. '`) '\n .
+      '\s '\s '\s '\s 'shows 'rules 'with 'a 'name '\n
+      '\s '\s '`( '\! 'split 'on '\o '<bool-formula> '. '`) '\n
+      '\s '\s '\s '\s 'splits 'on 'a 'Boolean 'formula '\n .
 
   eq itp-help-proof =
       '\s '\u 'Proof 'commands: '\o '\n '\n
       '\s '\s '`( '\! 'new-goal '\o '<label> '\! ': '\o '<mod-name> '\! '|- '\o '<formula> '. '`) '\n
+      '\s '\s '\s '\s 'adds 'a 'goal '\n
       '\s '\s '`( '\! 'sel-proof '\o '<proof-id> '. '`) '\n
+      '\s '\s '\s '\s 'selects 'a 'proof '\n
       '\s '\s '`( '\! 'ITP 'show 'state '\o '. '`) '\n 
-      '\s '\s '`( '\! 'ITP 'trust '\o '<goal-name> '. '`) .
+      '\s '\s '\s '\s 'shows 'the 'state 'of 'the 'ITP '\n
+      '\s '\s '`( '\! 'ITP 'trust '\o '<goal-name> '. '`) '\n
+      '\s '\s '\s '\s 'trusts 'a 'goal '\n .
 
   eq itp-help-help =
       '\s '\u 'Help 'commands: '\o '\n '\n 
-      '\s '\s '`( '\! 'ITP 'help '\o '. '`) '\n .
+      '\s '\s '`( '\! 'ITP 'help '\o '. '`) '\n
+      '\s '\s '\s '\s 'shows 'the 'help 'menu '\n .
+
 
   eq itp-help = itp-help-header '\n '\n itp-help-goal '\n itp-help-proof '\n itp-help-help .
 endfm
