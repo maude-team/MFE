@@ -19,6 +19,8 @@
 ---- Latest changes 
 ---- - July 7th, 2012
 ----   - A basic skeletom for the ERTP has been added. 
+----   - New versions of the different tools integrated, including a new version of Full Maude 
+----     which fixes several bugs. 
 ---- - July 2nd, 2012
 ----   - A new command (which tool .) has been added to the MFE.
 ---- - June 30th, 2012
@@ -93,13 +95,13 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude26e.maude
+load FM/full-maude261e.maude
 load ITP/itp.maude
-load CRChC/crchc3m.maude
+load CRChC/crchc3n.maude
 load MTT/mtt.maude
 load SCC/scc.maude
-load EqE/eqe.maude
-load ERTP/ertp.maude
+----load EqE/eqe.maude
+----load ERTP/ertp.maude
 
 *** 
 *** Maude Formal Environment
@@ -2851,10 +2853,10 @@ mod MFE-MTT is
     < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
     < O' : X@MTT | requester : OS, module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
     (to O from O''' : check termination M' using P functional part B')
-    => if M == M' and 3B == true and B == B' ---- a different proof might also be attempted
+    => if M == M' and 3B and (not B or B == B') ---- a different proof might also be attempted
        then < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
             < O' : X@MTT | requester : (OS, O'''), module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
-            (to O''' from O : module MN is terminating functional part B)
+            (to O''' from O : module MN is terminating functional part B')
        else ---- The MTT object is removed
             (to TS["MFE"] from O : output('The 'MTT 'proof 'for eMetaPrettyPrint(getName(M')) 'has 'been 'reset. '\n))
             ---- the association of module name in the reg map is removed
@@ -2922,6 +2924,7 @@ mod MFE-MTT is
        (to OS from O' : module getName(M) is terminating functional part B) .
 endm
 
+---(
 mod MFE-EqE is
   pr 3BOOL .
   pr DATABASE-HANDLING .
@@ -3076,7 +3079,9 @@ mod MFE-EqE is
   eq has==Aux((op '_==_ : 'Universal 'Universal -> 'Bool [AS]. ) OS) = true .
   eq has==Aux(OS) = false [owise] .
 endm
+---)
 
+---(
 --------------------------------------------------------------------------------
 ---- MFE-ERTP
 --------------------------------------------------------------------------------
@@ -3189,9 +3194,8 @@ mod MFE-ERTP is
     => < O : X@Controller | db : DB, Atts > 
        < O' : X@ERTPBroker | Atts' > 
        (to O'' from O' : output('Something 'should 'have 'been 'proved. '\n)) .
-
 endm
-
+---)
 
 
 --------------------------------------------------------------------------------
@@ -3210,8 +3214,8 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   pr MFE-CRC .
   pr MFE-ChC .
   pr MFE-MTT .
-  pr MFE-EqE .
-  pr MFE-ERTP .
+----  pr MFE-EqE .
+----  pr MFE-ERTP .
   pr MFE-PUBLIC-MESSAGES .
   pr META-MFE-SIGN .
   subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due 
@@ -3241,8 +3245,9 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
           init-itp(TOOLS)
           init-scc(TOOLS)
           init-mtt(TOOLS)
-          init-eqe(TOOLS)
-          init-ertp(TOOLS),
+----          init-eqe(TOOLS)
+----          init-ertp(TOOLS)
+          ,
          nil ] .
 
 endm

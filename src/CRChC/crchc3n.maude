@@ -1,4 +1,5 @@
 ---- Things to be fixed:
+---- - Submit messages are not finished. CPs and MAs should be submitted to the ITP.
 ---- - ChC ground case: Derived operators are frozen, but only those with different 
 ----   syntactic form should be frozen. Notice that subsort overloded operators 
 ----   must have the same attributes.
@@ -148,7 +149,7 @@ set show advisories off .
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3m - July 7th 2012" .
+  eq crc-banner = "Church-Rosser Checker 3n - March 7th 2014" .
 endfm
 
 fmod ChC-BANNER is
@@ -179,7 +180,8 @@ fmod CRC-HELP is
       '\t string2qidList("(show all mas .) / (show all membership assertions .)") '\n
       '\t '\t string2qidList("shows the status of all membership assertions of the last ") '\n
       '\t '\t string2qidList("check Church-Rosser command.") '\n
-----      '\t string2qidList("(submit .)") '\n
+      '\t string2qidList("(submit .)") '\n
+      '\t '\t string2qidList("submits termination proof to MTT, nothing is done with cps and mas.") '\n
 ----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
 ----      '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
@@ -206,6 +208,8 @@ fmod ChC-HELP is
       '\t string2qidList("(show all cps .) / (show all critical pairs .)") '\n
       '\t '\t string2qidList("shows the critical pairs of the last check coherence or ground") '\n
       '\t '\t string2qidList("coherence command before rewritten.") '\n
+      '\t string2qidList("(submit .)") '\n
+      '\t '\t string2qidList("submits termination proof to MTT, nothing is done with cps.") '\n
 ----      '\t string2qidList("(submit .)") '\n
 ----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
 ----      '\t '\t string2qidList("current module to the ITP.") '\n
@@ -1670,7 +1674,7 @@ fmod CRC-SIGN is
   op show mas . : -> @Command@ .                            ---- alias
   op show all membership assertions . : -> @Command@ .
   op show all mas . : -> @Command@ .                        ---- alias
-----  op submit . : -> @Command@ .
+  op submit . : -> @Command@ .
 ----  op submit critical pair_. : @Token@ -> @Command@ .
 ----  op submit cp_. : @Token@ -> @Command@ .                   ---- alias
 ----  op submit membership assertion_. : @Token@ -> @Command@ .
