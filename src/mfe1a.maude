@@ -95,7 +95,7 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude261e.maude
+load FM/full-maude261f.maude
 load ITP/itp.maude
 load CRChC/crchc3n.maude
 load MTT/mtt.maude
