@@ -42,6 +42,9 @@ endfm
 
 ---- Main changes and bugs fixed:
 ----
+---- - September 12th, 2013
+----   - Bug in ACU completion when handling modules with explicit use of kinds. Reported 
+----     by Luis Aguirre  
 ---- - December 12th, 2013
 ----   - Bug in the renaming of operators with explicit arity where parameterized sorts 
 ----     are used. 
@@ -19854,71 +19857,71 @@ fmod ACU-COHERENCE-COMPLETION is
   ---- if f AC add f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
   eq acuCohComplete(M, Tp, assoc comm AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[TL] => RHS [AtS'] .)
-      (rl F[TL, qid("X@@@:[" + string(Tp) + "]")] => F[RHS, qid("X@@@:[" + string(Tp) + "]")] [AtS'] .)
+      (rl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .)
     [owise] . 
   eq acuCohComplete(M, Tp, assoc comm AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[TL] => RHS if Cond [AtS'] .)
-      (crl F[TL, qid("X@@@:[" + string(Tp) + "]")] => F[RHS, qid("X@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
+      (crl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
     [owise] . 
   ---- if f ACU replace by f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
   eq acuCohComplete(M, Tp, assoc comm id(T) AtS, rl F[TL] => RHS [AtS'] .)
-    = (rl F[TL, qid("X@@@:[" + string(Tp) + "]")] => F[RHS, qid("X@@@:[" + string(Tp) + "]")] [AtS'] .) . 
+    = (rl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
   eq acuCohComplete(M, Tp, assoc comm id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
-    = (crl F[TL, qid("X@@@:[" + string(Tp) + "]")] => F[RHS, qid("X@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) . 
+    = (crl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f AU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ceq acuCohComplete(M, Tp, assoc id(T) AtS, rl F[TL] => RHS [AtS'] .)
-    = (rl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
+    = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS . 
   ceq acuCohComplete(M, Tp, assoc id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
-    = (crl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
+    = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS . 
   ---- if f ALU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   eq acuCohComplete(M, Tp, assoc left-id(T) AtS, rl F[TL] => RHS [AtS'] .)
-    = (rl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .)
-      (rl F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS] [AtS'] .)  . 
+    = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
+      (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .)  . 
   eq acuCohComplete(M, Tp, assoc left-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
-    = (crl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
-      (crl F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS] if Cond [AtS'] .)  . 
+    = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
+      (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .)  . 
   ---- if f ARU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
   eq acuCohComplete(M, Tp, assoc right-id(T) AtS, rl F[TL] => RHS [AtS'] .)
-    = (rl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .)
-      (rl F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) . 
+    = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
+      (rl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
   eq acuCohComplete(M, Tp, assoc right-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
-    = (crl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
-      (crl F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) . 
+    = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
+      (crl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f A add f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----            f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   ----            f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
   ceq acuCohComplete(M, Tp, assoc AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[TL] => RHS [AtS'] .) 
-      (rl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
-      (rl F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS] [AtS'] .) 
-      (rl F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
+      (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
+      (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .) 
+      (rl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS 
     [owise] . 
   ceq acuCohComplete(M, Tp, assoc AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[TL] => RHS if Cond [AtS'] .) 
-      (crl F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
-      (crl F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         => F[qid("X@@@:[" + string(Tp) + "]"), RHS] if Cond [AtS'] .) 
-      (crl F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         => F[RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
+      (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
+      (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .) 
+      (crl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS 
     [owise] . 
 
@@ -19926,71 +19929,71 @@ fmod ACU-COHERENCE-COMPLETION is
   ---- if f AC add f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
   eq acuCohComplete(M, Tp, assoc comm AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[TL] = RHS [AtS'] .)
-      (eq F[TL, qid("X@@@:[" + string(Tp) + "]")] = F[RHS, qid("X@@@:[" + string(Tp) + "]")] [AtS'] .)
+      (eq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .)
     [owise] . 
   eq acuCohComplete(M, Tp, assoc comm AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[TL] = RHS if Cond [AtS'] .)
-      (ceq F[TL, qid("X@@@:[" + string(Tp) + "]")] = F[RHS, qid("X@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
+      (ceq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
     [owise] . 
   ---- if f ACU replace by f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
   eq acuCohComplete(M, Tp, assoc comm id(T) AtS, eq F[TL] = RHS [AtS'] .)
-    = (eq F[TL, qid("X@@@:[" + string(Tp) + "]")] = F[RHS, qid("X@@@:[" + string(Tp) + "]")] [AtS'] .) . 
+    = (eq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
   eq acuCohComplete(M, Tp, assoc comm id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
-    = (ceq F[TL, qid("X@@@:[" + string(Tp) + "]")] = F[RHS, qid("X@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) . 
+    = (ceq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f AU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ceq acuCohComplete(M, Tp, assoc id(T) AtS, eq F[TL] = RHS [AtS'] .)
-    = (eq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
+    = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS . 
   ceq acuCohComplete(M, Tp, assoc id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
-    = (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
+    = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS . 
   ---- if f ALU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   eq acuCohComplete(M, Tp, assoc left-id(T) AtS, eq F[TL] = RHS [AtS'] .)
-    = (eq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .)
-      (eq F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS] [AtS'] .)  . 
+    = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
+      (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .)  . 
   eq acuCohComplete(M, Tp, assoc left-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
-    = (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
-      (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS] if Cond [AtS'] .)  . 
+    = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
+      (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .)  . 
   ---- if f ARU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
   eq acuCohComplete(M, Tp, assoc right-id(T) AtS, eq F[TL] = RHS [AtS'] .)
-    = (eq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .)
-      (eq F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) . 
+    = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
+      (eq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
   eq acuCohComplete(M, Tp, assoc right-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
-    = (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .)
-      (ceq F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) . 
+    = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
+      (ceq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f A add f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----            f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   ----            f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
   ceq acuCohComplete(M, Tp, assoc AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[TL] = RHS [AtS'] .) 
-      (eq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
-      (eq F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS] [AtS'] .) 
-      (eq F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[RHS, qid("Y@@@:[" + string(Tp) + "]")] [AtS'] .) 
+      (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
+      (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .) 
+      (eq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS 
     [owise] . 
   ceq acuCohComplete(M, Tp, assoc AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[TL] = RHS if Cond [AtS'] .) 
-      (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
-      (ceq F[qid("X@@@:[" + string(Tp) + "]"), TL] 
-         = F[qid("X@@@:[" + string(Tp) + "]"), RHS] if Cond [AtS'] .) 
-      (ceq F[TL, qid("Y@@@:[" + string(Tp) + "]")] 
-         = F[RHS, qid("Y@@@:[" + string(Tp) + "]")] if Cond [AtS'] .) 
+      (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
+      (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
+         = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .) 
+      (ceq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
+         = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS 
     [owise] . 
 endfm
