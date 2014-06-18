@@ -27,6 +27,8 @@
 ----     attribute from ChC proof objects.
 ----   - The MTT was failing to keep track of the requesters. Everytime a proof was requested, it was 
 ----     reset, not keeping track of previous requesters. 
+----   - A proof of the termination of a module implies the termination of its functional part. 
+----     The MTT was expecting different proofs, and requests from other tools were left unsolved.
 ---- - December 17th, 2012
 ----   - CRChC's "show all cps" command removed. In conflict with the show all FM's command. Reported by Fan Yang.  
 ---- - July 7th, 2012
@@ -2863,11 +2865,11 @@ mod MFE-MTT is
     < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
     < O' : X@MTT | requester : OS, module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
     (to O from O''' : check termination M' using P functional part B')
-    => if B == B' and-then M == M' ---- a different proof might also be attempted
+    => if (B == false or-else B == B') and-then M == M' ---- a different proof might also be attempted
        then < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
             < O' : X@MTT | requester : (OS, O'''), module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
             if 3B == true
-            then (to O''' from O : module MN is terminating functional part B)
+            then (to O''' from O : module MN is terminating functional part B')
             else (to TS["MFE"] from O : output('The 'MTT 'proof 'for eMetaPrettyPrint(getName(M')) 'is 'still 'open. '\n))
             fi
        else ---- The MTT object is removed
