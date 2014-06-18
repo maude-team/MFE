@@ -1,0 +1,121 @@
+  load readers-writers.maude
+  ----load model-checker.maude
+
+(fmod MBOOL is
+   sort MBool .
+   ops true false : -> MBool [ctor] .
+ endfm) 
+
+
+(fmod SATISFACTION is
+  protecting MBOOL .
+  sorts State Prop .
+  op _|=_ : State Prop -> MBool [frozen] .
+endfm)
+
+
+(mod READERS-WRITERS-PREDS is
+    including SATISFACTION .
+    protecting READERS-WRITERS .
+    subsort RWState < State .
+    ops mutex one-writer : -> Prop [ctor] .
+    
+    eq < s(N:Nat), s(M:Nat) > |= mutex = false .
+    eq < 0, N:Nat > |= mutex = true .
+    eq < N:Nat, 0 > |= mutex  = true .
+    
+    eq < N:Nat, s(s(M:Nat)) > |= one-writer = false .
+    eq < N:Nat, 0 > |= one-writer = true .
+    eq < N:Nat, s(0) > |= one-writer  = true .
+  endm)
+
+eof
+
+(select tool ChC .)
+(check coherence READERS-WRITERS-PREDS .)
+---(
+Coherence checking of READERS-WRITERS-PREDS
+	All critical pairs have been rewritten and no rewrite with rules can
+    happen at non-overlapping positions of equations left-hand sides.
+	The sufficient-completeness, termination and Church-Rosser properties
+    must still be checked.
+---)
+
+(submit .)
+---(
+The Church-Rosser goal for READERS-WRITERS-PREDS has been submitted to CRC.
+The Sufficient-Completeness goal for READERS-WRITERS-PREDS has been submitted
+    to SCC.
+The termination goal for the functional part of READERS-WRITERS-PREDS has been
+    submitted to MTT.
+Success: The functional part of module READERS-WRITERS-PREDS is terminating.
+Sufficient completeness check for READERS-WRITERS-PREDS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+The functional part of module READERS-WRITERS-PREDS has been checked
+    terminating.
+---)
+
+(select tool SCC .)
+
+(show state .)
+---(
+State of the tool:
+Sufficient completeness check for READERS-WRITERS-PREDS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
+(submit .)
+---(
+The sort-decreasingness goal for READERS-WRITERS-PREDS has been submitted to
+    CRC.
+The termination goal for the functional part of READERS-WRITERS-PREDS has been
+    submitted to MTT.
+Church-Rosser check for READERS-WRITERS-PREDS
+	The module is sort-decreasing.
+Success: The functional module READERS-WRITERS-PREDS is sufficiently complete
+    and has free constructors.
+The module READERS-WRITERS-PREDS has been checked sufficiently-complete.
+---)
+
+
+(show global state .)
+---(
+Global state:
+State of the CRC tool:
+- Church-Rosser check for READERS-WRITERS-PREDS :
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The module is sort-decreasing.
+State of the ChC tool:
+- Coherence check for READERS-WRITERS-PREDS :
+	There are 0 pending cps.
+	The specification is terminating.
+	The Church-Rosser property has not been proved.
+	The specification is not Sufficiently-Complete
+The state of the ITP is empty.
+State of the MTT tool:
+- Termination check for READERS-WRITERS-PREDS :
+	The specification has been proved terminating.
+State of the SCC tool:
+Sufficient completeness check for READERS-WRITERS-PREDS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: proved
+	Ground sort-decreasingness: proved
+---)
+
+(select tool ChC .)
+
+(check coherence READERS-WRITERS-PREDS .)
+
+(show state .)
+

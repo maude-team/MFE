@@ -1,0 +1,92 @@
+(set include BOOL off .)
+
+
+(mod READERS-WRITERS is 
+    sort Nat .
+    op 0 : -> Nat [ctor] .
+    op s : Nat -> Nat [ctor] . ---- iter not supported by tools  
+     
+    sort RWState .
+    op <_`,_> : Nat Nat -> RWState [ctor] .  --- readers/writers
+    
+    vars R W : Nat .
+    rl < 0, 0 > => < 0, s(0) > .
+    rl < R, s(W) > => < R, W > .
+    rl < R, 0 > => < s(R), 0 > .
+    rl < s(R), W > => < R, W > .
+  endm)
+
+eof
+
+(select tool CRC .)
+
+(check Church-Rosser READERS-WRITERS .) 
+---(
+Church-Rosser check for READERS-WRITERS
+	There are no critical pairs.
+	The specification is confluent.
+	The module is sort-decreasing.
+	Success: The module is therefore Church-Rosser.
+---)
+
+(select tool ChC .)
+
+(check coherence READERS-WRITERS .) 
+---(
+Coherence checking of READERS-WRITERS
+	All critical pairs have been rewritten and no rewrite with rules can
+    happen at non-overlapping positions of equations left-hand sides.
+	The sufficient-completeness, termination and Church-Rosser properties
+    must still be checked.
+---)
+
+(submit .)
+---(
+The Church-Rosser goal for READERS-WRITERS has been submitted to CRC.
+The Sufficient-Completeness goal for READERS-WRITERS has been submitted to SCC.
+The termination goal for the functional part of READERS-WRITERS has been
+    submitted to MTT.
+Success: The functional part of module READERS-WRITERS is terminating.
+Sufficient completeness check for READERS-WRITERS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+Church-Rosser check for READERS-WRITERS
+	There are no critical pairs.
+	The specification is confluent.
+	The module is sort-decreasing.
+	Success: The module is therefore Church-Rosser.
+The functional part of module READERS-WRITERS has been checked terminating.
+The module READERS-WRITERS has been checked Church-Rosser.
+Success: The module READERS-WRITERS is coherent.
+---)
+
+
+(show global state .)
+
+---(
+Global state:
+State of the CRC tool:
+- Church-Rosser check for READERS-WRITERS :
+	There are no critical pairs.
+	The specification is confluent.
+	The module is sort-decreasing.
+	Success: The module is therefore Church-Rosser.
+State of the ChC tool:
+- Coherence check for READERS-WRITERS :
+	The specification is coherent.
+The state of the ITP is empty.
+State of the MTT tool:
+- Termination check for READERS-WRITERS :
+	The specification has been proved terminating.
+State of the SCC tool:
+Sufficient completeness check for READERS-WRITERS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
