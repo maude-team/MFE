@@ -1,4 +1,5 @@
 ---- Things to be fixed:
+---- - Submit messages are not finished. CPs and MAs should be submitted to the ITP.
 ---- - ChC ground case: Derived operators are frozen, but only those with different 
 ----   syntactic form should be frozen. Notice that subsort overloded operators 
 ----   must have the same attributes.
@@ -28,6 +29,7 @@
 ----   critical pairs and the module resulting from the transformations used.     
 
 ---- Latest changes:
+---- November 26th, 2012: Bug fixed in the nonOverlapping check. Reported by Fan Yang.  
 ---- July 10th, 2011: rewrites in conditions are now supported. Bug reported by 
 ----   Musab Alturki.  
 ---- July 10th, 2011: There was a very subtle bug in the CRC when constructing the  
@@ -72,10 +74,12 @@ set show advisories off .
 ----        shows the membership assertions of the last check Church-Rosser command.
 ----      - (CRC show all membership assertions .)  (CRC show all mas .)  
 ----        shows the status of all membership assetions of the last check Church-Rosser command.
-----      - (submit CRC critical pair <id> .) (submit CRC cp <Id> .)
+----      - (submit .) 
+----        submits pending termination proof to MTT, and cps and mas to the ITP
+----      - (submit critical pair <id> .) (submit cp <Id> .)
 ----        submits the critical pair with the specified identifier to the ITP
 ----        (not available because the ITP is not ready to get them yet).
-----      - (submit CRC membership assertion <id> .) (submit CRC ma <Id> .)
+----      - (submit membership assertion <id> .) (submit ma <Id> .)
 ----        submits the membership assertion with the specified identifier to the ITP.
 ----      - (CRC select module <module> .) (CRC select <module> .)
 ----        sets the specified module as the current module of the CRC. 
@@ -94,6 +98,8 @@ set show advisories off .
 ----        shows the cps of the last check coherence command after rewritten
 ----      - (ChC show all critical pairs .) (ChC show all cps .)   
 ----        shows the cps of the last check coherence command before rewritten
+----      - (submit .) 
+----        submits pending termination proof to MTT, and cps to the ITP
 ----
 ---- main changes and bugs fixed since last release:
 ---- 
@@ -130,12 +136,12 @@ set show advisories off .
 ---- - en chc add rl-eq
 ---- - el coherence check utiliza simplify, el findAllOneStepRewrites no funciona
 ---- - comando check ground coherence
----- - check coherence deberÂ’a hacer frozen todos los operadores deinidos, 
+---- - check coherence deber’a hacer frozen todos los operadores deinidos, 
 ----   check ground coherence no hace congeladas las cosas definidas
 ---- - documentar los ctor-split
----- - aÂ–adir comandos check lcoherence y check ground lcoherence
+---- - a–adir comandos check lcoherence y check ground lcoherence
 ----   funciona igual, pero al buscar se utilizan solo las reglas con la misma 
-----   etiqueta de la utilizada en el par crÂ’tico (ver notas murcia 26-27/12/08)
+----   etiqueta de la utilizada en el par cr’tico (ver notas murcia 26-27/12/08)
 ---- - for conditional case, a manual search is required 
 
 ----load ../FM24/full-maude24l.maude
@@ -143,7 +149,7 @@ set show advisories off .
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3l -    November 24th 2010" .
+  eq crc-banner = "Church-Rosser Checker 3n - March 7th 2014" .
 endfm
 
 fmod ChC-BANNER is
@@ -175,8 +181,9 @@ fmod CRC-HELP is
       '\t '\t string2qidList("shows the status of all membership assertions of the last ") '\n
       '\t '\t string2qidList("check Church-Rosser command.") '\n
       '\t string2qidList("(submit .)") '\n
-      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
-      '\t '\t string2qidList("current module to the ITP.") '\n
+      '\t '\t string2qidList("submits termination proof to MTT, nothing is done with cps and mas.") '\n
+----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+----      '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
       '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
 endfm
@@ -202,10 +209,12 @@ fmod ChC-HELP is
       '\t '\t string2qidList("shows the critical pairs of the last check coherence or ground") '\n
       '\t '\t string2qidList("coherence command before rewritten.") '\n
       '\t string2qidList("(submit .)") '\n
-      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
-      '\t '\t string2qidList("current module to the ITP.") '\n
+      '\t '\t string2qidList("submits termination proof to MTT, nothing is done with cps.") '\n
+----      '\t string2qidList("(submit .)") '\n
+----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+----      '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
-      '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
+      '\t '\t string2qidList("sets the specified module as the current module of the ChC.") '\n .
 endfm
 
 ---- main changes from 3d:
@@ -1810,9 +1819,9 @@ fmod ChC-NON-OVERLAPPING-CHECK is
   eq nonOverlappingCheck(M, Eq, none, RlS) = ok .
       
   eq nonOverlappingCheckAux(M, Eq, V, Rl RlS)
-    = if nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl))))) == ok 
+    = if nonOverlappingCheck(M, Eq, V, Rl, eLeastSort(M, specializations(M, lhs(Rl)))) == ok 
       then nonOverlappingCheckAux(M, Eq, V, RlS)
-      else nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl)))))
+      else nonOverlappingCheck(M, Eq, V, Rl, eLeastSort(M, specializations(M, lhs(Rl))))
       fi .
   eq nonOverlappingCheckAux(M, Eq, VS, none) = ok .
       
@@ -2001,12 +2010,12 @@ mod CRChC-TOOLS is
   op $prepareModule : Module Bool -> Module .
   ---- The 2nd arg. indicates whether we are in the ground case or not
   eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
-  eq $prepareModule(M, false) = removeLonelyAssocs(removeIdsUnif(acuCohComplete(removeNonExecs(M)))) .
+  eq $prepareModule(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), non-handled)) .
   
-  op $prepareModuleNoIds : Module Bool -> Module .
-  ---- The 2nd arg. indicates whether we are in the ground case or not
-  eq $prepareModuleNoIds(M, true) = $prepareModuleNoIds(freezeNonCtors(M), false) .
-  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)))) .
+----  op $prepareModuleNoIds : Module Bool -> Module .
+----  ---- The 2nd arg. indicates whether we are in the ground case or not
+----  eq $prepareModuleNoIds(M, true) = $prepareModuleNoIds(freezeNonCtors(M), false) .
+----  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), all)) .
   
   op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
   op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .
@@ -2018,8 +2027,7 @@ mod CRChC-TOOLS is
 
   eq $processCRCcheck(M)   
     = if coveredCase(M) == ok
-      then ---- CRCcheck(M)
-           (M, confluenceCheck($prepareModule(M, false)), descentCheck($prepareModuleNoIds(M, false))) 
+      then (M, confluenceCheck($prepareModule(M, false)), descentCheck($prepareModule(M, false))) 
       else coveredCase(M)
       fi .
   eq $processCRCcheck(unitError(QIL)) = errorMsg(QIL) .
@@ -2045,12 +2053,12 @@ mod CRChC-TOOLS is
 
   eq $processChCcheck(M, (Eq, V, Rl))
     = noncoherent(M, 
-        'Rule 
-        if label(Rl) :: Qid then label(Rl) else eMetaPrettyPrint(M, Rl) '\n fi  
+        'Rule '\n
+        if label(Rl) :: Qid then label(Rl) else eMetaPrettyPrint(M, Rl) fi  
         'can 'be 'applied 'under 'the 'non-frozen 'and 'non-linear 'variable 
         V 
-        'of 'equation 
-        if label(Eq) :: Qid then label(Eq) else eMetaPrettyPrint(M, Eq) '\n fi) .
+        'of 'equation '\n
+        if label(Eq) :: Qid then label(Eq) else eMetaPrettyPrint(M, Eq) fi) .
 
   op freezeNonCtors : Module -> Module .
   op $freezeNonCtors : OpDeclSet -> OpDeclSet .

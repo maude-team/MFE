@@ -28,6 +28,7 @@
 ----   critical pairs and the module resulting from the transformations used.     
 
 ---- Latest changes:
+---- November 26th, 2012: Bug fixed in the nonOverlapping check. Reported by Fan Yang.  
 ---- July 10th, 2011: rewrites in conditions are now supported. Bug reported by 
 ----   Musab Alturki.  
 ---- July 10th, 2011: There was a very subtle bug in the CRC when constructing the  
@@ -72,10 +73,12 @@ set show advisories off .
 ----        shows the membership assertions of the last check Church-Rosser command.
 ----      - (CRC show all membership assertions .)  (CRC show all mas .)  
 ----        shows the status of all membership assetions of the last check Church-Rosser command.
-----      - (submit CRC critical pair <id> .) (submit CRC cp <Id> .)
+----      - (submit .) 
+----        submits pending termination proof to MTT, and cps and mas to the ITP
+----      - (submit critical pair <id> .) (submit cp <Id> .)
 ----        submits the critical pair with the specified identifier to the ITP
 ----        (not available because the ITP is not ready to get them yet).
-----      - (submit CRC membership assertion <id> .) (submit CRC ma <Id> .)
+----      - (submit membership assertion <id> .) (submit ma <Id> .)
 ----        submits the membership assertion with the specified identifier to the ITP.
 ----      - (CRC select module <module> .) (CRC select <module> .)
 ----        sets the specified module as the current module of the CRC. 
@@ -94,6 +97,8 @@ set show advisories off .
 ----        shows the cps of the last check coherence command after rewritten
 ----      - (ChC show all critical pairs .) (ChC show all cps .)   
 ----        shows the cps of the last check coherence command before rewritten
+----      - (submit .) 
+----        submits pending termination proof to MTT, and cps to the ITP
 ----
 ---- main changes and bugs fixed since last release:
 ---- 
@@ -174,9 +179,9 @@ fmod CRC-HELP is
       '\t string2qidList("(show all mas .) / (show all membership assertions .)") '\n
       '\t '\t string2qidList("shows the status of all membership assertions of the last ") '\n
       '\t '\t string2qidList("check Church-Rosser command.") '\n
-      '\t string2qidList("(submit .)") '\n
-      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
-      '\t '\t string2qidList("current module to the ITP.") '\n
+----      '\t string2qidList("(submit .)") '\n
+----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+----      '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
       '\t '\t string2qidList("sets the specified module as the current module of the CRC.") '\n .
 endfm
@@ -201,9 +206,9 @@ fmod ChC-HELP is
       '\t string2qidList("(show all cps .) / (show all critical pairs .)") '\n
       '\t '\t string2qidList("shows the critical pairs of the last check coherence or ground") '\n
       '\t '\t string2qidList("coherence command before rewritten.") '\n
-      '\t string2qidList("(submit .)") '\n
-      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
-      '\t '\t string2qidList("current module to the ITP.") '\n
+----      '\t string2qidList("(submit .)") '\n
+----      '\t '\t string2qidList("submits all critical pairs and memberships assertions for the ") '\n
+----      '\t '\t string2qidList("current module to the ITP.") '\n
       '\t string2qidList("(select <module> .)") '\n
       '\t '\t string2qidList("sets the specified module as the current module of the ChC.") '\n .
 endfm
@@ -1665,7 +1670,7 @@ fmod CRC-SIGN is
   op show mas . : -> @Command@ .                            ---- alias
   op show all membership assertions . : -> @Command@ .
   op show all mas . : -> @Command@ .                        ---- alias
-  op submit . : -> @Command@ .
+----  op submit . : -> @Command@ .
 ----  op submit critical pair_. : @Token@ -> @Command@ .
 ----  op submit cp_. : @Token@ -> @Command@ .                   ---- alias
 ----  op submit membership assertion_. : @Token@ -> @Command@ .
@@ -1810,9 +1815,9 @@ fmod ChC-NON-OVERLAPPING-CHECK is
   eq nonOverlappingCheck(M, Eq, none, RlS) = ok .
       
   eq nonOverlappingCheckAux(M, Eq, V, Rl RlS)
-    = if nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl))))) == ok 
+    = if nonOverlappingCheck(M, Eq, V, Rl, eLeastSort(M, specializations(M, lhs(Rl)))) == ok 
       then nonOverlappingCheckAux(M, Eq, V, RlS)
-      else nonOverlappingCheck(M, Eq, V, Rl, list2set(eLeastSort(M, specializations(M, lhs(Rl)))))
+      else nonOverlappingCheck(M, Eq, V, Rl, eLeastSort(M, specializations(M, lhs(Rl))))
       fi .
   eq nonOverlappingCheckAux(M, Eq, VS, none) = ok .
       
@@ -2044,12 +2049,12 @@ mod CRChC-TOOLS is
 
   eq $processChCcheck(M, (Eq, V, Rl))
     = noncoherent(M, 
-        'Rule 
-        if label(Rl) :: Qid then label(Rl) else eMetaPrettyPrint(M, Rl) '\n fi  
+        'Rule '\n
+        if label(Rl) :: Qid then label(Rl) else eMetaPrettyPrint(M, Rl) fi  
         'can 'be 'applied 'under 'the 'non-frozen 'and 'non-linear 'variable 
         V 
-        'of 'equation 
-        if label(Eq) :: Qid then label(Eq) else eMetaPrettyPrint(M, Eq) '\n fi) .
+        'of 'equation '\n
+        if label(Eq) :: Qid then label(Eq) else eMetaPrettyPrint(M, Eq) fi) .
 
   op freezeNonCtors : Module -> Module .
   op $freezeNonCtors : OpDeclSet -> OpDeclSet .
