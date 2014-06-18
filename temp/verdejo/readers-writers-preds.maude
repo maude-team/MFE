@@ -29,7 +29,7 @@ endfm)
     eq < N:Nat, s(0) > |= one-writer  = true .
   endm)
 
-eof
+---eof
 
 (select tool ChC .)
 (check coherence READERS-WRITERS-PREDS .)
