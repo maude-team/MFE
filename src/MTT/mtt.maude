@@ -61,8 +61,18 @@ fmod TERMINATION-CHECKER is
 
   op terminationCheck : Module Path Bool Bool -> String .
 
-  eq terminationCheck(M, PP, CONDITIONS, CONTEXT) 
-    = termCheck("aprove", replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", " "), "\\s", " "), 30) .
+ ceq terminationCheck(M, PP, CONDITIONS, CONTEXT) 
+    = Out:String
+    if In:String := replace(
+                      replace(
+                        replace(
+                          qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), 
+                          "`", ""), 
+                        "\\n", " "), 
+                      "\\s", " ")
+    /\ Out:String := termCheck("aprove", St:String, 30) 
+    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", false) : String 
+    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + Out:String + "\n", false) : String .
 ----    = termCheck(replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", ""), "\\s", ""), "AProVE", "30") .
 endfm
 
