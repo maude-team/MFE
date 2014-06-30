@@ -70,7 +70,7 @@ fmod TERMINATION-CHECKER is
                           "`", ""), 
                         "\\n", " "), 
                       "\\s", " ")
-    /\ Out:String := termCheck("aprove", St:String, 30) 
+    /\ Out:String := termCheck("aprove", In:String, 30) 
     /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", false) : String 
     /\ writeToFile("log.txt", "MTT -> AProVE: \n" + Out:String + "\n", false) : String .
 ----    = termCheck(replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", ""), "\\s", ""), "AProVE", "30") .
