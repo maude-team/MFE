@@ -2785,7 +2785,7 @@ fmod PROC-TPDB is
   var  Cond : Condition .
 
  ceq $procTPDB(M, PP, CONDITIONS, CONTEXT)
-    = if ((vars(getRls(M'))) =/= nil)
+    = if ((vars(getRls(M'))) =/= none)
       then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
       else nil
       fi
