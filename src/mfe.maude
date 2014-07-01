@@ -2527,6 +2527,7 @@ mod MFE-MTT is
   sort MTTBroker .
   subsort MTTBroker < Tool . 
   op MTTBroker : -> MTTBroker [ctor] .
+  op external-tool :_ : String -> Attribute [ctor gather (&)] .
  
   sort MTT .
   subsort MTT < Goal . 
@@ -2573,7 +2574,7 @@ mod MFE-MTT is
   var  MbS : MembAxSet . 
   var  EqS : EquationSet .
   var  RlS : RuleSet .
-  vars Id Id' Str : String .
+  vars Id Id' Str TOOL : String .
   vars QI L L' : Qid .
   var  Cd : Condition .
   var  S : Sort .
@@ -2606,7 +2607,8 @@ mod MFE-MTT is
              tools : TS, 
              current : null-oid, 
              index : 0, 
-             reg : empty >
+             reg : empty, 
+             external-tool : "muterm" >
        to TS["MFE"] from TS["MTT"] : output('\s '\s '\s '\s string2qidList(mtt-banner) '\n) .
 
 ---(
@@ -2881,11 +2883,11 @@ mod MFE-MTT is
     if MN = getName(M') .
   crl [mtt-check] :
     ---- no module with the same name was previously checked
-    < O : X@MTTBroker | reg : MNReg, Atts >
+    < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >
     (to O from O' : check termination M using P functional part B)
     => if mtt-hook
-       then applyMTTresult(O', < O : X@MTTBroker | reg : MNReg, Atts >, M, terminationCheck(eraseRls(M), P, false, false), B) 
-       else applyMTTDummyresult(O', < O : X@MTTBroker | reg : MNReg, Atts >, M, B) 
+       then applyMTTresult(O', < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >, M, terminationCheck(eraseRls(M), P, false, false, TOOL), B) 
+       else applyMTTDummyresult(O', < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >, M, B) 
        fi
     if not getName(M) in domain of MNReg .
 

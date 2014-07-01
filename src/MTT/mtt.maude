@@ -57,11 +57,11 @@ fmod TERMINATION-CHECKER is
   var  M : Module . 
   var  PP : Path .
   vars CONDITIONS CONTEXT : Bool .
-  var  Str : String .
+  var  Str TOOL : String .
 
-  op terminationCheck : Module Path Bool Bool -> String .
+  op terminationCheck : Module Path Bool Bool String -> String .
 
- ceq terminationCheck(M, PP, CONDITIONS, CONTEXT) 
+ ceq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
     = Out:String
     if In:String := replace(
                       replace(
@@ -70,9 +70,9 @@ fmod TERMINATION-CHECKER is
                           "`", ""), 
                         "\\n", " "), 
                       "\\s", " ")
-    /\ Out:String := termCheck("aprove", In:String, 30) 
-    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", false) : String 
-    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + Out:String + "\n", false) : String .
+    /\ Out:String := termCheck(TOOL, In:String, 30) 
+    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String 
+    /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
 ----    = termCheck(replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", ""), "\\s", ""), "AProVE", "30") .
 endfm
 
