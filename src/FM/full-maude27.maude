@@ -19424,7 +19424,8 @@ fmod MODULE-VARIANTS is
       getVariants(M, M', EqS, VP) .
   eq getVariants(M, M', (none).EquationSet, VP) = none .
     
-  eq getVariants#(M, M', T, narrowing) = makeVariantSet(getVariants(M, T, 1, irreducible ACUUnify minimal-unifiers)) .
+  eq getVariants#(M, M', T, narrowing) = makeVariantSet(getVariants(M, T)) .
+----    = makeVariantSet(getVariants(M, T, 1, irreducible ACUUnify minimal-unifiers)) .
   
   op makeVariantSet : VariantFourSet -> VariantTripleSet .
   eq makeVariantSet({T, Subst, Subst', N} | VFS) = {T, Subst, N} | makeVariantSet(VFS) .
