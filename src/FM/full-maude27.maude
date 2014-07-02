@@ -3081,7 +3081,7 @@ fmod RESULT-CONTEXT-SET is
       TraceNarrow
       Flags 
       -> ResultContext [ctor] .
-               
+		       
   subsort ResultContext < ResultContextNeSet < ResultContextSet .
   op empty : -> ResultContextSet [ctor] .
   op _|_ : ResultContextSet ResultContextSet -> ResultContextSet
@@ -3106,7 +3106,7 @@ fmod RESULT-CONTEXT-SET is
   eq getRSubst(
       {T,TP,S,S',Ct:Context,CtS:Context,TS:Term,CtTS:Term,NextVar,Tr:TraceNarrow,B:Flags})
    = S' .
-               
+		       
   op _<<_ : ResultContext UnificationTripleSet -> ResultContextSet .
   eq {T,TP,S,S',Ct:Context,CtS:Context,TS:Term,CtTS:Term,NextVar,Tr:TraceNarrow,B:Flags} 
      << (empty).UnificationTripleSet
@@ -3186,6 +3186,7 @@ fmod RESULT-CONTEXT-SET is
   eq | (empty).ResultContextSet | = 0 .
   eq | (RT:ResultContext | RTS:ResultContextSet) | 
    = | RTS:ResultContextSet | + 1 .
+
 endfm
 
 fmod META-MATCH is
@@ -3250,8 +3251,8 @@ fmod META-MATCH is
   op metaBuiltInEqual : Module TermList Term Term -> Bool .
   eq metaBuiltInEqual(M,TL,T,T')
    = canonice(M,T) == canonice(M,T') .
-endfm
 
+endfm
 fmod VARIANT-HANDLING is
   pr SUBSTITUTION-HANDLING .
   pr META-MINIMIZE-BINDINGS .
@@ -3304,6 +3305,7 @@ fmod VARIANT-HANDLING is
   eq toVariantTripleSet({T,S,S',NextVar} | VTS)
 ---    = {T,S ; S',NextVar} | toVariantTripleSet(VTS) .
    = {T,S,NextVar} | toVariantTripleSet(VTS) .
+
 endfm
 
 fmod RIGIDIFE is
@@ -3547,6 +3549,7 @@ fmod RIGIDIFE is
 
   op qid : Nat -> Qid .
   eq qid(N:Nat) = qid(string(N:Nat,10)) .
+
 endfm
 
 fmod META-E-UNIFICATION is
@@ -3978,6 +3981,7 @@ fmod META-E-UNIFICATION is
          and isAssociative(M,F,getTypes(M,TL)) 
       then 1 else 0 fi 
       + howManyAC$$(M,EqS) .
+
 endfm
 
 fmod META-ACU-UNIFICATION is
@@ -4085,6 +4089,7 @@ fmod META-UNIFICATION is
                     --- Term Lhs
   eq metaCoreUnify?(M, T, T', N) 
    = metaACUUnify?(M, T, T', N)  .
+
 endfm
 
 fmod META-MSG-UNIFICATION is
@@ -4125,24 +4130,36 @@ fmod META-MSG-UNIFICATION is
 
   ******* metaBuiltInUnify ***********************************************
   op metaBuiltInUnify : Module Term Term -> SubstitutionSet .
-  eq metaBuiltInUnify(M, T, T')
-   = toSubstitution(metaBuiltInUnify(M, T, T', highestVar((T,T')) + 1)) .
+  eq metaBuiltInUnify(M, T, T') = metaBuiltInUnify(M, empty, T, T') .
+
+  op metaBuiltInUnify : Module TermList Term Term -> SubstitutionSet .
+  eq metaBuiltInUnify(M, TL, T, T')
+   = toSubstitution(metaBuiltInUnify(M, TL, T, T', highestVar((T,T')) + 1)) .
 
   *** General Call for UnificationPairSet
   op metaBuiltInUnify : Module Term Term Nat -> UnificationTripleSet .
-                       --- Term Lhs
-  eq metaBuiltInUnify(M, T1, T2, N) 
+  eq metaBuiltInUnify(M, T1, T2, N) = metaBuiltInUnify(M, empty, T1, T2, N)  .
+
+  op metaBuiltInUnify : Module TermList Term Term Nat -> UnificationTripleSet .
+                                    --- Term Lhs
+  eq metaBuiltInUnify(M, TL, T1, T2, N) 
    = metaCoreUnify(M, T1, T2, N)  . 
 
   op metaBuiltInUnify? : Module Term Term -> Bool .
-  eq metaBuiltInUnify?(M, T, T')
-   = metaBuiltInUnify?(M, T, T',highestVar((T,T')) + 1) .
+  eq metaBuiltInUnify?(M, T, T') = metaBuiltInUnify?(M, empty, T, T') .
+
+  op metaBuiltInUnify? : Module TermList Term Term -> Bool .
+  eq metaBuiltInUnify?(M, TL, T, T')
+   = metaBuiltInUnify?(M, TL, T, T',highestVar((T,T')) + 1) .
 
   op metaBuiltInUnify? : Module Term Term Nat -> Bool .
-  eq metaBuiltInUnify?(M, T1, T2, N) 
-   = metaCoreUnify?(M, T1, T2, N) . 
-endfm
+  eq metaBuiltInUnify?(M, T1, T2, N) = metaBuiltInUnify?(M, empty, T1, T2, N)  .
 
+  op metaBuiltInUnify? : Module TermList Term Term Nat -> Bool .
+  eq metaBuiltInUnify?(M, TL, T1, T2, N) 
+   = metaCoreUnify?(M, T1, T2, N) . 
+
+endfm
 fmod ORDERS-TERM-SUBSTITUTION is
   protecting TERM-HANDLING .
   protecting SUBSTITUTION-HANDLING .
@@ -4457,8 +4474,8 @@ fmod ORDERS-TERM-SUBSTITUTION is
   eq eqNormalizeSubstitution*(M, V <- T ; S:Substitution)
    = V <- getTerm(metaReduce(eraseRls(M),T)) 
      ; eqNormalizeSubstitution*(M, S:Substitution) .
-endfm
 
+endfm
 fmod META-NORMALIZE is
   protecting META-TERM .
   protecting META-LEVEL .
@@ -4560,7 +4577,7 @@ fmod META-NORMALIZE is
                             Bound --- chosen solution
                             TypeOfNarrowing
                             ResultContextSet
-             -> ResultContextSet .
+			 -> ResultContextSet .
   --- Not defined in this module-------------
 
   op metaNormalizeCollect : Module Term ~> ResultTripleSet .
@@ -4677,6 +4694,7 @@ fmod META-NORMALIZE is
           {T',TP',S',S'*,Ct',CtS',TS',CtTS',NextVar',Tr:TraceNarrow,B':Flags}
      fi
      | noSelf*({T,TP,S,S*,[],[],T,T,NextVar,Tr':TraceNarrow,B:Flags},RTS) .
+
 endfm
 
 fmod META-E-NARROWING is
@@ -4894,20 +4912,20 @@ fmod META-E-NARROWING is
      then if CtS == []
           then *** Term CtTS is a normal form so we return it
                {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags}
-      else *** Term T is a rigid normal form inside a context Ct
-           *** but since no rewrite has been done and
+	  else *** Term T is a rigid normal form inside a context Ct
+	       *** but since no rewrite has been done and
                *** this can be part of a previous metaNarrowSub call,
                *** this path is discarded
                empty
           fi
      else if metaENarrowStra(M,B,ON,{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
-         =/= empty
+	     =/= empty
           then metaENarrowStra(M,B,ON,{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
           else if CtS == []
                then *** Term CtTS is a normal form so we return it
                     {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,end(true,B:Flags)}
-           else *** Term T is a rigid normal form inside a context Ct
-                *** but since no rewrite has been done and
+	       else *** Term T is a rigid normal form inside a context Ct
+	            *** but since no rewrite has been done and
                     *** this can be part of a previous metaNarrowSub call,
                     *** this path is discarded
                     empty
@@ -4952,7 +4970,7 @@ fmod META-E-NARROWING is
   *** Generic call to metaUnification with different parameters
   op auxMetaUnify : Module TypeOfNarrowing 
                     Term Term Nat ~> UnificationTripleSet .
-        --- Term Lhs
+		--- Term Lhs
   eq auxMetaUnify(M,variant(N') ON,T,T',N)
    = unrigidife(qid(N'),
        auxMetaUnify*(getM(rigidifeNat(M,qid(N'),T,N')),
@@ -4967,7 +4985,7 @@ fmod META-E-NARROWING is
 
   op auxMetaUnify* : Module TypeOfNarrowing 
                     Term Term Nat ~> UnificationTripleSet .
-        --- Term Lhs
+		--- Term Lhs
  ceq auxMetaUnify*(M,rigidife(F:Qid) ON,T,T',N)
    = unrigidife(Q:Qid,
        auxMetaUnify**(M#:Module,rigidife(F:Qid) ON,T#:Term,T',N) 
@@ -4983,7 +5001,7 @@ fmod META-E-NARROWING is
 
   op auxMetaUnify** : Module TypeOfNarrowing 
                      Term Term Nat ~> UnificationTripleSet .
-         --- Term Lhs
+		 --- Term Lhs
                  --- [memo] . --- Very useful but huge space use 
   eq auxMetaUnify**(M,E-rewriting ON,T,T',N)
    = toUnificationTriple[N](metaCoreMatch(removeBoolEqs(M),T,T')) .
@@ -5049,10 +5067,10 @@ fmod META-E-NARROWING is
                     -> ResultContextSet .
   eq metaENarrowRls*(M,B,ON, 
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
    = metaENarrowRls**$(M,B,ON, 
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
            Tr:TraceNarrow {CtTS,none,leastSort(M,CtTS),(rl Lhs => Rhs [Att].)},
                           --- Subst none here is key to write the real stuff 
                           --- later in function _<<_
@@ -5067,10 +5085,10 @@ fmod META-E-NARROWING is
                       -> ResultContextSet .
   eq metaENarrowRls**$(M,B,ON,
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'})
    = metaENarrowRls**$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs,Rhs,'none.AttrSet] << Subst) .
 
@@ -5079,13 +5097,13 @@ fmod META-E-NARROWING is
                           UnificationPair Term
                        -> ResultContextSet .
   eq metaENarrowRls**$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
           Tr:TraceNarrow {CtTS,none,TP$:Type,(rl Lhs => Rhs [Att].)},
           B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs',Rhs','none.AttrSet])
    = metaENarrowRls**$$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
            Tr:TraceNarrow {CtTS,none,TP$:Type,(rl Lhs' => Rhs' [Att].)},
            B:Flags},
         {Subst,NextVar'},
@@ -5097,19 +5115,19 @@ fmod META-E-NARROWING is
                            UnificationPair Term UnificationTripleSet
                         -> ResultContextSet .
   eq metaENarrowRls**$$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs',Rhs','none.AttrSet],US)
     = if US =/= empty
       then rebuildTypeAndDiscardErroneous(M,ON,
                {Ct[Rhs'],
-            TP,
-        S,S',
-        [],
-        [],
-        CtS[Rhs'],
-        CtS[Rhs'],
-        NextVar',
+	        TP,
+		S,S',
+		[],
+		[],
+		CtS[Rhs'],
+		CtS[Rhs'],
+		NextVar',
                 Tr:TraceNarrow,
                 B:Flags} 
                <<(M,ON) US
@@ -5130,7 +5148,7 @@ fmod META-E-NARROWING is
                                        ResultContext -> ResultContextSet .
   eq rebuildTypeAndDiscardErroneous*(M,ON,
        {T,TP,S,S',[],[],TS,TS,NextVar,Tr:TraceNarrow,B:Flags})
-   = if leastSort(M,TS) :: Type
+   = if	leastSort(M,TS) :: Type
      then normalize-terms?(M,ON,
              {canonice(M,T),leastSort(M,TS),S,S',
               [],[],canonice(M,TS),canonice(M,TS),
@@ -5323,6 +5341,7 @@ fmod META-E-NARROWING is
   op |_| : Substitution -> Nat .
   eq | (none).Substitution | = 0 .
   eq | V <- T ; S | = s(| S |) .
+
 endfm
 
 fmod META-NARROWING-SEARCH is
@@ -5383,7 +5402,7 @@ fmod META-NARROWING-SEARCH is
                            Bound --- number of solutions
                            Bound --- chosen solution
                            TypeOfNarrowing 
-            -> ResultTripleSet .
+			-> ResultTripleSet .
   eq metaNarrowSearchGen(M,T,T',SCond,QQ,BN,B,Sol,ON)
    = toTriple(M,metaNarrowSearchGenAll(M,T,T',SCond,QQ,B,BN,Sol,ON)) .
 
@@ -5431,7 +5450,7 @@ fmod META-NARROWING-SEARCH is
   *** One Narrowing step in the search process (including possible filters)
   op metaNarrowStep : Module SubstitutionCond 
                       ResultContextSet TypeOfNarrowing 
-           -> ResultContextSet .
+		   -> ResultContextSet .
   eq metaNarrowStep(M,SCond,RTS,ON)
    = filterSCond(M,SCond,metaENarrowGen(M,1,ON,RTS)) .
 
@@ -5466,7 +5485,7 @@ fmod META-NARROWING-SEARCH is
                             Bound --- chosen solution
                             TypeOfNarrowing
                             ResultContextSet
-             -> ResultContextSet .
+			 -> ResultContextSet .
   eq metaNarrowSearchAll(M,TOrig,T',SCond,QQ,B,BN,Sol,ON,RTS)
    = if QQ == '+
      then noSelf(RTS,
@@ -5506,7 +5525,7 @@ fmod META-NARROWING-SEARCH is
   op metaNarrowSearchCheck : Module Term Term SubstitutionCond 
                              TypeOfRelation Bound Bound Bound TypeOfNarrowing
                              ResultContextSet ResultContextSet ResultContextSet
-                 -> ResultContextSet .
+			     -> ResultContextSet .
 
   eq metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,B,BN,Sol,ON,RTSSol,RTS',empty)
    = if B == 0 or-else BN == 0 or-else Sol == 0 or-else RTS' == empty
@@ -5540,14 +5559,14 @@ fmod META-NARROWING-SEARCH is
                   | RTSSol,
                   RTS',RTS)
      else *** Continue with the remaining
-      metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,
+	  metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,
              B,BN,Sol,ON,RTSSol,RTS',RTS)
      fi .
 
   op isSolution? : Module Term Term  
                    TypeOfRelation Bound Bound TypeOfNarrowing
                    ResultContextSet ResultContext
-            -> Bool .
+	        -> Bool .
   eq isSolution?(M,TOrig,T',QQ,BN,Sol,ON,RTSSol,RT)
    = *** Is this the chosen solution?
      (BN == unbounded or-else BN > 0)
@@ -5577,8 +5596,8 @@ fmod META-NARROWING-SEARCH is
    = S':Substitution .
   eq upDown#(M,S':Substitution,V <- T ; S:Substitution)
    = upDown#(M,S':Substitution ; V <- getTerm(metaReduce(M,T)),S:Substitution) .
-endfm
 
+endfm
 *************************************
 ****** End of Santiago Escobar's code
 *******************************************************************************
@@ -19424,8 +19443,7 @@ fmod MODULE-VARIANTS is
       getVariants(M, M', EqS, VP) .
   eq getVariants(M, M', (none).EquationSet, VP) = none .
     
-  eq getVariants#(M, M', T, narrowing) = makeVariantSet(getVariants(M, T)) .
-----    = makeVariantSet(getVariants(M, T, 1, irreducible ACUUnify minimal-unifiers)) .
+  eq getVariants#(M, M', T, narrowing) = makeVariantSet(getVariants(M, T, 1, irreducible ACUUnify minimal-unifiers)) .
   
   op makeVariantSet : VariantFourSet -> VariantTripleSet .
   eq makeVariantSet({T, Subst, Subst', N} | VFS) = {T, Subst, N} | makeVariantSet(VFS) .
