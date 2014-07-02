@@ -132,7 +132,8 @@ mod MFE-GLOBAL-VARS is
   --- set constant mtt-hook to true if MTTs back end tools are avaiable
   --- from Maude via the ??? hook
   op mtt-hook  : -> Bool .
-  eq mtt-hook = termCheck("aprove", "", 30) :: String .
+  eq mtt-hook = writeToFile(".hook-check", "", true) :: String .
+  ---- eq mtt-hook = termCheck("muterm", "", 30) :: String .
 endm
 
 fmod MFE-BANNER is
@@ -2659,22 +2660,13 @@ mod MFE-MTT is
                   fi 
              fi 
          ) .
+  eq parseModExp('token[T]) = downQid(T) .
 
----( INHERITED FROM Tool
-  ---- select proof as current for the MTT
-  crl [mtt-select] :
-    < O : X@MTTBroker | current : O', reg : (MN |-> O'', MNReg), Atts >
-    (to O from O''' : 'select`proof_.[T])
-    => < O : X@MTTBroker | current : O'', reg : (MN |-> O'', MNReg), Atts >
-       (to O''' from O : output(eMetaPrettyPrint(parseModExp(T)) 'is 'now 'the 'current 'module. '\n))
-    if MN = parseModExp(T) .
-  crl [mtt-select] :
-    < O : X@MTTBroker | reg : MNReg, Atts >
-    (to O from O''' : 'select`proof_.[T])
-    => < O : X@MTTBroker | reg : MNReg, Atts >
-       (to O''' from O : output(eMetaPrettyPrint(parseModExp(T)) 'cannot 'be 'set 'as 'current. '\n))
-    if not parseModExp(T) in domain of MNReg .
----)
+  rl [mtt-select-external-tool] :
+    < O : X@MTTBroker | external-tool : TOOL, Atts >
+    (to O from O' : 'select`external`tool_.['token[T]])
+    => < O : X@MTTBroker | external-tool : string(downQid(T)), Atts >
+       (to O' from O : output(downQid(T) 'is 'now 'the 'current 'external 'tool. '\n)).
 
   ---- These rules take the messages with the terms resulting from the parsing
   ---- and send messages with the common syntax.
