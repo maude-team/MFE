@@ -1,0 +1,115 @@
+fth FORMULA is
+  sort Formula .
+endfth 
+
+view FORMULA from TRIV to FORMULA is
+  sort Elt to Formula .
+endv
+
+fmod INFERENCE-SYSTEM{X :: FORMULA} is
+  pr QID .
+  pr LIST{FORMULA}{X} * (sort List{FORMULA}{X} to FormulaList,
+                         sort NeList{FORMULA}{X} to NeFormulaList,
+                         op nil to empty) .
+
+  sort Name InferenceRule InferenceSystem .
+  subsort Qid < Name .
+  subsort InferenceRule < InferenceSystem .
+  op _(_)- - - - - - - - - -_ : FormulaList Name X$Formula -> InferenceRule .
+  op empty : -> InferenceSystem .
+  op _+_ : InferenceSystem InferenceSystem -> InferenceSystem [assoc comm id: empty prec 42] .
+
+  op inference-system : -> InferenceSystem .
+endfm
+
+fmod PROOF-JUMP-SET{X :: FORMULA} is
+  pr QID .
+  pr LIST{FORMULA}{X} * (sort List{FORMULA}{X} to FormulaList,
+                         sort NeList{FORMULA}{X} to NeFormulaList,
+                         ----op __ to _`,_,
+                         op nil to empty) .
+
+  sort Name ProofJump ProofJumpSet .
+  subsort Qid < Name .
+  subsort ProofJump < ProofJumpSet .
+  op (_)_||_ : Name X$Formula NeFormulaList -> ProofJump .
+  op empty : -> ProofJumpSet .
+  op _+_ : ProofJumpSet ProofJumpSet -> ProofJumpSet [assoc comm id: empty prec 42] .
+endfm
+
+fmod LOGIC-PROCESSING is
+  pr META-LEVEL .
+  pr TERMSET . ---- from Full Maude
+  pr EXT-QID-LIST .
+
+  op MIS : Qid -> Module . ---- metamodule with a constant of sort InferenceSystem that represents the inference system
+  op MPJ : Qid -> Module . ---- metamodule with a singnature for prrof jumps
+
+  var  Ct : Constant .
+  vars T T1 T2 T3 T4 : Term .
+  var  EqS : EquationSet .
+  var  L N : Qid .
+  var  TS : TermSet . 
+  var  TL : TermList .
+ 
+  ---- The different logics will provide corresponding getInfrenceSystem operators. 
+  ---- E.g., getInferenceSystem('lambda-calculus) will return the fixed rules 
+  ---- provided by the logic. getInferenceSystem('CTRS, (T1, T2)) will provide the  
+  ---- concrete rules plus the result of instantiating the inference rule schemes 
+  ---- of the logic with the specification in T1+T2 (T1 are the variables and T2 
+  ---- the rewrite rules)
+  op getInferenceSystem : Qid -> [TermSet] .
+  op getInferenceSystem : Qid TermList -> [TermSet] .
+  
+  op getInferenceSystem : Module -> [TermSet] . 
+  op getInferenceSystem : EquationSet -> [TermSet] .
+  op breakInferenceSystem : Term -> [TermSet] .
+  eq getInferenceSystem(M:Module) = getInferenceSystem(getEqs(M:Module)) .
+ ceq getInferenceSystem(eq Ct = T [nonexec] . EqS) 
+    = breakInferenceSystem(T) 
+    if getType(Ct) == 'InferenceSystem .
+  eq breakInferenceSystem('_+_['_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3], T4]) 
+    = ('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3]) | breakInferenceSystem(T4) . 
+  eq breakInferenceSystem('_+_[T1, '_`(_`)-`-`-`-`-`-`-`-`-`-_[T2, T3, T4]]) 
+    = '_`(_`)-`-`-`-`-`-`-`-`-`-_[T2, T3, T4] | breakInferenceSystem(T1) . 
+  eq breakInferenceSystem('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3]) 
+    = '_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3] . 
+  eq breakInferenceSystem('empty.InferenceSystem) = emptyTermSet . 
+
+  ---- Given a qid with the name of the logic (e.g, 'lambda-calculus, 'CTRS, ...),
+  ---- genProofJumps : Qid TermSet -> QidList generates the proof jumps from the  
+  ---- instantiated inference rules of such logic (represented as a TermSet). 
+  op genProofJumps : Qid TermSet -> QidList .
+  op genProofJumps : TermSet -> Term .
+  op genProofJumps : TermList Qid Term -> Term .
+  op genProofJumpsAux : TermList Term Term -> Term .
+  op breakFormulaList : Term -> TermList .
+
+  eq genProofJumps(L, TS)
+    = replace(
+        metaPrettyPrint(MPJ(L), 
+          getTerm(
+            metaNormalize(MPJ(L), 
+              genProofJumps(TS)))), 
+        '+, '\n) .
+        
+  eq genProofJumps('_`(_`)-`-`-`-`-`-`-`-`-`-_['empty.FormulaList, N, T] | TS) 
+    = genProofJumps(TS) .
+  eq genProofJumps('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, N, T2] | TS) 
+    = '_+_[genProofJumps(breakFormulaList(T1), N, T2), 
+           genProofJumps(TS)] 
+    [owise] .
+  eq genProofJumps(emptyTermSet) = 'empty.ProofJumpSet .
+
+  eq genProofJumps((T1, TL), N, T2)
+    = genProofJumpsAux(TL, '`(_`)_||_[N, T2, T1], '`(_`)_||_[N, T2, T1]) .
+    
+  eq genProofJumpsAux((T1, TL), T2, '`(_`)_||_[N, T3, T4])
+----    = genProofJumpsAux(TL, '_+_[T2, '`(_`)_||_[N, T3, '_`,_[T4, T1]]], '`(_`)_||_[N, T3, '_`,_[T4, T1]]) .
+    = genProofJumpsAux(TL, '_+_[T2, '`(_`)_||_[N, T3, '__[T4, T1]]], '`(_`)_||_[N, T3, '_`,_[T4, T1]]) .
+  eq genProofJumpsAux(empty, T1, T2) = T1 .
+  
+  eq breakFormulaList('__[T, TL]) = (T, breakFormulaList(TL)) .
+  eq breakFormulaList(T) = T [owise] .  
+endfm
+

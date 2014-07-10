@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------------
+---- file: glot.maude
+---- author: Francisco Duran
+---- Operational termination of delarative programs in General Logics
+---- With Salvador Lucas and Jose Meseguer
+
+fmod GLOT-BANNER is 
+  pr STRING .
+  op glot-banner : -> String .
+  eq glot-banner = "General Logics - based Operational Termination 0.0 - July 8th 2014" .
+endfm
+
+fmod GLOT-HELP is
+  pr EXT-QID-LIST .
+  op glot-help : -> QidList .
+  eq glot-help 
+    = '\t string2qidList("THIS IS A VERY EARLY PROTOTYPE!") '\n
+      '\t string2qidList("(GLOT help .)") '\n
+      '\t '\t string2qidList("shows the commands available for the GLOT tool.") '\n
+      '\t string2qidList("(ct LAMBDA-CALCULUS .) / (check termination LAMBDA-CALCULUS .)") '\n
+      '\t '\t string2qidList("checks the termination of LAMBDA-CALCULUS. ") '\n
+      '\t string2qidList("(ct CTRS <variables> | <rules> .) / (check termination CTRS <variables> | <rules> .)") '\n
+      '\t '\t string2qidList("checks the termination of the given CTRS. ") '\n
+      .
+endfm
+
+load glot-logic.maude
+load typed-lambda-calculus.maude
+load conditional-term-rewriting-systems.maude
+
+-------------------
+------SIGN
+-------------------
+
+fmod GLOT-SIGN is
+  including FULL-MAUDE-SIGN .
+  ---- mixing logics here will be a source of problems, we will possibly want to 
+  ---- have the possibility of selecting the logic we want to parse the input
+  including TYPED-LAMBDA-CALCULUS-SYNTAX .
+  including CTRS-SPEC-SYNTAX .
+  op GLOT help . : -> @Command@ .
+endfm
+
+
+mod GLOT-TOOL is
+  pr TYPED-LAMBDA-CALCULUS-PROCESSING .
+  pr CTRS-PROCESSING .
+  pr GLOT-HELP .
+  pr MAP{String, String} .
+endm

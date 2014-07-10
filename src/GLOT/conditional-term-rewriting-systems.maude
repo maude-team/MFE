@@ -1,0 +1,103 @@
+---- Syntax for the inference system 
+fmod CTRS-SYNTAX is
+  sorts Constant Variable Term Formula .
+  subsorts Constant Variable < Term .
+  op _->_ : Term Term -> Formula .
+  op _->*R_ : Term Term -> Formula .
+endfm
+
+---- Syntax to parse user inputs (CTRS specs)
+fmod CTRS-SPEC-SYNTAX is 
+  including FULL-MAUDE-SIGN .
+
+  sorts Term Variable FunctionSymbol TermList Rewrite RewriteList Rule RuleList CTRS .
+  subsort @Token@ < FunctionSymbol Variable < Term < TermList .
+  subsort Rewrite < RewriteList Rule .
+  subsort Rule < RuleList .
+  op _,_ : TermList TermList -> TermList [assoc] .
+  op _(_) : FunctionSymbol TermList -> Term .
+  op _->_ : Term Term -> Rewrite .
+  op _,_ : RewriteList RewriteList -> RewriteList [assoc] .
+  op _<=_ : Rewrite RewriteList -> Rule .
+  op _;_ : RuleList RuleList -> RuleList [assoc] .
+  op check termination CTRS_|_. : @NeTokenList@ RuleList -> @Input@ .
+endfm
+
+view CTRSFormula from FORMULA to CTRS-SYNTAX is
+  sort Formula to Formula .
+endv
+
+---- Definition of the fix inference system for the logic. 
+---- In the case of ltyped lambda calculus it is the final one. 
+---- For other logics only part is concrete, the rest will be generated from a 
+---- scheme of the inference system. 
+fmod CTRS-INFERENCE-SYSTEM is
+  pr INFERENCE-SYSTEM{CTRSFormula} .
+  
+  vars t s u : Term .
+  
+  eq inference-system
+    =             empty
+      ('Refl)     - - - - - - - - - -
+                  t ->*R t
+      +
+                  (s ->*R u)   (u ->*R t)
+      ('r\lambda) - - - - - - - - - -
+                  s ->*R t
+    [nonexec] .       
+endfm
+
+---- Proof jumps for the concrete logic.  
+fmod CTRS-PROOF-JUMP-SET is
+  pr PROOF-JUMP-SET{CTRSFormula} .
+endfm
+
+---- THIS IS UNFINISHED!!!
+---- RUN README.txt TO SEE PENDING TERMS
+---- Given a CTRS getInferenceSystem takes the concrete inference rules in 
+---- CTRS-INFERENCE-SYSTEM and generates additional inference rules by
+---- instantiating the Repl and Cong schematic inference rules.  
+fmod CTRS-PROCESSING is
+  ex LOGIC-PROCESSING .
+
+  eq MIS('CTRS) = upModule('CTRS-INFERENCE-SYSTEM, false) .
+  eq MPJ('CTRS) = upModule('CTRS-PROOF-JUMP-SET, false) .
+  
+  vars T T1 T2 T3 : Term .
+  var  TL : TermList .
+  var  VS : MyQidSet .
+  var  Ct : Constant .
+  var  TS : TermSet .
+  var  V : Qid .
+  
+  sort MyQidSet . ---- Some problem with predefined QidSet
+  subsort Qid < MyQidSet .
+  op mtQidSet : -> MyQidSet .
+  op _*_ : MyQidSet MyQidSet -> MyQidSet [assoc comm id: mtQidSet] .
+  
+  op instCongRules : Term -> TermSet .
+  op instReplRules : Term -> TermSet .
+  op parseCTRSRules : Term Term -> TermSet . 
+  op parseCTRSRules2 : Term MyQidSet Term -> TermSet . 
+  op parseCTRSRules3 : MyQidSet Term -> Term . 
+
+  eq getInferenceSystem('CTRS, (T1, T2)) 
+    ---- variables are not used, we will probably need if muterm needs it  
+----    = getInferenceSystem(MIS('CTRS)) | instCongRules(TS) | instReplRules(TS) 
+----    if TS := parseCTRSRules(T1, T2) .
+    = getInferenceSystem(MIS('CTRS)) | instCongRules(parseCTRSRules(T1, T2)) | instReplRules(parseCTRSRules(T1, T2))  .
+ 
+  eq parseCTRSRules(T1, T2) = parseCTRSRules2(T1, mtQidSet, T2) .
+  eq parseCTRSRules2('neTokenList['__[T1, T2, TL]], VS, T3) = parseCTRSRules2('neTokenList['__[T2, TL]], VS * myDownQid(T1), T3) .
+  eq parseCTRSRules2('neTokenList['__[T1]], VS, T2) = parseCTRSRules3(VS * myDownQid(T1), T2) .
+  eq parseCTRSRules2('neTokenList[T1], VS, T2) = parseCTRSRules3(VS * myDownQid(T1), T2) [owise] .
+  
+  eq parseCTRSRules3(VS, '_<=_[T1, T2]) = '_<=_[parseCTRSRules3(VS, T1), parseCTRSRules3(VS, T2)] .
+  eq parseCTRSRules3(VS, '_->_[T1, T2]) = '_->_[parseCTRSRules3(VS, T1), parseCTRSRules3(VS, T2)] .
+ ceq parseCTRSRules3(V * VS, 'token[T1]) = qid(string(V) + ".Variable")   
+    if myDownQid(T1) == V .
+  eq parseCTRSRules3(VS, 'token[T1]) =  qid(string(myDownQid(T1)) + ".Constant") [owise] .
+  
+  op myDownQid : Constant -> [Qid] .
+  eq myDownQid(Ct) = qid(substr(string(getName(Ct)), 1, length(string(getName(Ct))))) .
+endfm
