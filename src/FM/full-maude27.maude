@@ -724,7 +724,7 @@ fmod TERMSET is
   subsort Term < TermSet .
   op emptyTermSet : -> TermSet [ctor] .
   op _|_ : TermSet TermSet -> TermSet
-    [ctor assoc comm id: emptyTermSet format (d n d d)] .
+    [ctor assoc comm id: emptyTermSet format (d n d d) prec 42] .
   eq X:Term | X:Term = X:Term .
 
   op _in_ : Term TermSet -> Bool .
@@ -736,7 +736,6 @@ fmod TERMSET is
    = emptyTermSet .
   eq TermSet((T:Term,TL:TermList))
    = T:Term | TermSet(TL:TermList) .
-
 endfm
 
 fmod RENAMING is
@@ -6202,7 +6201,7 @@ fmod EXT-QID-LIST is
 
   op qidList2Qid : QidList -> Qid .
 
-  var  QI : Qid .
+  vars QI QI' QI'' : Qid .
   var  QIL : QidList .
   vars St St' : String .
   var  N : Nat .
@@ -6272,7 +6271,14 @@ fmod EXT-QID-LIST is
            fi
       else notFound 
       fi .
-    
+  
+  op replace : QidList Qid Qid -> QidList .
+  eq replace(QI QIL, QI', QI'') 
+    = if QI == QI' 
+      then QI'' replace(QIL, QI', QI'')
+      else QI replace(QIL, QI', QI'')
+      fi .
+  eq replace(nil, QI, QI') = nil .
 endfm
 
 fmod HELP is

@@ -110,6 +110,7 @@ mod CONFIGURATION is
 endm
 
 load FM/full-maude27.maude
+load GLOT/glot.maude
 load ITP/itp.maude
 load CRChC/crchc3o.maude
 load MTT/mtt.maude
@@ -2941,6 +2942,98 @@ mod MFE-MTT is
        (to OS from O' : module getName(M) is terminating functional part B) .
 endm
 
+--------------------------------------------------------------------------------
+--- MFE-GLOT
+--------------------------------------------------------------------------------
+
+mod MFE-GLOT is
+  pr MFE-GLOBAL-VARS .
+  inc MFE-TOOL .
+  inc MFE-CONTROLLER .
+  inc TPDB-DATABASE-HANDLING .
+  inc GLOT-BANNER .
+  inc GLOT-TOOL .
+  pr 3BOOL .
+  
+  sort GLOTBroker .
+  subsort GLOTBroker < Tool . 
+  op GLOTBroker : -> GLOTBroker [ctor] .
+  op external-tool :_ : String -> Attribute [ctor gather (&)] .
+ 
+  sort GLOT .
+  subsort GLOT < Goal . 
+  op GLOT : -> GLOT [ctor] .
+ 
+  op GLOT : Nat -> Oid .
+
+  op init-glot : Map{ToolName, Oid} -> Configuration [ctor] .
+  
+  vars O O' O'' O''' O4 O5 OMFE OCRC OChC OITP OSCC OGLOT : Oid .
+  var  OS : Set{Oid} .
+  var  TS : Map{ToolName, Oid} .
+  var  X@GLOTBroker : GLOTBroker .
+  var  X@GLOT : GLOT .
+  var  X@Controller : Controller . 
+  vars Atts Atts' : AttributeSet .
+  var  MN : ModuleName .
+  var  MNReg : Map{ModuleName, Oid} .
+  var  N : Nat .
+  vars QIL QIL' : QidList .
+  vars T T' T1 T2 : Term .
+  vars DB DB' : Database .
+  vars ME ME' : ModuleExpression .
+  vars M M' : Module .
+  var  Reg : Map{String, String} .
+  vars B B' : Bool .
+  vars 3B 3B' : 3Bool .
+  var  SS : SortSet .
+  var  SSDS : SubsortDeclSet .
+  var  OPS : OpDeclSet .
+  var  MbS : MembAxSet . 
+  var  EqS : EquationSet .
+  var  RlS : RuleSet .
+  vars Id Id' Str TOOL : String .
+  vars QI L L' : Qid .
+  var  Cd : Condition .
+  var  S : Sort .
+  var  P : Path .
+  
+  op GLOT-GRAMMAR : -> FModule .
+  eq GLOT-GRAMMAR = addImports((including 'GLOT-SIGN .), BUBBLES) .
+
+  eq (to O from O' : ('ct`LAMBDA-CALCULUS`..@Command@))
+    = (to O from O' : ('check`termination`LAMBDA-CALCULUS`..@Command@)) .
+  eq (to O from O' : ('ct`CTRS_|_[T1, T2]))
+    = (to O from O' : ('check`termination`CTRS_|_[T1, T2])) .
+
+  ---- initialization
+  rl init-glot(TS)
+    => < TS["GLOT"] : GLOTBroker | 
+             grammar : GLOT-GRAMMAR,
+             tools : TS, 
+             current : null-oid, 
+             index : 0, 
+             reg : empty >
+       to TS["MFE"] from TS["GLOT"] : output('\s '\s '\s '\s string2qidList(glot-banner) '\n) .
+
+  ---- help
+  rl [glot-help] :
+     < O : X@GLOTBroker | Atts >
+     (to O from O' : 'GLOT`help`..@Command@)
+     => < O : X@GLOTBroker | Atts >
+        (to O' from O : output(glot-help)) .
+
+  rl < O : X@GLOTBroker | tools : TS, Atts >
+     (to O from O' : ('check`termination`LAMBDA-CALCULUS`..@Command@))
+     => < O : X@GLOTBroker | tools : TS, Atts >
+        (to TS["MFE"] from O : output(genProofJumps('lambda-calculus, getInferenceSystem('lambda-calculus)))) .
+              
+  rl < O : X@GLOTBroker | tools : TS, Atts >
+     (to O from O' : ('check`termination`CTRS_|_.[T1,T2]))
+     => < O : X@GLOTBroker | tools : TS, Atts >
+        (to TS["MFE"] from O : output(genProofJumps('CTRS, getInferenceSystem('CTRS, (T1, T2))))) .
+endm
+
 mod MFE-EqE is
   pr 3BOOL .
   pr DATABASE-HANDLING .
@@ -3229,6 +3322,7 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   pr MFE-MTT .
   pr MFE-EqE .
   pr MFE-ERTP .
+  pr MFE-GLOT .
   pr MFE-PUBLIC-MESSAGES .
   pr META-MFE-SIGN .
   subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due 
@@ -3238,7 +3332,7 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
 
   ---- Oids for the tools' brokers 
   ---- add a new constant for a new tool
-  ops crc chc mtt scc itp eqe ertp : -> Oid . 
+  ops crc chc mtt scc itp eqe ertp glot : -> Oid . 
 
   op TOOLS : -> Map{ToolName, Oid} .
   eq TOOLS = ("MFE" |-> mfe, 
@@ -3248,7 +3342,8 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
               "SCC" |-> scc, 
               "MTT" |-> mtt, 
               "EqE" |-> eqe, 
-              "ERTP" |-> ertp) .
+              "ERTP" |-> ertp, 
+              "GLOT" |-> glot) .
   
   rl [init] :
      init
@@ -3266,7 +3361,8 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
           init-scc(TOOLS)
           init-mtt(TOOLS)
           init-eqe(TOOLS)
-          init-ertp(TOOLS),
+          init-ertp(TOOLS)
+          init-glot(TOOLS),
          nil ] .
 
 endm
