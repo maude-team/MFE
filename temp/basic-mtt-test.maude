@@ -1,0 +1,11 @@
+set trace off .
+set trace select on .
+trace select termCheck 
+             .
+
+(set include BOOL off .)
+(fmod FOO is sort Foo . ops f g  : -> Foo . eq f = g . endfm)
+(select tool MTT .)
+(ct FOO .)
+
+

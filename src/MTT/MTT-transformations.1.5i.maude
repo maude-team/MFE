@@ -1381,7 +1381,7 @@ fmod SCS-MCTRS->CS-OSCTRS is
   ---- MB(S) is the smallest subset of S such that
   ----   (i) if a membership t : s if C belongs to M, then s is in MB(S)
   ----  (ii) if s is in MB(S) and s <= s', then s' is in MB(S)
-  ---- (iii) if f : s1 · · · sn -> s and some si in MB(S) then s in MB(S)
+  ---- (iii) if f : s1 \B7 \B7 \B7 sn -> s and some si in MB(S) then s in MB(S)
   eq MB(M) = MB(M, getMbs(M), getSubsorts(M), getOps(M), none) .
   eq MB(M, mb T : S [AtS] . MAS, SDS, ODS, SS) 
     = MB(M, MAS, SDS, ODS, S ; SS) .
@@ -2785,7 +2785,7 @@ fmod PROC-TPDB is
   var  Cond : Condition .
 
  ceq $procTPDB(M, PP, CONDITIONS, CONTEXT)
-    = if ((vars(getRls(M'))) =/= nil)
+    = if ((vars(getRls(M'))) =/= none)
       then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
       else nil
       fi

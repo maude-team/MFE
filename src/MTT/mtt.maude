@@ -1,5 +1,7 @@
 ---- Last changes:
 ----
+---- Jul 1st, 2014: A new command (select external tool <tool> .) has been added. 
+----   With this command we can choose between the external tools configured in the mfe.config file. 
 ---- Feb 21st, 2011: A new command 
 ----     (check termination functional part [<module-name>] .)
 ----   has been added. It checks the termination of the functional part of the module, 
@@ -45,6 +47,10 @@ fmod MTT-HELP is
       '\t string2qidList("(select proof <module> .)") '\n
       '\t '\t string2qidList("sets the specified module as the current module of the MTT.") '\n 
 
+      '\t string2qidList("(select external tool <tool> .)") '\n
+      '\t '\t string2qidList("sets the specified external tool as the current backend tool of the MTT") '\n 
+      '\t '\t string2qidList("(the specified <tool> must be one of the tools in your mfe.config file).") '\n 
+
       '\t string2qidList("(trust .)") '\n
       '\t '\t string2qidList("Assumes that the current module has been proved terminating.") '\n .
 endfm
@@ -57,13 +63,34 @@ fmod TERMINATION-CHECKER is
   var  M : Module . 
   var  PP : Path .
   vars CONDITIONS CONTEXT : Bool .
-  var  Str : String .
+  var  Str TOOL : String .
 
-  op terminationCheck : Module Path Bool Bool -> String .
-
-  eq terminationCheck(M, PP, CONDITIONS, CONTEXT) 
-    = termCheck("aprove", replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", " "), "\\s", " "), 30) .
-----    = termCheck(replace(replace(replace(qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), "`", ""), "\\n", ""), "\\s", ""), "AProVE", "30") .
+  op terminationCheck : Module Path Bool Bool String -> String .
+---(
+ ceq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
+    = Out:String
+    if In:String := replace(
+                      replace(
+                        replace(
+                          qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)), 
+                          "`", ""), 
+                        "\\n", " "), 
+                      "\\s", " ")
+    /\ Out:String := termCheck(TOOL, In:String, 30) 
+    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String 
+    /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
+---)
+  eq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
+    = termCheck(
+        TOOL, replace(
+          replace(
+            replace(
+              qidList2string(
+               $procTPDB(M, PP, CONDITIONS, CONTEXT)), 
+              "`", ""), 
+            "\\n", ""), 
+          "\\s", ""), 
+        30) .
 endfm
 
 
@@ -97,6 +124,7 @@ fmod MTT-SIGN is
   op ctfu__. : @ModExp@ @Path@ -> @Command@ .                            ---- alias
   op show proof . : -> @Command@ .
   op select proof_. : @ModExp@ -> @Command@ .
+  op select external tool_. : @Token@ -> @Command@ .
   op trust . : -> @Command@ .
 endfm
 
