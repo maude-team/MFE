@@ -196,7 +196,6 @@ mod ITP-EXTENDED-HELPERS is
    = (defaultGoal : (NewLabel + AT + "0"),
       from : From,
       mainGoal : (NewLabel + AT + "0"),
-      mode : uiuc,
       proofState : ps(new-goal(NewLabel + AT + "0", SelMod, SelFormula)),
       itp-trusted : false) .
   eq new-proof(From, NewLabel, SelMod, Cond, T, T')
@@ -212,7 +211,7 @@ mod ITP-EXTENDED-HELPERS is
   --- returns the default attributes for a proof with the by-default value
   op itp-proof-def-atts : -> AttributeSet .
   eq itp-proof-def-atts
-   = defaultGoal : "", goalName : "", mode : uiuc, proofState : emptyProofState .
+   = defaultGoal : "", goalName : "", proofState : emptyProofState .
 
   --- returns true if the given index corresponds to a proof
   op is-a-proof? : Configuration Nat -> Bool .

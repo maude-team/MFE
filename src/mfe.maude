@@ -22,6 +22,11 @@
 ---- - Add support for rechability properties
 
 ---- Latest changes
+---- - July 22nd, 2014
+----   - Bug in the error handling of the ITP. Errors on the parsing of input commands,
+----     in particular handling the first goal on a wrong module, was not captured. 
+----     A new rule itp-parse-error-null has been added. The ITP print-error operation
+----     and the mode attribute have also been removed. Bug reported by Stephen Skeirik.
 ---- - June 18th, 2014
 ----   - bug in the show state commands. The chc-show-state rules was removing the sufficiently-complete 
 ----     attribute from ChC proof objects.
@@ -2110,7 +2115,7 @@ mod MFE-ITP is
     (to OITP from O' : input(NeQIL))
     => < OITP : X@ITPBroker | Atts > 
        < O : X@Controller | db : DB, Atts' >
-       (to O' from OITP : output(print-error(Atts, Msg)))
+       (to O' from OITP : output(Msg))
        (to O' from OITP : input-parsed(NeQIL, false))
     if metaParse(itp-grammar, NeQIL, 'Input) : ResultPair
     /\ input(Cmd) := parse-cmd(Atts, NeQIL, DB)
@@ -2122,11 +2127,10 @@ mod MFE-ITP is
     => < OITP : X@ITPBroker | Atts > 
        < O : X@Controller | db : DB, Atts' >
        (to O' from OITP : output(
-                           print-error(Atts,
                              if getDefaultGoal(Atts) :: Goal 
                              then 'Unable 'to 'interpret 'command. '\n
                              else 'The 'goal 'is 'not 'set.  'Please 'select 'a 'goal. '\n
-                             fi)))
+                             fi))
        (to O' from OITP : input-parsed(NeQIL, false))
     if metaParse(itp-grammar, NeQIL, 'Input) : ResultPair
     /\ input(Cmd) := parse-cmd(Atts, NeQIL, DB)
@@ -2138,17 +2142,27 @@ mod MFE-ITP is
     (to OITP from O' : input(NeQIL))
     => < OITP : X@ITPBroker | Atts > 
        < O : X@Controller | db : DB, Atts' >
-       (to O' from OITP : output(print-error(Atts, QIL')))
+       (to O' from OITP : output(QIL'))
        (to O' from OITP : input-parsed(NeQIL, false))
     if metaParse(itp-grammar, NeQIL, 'Input) : ResultPair
     /\ parse-input-error(QIL') := parse-cmd(Atts, NeQIL, DB) .
-
-  crl [itp-parse-error] :
-    < OITP : X@ITPBroker | Atts > 
+  crl [itp-parse-error-null] :
+    < OITP : X@ITPBroker | itp-default : null-itp, Atts > 
+    < O : X@Controller | db : DB, Atts' >
     (to OITP from O' : input(NeQIL))
-    => < OITP : X@ITPBroker | Atts > 
+    => < OITP : X@ITPBroker | itp-default : null-itp, Atts > 
+       < O : X@Controller | db : DB, Atts' >
+       (to O' from OITP : output(QIL'))
        (to O' from OITP : input-parsed(NeQIL, false))
-    if not metaParse(itp-grammar, NeQIL, 'Input) :: ResultPair .
+    if metaParse(itp-grammar, NeQIL, 'Input) : ResultPair
+    /\ parse-input-error(QIL') := parse-cmd(itp-proof-def-atts, NeQIL, DB) .
+
+   crl [itp-parse-error] :
+     < OITP : X@ITPBroker | Atts > 
+     (to OITP from O' : input(NeQIL))
+     => < OITP : X@ITPBroker | Atts > 
+        (to O' from OITP : input-parsed(NeQIL, false))
+     if not metaParse(itp-grammar, NeQIL, 'Input) :: ResultPair .
 endm
 
 ----------------------------
