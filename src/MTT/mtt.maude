@@ -100,8 +100,8 @@ fmod TERMINATION-CHECKER is
           "@semicolon@", ";"), 
           "@comma@", "`,"), 
           "@bq@", "`"), 
-          "@underscore@, "_""), 
-          "@vertical-bar@", "|"))))))))))) .
+          "@underscore@", "_"), 
+          "@vertical-bar@", "|") .
 endfm
 
 
