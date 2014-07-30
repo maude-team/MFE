@@ -94,7 +94,7 @@ fmod TERMINATION-CHECKER is
           "@osb@", "`["), 
           "@csb@", "`]"), 
           "@ocb@", "`{"), 
-          "@ccb@", "`}", ), 
+          "@ccb@", "`}"), 
           "@opar@", "`("), 
           "@cpar@", "`)"), 
           "@semicolon@", ";"), 
