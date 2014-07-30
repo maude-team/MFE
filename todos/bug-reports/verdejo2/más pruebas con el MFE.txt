@@ -1,0 +1,540 @@
+From: Alberto Verdejo <jalberto@ucm.es>
+Subject: más pruebas con el MFE
+Date: 17 de julio de 2014 11:56:07 GMT+01:00
+To: Francisco Duran <duran@lcc.uma.es>
+Cc: Narciso Martí Oliet <narciso@ucm.es>
+
+Hola Paco,
+
+Primero te comentamos que al iniciar el nuevo Maude con hooks nos sale este mensaje
+
+Bad terminal type: "xterm". Will assume vt100.
+
+Te lo decimos por si te interesa para tus compilaciones, pero suponemos que no afecta a lo siguiente.
+
+
+Hemos probado con el nuevo Maude, el nuevo MFE y el antiguo AproVe, y con los ficheros que nos enviaste tú corregidos para evitar conflictos de redefiniciones, que te volvemos a enviar.
+
+Y nos ocurre lo mismo. Todo va bien, pero cuando llegamos a probar la coherencia del módulo READERS-WRITERS-ABS que tiene un par crítico sin resolver, y hacemos submit, empiezan a salir advisories de sorts y operaciones que no deberían estar en el módulo. Al final del mensaje te copiamos la parte de fallos que quedan en el terminal (no cabe todo).
+
+¿Entiendes tú a qué se debe todos estos advisories? ¿Pueden tener que ver con el ITP? El ChC envía el par crítico al ITP, pero al hacer (ITP show state) nos dice que está vacío. ¿Se deberá esto a los errores?
+
+¿Se puede hacer trust de lo que le queda pendiente al ITP? Hemos visto la instrucción (ITP trust goal-name .) pero como el estado está vacío no sabemos el goal-name.
+
+Saludos,
+Narciso y Alberto
+
+
+
+
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: bad operator declaration (op '0 : nil -> 'Nat [ctor] .
+op '<_`,_> : 'Nat 'Nat -> 'RWState [ctor] .
+op '_|=_ : 'State 'Prop -> 'MBool [frozen(1 2)] .
+op 'false : nil -> 'MBool [ctor] .
+op 'mutex : nil -> 'Prop [ctor] .
+op 'one-writer : nil -> 'Prop [ctor] .
+op 's : 'Nat -> 'Nat [ctor] .
+op 'true : nil -> 'MBool [ctor] .) \ op '0 : nil -> 'Zero [ctor] .
+op '_&_ : 'Nat 'Nat -> 'Nat [assoc comm prec(53) special(
+   id-hook('ACU_NumberOpSymbol, '&) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_*_ : 'Nat 'Nat -> 'Nat [assoc comm prec(31) special(
+   id-hook('ACU_NumberOpSymbol, '*) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_*_ : 'NzNat 'NzNat -> 'NzNat [assoc comm prec(31) special(
+   id-hook('ACU_NumberOpSymbol, '*) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm prec(33) special(
+   id-hook('ACU_NumberOpSymbol, '+) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm prec(33) special(
+   id-hook('ACU_NumberOpSymbol, '+) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_<<_ : 'Nat 'Nat -> 'Nat [prec(35) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '<<) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '<=) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_<_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '<) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_=/=_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+   id-hook('EqualitySymbol, nil) 
+   term-hook('equalTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))) 
+   term-hook('notEqualTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))))] .
+op '_==_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+   id-hook('EqualitySymbol, nil) 
+   term-hook('equalTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('notEqualTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_>=_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '>=) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_>>_ : 'Nat 'Nat -> 'Nat [prec(35) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '>>) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_>_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '>) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_^_ : 'Nat 'Nat -> 'Nat [prec(29) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '^) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_^_ : 'NzNat 'Nat -> 'NzNat [prec(29) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '^) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_and_ : 'Bool 'Bool -> 'Bool [assoc comm prec(55)] .
+op '_divides_ : 'NzNat 'Nat -> 'Bool [prec(51) special(
+   id-hook('NumberOpSymbol, 'divides) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_implies_ : 'Bool 'Bool -> 'Bool [prec(61) gather('e 'E)] .
+op '_or_ : 'Bool 'Bool -> 'Bool [assoc comm prec(59)] .
+op '_quo_ : 'Nat 'NzNat -> 'Nat [prec(31) gather('E 'e) special(
+   id-hook('NumberOpSymbol, 'quo) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_rem_ : 'Nat 'NzNat -> 'Nat [prec(31) gather('E 'e) special(
+   id-hook('NumberOpSymbol, 'rem) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_xor_ : 'Bool 'Bool -> 'Bool [assoc comm prec(57)] .
+op '_xor_ : 'Nat 'Nat -> 'Nat [assoc comm prec(55) special(
+   id-hook('ACU_NumberOpSymbol, 'xor) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_|_ : 'Nat 'Nat -> 'Nat [assoc comm prec(57) special(
+   id-hook('ACU_NumberOpSymbol, '|) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_|_ : 'NzNat 'Nat -> 'NzNat [assoc comm prec(57) special(
+   id-hook('ACU_NumberOpSymbol, '|) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'false : nil -> 'Bool [ctor special(
+   id-hook('SystemFalse, nil))] .
+op 'gcd : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'gcd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'gcd : 'NzNat 'Nat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'gcd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0) special(
+   id-hook('BranchSymbol, nil) 
+   term-hook('1, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('2, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op 'lcm : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'lcm) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'lcm : 'NzNat 'NzNat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'lcm) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'max) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'max : 'NzNat 'Nat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'max) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'min : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'min) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'min : 'NzNat 'NzNat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'min) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'modExp : '`[Nat`] '`[Nat`] '`[Nat`] -> '`[Nat`] [special(
+   id-hook('NumberOpSymbol, 'modExp) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'not_ : 'Bool -> 'Bool [prec(53)] .
+op 's_ : 'Nat -> 'NzNat [iter ctor special(
+   id-hook('SuccSymbol, nil) 
+   term-hook('zeroTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), '0.Zero))))] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm special(
+   id-hook('CUI_NumberOpSymbol, 'sd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'true : nil -> 'Bool [ctor special(
+   id-hook('SystemTrue, nil))] . in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Zero in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: could not find sort Bool in meta-module READERS-WRITERS-ABS.
+Advisory: bad operator declaration (op '0 : nil -> 'Nat [ctor] .
+op '<_`,_> : 'Nat 'Nat -> 'RWState [ctor] .
+op '_|=_ : 'State 'Prop -> 'MBool [frozen(1 2)] .
+op 'false : nil -> 'MBool [ctor] .
+op 'mutex : nil -> 'Prop [ctor] .
+op 'one-writer : nil -> 'Prop [ctor] .
+op 's : 'Nat -> 'Nat [ctor] .
+op 'true : nil -> 'MBool [ctor] .) \ op '0 : nil -> 'Zero [ctor] .
+op '_&_ : 'Nat 'Nat -> 'Nat [assoc comm prec(53) special(
+   id-hook('ACU_NumberOpSymbol, '&) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_*_ : 'Nat 'Nat -> 'Nat [assoc comm prec(31) special(
+   id-hook('ACU_NumberOpSymbol, '*) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_*_ : 'NzNat 'NzNat -> 'NzNat [assoc comm prec(31) special(
+   id-hook('ACU_NumberOpSymbol, '*) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm prec(33) special(
+   id-hook('ACU_NumberOpSymbol, '+) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm prec(33) special(
+   id-hook('ACU_NumberOpSymbol, '+) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_<<_ : 'Nat 'Nat -> 'Nat [prec(35) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '<<) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '<=) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_<_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '<) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_=/=_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+   id-hook('EqualitySymbol, nil) 
+   term-hook('equalTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))) 
+   term-hook('notEqualTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))))] .
+op '_==_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+   id-hook('EqualitySymbol, nil) 
+   term-hook('equalTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('notEqualTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_>=_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '>=) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_>>_ : 'Nat 'Nat -> 'Nat [prec(35) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '>>) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_>_ : 'Nat 'Nat -> 'Bool [prec(37) special(
+   id-hook('NumberOpSymbol, '>) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_^_ : 'Nat 'Nat -> 'Nat [prec(29) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '^) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_^_ : 'NzNat 'Nat -> 'NzNat [prec(29) gather('E 'e) special(
+   id-hook('NumberOpSymbol, '^) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_and_ : 'Bool 'Bool -> 'Bool [assoc comm prec(55)] .
+op '_divides_ : 'NzNat 'Nat -> 'Bool [prec(51) special(
+   id-hook('NumberOpSymbol, 'divides) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat) 
+   term-hook('trueTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('falseTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op '_implies_ : 'Bool 'Bool -> 'Bool [prec(61) gather('e 'E)] .
+op '_or_ : 'Bool 'Bool -> 'Bool [assoc comm prec(59)] .
+op '_quo_ : 'Nat 'NzNat -> 'Nat [prec(31) gather('E 'e) special(
+   id-hook('NumberOpSymbol, 'quo) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_rem_ : 'Nat 'NzNat -> 'Nat [prec(31) gather('E 'e) special(
+   id-hook('NumberOpSymbol, 'rem) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_xor_ : 'Bool 'Bool -> 'Bool [assoc comm prec(57)] .
+op '_xor_ : 'Nat 'Nat -> 'Nat [assoc comm prec(55) special(
+   id-hook('ACU_NumberOpSymbol, 'xor) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_|_ : 'Nat 'Nat -> 'Nat [assoc comm prec(57) special(
+   id-hook('ACU_NumberOpSymbol, '|) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op '_|_ : 'NzNat 'Nat -> 'NzNat [assoc comm prec(57) special(
+   id-hook('ACU_NumberOpSymbol, '|) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'false : nil -> 'Bool [ctor special(
+   id-hook('SystemFalse, nil))] .
+op 'gcd : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'gcd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'gcd : 'NzNat 'Nat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'gcd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0) special(
+   id-hook('BranchSymbol, nil) 
+   term-hook('1, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'true.Bool))) 
+   term-hook('2, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), 'false.Bool))))] .
+op 'lcm : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'lcm) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'lcm : 'NzNat 'NzNat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'lcm) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'max) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'max : 'NzNat 'Nat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'max) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'min : 'Nat 'Nat -> 'Nat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'min) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'min : 'NzNat 'NzNat -> 'NzNat [assoc comm special(
+   id-hook('ACU_NumberOpSymbol, 'min) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'modExp : '`[Nat`] '`[Nat`] '`[Nat`] -> '`[Nat`] [special(
+   id-hook('NumberOpSymbol, 'modExp) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'not_ : 'Bool -> 'Bool [prec(53)] .
+op 's_ : 'Nat -> 'NzNat [iter ctor special(
+   id-hook('SuccSymbol, nil) 
+   term-hook('zeroTerm, getTerm(metaNormalize(fmod_is_sorts_.____endfm(...), '0.Zero))))] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm special(
+   id-hook('CUI_NumberOpSymbol, 'sd) 
+   op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+op 'true : nil -> 'Bool [ctor special(
+   id-hook('SystemTrue, nil))] . in meta-module READERS-WRITERS-ABS.
+rewrites: 225423 in 132ms cpu (712ms real) (1707750 rewrites/second)
+The Church-Rosser goal for READERS-WRITERS-ABS has been submitted to CRC.
+The Sufficient-Completeness goal for READERS-WRITERS-ABS has been submitted to SCC.
+The goal for critical pair READERS-WRITERS-ABS1 has been submitted to ITP.
+The termination goal for the functional part of READERS-WRITERS-ABS has been submitted to MTT.
+Success: The functional part of module READERS-WRITERS-ABS is terminating.
+Sufficient completeness check for READERS-WRITERS-ABS
+	Completeness counter-examples: none were found
+	Freeness counter-examples: < s(s(0)),0 > with sort RWState
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+The functional part of module READERS-WRITERS-ABS has been checked terminating.
+
