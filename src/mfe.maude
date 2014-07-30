@@ -139,8 +139,8 @@ mod MFE-GLOBAL-VARS is
   ---- from Maude via the corresponding hook. The writeToFile and termCheck
   ---- hooks are supposed to go together
   op mtt-hook : -> Bool .
-  eq mtt-hook = true == true . ---- FOR DEBUGGING
-  ---- eq mtt-hook = writeToFile(".hook-check", "", true) :: String .
+  ----eq mtt-hook = true == true . ---- FOR DEBUGGING
+  eq mtt-hook = writeToFile(".hook-check", "", true) :: String .
   ---- We could check on the availability of specific termination tools as well,
   ---- but since they depend on the mfe.config file it is not possible a generic check. 
   ---- eq mtt-hook = termCheck("muterm", "", 30) :: String .  
