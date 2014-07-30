@@ -66,7 +66,6 @@ fmod TERMINATION-CHECKER is
   var  Str TOOL : String .
 
   op terminationCheck : Module Path Bool Bool String -> String .
----(
  ceq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
     = Out:String
     if In:String := replace(
@@ -79,7 +78,7 @@ fmod TERMINATION-CHECKER is
     /\ Out:String := termCheck(TOOL, In:String, 30) 
     /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String 
     /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
----)
+---(
   eq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
     = termCheck(
         TOOL, replace(
@@ -91,6 +90,7 @@ fmod TERMINATION-CHECKER is
             "\\n", ""), 
           "\\s", ""), 
         30) .
+---)
 endfm
 
 

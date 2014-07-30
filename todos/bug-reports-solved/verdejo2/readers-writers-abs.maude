@@ -6,7 +6,6 @@
     eq < s(s(N:Nat)), 0 > = < s(0), 0 > .
   endm
 
-eof 
   load model-checker.maude
 
   mod READERS-WRITERS-ABS-CHECK is
@@ -19,10 +18,11 @@ select MFE .
 loop init .
 
 (select tool MTT .)
+(select external tool aprove .)
 (ct READERS-WRITERS-PREDS .)
-(trust .)
+----(trust .)
 (ct READERS-WRITERS-ABS .)
-(trust .)
+----(trust .)
 
 (select tool CRC .)
 (ccr READERS-WRITERS-PREDS .)
