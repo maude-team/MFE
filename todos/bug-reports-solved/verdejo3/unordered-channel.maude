@@ -40,21 +40,8 @@ loop init .
 
 (select tool MTT .)
 (select external tool aprove .)
-
-set trace on .
-set trace select on .
-trace include FULL-MAUDE .
-
-trace select ----$procTPDB
-             ----proc
-             ----filterMaude
-             removeLonelyAssocs 
-             removeIds 
-             ----acuCohComplete 
-             ----removeNonExecs
-             .
 (ct UNORDERED-CHANNEL .)
-eof
+
 (select tool CRC .)
 (ccr UNORDERED-CHANNEL .)
 (submit .)
