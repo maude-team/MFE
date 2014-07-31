@@ -40,6 +40,11 @@ loop init .
 (select tool ChC .)
 (cch READERS-WRITERS-PREDS .)
 (submit .)
+set trace on .
+set trace select on .
+trace select chcSimplify 
+             chcCritPairs
+             .
 (cch READERS-WRITERS-ABS .)
 (submit .)
 
