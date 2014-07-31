@@ -81,16 +81,27 @@ fmod TERMINATION-CHECKER is
     /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
 ---)
   eq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
-    = termCheck(
-        TOOL, replace(
-          replace(
-            replace(
-              qidList2string(
-               $procTPDB(M, PP, CONDITIONS, CONTEXT)), 
-              "`", ""), 
+    = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
+        termCheck(
+          TOOL, 
+          replace(replace(replace(
+            qidList2string(
+              $procTPDB(M, PP, CONDITIONS, CONTEXT)), 
+            "`", ""), 
             "\\n", ""), 
-          "\\s", ""), 
-        30) .
+            "\\s", ""), 
+          30),
+          "@osb@", "`["), 
+          "@csb@", "`]"), 
+          "@ocb@", "`{"), 
+          "@ccb@", "`}"), 
+          "@opar@", "`("), 
+          "@cpar@", "`)"), 
+          "@semicolon@", ";"), 
+          "@comma@", "`,"), 
+          "@bq@", "`"), 
+          "@underscore@", "_"), 
+          "@vertical-bar@", "|") .
 endfm
 
 

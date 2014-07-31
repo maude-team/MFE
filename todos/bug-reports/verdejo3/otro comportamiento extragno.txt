@@ -6,7 +6,13 @@ Cc: Narciso Martí Oliet <narciso@ucm.es>
 
 Hola Paco,
 
-Hemos cambiado de ejemplo, al del unordered channel, y aquí nos ocurre algo que no comprendemos, muy pronto, al hacer la prueba de terminación. Después de introducir el fichero que te enviamos, seleccionamos MTT y pedimos probar la terminación. Salen unos warnings y la herramienta se queda colgada, parece, con funciones sin reducir. Te copio la salida. ¿Tenemos algo mal en el módulo (hemos probado a renombrar la constante null, pero ocurre lo mismo)?
+Hemos cambiado de ejemplo, al del unordered channel, y aquí nos 
+ocurre algo que no comprendemos, muy pronto, al hacer la prueba de 
+terminación. Después de introducir el fichero que te enviamos, 
+seleccionamos MTT y pedimos probar la terminación. Salen unos 
+warnings y la herramienta se queda colgada, parece, con funciones 
+sin reducir. Te copio la salida. ¿Tenemos algo mal en el módulo 
+(hemos probado a renombrar la constante null, pero ocurre lo mismo)?
 
 Saludos,
 Alberto

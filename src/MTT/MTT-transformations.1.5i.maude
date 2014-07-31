@@ -258,17 +258,18 @@ fmod MTT-PRELIMINARIES is
  ceq filterTPDB(Tp TpL) = filterTPDB(Tp) filterTPDB(TpL) if TpL =/= nil .
   eq filterTPDB((nil).TypeList) = nil .
   eq filterTPDB(F) 
-    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
-                                          "`[", "osb-"), 
-                                          "`]", "-csb"), 
-                                          "`{", "ocb-"), 
-                                          "`}", "-ccb"), 
-                                          "`(", "op-"), 
-                                          "`)", "-cp"), 
-                                          ";", "-semicolon-"), 
-                                          "`,", "-comma-"), 
-                                          "`", "-bq-"), 
-                                          "_", "-")) 
+    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
+                                          "`[", "@osb@"), 
+                                          "`]", "@csb@"), 
+                                          "`{", "@ocb@"), 
+                                          "`}", "@ccb@"), 
+                                          "`(", "@opar@"), 
+                                          "`)", "@cpar@"), 
+                                          ";", "@semicolon@"), 
+                                          "`,", "@comma@"), 
+                                          "`", "@bq@"), 
+                                          "_", "@underscore@"), 
+                                          "|", "@vertical-bar@")) 
     [owise] .
  ceq filterTPDB(F ; FS) = filterTPDB(F) ; filterTPDB(FS) if FS =/= none .
   eq filterTPDB((none).QidSet) = none .
@@ -2805,7 +2806,7 @@ fmod PROC-TPDB is
       else nil
       fi
       '\n
-    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), non-handled))), PP, CONDITIONS) .
+    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), all))), PP, CONDITIONS) .
   eq $procTPDB(unitError(QIL), PP, CONDITIONS, CONTEXT) = QIL .
   eq $procTPDB(M, PP, CONDITIONS, CONTEXT) 
     = 'error: 'possibly 'a 'non-supported 'feature 'in 'the 'module 

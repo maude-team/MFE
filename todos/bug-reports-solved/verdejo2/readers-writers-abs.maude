@@ -18,10 +18,11 @@ select MFE .
 loop init .
 
 (select tool MTT .)
+(select external tool aprove .)
 (ct READERS-WRITERS-PREDS .)
-(trust .)
+----(trust .)
 (ct READERS-WRITERS-ABS .)
-(trust .)
+----(trust .)
 
 (select tool CRC .)
 (ccr READERS-WRITERS-PREDS .)
@@ -39,11 +40,6 @@ loop init .
 (select tool ChC .)
 (cch READERS-WRITERS-PREDS .)
 (submit .)
-set trace on .
-set trace select on .
-trace select chcSimplify 
-             chcCritPairs
-             .
 (cch READERS-WRITERS-ABS .)
 (submit .)
 

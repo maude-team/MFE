@@ -131,15 +131,19 @@ load ERTP/ertp.maude
 mod MFE-GLOBAL-VARS is
   inc TERMINATION-CHECKER .
   pr CC .
-  --- set constant ceta-hook to true if CETA library is avaiable
-  --- from Maude via the test-emptiness hook
+  ---- set constant ceta-hook to true if CETA library is avaiable from Maude 
+  ---- via the test-emptiness hook. CETA is only available on Linux.
   op ceta-hook : -> Bool .
   eq ceta-hook = scc(upModule('TRUTH-VALUE, false)) :: SCCResult .
-  --- set constant mtt-hook to true if MTTs back end tools are avaiable
-  --- from Maude via the ??? hook
-  op mtt-hook  : -> Bool .
+  ---- set constant mtt-hook to true if MTTs back end tools are available
+  ---- from Maude via the corresponding hook. The writeToFile and termCheck
+  ---- hooks are supposed to go together
+  op mtt-hook : -> Bool .
+  ----eq mtt-hook = true == true . ---- FOR DEBUGGING
   eq mtt-hook = writeToFile(".hook-check", "", true) :: String .
-  ---- eq mtt-hook = termCheck("muterm", "", 30) :: String .
+  ---- We could check on the availability of specific termination tools as well,
+  ---- but since they depend on the mfe.config file it is not possible a generic check. 
+  ---- eq mtt-hook = termCheck("muterm", "", 30) :: String .  
 endm
 
 fmod MFE-BANNER is
@@ -2624,7 +2628,7 @@ mod MFE-MTT is
              current : null-oid, 
              index : 0, 
              reg : empty, 
-             external-tool : "muterm" >
+             external-tool : "external tool not selected" >
        to TS["MFE"] from TS["MTT"] : output('\s '\s '\s '\s string2qidList(mtt-banner) '\n) .
 
 ---(
