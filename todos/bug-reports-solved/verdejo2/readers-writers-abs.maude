@@ -18,7 +18,7 @@ select MFE .
 loop init .
 
 (select tool MTT .)
-(select external tool aprove .)
+(select external tool muterm .)
 (ct READERS-WRITERS-PREDS .)
 ----(trust .)
 (ct READERS-WRITERS-ABS .)
