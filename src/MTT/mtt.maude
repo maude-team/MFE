@@ -66,7 +66,6 @@ fmod TERMINATION-CHECKER is
   var  Str TOOL : String .
 
   op terminationCheck : Module Path Bool Bool String -> String .
----(
  ceq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
     = Out:String
     if In:String := replace(
@@ -76,10 +75,22 @@ fmod TERMINATION-CHECKER is
                           "`", ""), 
                         "\\n", " "), 
                       "\\s", " ")
-    /\ Out:String := termCheck(TOOL, In:String, 30) 
+    /\ Out:String := replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
+                        termCheck(TOOL, In:String, 30),
+                        "@osb@", "`["), 
+                        "@csb@", "`]"), 
+                        "@ocb@", "`{"), 
+                        "@ccb@", "`}"), 
+                        "@opar@", "`("), 
+                        "@cpar@", "`)"), 
+                        "@semicolon@", ";"), 
+                        "@comma@", "`,"), 
+                        "@bq@", "`"), 
+                        "@underscore@", "_"), 
+                        "@vertical-bar@", "|") 
     /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String 
     /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
----)
+---(
   eq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL) 
     = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
         termCheck(
@@ -102,6 +113,7 @@ fmod TERMINATION-CHECKER is
           "@bq@", "`"), 
           "@underscore@", "_"), 
           "@vertical-bar@", "|") .
+---)
 endfm
 
 
