@@ -2548,6 +2548,7 @@ mod MFE-MTT is
   subsort MTTBroker < Tool . 
   op MTTBroker : -> MTTBroker [ctor] .
   op external-tool :_ : String -> Attribute [ctor gather (&)] .
+  op path :_ : Path -> Attribute [ctor gather (&)] .
  
   sort MTT .
   subsort MTT < Goal . 
@@ -2611,14 +2612,14 @@ mod MFE-MTT is
     = (to O from O' : ('check`termination`functional`part`..@Command@)) .
   eq (to O from O' : ('ctf_.[T]))
     = (to O from O' : ('check`termination`functional`part_.[T])) .
-  eq (to O from O' : ('ctu_.[T]))
-    = (to O from O' : ('check`termination`using_.[T])) .
-  eq (to O from O' : ('ctu__.[T, T']))
-    = (to O from O' : ('check`termination_using_.[T, T'])) .
-  eq (to O from O' : ('ctfu_.[T]))
-    = (to O from O' : ('check`termination`functional`part`using.[T])) .
-  eq (to O from O' : ('ctfu_.[T, T']))
-    = (to O from O' : ('check`termination`functional`part_using_.[T, T'])) .
+----  eq (to O from O' : ('ctu_.[T]))
+----    = (to O from O' : ('check`termination`using_.[T])) .
+----  eq (to O from O' : ('ctu__.[T, T']))
+----    = (to O from O' : ('check`termination_using_.[T, T'])) .
+----  eq (to O from O' : ('ctfu_.[T]))
+----    = (to O from O' : ('check`termination`functional`part`using.[T])) .
+----  eq (to O from O' : ('ctfu_.[T, T']))
+----    = (to O from O' : ('check`termination`functional`part_using_.[T, T'])) .
   
   ---- initialization
   rl init-mtt(TS)
@@ -2628,7 +2629,8 @@ mod MFE-MTT is
              current : null-oid, 
              index : 0, 
              reg : empty, 
-             external-tool : "external tool not selected" >
+             external-tool : "external tool not selected",
+             path : C;A(no-sorts);B >
        to TS["MFE"] from TS["MTT"] : output('\s '\s '\s '\s string2qidList(mtt-banner) '\n) .
 
 ---(
@@ -2687,15 +2689,21 @@ mod MFE-MTT is
     => < O : X@MTTBroker | external-tool : string(downQid(T)), Atts >
        (to O' from O : output(downQid(T) 'is 'now 'the 'current 'external 'tool. '\n)).
 
+  rl [mtt-select-path] :
+    < O : X@MTTBroker | path : P, Atts >
+    (to O from O' : 'select`path_.['token[T]])
+    => < O : X@MTTBroker | path : parsePath(T), Atts >
+       (to O' from O : output(string(parsePath(T)) 'is 'now 'the 'checking 'path. '\n)).
+
   ---- These rules take the messages with the terms resulting from the parsing
   ---- and send messages with the common syntax.
   crl
     < O : X@Controller | db : DB, default : MN, Atts > 
     < O' : X@MTTBroker | Atts' >
     (to O' from O'' : ('check`termination`..@Command@))
-    => < O : X@Controller | db : DB, default : MN, Atts > 
+    => < O : X@Controller | db : DB, default : MN, path : P, Atts > 
        < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M functional part false)
+       (to O' from O'' : check termination M using P functional part false)
     if < DB' ; ME > := evalModExp(MN, DB)
     /\ M := getFlatModule(ME, DB') .
   crl

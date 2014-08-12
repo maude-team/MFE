@@ -131,23 +131,24 @@ fmod MTT-SIGN is
 
   op check termination . : -> @Command@ .
   op check termination functional part . : -> @Command@ .
-  op check termination using_. : @Path@ -> @Command@ .
-  op check termination functional part using_. : @Path@ -> @Command@ .
+----  op check termination using_. : @Path@ -> @Command@ .
+----  op check termination functional part using_. : @Path@ -> @Command@ .
   op ct . : -> @Command@ .                                      ---- alias 
   op ctf . : -> @Command@ .                                     ---- alias 
-  op ctu_. : @Path@ -> @Command@ .                                      ---- alias 
-  op ctfu_. : @Path@ -> @Command@ .                                     ---- alias 
+----  op ctu_. : @Path@ -> @Command@ .                                      ---- alias 
+----  op ctfu_. : @Path@ -> @Command@ .                                     ---- alias 
   op check termination_. : @ModExp@ -> @Command@ .
   op check termination functional part_. : @ModExp@ -> @Command@ .
-  op check termination_using_. : @ModExp@ @Path@ -> @Command@ .
-  op check termination functional part_using_. : @ModExp@ @Path@ -> @Command@ .
+----  op check termination_using_. : @ModExp@ @Path@ -> @Command@ .
+----  op check termination functional part_using_. : @ModExp@ @Path@ -> @Command@ .
   op ct_. : @ModExp@ -> @Command@ .                             ---- alias
   op ctf_. : @ModExp@ -> @Command@ .                            ---- alias
-  op ctu__. : @ModExp@ @Path@ -> @Command@ .                             ---- alias
-  op ctfu__. : @ModExp@ @Path@ -> @Command@ .                            ---- alias
+----  op ctu__. : @ModExp@ @Path@ -> @Command@ .                             ---- alias
+----  op ctfu__. : @ModExp@ @Path@ -> @Command@ .                            ---- alias
   op show proof . : -> @Command@ .
   op select proof_. : @ModExp@ -> @Command@ .
   op select external tool_. : @Token@ -> @Command@ .
+  op select path_. : @Path@ -> @Command@ . 
   op trust . : -> @Command@ .
 endfm
 

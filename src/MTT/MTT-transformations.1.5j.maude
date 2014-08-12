@@ -1,21 +1,18 @@
----- owise attribute is not supported
----- if the (original) specification has mbs the tool doesn't work, only order-sorted case
-
 ******************************************************************************
 *** Transformation of Maude specs for the Maude Termination Tool (MTT) 
 ******************************************************************************
 ***                                             
-***                                             MTT specification version 1.5i
+***                                             MTT specification version 1.5j
 ***                                          To be run on Full Maude Alpha 103
 *** Author: Francisco Duran                     
-*** Last modified: January 1st, 2011
+*** Last modified: August 11th, 2014
 ***                                             
 ******************************************************************************
 
 fmod MTT-BANNER is 
   pr STRING .
   op mtt-banner : -> String .
-  eq mtt-banner = "Maude Termination Tool 1.5i - July 7th 2012" .
+  eq mtt-banner = "Maude Termination Tool 1.5j - August 11th 2014" .
 endfm
 
 ******************************************************************************
@@ -44,18 +41,37 @@ endfm
 ***     where <path> can be C;A;B, C;Uk;B, C;U;B, C;A, C;Uk, C;U, C;OS;B;O-L, 
 ***     C;OS;B;Uk, C;OS;B;U, C;OS;Uk;B, C;OS;U;B, OS;T;B;O-L, OS;T;B;Uk, OS;T;B;U, 
 ***     OS;T;Uk;B, or OS;T;U;B
+***  See IJCAR'08 paper (or other papers on the MTT) for details on these transformations.
 ***
+***               SRWT
+***              /    \
+***           C /      \ OS
+***            /        \
+***       SCS-MCTRS    OS-RWT
+***         /     \      /
+*** A,Uk,U /    OS \    / T
+***       /         \  /
+***  CS-CTRS <---- CS-OS-CTRS
+***      \    Uk,U   |
+***       \          | B
+***        \         |
+***       B \      CS-OS-TRS
+***          \      /
+***           \    / O-L,Uk,U
+***            \  /
+***           CS-TRS
+***  
 *** RESTRICTIONS:                                                          
 *** - Built-ins are not handled. This includes BOOL. The default importation
 ***   of BOOL is disabled at the end of this file.
-*** - AC and C are the only combinations of attributes supported
+*** - AC and C are the only combinations of attributes supported. Remove all 
+***   other attributes with the procedures described at FroCoS.
+*** - owise attribute is not supported
+*** - if the (original) specification has mbs the tool doesn't work, only order-sorted case
 ***
 *** TO DO
-*** - Allow the possibility of leaving the conditions when using AProVE
+*** - Allow the possibility of leaving the conditions when using AProVE or MuTerm
 ***   proc already supports it
-***
-*** TO DO (ON MTT)
-*** - Do not send to MU-TERM if no CS
 ***
 ******************************************************************************
 
@@ -93,6 +109,7 @@ fmod TPDB-SIGN is
   op OS;T;B;U : -> @Path@ .
   op OS;T;Uk;B : -> @Path@ .
   op OS;T;U;B : -> @Path@ .
+  
   
   op TPDB_and-optimization_context-sensitive_. : 
        @Path@ @Value@ @Value@ -> @Command@ .
