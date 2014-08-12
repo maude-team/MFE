@@ -22,6 +22,13 @@
 ---- - Add support for rechability properties
 
 ---- Latest changes
+---- - August 12th, 2014
+----   - The different transformtions available in MTT are now accesible from MFE. There are new commands 
+----     (show transformation graph .), (show current path .), and (select path <path> .) which, 
+----     respectively, shows the transformations available as a graph, shows the current checking path, 
+----     and sets the path to be used in termination checks.
+----   - Between the transformation paths available, any of them leading to a CTRS is supported (CS-CTRS 
+----     without strategies). Tools like AProVE and MuTerm are able to handle conditional rules directly. 
 ---- - July 22nd, 2014
 ----   - Bug in the error handling of the ITP. Errors on the parsing of input commands,
 ----     in particular handling the first goal on a wrong module, was not captured. 
@@ -281,6 +288,7 @@ mod MFE-PUBLIC-MESSAGES is
   op check termination_functional part_ : Module Bool -> MFEPublicMsgBody .
   op check termination_using_functional part_ : Module Path Bool -> MFEPublicMsgBody .
   op module_is terminating functional part_ : ModuleName Bool -> MFEPublicMsgBody .
+  op module_is non-terminating functional part_ : ModuleName Bool -> MFEPublicMsgBody .
   ---- the proof of termination may refer to the functional part of the module, which is specified by the Bool arg.
   
   ---- CRC messages 
@@ -629,6 +637,25 @@ mod MFE-CONTROLLER is
        then (to O from O' : output(mfe-success('The 'functional 'part 'of 'module eMetaPrettyPrint(MN) 'is 'terminating. '\n)))
        else (to O from O' : output(mfe-success('The 'module eMetaPrettyPrint(MN) 'is 'terminating. '\n))) 
        fi .
+  rl [out] :
+    < O : X@Controller | Atts >
+    (to O from O' : module MN is non-terminating functional part B) 
+    => < O : X@Controller | Atts > 
+       if B ---- functional part 
+       then (to O from O' : output(mfe-success('The 'functional 'part 'of 'module eMetaPrettyPrint(MN) 'is 'non-terminating. '\n)))
+       else (to O from O' : output(mfe-success('The 'module eMetaPrettyPrint(MN) 'is 'non-terminating. '\n))) 
+       fi .
+  rl [out] :
+    < O : X@Controller | Atts >
+    (to O from O' : module MN is sufficiently complete) 
+    => < O : X@Controller | Atts > 
+       (to O from O' : output(mfe-success('Module eMetaPrettyPrint(MN) 'is 'sufficiently 'complete. '\n))) .
+  rl [out] :
+    < O : X@Controller | Atts >
+    (to O from O' : module MN has free equational constructors) 
+    => < O : X@Controller | Atts > 
+       (to O from O' : output(mfe-success('Module eMetaPrettyPrint(MN) 'has 'free 'equational 'constructors. '\n))) .
+
   rl [out] :
     [QIL, 
      < O : X@Controller | db : DB, input : TL, output : (QI QIL'), default : ME, Atts >
@@ -1119,15 +1146,25 @@ mod MFE-CRC is
      (to O from O' : check sort-decreasingness M)
     = < O : X@CRCBroker | Atts >
       (to O from O' : crc(M, sort-decreasingness)) .
-
+      
   crl [crc-check] :
     ---- a module with the same name (perhaps the same module) was previously checked
     < OCRC : X@CRCBroker | tools : TS, reg : ((MN |-> O), MNReg), Atts >
-    < O : X@CRC | original-module : M', requester : OS, cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
+    < O : X@CRC | original-module : M', 
+                  requester : OS, confluence-requester : OS', sort-decreasingness-requester : OS'',
+                  cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
     (to OCRC from O' : crc(M, CRCCT))
     => if M == M' 
        then < OCRC : X@CRCBroker | tools : TS, reg : ((MN |-> O), MNReg), Atts >
-            < O : X@CRC | original-module : M', requester : (OS, O'), cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
+            < O : X@CRC | original-module : M', 
+                if CRCCT == Church-Rosser 
+                then requester : (OS, O'), confluence-requester : OS', sort-decreasingness-requester : OS''
+                else if CRCCT == confluence 
+                     then requester : OS, confluence-requester : (OS', O'), sort-decreasingness-requester : OS''
+                     else requester : OS, confluence-requester : OS', sort-decreasingness-requester : (OS'', O')
+                     fi
+                fi,
+                cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
             makeCRCmessage((OS, O') \ TS["MFE"], < O : X@CRC | module : M', requester : OS, cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >, CRCCT)
             to TS["MFE"] from O : 
                    output(
@@ -2248,33 +2285,30 @@ mod MFE-SCC is
    = nil [owise] .
   op auxShowStateSCC : Module SCCResult CFCResult Bool Bool Bool Bool Bool -> QidList .
   eq auxShowStateSCC(M,SCCRes,CFCRes,isSound,isComplete,B,B',B'')
-   =     'Sufficient 'completeness 'check 'for eMetaPrettyPrint(getName(M))  
-           if B''
-           then 'trusted! '\n
-           else
-             '\n '\t 'Completeness 'counter-examples:
-             (if SCCRes == complete
-             then 'none 'were 'found 
-             else 
-               if SCCRes == invalid-input 
-               then 'information 'not 'available
-               else getCounterExampleTerm(M,SCCRes)
-               fi
-             fi)
-				 '\n '\t 'Freeness 'counter-examples:
-             (if CFCRes == free
-             then 'none 'were 'found 
-             else
-               if CFCRes == invalid-input 
-               then 'information 'not 'available
-               else getCounterExampleTerm(M,CFCRes)
-               fi
-             fi)
-				 '\n '\t 'Analysis:
-             'it 'is (if isComplete then nil else 'not fi) 'complete 'and 'it 'is (if isSound then nil  else 'not fi) 'sound
-             '\n '\t 'Ground 'weak 'termination: (if B then nil else 'not fi) 'proved
-             '\n '\t 'Ground 'sort-decreasingness: (if B' then nil else 'not fi) 'proved '\n
-           fi .
+   = 'Sufficient 'completeness 'check 'for eMetaPrettyPrint(getName(M))  
+     if B''
+     then 'trusted! '\n
+     else '\n '\t 'Completeness 'counter-examples:
+          (if SCCRes == complete
+           then 'none 'were 'found 
+           else if SCCRes == invalid-input 
+                then 'information 'not 'available
+                else getCounterExampleTerm(M,SCCRes)
+                fi
+           fi)
+          '\n '\t 'Freeness 'counter-examples:
+          (if CFCRes == free
+           then 'none 'were 'found 
+           else if CFCRes == invalid-input 
+                then 'information 'not 'available
+                else getCounterExampleTerm(M,CFCRes)
+                fi
+           fi)
+          '\n '\t 'Analysis:
+          'it 'is (if isComplete then nil else 'not fi) 'complete 'and 'it 'is (if isSound then nil  else 'not fi) 'sound
+          '\n '\t 'Ground 'weak 'termination: (if B then nil else 'not fi) 'proved
+          '\n '\t 'Ground 'sort-decreasingness: (if B' then nil else 'not fi) 'proved '\n
+    fi .
 
   op getCounterExampleTerm : Module SCCResult -> QidList .
   eq getCounterExampleTerm(M,counterexample(T,S))
@@ -2482,17 +2516,15 @@ mod MFE-SCC is
     < O' : X@SCC | module : M, requesters : OS, trusted : B, Atts' > 
     (to O from O'' : ('trust`..@Command@))
     => < O : X@SCCBroker | current : O', tools : TS, Atts >
-    < O' : X@SCC | module : M, requesters : OS, trusted : true, Atts' > 
-    (to TS["MFE"] from O' : output('Module eMetaPrettyPrint(getName(M)) 'is 'trusted 'to 'be 'sufficiently 'complete. '\n))
-     if B == true
-     then 
-       none
-     else
-       (to OS from O' : module getName(M) is sufficiently complete)
-       (to OS from O' : module getName(M) has free equational constructors)
-     fi .
+       < O' : X@SCC | module : M, requesters : OS, trusted : true, Atts' > 
+       (to TS["MFE"] from O' : output('Module eMetaPrettyPrint(getName(M)) 'is 'trusted 'to 'be 'sufficiently 'complete. '\n))
+       if B == true
+       then none
+       else (to OS from O' : module getName(M) is sufficiently complete)
+            (to OS from O' : module getName(M) has free equational constructors)
+       fi .
 
- crl [scc-select] :
+  crl [scc-select] :
     < O : X@SCCBroker | current : O', reg : (MN |-> O'', MNReg), Atts > 
     (to O from O''' : 'SCC`select_.[T])
     => < O : X@SCCBroker |  current : O'', reg : (MN |-> O'', MNReg), Atts >
@@ -2612,14 +2644,6 @@ mod MFE-MTT is
     = (to O from O' : ('check`termination`functional`part`..@Command@)) .
   eq (to O from O' : ('ctf_.[T]))
     = (to O from O' : ('check`termination`functional`part_.[T])) .
-----  eq (to O from O' : ('ctu_.[T]))
-----    = (to O from O' : ('check`termination`using_.[T])) .
-----  eq (to O from O' : ('ctu__.[T, T']))
-----    = (to O from O' : ('check`termination_using_.[T, T'])) .
-----  eq (to O from O' : ('ctfu_.[T]))
-----    = (to O from O' : ('check`termination`functional`part`using.[T])) .
-----  eq (to O from O' : ('ctfu_.[T, T']))
-----    = (to O from O' : ('check`termination`functional`part_using_.[T, T'])) .
   
   ---- initialization
   rl init-mtt(TS)
@@ -2630,7 +2654,7 @@ mod MFE-MTT is
              index : 0, 
              reg : empty, 
              external-tool : "external tool not selected",
-             path : C;A(no-sorts);B >
+             path : C;A;B(no-sorts) >
        to TS["MFE"] from TS["MTT"] : output('\s '\s '\s '\s string2qidList(mtt-banner) '\n) .
 
 ---(
@@ -2691,18 +2715,48 @@ mod MFE-MTT is
 
   rl [mtt-select-path] :
     < O : X@MTTBroker | path : P, Atts >
-    (to O from O' : 'select`path_.['token[T]])
+    (to O from O' : 'select`path_.[T])
     => < O : X@MTTBroker | path : parsePath(T), Atts >
-       (to O' from O : output(string(parsePath(T)) 'is 'now 'the 'checking 'path. '\n)).
+       (to O' from O : output(qid(string(parsePath(T))) 'is 'now 'the 'checking 'path. '\n)).
+
+  rl [mtt-show-path] :
+    < O : X@MTTBroker | path : P, Atts >
+    (to O from O' : 'show`current`path`..@Command@)
+    => < O : X@MTTBroker | path : P, Atts >
+       (to O' from O : output('The 'current 'path 'for 'termination 'checks 'is qid(string(P)) '\n)).
+
+  rl [mtt-show-graph] :
+    < O : X@MTTBroker | Atts >
+    (to O from O' : 'show`transformation`graph`..@Command@)
+    => < O : X@MTTBroker | Atts >
+       (to O' from O : output('The 'transformation 'graph 'is '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s 'SRWT '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '/ '\s '\s '\s '\\ '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s 'C '\s '/ '\s '\s '\s '\s '\s '\\ 'OS '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '/ '\s '\s '\s '\s '\s '\s '\s '\\ '\n
+        '\s '\s '\s '\s '\s '\s '\s 'SCS-MCTRS '\s '\s '\s 'OS-RWT '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '/ '\s '\s '\s '\s '\\ '\s '\s '\s '\s '\s '/ '\n
+        '\s 'A 'Uk 'U '/ '\s '\s '\s 'OS '\\ '\s '\s '\s '/ 'T '\n
+        '\s '\s '\s '\s '\s '\s '\s '/ '\s '\s '\s '\s '\s '\s '\s '\s '\\ '\s '/ '\n
+        '\s '\s 'CS-CTRS '<---- 'CS-OS-CTRS '\n
+        '\s '\s '\s '\s '\s '\s '\\ '\s '\s '\s '\s 'Uk 'U '\s '\s '| '\n
+        '\s '\s '\s '\s '\s '\s '\s '\\ '\s '\s '\s '\s '\s '\s '\s '\s '\s '| 'B '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\\ '\s '\s '\s '\s '\s '\s '\s '\s '| '\n
+        '\s '\s '\s '\s '\s '\s '\s 'B '\\ '\s '\s '\s '\s '\s 'CS-OS-TRS '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\\ '\s '\s '\s '\s '\s '/ '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\\ '\s '\s '\s '/ 'O-L 'Uk 'U '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\\ '\s '/ '\n
+        '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s '\s 'CS-TRS '\n
+        '\n)).
 
   ---- These rules take the messages with the terms resulting from the parsing
   ---- and send messages with the common syntax.
   crl
     < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
+    < O' : X@MTTBroker | path : P, Atts' >
     (to O' from O'' : ('check`termination`..@Command@))
-    => < O : X@Controller | db : DB, default : MN, path : P, Atts > 
-       < O' : X@MTTBroker | Atts' >
+    => < O : X@Controller | db : DB, default : MN, Atts > 
+       < O' : X@MTTBroker | path : P, Atts' >
        (to O' from O'' : check termination M using P functional part false)
     if < DB' ; ME > := evalModExp(MN, DB)
     /\ M := getFlatModule(ME, DB') .
@@ -2718,11 +2772,11 @@ mod MFE-MTT is
 
   crl
     < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
+    < O' : X@MTTBroker | path : P, Atts' >
     (to O' from O'' : ('check`termination`functional`part`..@Command@))
     => < O : X@Controller | db : DB, default : MN, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M functional part true)
+       < O' : X@MTTBroker | path : P, Atts' >
+       (to O' from O'' : check termination M using P functional part true)
     if < DB' ; ME > := evalModExp(MN, DB)
     /\ M := getFlatModule(ME, DB') .
   crl
@@ -2737,11 +2791,11 @@ mod MFE-MTT is
 
   crl
     < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
+    < O' : X@MTTBroker | path : P, Atts' >
     (to O' from O'' : ('check`termination_.[T]))
     => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M functional part false)
+       < O' : X@MTTBroker | path : P, Atts' >
+       (to O' from O'' : check termination M using P functional part false)
     if ME := parseModExp(T)
     /\ < DB' ; ME' > := evalModExp(ME, DB)
     /\ M := getFlatModule(ME', DB') .
@@ -2758,11 +2812,11 @@ mod MFE-MTT is
 
   crl [check-termination-command] :
     < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
+    < O' : X@MTTBroker | path : P, Atts' >
     (to O' from O'' : ('check`termination`functional`part_.[T]))
     => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M functional part true)
+       < O' : X@MTTBroker | path : P, Atts' >
+       (to O' from O'' : check termination M using P functional part true)
     if ME := parseModExp(T)
     /\ < DB' ; ME' > := evalModExp(ME, DB)
     /\ M := getFlatModule(ME', DB') .
@@ -2775,86 +2829,6 @@ mod MFE-MTT is
        (to O'' from O' : toolError(QIL))
     if ME := parseModExp(T)
     /\ < DB' ; ME' > := evalModExp(ME, DB)
-    /\ unitError(QIL) := getFlatModule(ME', DB') .
-
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`functional`part_using_.[T, T']))
-    => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M using parsePath(T) functional part true)
-    if ME := parseModExp(T')
-    /\ < DB' ; ME' > := evalModExp(ME, DB)
-    /\ M := getFlatModule(ME', DB') .
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`functional`part_using_.[T, T']))
-    => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O'' from O' : toolError(QIL))
-    if ME := parseModExp(T')
-    /\ < DB' ; ME' > := evalModExp(ME, DB)
-    /\ unitError(QIL) := getFlatModule(ME', DB') .
-
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`functional`part`using_.[T]))
-    => < O : X@Controller | db : DB, default : MN, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M using parsePath(T) functional part true)
-    if < DB' ; ME' > := evalModExp(MN, DB)
-    /\ M := getFlatModule(ME', DB') .
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`functional`part`using_.[T]))
-    => < O : X@Controller | db : DB, default : MN, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O'' from O' : toolError(QIL))
-    if < DB' ; ME' > := evalModExp(MN, DB)
-    /\ unitError(QIL) := getFlatModule(ME', DB') .
-
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination_using_.[T, T']))
-    => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M using parsePath(T) functional part false)
-    if ME := parseModExp(T')
-    /\ < DB' ; ME' > := evalModExp(ME, DB)
-    /\ M := getFlatModule(ME', DB') .
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination_using_.[T, T']))
-    => < O : X@Controller | db : DB, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O'' from O' : toolError(QIL))
-    if ME := parseModExp(T')
-    /\ < DB' ; ME' > := evalModExp(ME, DB)
-    /\ unitError(QIL) := getFlatModule(ME', DB') .
-
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`using_.[T]))
-    => < O : X@Controller | db : DB, default : MN, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O' from O'' : check termination M using parsePath(T) functional part false)
-    if < DB' ; ME' > := evalModExp(MN, DB)
-    /\ M := getFlatModule(ME', DB') .
-  crl [check-termination-command] :
-    < O : X@Controller | db : DB, default : MN, Atts > 
-    < O' : X@MTTBroker | Atts' >
-    (to O' from O'' : ('check`termination`using_.[T]))
-    => < O : X@Controller | db : DB, default : MN, Atts > 
-       < O' : X@MTTBroker | Atts' >
-       (to O'' from O' : toolError(QIL))
-    if < DB' ; ME' > := evalModExp(MN, DB)
     /\ unitError(QIL) := getFlatModule(ME', DB') .
 
   op parsePath : Term ~> Path .
@@ -2864,7 +2838,7 @@ mod MFE-MTT is
   eq parsePath('C;A.@Path@) = C;A(complete) .
   eq parsePath('C;Uk.@Path@) = C;A(no-kinds) .
   eq parsePath('C;U.@Path@) = C;A(no-sorts) .
-  eq parsePath('C;OS;B;O-L.@Path@) = C;OS;B;O;L .
+  eq parsePath('C;OS;B;O-L.@Path@) = C;OS;B;O-L .
   eq parsePath('C;OS;B;Uk.@Path@) = C;OS;B;A(no-kinds) .
   eq parsePath('C;OS;B;U.@Path@) = C;OS;B;A(no-sorts) .
   eq parsePath('C;OS;Uk;B.@Path@) = C;OS;A;B(no-kinds) .
@@ -2875,8 +2849,10 @@ mod MFE-MTT is
   eq parsePath('OS;T;Uk;B.@Path@) = OS;T;A;B(no-kinds) .
   eq parsePath('OS;T;U;B.@Path@) = OS;T;A;B(no-sorts) .
 
-  eq (to O from O' : check termination M functional part B)
-    = (to O from O' : check termination M using C;A;B(no-sorts) functional part B) .
+  eq < O : X@MTTBroker | path : P, Atts > 
+     (to O from O' : check termination M functional part B)
+    = < O : X@MTTBroker | path : P, Atts >
+      (to O from O' : check termination M using P functional part B) .
     
   ---- Depending on whether a module with the name of the module has previously been
   ---- checked or not the module is directly checked or it is checked after 
@@ -2886,12 +2862,12 @@ mod MFE-MTT is
     < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
     < O' : X@MTT | requester : OS, module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
     (to O from O''' : check termination M' using P functional part B')
-    => if (B == false or-else B == B') and-then M == M' ---- a different proof might also be attempted
+    => if (B == false or-else B == B') and-then M == M' and-then 3B =/= maybe
        then < O : X@MTTBroker | tools : TS, reg : ((MN |-> O'), MNReg), Atts >
             < O' : X@MTT | requester : (OS, O'''), module : M, terminating : 3B, proof : Str, functional-part : B, Atts' >
-            if 3B == true
+            if 3B == true ---- 3B =/= maybe
             then (to O''' from O : module MN is terminating functional part B')
-            else (to TS["MFE"] from O : output('The 'MTT 'proof 'for eMetaPrettyPrint(getName(M')) 'is 'still 'open. '\n))
+            else (to O''' from O : module MN is non-terminating functional part B')
             fi
        else ---- The MTT object is removed
             (to TS["MFE"] from O : output('The 'MTT 'proof 'for eMetaPrettyPrint(getName(M')) 'has 'been 'reset. '\n))
@@ -2905,7 +2881,11 @@ mod MFE-MTT is
     < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >
     (to O from O' : check termination M using P functional part B)
     => if mtt-hook
-       then applyMTTresult(O', < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >, M, terminationCheck(eraseRls(M), P, false, false, TOOL), B) 
+       then applyMTTresult(O', 
+              < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >, 
+              M, 
+              terminationCheck(eraseRls(M), P, false, false, TOOL), 
+              B) 
        else applyMTTDummyresult(O', < O : X@MTTBroker | reg : MNReg, external-tool : TOOL, Atts >, M, B) 
        fi
     if not getName(M) in domain of MNReg .

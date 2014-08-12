@@ -70,9 +70,10 @@ endfm
 *** - if the (original) specification has mbs the tool doesn't work, only order-sorted case
 ***
 *** TO DO
-*** - Allow the possibility of leaving the conditions when using AProVE or MuTerm
-***   proc already supports it
-***
+*** - show path
+*** - select path
+*** - allows submitting CTRS (CS-CTRS without strategies) to termination tools
+*** 
 ******************************************************************************
 
 set show loop stats off .
@@ -180,10 +181,23 @@ fmod MTT-PRELIMINARIES is
   
   sorts Path TransfType .
   ops C;A;B C;OS;A;B OS;T;A;B C;A OS;T;B;A C;OS;B;A : TransfType -> Path .
-  ops C;OS;B;O;L OS;T;B;O-L : -> Path . 
-  
+  ops C;OS;B;O-L OS;T;B;O-L : -> Path .
   ops complete no-sorts no-kinds : -> TransfType .
-
+  
+  op string : Path -> String .
+  op string : TransfType -> String .
+  eq string(C;A;B(TT:TransfType)) = "C;" + string(TT:TransfType) + ";B" . 
+  eq string(C;OS;A;B(TT:TransfType)) = "C;OS;" + string(TT:TransfType) + ";B" . 
+  eq string(OS;T;A;B(TT:TransfType)) = "OS;T;" + string(TT:TransfType) + ";B" . 
+  eq string(C;A(TT:TransfType)) = "C;" + string(TT:TransfType) . 
+  eq string(OS;T;B;A(TT:TransfType)) = "OS;T;B;" + string(TT:TransfType) .
+  eq string(C;OS;B;A(TT:TransfType)) = "C;OS;B;" + string(TT:TransfType) .
+  eq string(C;OS;B;O-L) = "C;OS;B;O-L" .
+  eq string(OS;T;B;O-L) = "OS;T;B;O-L" .
+  eq string(complete) = "A" .
+  eq string(no-kinds) = "Uk" .
+  eq string(no-sorts) = "U" .
+  
   op vars : Term -> QidSet .
   op vars : Condition -> QidSet .
   op vars : RuleSet -> QidSet .
@@ -2664,8 +2678,10 @@ fmod PROCESS is
   vars M M' : Module .
   var  DTT : TransfType .
   var  AND : Bool .
+  var  QIL : QidList .
 
   op proc : Module Path Bool -> Module .
+  eq proc(unitError(QIL), P:Path, AND) = unitError(QIL) .  
  ceq proc(M, C;A;B(DTT), AND) 
     = if AND then and-optimization(M') else M' fi
     if M' := filterTPDB(
@@ -2681,7 +2697,7 @@ fmod PROCESS is
                  scs-mctrs2cs-mctrs(
                    srwt2scs-mctrs(M)), 
                  DTT)) .
- ceq proc(M, C;OS;B;O;L, AND) 
+ ceq proc(M, C;OS;B;O-L, AND) 
     = if AND then and-optimization(M') else M' fi
     if M' := filterTPDB(
                cs-ostrs2cs-trs(
@@ -2766,7 +2782,7 @@ fmod PROC-TPDB is
   op $procTPDB : Module Path Bool Bool -> QidList .
   ---- 2nd arg. proof path
   ----          C;A;B(complete/no-sorts/no-kinds)
-  ----          C;OS;B;O;L
+  ----          C;OS;B;O-L
   ----          C;OS;B;A(no-sorts)
   ----          C;OS;A;B(no-sorts/no-kinds)
   ---- 3er arg. true -> conditions are processed 
@@ -2855,6 +2871,7 @@ fmod PROC-TPDB is
     = mod MN is nil sorts filterMaude(SS) . filterMaude(SSDS) filterMaude(OPDS) filterMaude(MAS) filterMaude(EqS) filterMaude(RlS) endm .
   eq filterMaude(fmod MN is nil sorts SS . SSDS OPDS MAS EqS endfm) 
     = fmod MN is nil sorts filterMaude(SS) . filterMaude(SSDS) filterMaude(OPDS) filterMaude(MAS) filterMaude(EqS) endfm .
+  eq filterMaude(unitError(QIL)) = unitError(QIL) .
 
  ceq filterMaude(F ; FS) = filterMaude(F) ; filterMaude(FS) if FS =/= none .
   eq filterMaude((none).QidSet) = none .
@@ -3138,7 +3155,7 @@ mod TPDB-DATABASE-HANDLING is
   eq parsePath('C;A.@Path@) = C;A(complete) .
   eq parsePath('C;Uk.@Path@) = C;A(no-kinds) .
   eq parsePath('C;U.@Path@) = C;A(no-sorts) .
-  eq parsePath('C;OS;B;O-L.@Path@) = C;OS;B;O;L .
+  eq parsePath('C;OS;B;O-L.@Path@) = C;OS;B;O-L .
   eq parsePath('C;OS;B;Uk.@Path@) = C;OS;B;A(no-kinds) .
   eq parsePath('C;OS;B;U.@Path@) = C;OS;B;A(no-sorts) .
   eq parsePath('C;OS;Uk;B.@Path@) = C;OS;A;B(no-kinds) .

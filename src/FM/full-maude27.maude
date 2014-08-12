@@ -19752,6 +19752,7 @@ fmod MODULE-VARIANTS is
            fi
       else M
       fi .
+  eq removeLonelyAssocs(unitError(QIL:QidList)) = unitError(QIL:QidList) .
   
   ceq $removeLonelyAssocs(op F : Tp Tp -> Tp [assoc AtS] . OPDS)
     = op F : Tp Tp -> Tp [AtS] . $removeLonelyAssocs(OPDS)
