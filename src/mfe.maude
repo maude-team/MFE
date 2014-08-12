@@ -23,7 +23,7 @@
 
 ---- Latest changes
 ---- - August 12th, 2014
-----   - The different transformtions available in MTT are now accesible from MFE. There are new commands 
+----   - The different transformations available in MTT are now accesible from MFE. There are new commands 
 ----     (show transformation graph .), (show current path .), and (select path <path> .) which, 
 ----     respectively, shows the transformations available as a graph, shows the current checking path, 
 ----     and sets the path to be used in termination checks.

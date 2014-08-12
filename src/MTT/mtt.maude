@@ -60,7 +60,7 @@ fmod MTT-HELP is
 
       '\t string2qidList("(select path <path> .)") '\n
       '\t '\t string2qidList("sets the path to be used in termination checks") '\n 
-      '\t '\t string2qidList("(use the show-transformation-graph command for the avaivlable transfomations).") '\n 
+      '\t '\t string2qidList("(use the show-transformation-graph command for the available transformations).") '\n 
 
       '\t string2qidList("(trust .)") '\n
       '\t '\t string2qidList("Assumes that the current module has been proved terminating.") '\n .
