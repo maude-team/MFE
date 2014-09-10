@@ -1,0 +1,811 @@
+Maude> cont .
+rewrites: 0 in 0ms cpu (0ms real) (~ rewrites/second)
+result System: [nil,< mfe : Controller | db : 
+db(
+  < 'META-MODULE ;
+     fmod 'META-MODULE is
+       protecting 'META-TERM .
+       protecting 'NAT-LIST .
+       protecting 'QID-LIST .
+       protecting 'QID-SET * (
+         op '_`,_ to '_;_ [prec(43)],
+         op 'empty to 'none [none]
+       ) .
+       including 'QID-LIST .
+       including 'MOD-EXPRS .
+       sorts 'Attr ; 'AttrSet ; 'Condition ; 'EmptyCommaList ; 'EmptyTypeSet ;
+    'EqCondition ; 'Equation ; 'EquationSet ; 'FModule ; 'FTheory ; 'Header ;
+    'Hook ; 'HookList ; 'Import ; 'ImportList ; 'KindSet ; 'MembAx ; 'MembAxSet
+    ; 'Module ; 'ModuleExpression ; 'NeHookList ; 'NeKindSet ;
+    'NeParameterDeclList ; 'NeParameterList ; 'NeSortSet ; 'NeTypeList ;
+    'NeTypeSet ; 'OpDecl ; 'OpDeclSet ; 'ParameterDecl ; 'ParameterDeclList ;
+    'ParameterList ; 'Renaming ; 'RenamingSet ; 'Rule ; 'RuleSet ; 'SModule ;
+    'STheory ; 'SortSet ; 'SubsortDecl ; 'SubsortDeclSet ; 'TypeList ;
+    'TypeListSet ; 'TypeSet .
+       subsort 'Attr < 'AttrSet .
+       subsort 'EmptyCommaList < 'GroundTermList .
+       subsort 'EmptyCommaList < 'ParameterList .
+       subsort 'EmptyTypeSet < 'KindSet .
+       subsort 'EmptyTypeSet < 'SortSet .
+       subsort 'EqCondition < 'Condition .
+       subsort 'Equation < 'EquationSet .
+       subsort 'FModule < 'SModule .
+       subsort 'FTheory < 'STheory .
+       subsort 'Hook < 'NeHookList .
+       subsort 'Import < 'ImportList .
+       subsort 'Kind < 'NeKindSet .
+       subsort 'KindSet < 'TypeSet .
+       subsort 'MembAx < 'MembAxSet .
+       subsort 'NeHookList < 'HookList .
+       subsort 'NeKindSet < 'KindSet .
+       subsort 'NeKindSet < 'NeTypeSet .
+       subsort 'NeParameterDeclList < 'ParameterDeclList .
+       subsort 'NeParameterList < 'ParameterList .
+       subsort 'NeSortSet < 'NeTypeSet .
+       subsort 'NeSortSet < 'SortSet .
+       subsort 'NeTypeList < 'NeQidList .
+       subsort 'NeTypeList < 'TypeList .
+       subsort 'NeTypeSet < 'NeQidSet .
+       subsort 'NeTypeSet < 'TypeSet .
+       subsort 'OpDecl < 'OpDeclSet .
+       subsort 'ParameterDecl < 'NeParameterDeclList .
+       subsort 'Qid < 'Header .
+       subsort 'Qid < 'ModuleExpression .
+       subsort 'Renaming < 'RenamingSet .
+       subsort 'Rule < 'RuleSet .
+       subsort 'SModule < 'Module .
+       subsort 'STheory < 'Module .
+       subsort 'Sort < 'NeParameterList .
+       subsort 'Sort < 'NeSortSet .
+       subsort 'SortSet < 'TypeSet .
+       subsort 'SubsortDecl < 'SubsortDeclSet .
+       subsort 'Type < 'NeTypeList .
+       subsort 'Type < 'NeTypeSet .
+       subsort 'TypeList < 'QidList .
+       subsort 'TypeList < 'TypeListSet .
+       subsort 'TypeSet < 'QidSet .
+       subsort 'TypeSet < 'TypeListSet .
+       op '_*`(_`) : 'ModuleExpression 'RenamingSet -> 'ModuleExpression [ctor
+    prec(39) format('d 'd 's 'n++i 'n--i 'd)] .
+       op '_+_ : 'ModuleExpression 'ModuleExpression -> 'ModuleExpression [
+    assoc comm ctor] .
+       op '_/\_ : 'Condition 'Condition -> 'Condition [assoc ctor id(
+    'nil.EqCondition) prec(73)] .
+       op '_/\_ : 'EqCondition 'EqCondition -> 'EqCondition [assoc ctor id(
+    'nil.EqCondition) prec(73)] .
+       op '_::_ : 'Sort 'ModuleExpression -> 'ParameterDecl [none] .
+       op '_:=_ : 'Term 'Term -> 'EqCondition [ctor prec(71)] .
+       op '_:_ : 'Term 'Sort -> 'EqCondition [ctor prec(71)] .
+       op '_;_ : 'EmptyTypeSet 'EmptyTypeSet -> 'EmptyTypeSet [assoc comm ctor
+    id('none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'KindSet 'KindSet -> 'KindSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'NeKindSet 'KindSet -> 'NeKindSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'NeSortSet 'SortSet -> 'NeSortSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'NeTypeSet 'TypeSet -> 'NeTypeSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'SortSet 'SortSet -> 'SortSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'TypeListSet 'TypeListSet -> 'TypeListSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_;_ : 'TypeSet 'TypeSet -> 'TypeSet [assoc comm ctor id(
+    'none.EmptyTypeSet) prec(43)] .
+       op '_=>_ : 'Term 'Term -> 'Condition [ctor prec(71)] .
+       op '_=_ : 'Term 'Term -> 'EqCondition [ctor prec(71)] .
+       op '__ : 'AttrSet 'AttrSet -> 'AttrSet [assoc comm ctor id(
+    'none.AttrSet)] .
+       op '__ : 'EquationSet 'EquationSet -> 'EquationSet [assoc comm ctor id(
+    'none.EquationSet) format('d 'ni 'd)] .
+       op '__ : 'HookList 'HookList -> 'HookList [assoc ctor id('nil.HookList)]
+    .
+       op '__ : 'HookList 'NeHookList -> 'NeHookList [assoc ctor id(
+    'nil.HookList)] .
+       op '__ : 'ImportList 'ImportList -> 'ImportList [assoc ctor id(
+    'nil.ImportList) format('d 'ni 'd)] .
+       op '__ : 'MembAxSet 'MembAxSet -> 'MembAxSet [assoc comm ctor id(
+    'none.MembAxSet) format('d 'ni 'd)] .
+       op '__ : 'NeHookList 'HookList -> 'NeHookList [assoc ctor id(
+    'nil.HookList)] .
+       op '__ : 'NeTypeList 'TypeList -> 'NeTypeList [assoc ctor id(
+    'nil.TypeList) prec(25)] .
+       op '__ : 'OpDeclSet 'OpDeclSet -> 'OpDeclSet [assoc comm ctor id(
+    'none.OpDeclSet) format('d 'ni 'd)] .
+       op '__ : 'RuleSet 'RuleSet -> 'RuleSet [assoc comm ctor id(
+    'none.RuleSet) format('d 'ni 'd)] .
+       op '__ : 'SubsortDeclSet 'SubsortDeclSet -> 'SubsortDeclSet [assoc comm
+    ctor id('none.SubsortDeclSet) format('d 'ni 'd)] .
+       op '__ : 'TypeList 'NeTypeList -> 'NeTypeList [assoc ctor id(
+    'nil.TypeList) prec(25)] .
+       op '__ : 'TypeList 'TypeList -> 'TypeList [assoc ctor id('nil.TypeList)
+    prec(25)] .
+       op '_`,_ : 'EmptyCommaList 'EmptyCommaList -> 'EmptyCommaList [assoc
+    ctor id('empty.EmptyCommaList) prec(121) gather('e 'E)] .
+       op '_`,_ : 'NeParameterDeclList 'ParameterDeclList ->
+    'NeParameterDeclList [assoc ctor id('nil.ParameterDeclList) prec(121)] .
+       op '_`,_ : 'NeParameterList 'ParameterList -> 'NeParameterList [assoc
+    ctor id('empty.EmptyCommaList) prec(121) gather('e 'E)] .
+       op '_`,_ : 'ParameterDeclList 'NeParameterDeclList ->
+    'NeParameterDeclList [assoc ctor id('nil.ParameterDeclList) prec(121)] .
+       op '_`,_ : 'ParameterDeclList 'ParameterDeclList -> 'ParameterDeclList [
+    assoc ctor id('nil.ParameterDeclList) prec(121)] .
+       op '_`,_ : 'ParameterList 'NeParameterList -> 'NeParameterList [assoc
+    ctor id('empty.EmptyCommaList) prec(121) gather('e 'E)] .
+       op '_`,_ : 'ParameterList 'ParameterList -> 'ParameterList [assoc ctor
+    id('empty.EmptyCommaList) prec(121) gather('e 'E)] .
+       op '_`,_ : 'RenamingSet 'RenamingSet -> 'RenamingSet [assoc comm ctor
+    prec(43) format('d 'd 'ni 'd)] .
+       op '_`{_`} : 'ModuleExpression 'ParameterList -> 'ModuleExpression [ctor
+    prec(37)] .
+       op '_`{_`} : 'Qid 'ParameterDeclList -> 'Header [ctor] .
+       op '`[_`] : '@Token@ -> 'Module [none] .
+       op '`[_`] : 'Qid -> 'Module [none] .
+       op 'assoc : nil -> 'Attr [ctor] .
+       op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+       op 'ceq_=_if_`[_`]. : 'Term 'Term 'EqCondition 'AttrSet -> 'Equation [
+    ctor format('d 'd 'd 'd 'd 'd 's 'd 'd 's 'd)] .
+       op 'cmb_:_if_`[_`]. : 'Term 'Sort 'EqCondition 'AttrSet -> 'MembAx [ctor
+    format('d 'd 'd 'd 'd 'd 's 'd 'd 's 'd)] .
+       op 'comm : nil -> 'Attr [ctor] .
+       op 'config : nil -> 'Attr [ctor] .
+       op 'crl_=>_if_`[_`]. : 'Term 'Term 'Condition 'AttrSet -> 'Rule [ctor
+    format('d 'd 'd 'd 'd 'd 's 'd 'd 's 'd)] .
+       op 'ctor : nil -> 'Attr [ctor] .
+       op 'empty : nil -> 'EmptyCommaList [ctor] .
+       op 'eq_=_`[_`]. : 'Term 'Term 'AttrSet -> 'Equation [ctor format('d 'd
+    'd 'd 's 'd 'd 's 'd)] .
+       op 'extending_. : 'ModuleExpression -> 'Import [ctor] .
+       op 'fmod_is_sorts_.____endfm : 'Header 'ImportList 'SortSet
+    'SubsortDeclSet 'OpDeclSet 'MembAxSet 'EquationSet -> 'FModule [ctor
+    gather('& '& '& '& '& '& '&) format('d 'd 's 'n++i 'ni 'd 'd 'ni 'ni 'ni
+    'ni 'n--i 'd)] .
+       op 'format : 'QidList -> 'Attr [ctor] .
+       op 'frozen : 'NeNatList -> 'Attr [ctor] .
+       op 'fth_is_sorts_.____endfth : 'Qid 'ImportList 'SortSet 'SubsortDeclSet
+    'OpDeclSet 'MembAxSet 'EquationSet -> 'FTheory [ctor gather('& '& '& '& '&
+    '& '&) format('d 'd 'd 'n++i 'ni 'd 'd 'ni 'ni 'ni 'ni 'n--i 'd)] .
+       op 'gather : 'QidList -> 'Attr [ctor] .
+       op 'getEqs : 'Module -> 'EquationSet [none] .
+       op 'getImports : 'Module -> 'ImportList [none] .
+       op 'getMbs : 'Module -> 'MembAxSet [none] .
+       op 'getName : 'Module -> 'Qid [none] .
+       op 'getOps : 'Module -> 'OpDeclSet [none] .
+       op 'getRls : 'Module -> 'RuleSet [none] .
+       op 'getSorts : 'Module -> 'SortSet [none] .
+       op 'getSubsorts : 'Module -> 'SubsortDeclSet [none] .
+       op 'id : 'Term -> 'Attr [ctor] .
+       op 'id-hook : 'Qid 'QidList -> 'Hook [ctor format('nssss 'd)] .
+       op 'idem : nil -> 'Attr [ctor] .
+       op 'including_. : 'ModuleExpression -> 'Import [ctor] .
+       op 'iter : nil -> 'Attr [ctor] .
+       op 'label : 'Qid -> 'Attr [ctor] .
+       op 'label_to_ : 'Qid 'Qid -> 'Renaming [ctor] .
+       op 'left-id : 'Term -> 'Attr [ctor] .
+       op 'mb_:_`[_`]. : 'Term 'Sort 'AttrSet -> 'MembAx [ctor format('d 'd 'd
+    'd 's 'd 'd 's 'd)] .
+       op 'memo : nil -> 'Attr [ctor] .
+       op 'metadata : 'String -> 'Attr [ctor] .
+       op 'mod_is_sorts_._____endm : 'Header 'ImportList 'SortSet
+    'SubsortDeclSet 'OpDeclSet 'MembAxSet 'EquationSet 'RuleSet -> 'SModule [
+    ctor gather('& '& '& '& '& '& '& '&) format('d 'd 's 'n++i 'ni 'd 'd 'ni
+    'ni 'ni 'ni 'ni 'n--i 'd)] .
+       op 'msg : nil -> 'Attr [ctor] .
+       op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+       op 'nil : nil -> 'EqCondition [ctor] .
+       op 'nil : nil -> 'HookList [ctor] .
+       op 'nil : nil -> 'ImportList [ctor] .
+       op 'nil : nil -> 'ParameterDeclList [ctor] .
+       op 'nil : nil -> 'TypeList [ctor] .
+       op 'none : nil -> 'AttrSet [ctor] .
+       op 'none : nil -> 'EmptyTypeSet [ctor] .
+       op 'none : nil -> 'EquationSet [ctor] .
+       op 'none : nil -> 'MembAxSet [ctor] .
+       op 'none : nil -> 'OpDeclSet [ctor] .
+       op 'none : nil -> 'RuleSet [ctor] .
+       op 'none : nil -> 'SubsortDeclSet [ctor] .
+       op 'nonexec : nil -> 'Attr [ctor] .
+       op 'object : nil -> 'Attr [ctor] .
+       op 'op-hook : 'Qid 'Qid 'QidList 'Qid -> 'Hook [ctor format('nssss 'd)]
+    .
+       op 'op_:_->_`[_`]. : 'Qid 'TypeList 'Type 'AttrSet -> 'OpDecl [ctor
+    format('d 'd 'd 'd 'd 'd 's 'd 'd 's 'd)] .
+       op 'op_:_->_to_`[_`] : 'Qid 'TypeList 'Type 'Qid 'AttrSet -> 'Renaming [
+    ctor format('d 'd 'd 'd 'd 'd 'd 'd 's 'd 'd 'd)] .
+       op 'op_to_`[_`] : 'Qid 'Qid 'AttrSet -> 'Renaming [ctor format('d 'd 'd
+    'd 's 'd 'd 'd)] .
+       op 'owise : nil -> 'Attr [ctor] .
+       op 'poly : 'NeNatList -> 'Attr [ctor] .
+       op 'prec : 'Nat -> 'Attr [ctor] .
+       op 'print : 'QidList -> 'Attr [ctor] .
+       op 'protecting_. : 'ModuleExpression -> 'Import [ctor] .
+       op 'right-id : 'Term -> 'Attr [ctor] .
+       op 'rl_=>_`[_`]. : 'Term 'Term 'AttrSet -> 'Rule [ctor format('d 'd 'd
+    'd 's 'd 'd 's 'd)] .
+       op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+       op 'sort_to_ : 'Qid 'Qid -> 'Renaming [ctor] .
+       op 'special : 'NeHookList -> 'Attr [ctor] .
+       op 'strat : 'NeNatList -> 'Attr [ctor] .
+       op 'subsort_<_. : 'Sort 'Sort -> 'SubsortDecl [ctor] .
+       op 'term-hook : 'Qid 'Term -> 'Hook [ctor format('nssss 'd)] .
+       op 'th_is_sorts_._____endth : 'Qid 'ImportList 'SortSet 'SubsortDeclSet
+    'OpDeclSet 'MembAxSet 'EquationSet 'RuleSet -> 'STheory [ctor gather('& '&
+    '& '& '& '& '& '&) format('d 'd 'd 'n++i 'ni 'd 'd 'ni 'ni 'ni 'ni 'ni
+    'n--i 'd)] .
+       op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+       op 'upModule : '@ModExp@ -> 'Module [none] .
+       op 'upTerm : '@ModExp@ '@Bubble@ -> 'Term [none] .
+       op 'variant : nil -> 'Attr [ctor] .
+       op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+       none
+       eq '_;_['T:TypeList,'T:TypeList] = 'T:TypeList [none] .
+       eq '__['A:Attr,'A:Attr] = 'A:Attr [none] .
+       eq '__['E:Equation,'E:Equation] = 'E:Equation [none] .
+       eq '__['M:MembAx,'M:MembAx] = 'M:MembAx [none] .
+       eq '__['O:OpDecl,'O:OpDecl] = 'O:OpDecl [none] .
+       eq '__['R:Rule,'R:Rule] = 'R:Rule [none] .
+       eq '__['S:SubsortDecl,'S:SubsortDecl] = 'S:SubsortDecl [none] .
+       eq '`[_`]['Q:Qid] = 'th_is_sorts_._____endth['Q:Qid,'including_.[
+    'Q:Qid],'none.EmptyTypeSet,'none.SubsortDeclSet,'none.OpDeclSet,
+    'none.MembAxSet,'none.EquationSet,'none.RuleSet] [none] .
+       eq 'getEqs['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'EQS:EquationSet [none] .
+       eq 'getEqs['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'EQS:EquationSet [none] .
+       eq 'getEqs['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'EQS:EquationSet [none] .
+       eq 'getEqs['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'EQS:EquationSet [none] .
+       eq 'getImports['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'IL:ImportList [none] .
+       eq 'getImports['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'IL:ImportList [none] .
+       eq 'getImports['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'IL:ImportList [none] .
+       eq 'getImports['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'IL:ImportList [none] .
+       eq 'getMbs['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'MAS:MembAxSet [none] .
+       eq 'getMbs['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'MAS:MembAxSet [none] .
+       eq 'getMbs['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'MAS:MembAxSet [none] .
+       eq 'getMbs['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'MAS:MembAxSet [none] .
+       eq 'getName['fmod_is_sorts_.____endfm['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'Q:Qid [none] .
+       eq 'getName['fmod_is_sorts_.____endfm['_`{_`}['Q:Qid,
+    'PDL:ParameterDeclList],'IL:ImportList,'SS:SortSet,'SSDS:SubsortDeclSet,
+    'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] = 'Q:Qid [none] .
+       eq 'getName['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'Q:Qid [none] .
+       eq 'getName['mod_is_sorts_._____endm['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'Q:Qid [none] .
+       eq 'getName['mod_is_sorts_._____endm['_`{_`}['Q:Qid,
+    'PDL:ParameterDeclList],'IL:ImportList,'SS:SortSet,'SSDS:SubsortDeclSet,
+    'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,'RLS:RuleSet]] = 'Q:Qid [
+    none] .
+       eq 'getName['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'Q:Qid [none] .
+       eq 'getOps['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'OPDS:OpDeclSet [none] .
+       eq 'getOps['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'OPDS:OpDeclSet [none] .
+       eq 'getOps['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'OPDS:OpDeclSet [none] .
+       eq 'getOps['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'OPDS:OpDeclSet [none] .
+       eq 'getRls['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'none.RuleSet [none] .
+       eq 'getRls['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet]] =
+    'none.RuleSet [none] .
+       eq 'getRls['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'RLS:RuleSet [none] .
+       eq 'getRls['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'RLS:RuleSet [none] .
+       eq 'getSorts['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'SS:SortSet [none] .
+       eq 'getSorts['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'SS:SortSet [none] .
+       eq 'getSorts['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'SS:SortSet [none] .
+       eq 'getSorts['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,'SS:SortSet,
+    'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,'EQS:EquationSet,
+    'RLS:RuleSet]] = 'SS:SortSet [none] .
+       eq 'getSubsorts['fmod_is_sorts_.____endfm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'SSDS:SubsortDeclSet [none] .
+       eq 'getSubsorts['fth_is_sorts_.____endfth['Q:Qid,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet]] = 'SSDS:SubsortDeclSet [none] .
+       eq 'getSubsorts['mod_is_sorts_._____endm['H:Header,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'SSDS:SubsortDeclSet [none] .
+       eq 'getSubsorts['th_is_sorts_._____endth['Q:Qid,'IL:ImportList,
+    'SS:SortSet,'SSDS:SubsortDeclSet,'OPDS:OpDeclSet,'MAS:MembAxSet,
+    'EQS:EquationSet,'RLS:RuleSet]] = 'SSDS:SubsortDeclSet [none] .
+     endfm ;
+     noModule ;
+     noModule ;
+     noModule ;
+     (none).OpDeclSet ;
+     emptyModuleNameSet ;
+     emptyViewExpSet
+  >, 'META-MODULE, emptyInfoSet, emptyViewExpSet, emptyModuleNameSet,
+    emptyModuleNameSet, 'BOOL, nil),input : nilTermList,output : nil,default :
+    'CONVERSION,tools : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE"
+    |-> eqe, "GLOT" |-> glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt,
+    "SCC" |-> scc),current-tool : scc > < crc : CRCBroker | tools : ("CRC" |->
+    crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE" |-> eqe, "GLOT" |-> glot, "ITP"
+    |-> itp, "MFE" |-> mfe, "MTT" |-> mtt, "SCC" |-> scc),grammar : fmod
+    'GRAMMAR is
+    including 'QID-LIST .
+    including 'CRC-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : CRC(0),index : 1,reg : 'UNORDERED-CHANNEL |-> CRC(0) > < chc
+    : ChCBroker | tools : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE"
+    |-> eqe, "GLOT" |-> glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt,
+    "SCC" |-> scc),grammar : fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'ChC-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : null-oid,index : 0,reg : empty > < mtt : MTTBroker | tools :
+    ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE" |-> eqe, "GLOT" |->
+    glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt, "SCC" |-> scc),grammar :
+    fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'FULL-MAUDE-SIGN .
+    including 'MTT-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : MTT(0),index : 1,reg : 'UNORDERED-CHANNEL |-> MTT(0),
+    external-tool : "aprove",path : C;A;B(no-sorts) > < scc : SCCBroker | tools
+    : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE" |-> eqe, "GLOT" |->
+    glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt, "SCC" |-> scc),grammar :
+    fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'CC-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : SCC(0),index : 1,reg : 'UNORDERED-CHANNEL |-> SCC(0) > < itp
+    : ITPBroker | itp-count : 0,itp-default : null-itp,itp-map : empty > < eqe
+    : EqEBroker | tools : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE"
+    |-> eqe, "GLOT" |-> glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt,
+    "SCC" |-> scc),grammar : fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'EqE-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : null-oid,index : 0,reg : empty > < ertp : ERTPBroker | tools
+    : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE" |-> eqe, "GLOT" |->
+    glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt, "SCC" |-> scc),grammar :
+    fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'ERTP-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : null-oid,index : 0,reg : empty > < glot : GLOTBroker | tools
+    : ("CRC" |-> crc, "ChC" |-> chc, "ERTP" |-> ertp, "EqE" |-> eqe, "GLOT" |->
+    glot, "ITP" |-> itp, "MFE" |-> mfe, "MTT" |-> mtt, "SCC" |-> scc),grammar :
+    fmod 'GRAMMAR is
+    including 'QID-LIST .
+    including 'GLOT-SIGN .
+    sorts none .
+    none
+    op 'bubble : 'QidList -> '@Bubble@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'neTokenList : 'QidList -> '@NeTokenList@ [special(
+    id-hook('Bubble, '1 '-1 '`( '`)) 
+    op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '.))] .
+    op 'sortToken : 'Qid -> '@SortToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid) 
+    id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': 'ditto
+    'precedence 'prec 'gather 'assoc 'associative 'comm 'commutative 'ctor
+    'constructor 'id: 'strat 'strategy 'poly 'memo 'memoization 'iter 'frozen
+    'config 'object 'msg 'metadata 'nonexec 'variant))] .
+    op 'token : 'Qid -> '@Token@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    op 'viewToken : 'Qid -> '@ViewToken@ [special(
+    id-hook('Bubble, '1 '1) 
+    op-hook('qidSymbol, '<Qids>, nil, 'Qid))] .
+    none
+    none
+  endfm,current : null-oid,index : 0,reg : empty > < SCC(0) : SCC | module :
+    mod 'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,requesters : mfe,sc-result : complete,free-result : free,eq-sound :
+    true,eq-complete : true,eq-terminating : true,eq-sort-decreasing : true,
+    trusted : false > < CRC(0) : CRC | requester : mfe,original-module : mod
+    'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,module : mod 'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,confluence-requester : empty,sort-decreasingness-requester : SCC(0),cps
+    : (cp("UNORDERED-CHANNEL0", 'no-label, 'no-label, 'L:List, 'L:List, joined)
+    cp("UNORDERED-CHANNEL1", 'no-label, 'no-label, '_;_['N:Natural,'_@_[
+    'L:List,'P:List]], '_;_['N:Natural,'_@_['L:List,'P:List]], joined)),mas :
+    none,cp-reg : empty,ma-reg : empty,terminating : true,locally-confluent :
+    true,sort-decreasing : true > < MTT(0) : MTT | requester : (mfe, SCC(0),
+    CRC(0)),module : mod 'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,terminating : true,proof : "\nproof of /tmp/filekQDr5q.trs\n# AProVE Commit ID: 62120467dfe79fefdb7ebbf9930892befa9ff8d3 ffrohn 20140611\n\n\nTermination of the given ETRS could be proven:\n\n(0) ETRS\n(1) EDirectTerminationProof [EQUIVALENT, 25 ms]\n(2) YES\n\n\n----------------------------------------\n\n(0)\nObligation:\nEquational rewrite system:\nThe TRS R consists of the following rules:\n\n   _@_-`[List`]-`[List`](nil, L) -> L\n   _@_-`[List`]-`[List`](_;_-`[Natural`]-`[List`](N, L), P) -> _;_-`[Natural`]-`[List`](N, _@_-`[List`]-`[List`](L, P))\n   __-`[Conf`]-`[Conf`](null, X) -> X\n\nThe set E consists of the following equations:\n\n   __-`[Conf`]-`[Conf`](x, y) == __-`[Conf`]-`[Conf`](y, x)\n   __-`[Conf`]-`[Conf`](__-`[Conf`]-`[Conf`](x, y), z) == __-`[Conf`]-`[Conf`](x, __-`[Conf`]-`[Conf`](y, z))\n\n\n----------------------------------------\n\n(1) EDirectTerminationProof (EQUIVALENT)\nWe use [DA_FALKE] with the following order to prove termination.\n\nPrecedence:\n_@_-`[List`]-`[List`]_2 > _;_-`[Natural`]-`[List`]_2\n\n\nStatus:\n__-`[Conf`]-`[Conf`]_2: flat status\n\n\n\n----------------------------------------\n\n(2)\nYES\n",functional-part : false >,'The
+    'sort-decreasingness 'goal 'for 'UNORDERED-CHANNEL 'has 'been 'submitted
+    'to 'CRC. '\n 'The 'termination 'goal 'for 'the 'functional 'part 'of
+    'UNORDERED-CHANNEL 'has 'been 'submitted 'to 'MTT. '\n 'Church-Rosser
+    'check 'for 'UNORDERED-CHANNEL '\n makeCRCmessage(< CRC(0) : CRC |
+    requester : mfe,module : mod 'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,module : mod 'UNORDERED-CHANNEL is
+    nil
+    sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
+    subsort 'Msg < 'Conf .
+    op '0 : nil -> 'Natural [ctor] .
+    op '_;_ : 'Natural 'List -> 'List [ctor] .
+    op '_@_ : 'List 'List -> 'List [none] .
+    op '__ : 'Conf 'Conf -> 'Conf [assoc comm ctor id('null.Conf)] .
+    op '`[_`,_`] : 'Natural 'Natural -> 'Msg [ctor] .
+    op '`{_`,_|_|_`,_`} : 'List 'Natural 'Conf 'List 'Natural -> 'State [ctor]
+    .
+    op 'ack : 'Natural -> 'Msg [ctor] .
+    op 'nil : nil -> 'List [ctor] .
+    op 'null : nil -> 'Conf [ctor] .
+    op 's : 'Natural -> 'Natural [ctor] .
+    none
+    eq '_@_['nil.List,'L:List] = 'L:List [none] .
+    eq '_@_['_;_['N:Natural,'L:List],'P:List] = '_;_['N:Natural,'_@_['L:List,
+    'P:List]] [none] .
+    rl '`{_`,_|_|_`,_`}['L:List,'M:Natural,'__['C:Conf,'`[_`,_`]['N:Natural,
+    'J:Natural]],'P:List,'J:Natural] => '`{_`,_|_|_`,_`}['L:List,'M:Natural,
+    '__['C:Conf,'ack['J:Natural]],'_@_['P:List,'_;_['N:Natural,'nil.List]],'s[
+    'J:Natural]] [label('rec)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'J:Natural,'__['C:Conf,'ack[
+    'J:Natural]],'P:List,'M:Natural] => '`{_`,_|_|_`,_`}['L:List,'s[
+    'J:Natural],'C:Conf,'P:List,'M:Natural] [label('rec-ack)] .
+    rl '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'C:Conf,'P:List,
+    'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
+    'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
+    .
+  endm,cps : (cp("UNORDERED-CHANNEL0", 'no-label, 'no-label, 'L:List, 'L:List,
+    joined) cp("UNORDERED-CHANNEL1", 'no-label, 'no-label, '_;_['N:Natural,
+    '_@_['L:List,'P:List]], '_;_['N:Natural,'_@_['L:List,'P:List]], joined)),
+    mas : none,cp-reg : empty,ma-reg : empty,terminating : true,
+    locally-confluent : true,sort-decreasing : true >, sort-decreasingness) '\!
+    '\g 'Success: '\o '\o 'The 'functional 'module '\o 'UNORDERED-CHANNEL '\o
+    'is 'sufficiently 'complete 'and 'has 'free 'constructors. '\n]
+Maude> 
