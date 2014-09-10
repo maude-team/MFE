@@ -963,7 +963,7 @@ mod MFE-CRC is
                 eMetaPrettyPrint(M, '=, pendingCPs(CPS), false) 
            fi
       fi .
-  eq makeCRCmessage(< O : X@CRC | module : M, mas : MAS, sort-decreasing : 3B'', sort-decreasingness-requester : OS, Atts >, sort-decreasingness) 
+  eq makeCRCmessage(< O : X@CRC | module : M, mas : MAS, sort-decreasing : 3B'', Atts >, sort-decreasingness) ---- , sort-decreasingness-requester : OS
     = if 3B'' == true
       then '\t 'The 'module 'is 'sort-decreasing. '\n
            ---- (to OS \ TS["MFE"] from O : module M is sort-decreasing)
@@ -1165,7 +1165,10 @@ mod MFE-CRC is
                      fi
                 fi,
                 cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
-            makeCRCmessage((OS, O') \ TS["MFE"], < O : X@CRC | module : M', requester : OS, cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >, CRCCT)
+            makeCRCmessage((OS, O') \ TS["MFE"], 
+              < O : X@CRC | original-module : M', 
+                  requester : OS, confluence-requester : OS', sort-decreasingness-requester : OS'',
+                  cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >, CRCCT)
             to TS["MFE"] from O : 
                    output(
                      'Church-Rosser 'check 'for eMetaPrettyPrint(getName(M)) '\n
