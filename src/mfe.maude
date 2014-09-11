@@ -947,7 +947,7 @@ mod MFE-CRC is
            fi
       else nil
       fi .
-  eq makeCRCmessage(< O : X@CRC | module : M, cps : CPS, terminating : 3B, locally-confluent : 3B', confluence-requester : OS, Atts >, confluence) 
+  eq makeCRCmessage(< O : X@CRC | module : M, cps : CPS, terminating : 3B, locally-confluent : 3B', Atts >, confluence) ---- confluence-requester : OS,  
     = if CPS == none 
       then '\t 'There 'are 'no 'critical 'pairs. '\n 
            '\t '\b 'The 'specification 'is 'confluent. '\o '\n
@@ -1172,7 +1172,7 @@ mod MFE-CRC is
             to TS["MFE"] from O : 
                    output(
                      'Church-Rosser 'check 'for eMetaPrettyPrint(getName(M)) '\n
-                     makeCRCmessage(< O : X@CRC | module : M', requester : OS, cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >,
+                     makeCRCmessage(< O : X@CRC | module : M', requester : OS, confluence-requester : OS', sort-decreasingness-requester : OS'', cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >,
                        CRCCT))
        else ---- The CRC object is removed
             (to TS["MFE"] from OCRC : output('The 'CRC 'for eMetaPrettyPrint(getName(M)) 'has 'been 'reset. '\n))
