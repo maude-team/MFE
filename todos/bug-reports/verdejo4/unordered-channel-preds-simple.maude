@@ -1,0 +1,7 @@
+mod UNORDERED-CHANNEL-PREDS is
+ sorts Natural .
+ sorts Truth .
+ sorts Proposition .
+ ops tt ff : -> Truth [ctor] .
+ op _~_ : Natural Natural -> Truth [comm] .
+endm
