@@ -12,4 +12,5 @@ loop init .
 set trace on .
 set trace select on .
 trace select test-emptiness .
+set print conceal off .
 (scc UNORDERED-CHANNEL-PREDS .)
