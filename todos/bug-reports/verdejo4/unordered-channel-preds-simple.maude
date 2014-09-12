@@ -12,3 +12,4 @@ loop init .
 set trace on .
 set trace select on .
 trace select test-emptiness .
+(scc UNORDERED-CHANNEL-PREDS .)
