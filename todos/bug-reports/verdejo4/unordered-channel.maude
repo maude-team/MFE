@@ -1,5 +1,4 @@
 set include BOOL off .
-set include BOOL-OPS off .
 
   fmod UNORDERED-CHANNEL-EQ is
     sorts Natural List Msg Conf State .
@@ -37,13 +36,11 @@ set include BOOL-OPS off .
   endm
 
 
-select MFE .
-loop init .
+
+eof
 
 (select tool MTT .)
-(select external tool aprove .)
 (ct UNORDERED-CHANNEL .)
-
 
 (select tool CRC .)
 (ccr UNORDERED-CHANNEL .)
@@ -52,4 +49,8 @@ loop init .
 (select tool SCC .)
 (scc UNORDERED-CHANNEL .)
 (submit .)
-  
+
+(select tool ChC .)
+(cch UNORDERED-CHANNEL .)
+(submit .)
+
