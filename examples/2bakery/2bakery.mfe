@@ -1,6 +1,7 @@
 (set include BOOL off .)
 load 2bakery.maude
 (select tool MTT .)
+(select external tool aprove .)
 (ctf 2BAK .)
 (select tool CRC .)
 (ccr 2BAK .)
@@ -12,6 +13,7 @@ load 2bakery.maude
 (cch 2BAK .)    --- The ChC does not implement the command ChC show status
 (submit .)      --- A termination proof cannot be found ... a BUG!
 (select tool MTT .)
+(select external tool aprove .)
 (ct 2BAK-PROPS-EXT .)
 (select tool CRC .)
 (ccr 2BAK-PROPS-EXT .)

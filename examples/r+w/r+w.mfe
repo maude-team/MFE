@@ -1,6 +1,7 @@
 (set include BOOL off .)
 load r+w.maude
 (select tool MTT .)
+(select external tool aprove .)
 (ct R&W-SYNTAX .)
 (select tool CRC .)
 (ccr R&W-SYNTAX .)
@@ -11,6 +12,7 @@ load r+w.maude
 (cch R&W .)
 (submit .)   --- Fails because termination of the equational part cannot be proved ... a BUG!
 (select tool MTT .)
+(select external tool aprove .)
 (ct R&W-PROPS .)
 (select tool CRC .)
 (ccr R&W-PROPS .)

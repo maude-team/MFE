@@ -1,6 +1,7 @@
 (set include BOOL off .)
 load bakery.maude
 (select tool MTT .)
+(select external tool aprove .)
 (ct BAKERY-SYNTAX .)
 (select tool CRC .)
 (ccr BAKERY-SYNTAX .)
@@ -12,6 +13,7 @@ load bakery.maude
 (cch BAKERY-SYNTAX .)
 (submit .)
 (select tool MTT .)
+(select external tool aprove .)
 (ct BAKERY-PROPS .)
 (select tool CRC .)
 (ccr BAKERY-PROPS .)

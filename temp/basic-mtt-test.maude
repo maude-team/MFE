@@ -6,6 +6,7 @@ trace select termCheck
 (set include BOOL off .)
 (fmod FOO is sort Foo . ops f g  : -> Foo . eq f = g . endfm)
 (select tool MTT .)
+(select external tool aprove .)
 (ct FOO .)
 
 

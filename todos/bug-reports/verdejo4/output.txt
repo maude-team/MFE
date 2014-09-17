@@ -740,8 +740,11 @@ db(
     'sort-decreasingness 'goal 'for 'UNORDERED-CHANNEL 'has 'been 'submitted
     'to 'CRC. '\n 'The 'termination 'goal 'for 'the 'functional 'part 'of
     'UNORDERED-CHANNEL 'has 'been 'submitted 'to 'MTT. '\n 'Church-Rosser
-    'check 'for 'UNORDERED-CHANNEL '\n makeCRCmessage(< CRC(0) : CRC |
-    requester : mfe,module : mod 'UNORDERED-CHANNEL is
+    'check 'for 'UNORDERED-CHANNEL '\n 
+    
+makeCRCmessage(< CRC(0) : CRC |
+    requester : mfe,
+    module : mod 'UNORDERED-CHANNEL is
     nil
     sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
     subsort 'Msg < 'Conf .
@@ -771,7 +774,8 @@ db(
     'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
     'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
     .
-  endm,module : mod 'UNORDERED-CHANNEL is
+  endm,
+  module : mod 'UNORDERED-CHANNEL is
     nil
     sorts 'Conf ; 'List ; 'Msg ; 'Natural ; 'State .
     subsort 'Msg < 'Conf .
@@ -801,11 +805,15 @@ db(
     'K:Natural] => '`{_`,_|_|_`,_`}['_;_['N:Natural,'L:List],'M:Natural,'__[
     'C:Conf,'`[_`,_`]['N:Natural,'M:Natural]],'P:List,'K:Natural] [label('snd)]
     .
-  endm,cps : (cp("UNORDERED-CHANNEL0", 'no-label, 'no-label, 'L:List, 'L:List,
-    joined) cp("UNORDERED-CHANNEL1", 'no-label, 'no-label, '_;_['N:Natural,
-    '_@_['L:List,'P:List]], '_;_['N:Natural,'_@_['L:List,'P:List]], joined)),
-    mas : none,cp-reg : empty,ma-reg : empty,terminating : true,
-    locally-confluent : true,sort-decreasing : true >, sort-decreasingness) '\!
+  endm,
+  cps : (cp("UNORDERED-CHANNEL0", 'no-label, 'no-label, 'L:List, 'L:List, joined) 
+         cp("UNORDERED-CHANNEL1", 'no-label, 'no-label, '_;_['N:Natural, '_@_['L:List,'P:List]], '_;_['N:Natural,'_@_['L:List,'P:List]], joined)),
+  mas : none,
+  cp-reg : empty,
+  ma-reg : empty,
+  terminating : true,
+  locally-confluent : true,
+  sort-decreasing : true >, sort-decreasingness) '\!
     '\g 'Success: '\o '\o 'The 'functional 'module '\o 'UNORDERED-CHANNEL '\o
     'is 'sufficiently 'complete 'and 'has 'free 'constructors. '\n]
 Maude> 

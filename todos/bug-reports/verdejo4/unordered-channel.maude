@@ -1,4 +1,4 @@
-set include BOOL off .
+ set include BOOL off .
 
   fmod UNORDERED-CHANNEL-EQ is
     sorts Natural List Msg Conf State .

@@ -31,6 +31,7 @@
  endm)
 
 (select tool MTT .)
+(select external tool aprove .)
 ---(
 The MTT has been set as current tool.
 ---)

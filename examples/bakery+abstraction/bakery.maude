@@ -157,6 +157,7 @@ Warning: A proof of the termination of functional part of module BAKERY has not
 ---- In one case or the other, we can select the MTT and complete its proof.  
 
 (select tool MTT .)
+(select external tool aprove .)
 ---(
 The MTT has been set as current tool.
 ---)

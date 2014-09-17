@@ -1,31 +1,14 @@
----(set include BOOL off .)
----(set include BOOL-OPS off .)
+(set include BOOL off .)
+(set include BOOL-OPS off .)
 
----(fmod FOO is 
+(fmod FOO is 
    sort Foo .
    ops f g : -> Foo .
-   ceq f = g
-    if f = f .
+   ceq f = g if f = f .
  endfm)
 
 (select tool MTT .)
 (select external tool aprove .)
-(show current path .)
 (select path C;A .)
-(show current path .)
 
-print reveal fmod_is_sorts_.____endfm 
-             .
-set trace off .
-set trace select on .
-trace select $procTPDB 
-             proc 
-             filterMaude 
-             removeLonelyAssocs 
-             removeIds 
-             acuCohComplete 
-             removeNonExecs 
-             .
-(ct .)
-eof             
 (ct FOO .)
