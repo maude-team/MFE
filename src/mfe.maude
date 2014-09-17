@@ -2656,7 +2656,7 @@ mod MFE-MTT is
              current : null-oid, 
              index : 0, 
              reg : empty, 
-             external-tool : "external tool not selected",
+             external-tool : "no-tool",
              path : C;A;B(no-sorts) >
        to TS["MFE"] from TS["MTT"] : output('\s '\s '\s '\s string2qidList(mtt-banner) '\n) .
 
