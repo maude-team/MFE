@@ -10,7 +10,7 @@ select MFE .
 loop init .
 (select tool SCC .)
 set trace on .
-set trace select on .
-trace select test-emptiness .
-set print conceal off .
+----set trace select on .
+----trace select test-emptiness .
+----set print conceal off .
 (scc UNORDERED-CHANNEL-PREDS .)
