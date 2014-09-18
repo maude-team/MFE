@@ -3,7 +3,7 @@ mod UNORDERED-CHANNEL-PREDS is
  sorts Truth .
  sorts Proposition .
  ops tt ff : -> Truth [ctor] .
- op _~_ : Natural Natural -> Truth [comm] .
+ op f : Natural Natural -> Truth [comm] .
 endm
 
 select MFE .
