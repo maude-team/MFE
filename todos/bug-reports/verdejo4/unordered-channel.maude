@@ -35,11 +35,11 @@
     rl [rec-ack]: {N ; L, J | ack(J) C | P, M}  => {L, s(J) | C | P, M} .
   endm
 
-
-
-eof
+select MFE .
+loop init .
 
 (select tool MTT .)
+(select external tool aprove .)
 (ct UNORDERED-CHANNEL .)
 
 (select tool CRC .)
