@@ -685,10 +685,35 @@ endm
 --------------------------------------------------------------------------------
 
 fmod 3BOOL is
-  pr BOOL .
+  pr TRUTH .
   sort 3Bool .
   subsort Bool < 3Bool .
   op maybe : -> 3Bool [ctor] .
+---(
+  op _and_ : 3Bool 3Bool -> 3Bool [ditto] .
+  op _or_ : 3Bool 3Bool -> 3Bool [ditto] .
+  op _xor_ : 3Bool 3Bool -> 3Bool [ditto] .
+  op not_ : 3Bool -> 3Bool [ditto] .
+  op _implies_ : 3Bool 3Bool -> 3Bool [ditto] .
+  vars A B C : 3Bool .
+  eq maybe and false = false .
+  eq maybe and maybe = maybe .
+  eq maybe and true = maybe .
+  eq maybe xor true = maybe .
+  eq maybe xor false = maybe .
+  eq maybe xor maybe = maybe .
+  eq not maybe = maybe .
+  eq maybe or true = true .
+  eq maybe or false = maybe .
+  eq maybe or maybe = maybe .
+  eq maybe implies true = true .
+  eq maybe implies false = false .
+  eq maybe implies maybe = maybe .
+  eq true implies maybe = maybe .
+  eq false implies maybe = maybe .
+  op if_then_else_fi : 3Bool Configuration Configuration -> Configuration .
+  eq if maybe then U1:Configuration else U2:Configuration fi = U2:Configuration . 
+---)
 endfm
 
 --------------------------------------------------------------------------------
@@ -977,7 +1002,7 @@ mod MFE-CRC is
   op makeCRCmessage : Set{Oid} Object CRCcheckType -> Configuration .
   eq makeCRCmessage(OS, < O : X@CRC | module : M, cps : CPS, cp-reg : CPReg, 
                        terminating : 3B, locally-confluent : 3B', sort-decreasing : 3B'', Atts >, Church-Rosser) 
-    = if (CPS == none or (3B' == true and 3B == true)) and 3B'' 
+    = if (CPS == none or (3B' == true and 3B == true)) and 3B'' == true
       then if CPReg == empty
            then (to OS from O : module getName(M) is Church-Rosser) 
            else (to OS from O : module getName(M) is ground-Church-Rosser) 

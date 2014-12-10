@@ -414,7 +414,7 @@ fmod MEMBERSHIP-ASSERTION-SET is
              else nil
              fi)
             if All then '\s status2qid(Status) else nil fi
-            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) '. '\o
+            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) '. '\o '\n
        else nil
        fi 
        eMetaPrettyPrint(M, MAS, All)) .
@@ -427,7 +427,7 @@ fmod MEMBERSHIP-ASSERTION-SET is
              fi)
             if All then '\s status2qid(Status) else nil fi
             '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) 
-            '\n '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o
+            '\n '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o '\n
        else nil
        fi 
        eMetaPrettyPrint(M, MAS, All)) .
