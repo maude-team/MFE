@@ -1,0 +1,33 @@
+  load readers-writers.maude
+
+fmod MBOOL is
+   sort MBool .
+   ops true false : -> MBool [ctor] .
+endfm
+
+
+fmod MSATISFACTION is
+  protecting MBOOL .
+  sorts State Prop .
+  op _|=_ : State Prop -> MBool [frozen] .
+endfm
+
+
+mod READERS-WRITERS-PREDS is
+    including MSATISFACTION .
+    protecting READERS-WRITERS .
+    subsort RWState < State .
+    ops mutex one-writer : -> Prop [ctor] .
+    
+    eq < s(N:Nat), s(M:Nat) > |= mutex = false .
+    eq < 0, N:Nat > |= mutex = true .
+    eq < N:Nat, 0 > |= mutex  = true .
+    
+    eq < N:Nat, s(s(M:Nat)) > |= one-writer = false .
+    eq < N:Nat, 0 > |= one-writer = true .
+    eq < N:Nat, s(0) > |= one-writer  = true .
+  endm
+
+eof
+
+

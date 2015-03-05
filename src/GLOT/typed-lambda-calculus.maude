@@ -1,0 +1,122 @@
+fmod TYPED-LAMBDA-CALCULUS-SYNTAX is
+  including FULL-MAUDE-SIGN .
+
+  op ct LAMBDA-CALCULUS . : -> @Command@ .
+  op check termination LAMBDA-CALCULUS . : -> @Command@ .
+endfm
+
+
+fmod TYPED-LAMBDA-CALCULUS-SIGN is
+  sorts AtomicType Type .
+  subsort AtomicType < Type .
+  
+  op _->_ : Type Type -> Type .
+  
+  sorts Variable TypedVariable Term TypedTerm Term? TypedTerm? .
+  subsort Variable < Term < Term? .
+  subsort TypedVariable < TypedTerm < TypedTerm? .
+  
+  op __ : TypedTerm TypedTerm -> Term .
+  op \lambda_._ : TypedVariable TypedTerm -> Term .
+  op _^_ : Variable Type -> TypedVariable .   
+  op _^_ : Term Type -> TypedTerm? .   
+  
+  vars x y : Variable .
+  vars \zeta \eta \theta : Type .
+  var  \tau : AtomicType .
+  vars N M Q : Term .
+  
+  mb x ^ \zeta : TypedTerm .
+  mb (M ^ (\zeta -> \eta) N ^ \zeta) ^ \eta : TypedTerm .
+  mb (\lambda x ^ \zeta . M ^ \eta) ^ (\zeta -> \eta) : TypedTerm .
+  
+  sort Formula .
+  op _->\beta_ : TypedTerm TypedTerm -> Formula .
+  op _->\beta*_ : TypedTerm TypedTerm -> Formula .
+  
+  op _[_:=_] : TypedTerm TypedVariable TypedTerm -> [TypedTerm] .
+  eq x ^ \zeta [ y ^ \zeta := Q ^ \zeta ] 
+    = if x == y then Q ^ \zeta else x ^ \zeta fi .
+  eq ((M ^ (\zeta -> \eta) N ^ \zeta) ^ \eta) [ x ^ \theta := Q ^ \theta ] 
+    = (M ^ (\zeta -> \eta) [ x ^ \theta := Q ^ \theta ] N ^ \zeta [ x ^ \theta := Q ^ \theta ]) ^ \eta .
+  eq (\lambda x ^ \zeta . M ^ \eta) ^ (\zeta -> \eta) [ y ^ \theta := Q ^ \theta ] 
+    = if x ^ \zeta == y ^ \theta
+      then (\lambda x ^ \zeta . M ^ \eta) ^ (\zeta -> \eta) 
+      else (\lambda x ^ \zeta . M ^ \eta [ y ^ \theta := Q ^ \theta ]) ^ (\zeta -> \eta)
+      fi .
+endfm
+
+---- red x:Variable ^ t1:Type .
+---- red (\lambda x ^ t1:Type . x ^ t1:Type) ^ t1:Type -> t1:Type .
+---- red ((\lambda x ^ t1:Type . x ^ t1:Type) ^ t1:Type -> t1:Type) (y ^ t1:Type) .
+
+view TLCFormula from FORMULA to TYPED-LAMBDA-CALCULUS-SIGN is
+  sort Formula to Formula .
+endv
+
+fmod TYPED-LAMBDA-CALCULUS-INFERENCE-SYSTEM is
+  pr INFERENCE-SYSTEM{TLCFormula} .
+  
+  vars x y : Variable .
+  vars \zeta \eta \theta : Type .
+  var  \tau : AtomicType .
+  vars N M P Q : Term .
+  
+  eq inference-system
+    =             empty
+      ('red)      - - - - - - - - - -
+                  ((\lambda x ^ \zeta . P ^ \eta) ^ (\zeta -> \eta) Q ^ \zeta) ^ \eta ->\beta P ^ \eta [x ^ \zeta := Q ^ \zeta]
+      +
+                  M ^ \eta ->\beta N ^ \eta
+      ('r\lambda) - - - - - - - - - -
+                  (\lambda x ^ \zeta . M ^ \eta) ^ (\zeta -> \eta) ->\beta (\lambda x ^ \zeta . N ^ \eta) ^ (\zeta -> \eta)
+      +
+                  M ^ (\zeta -> \eta) ->\beta N ^ (\zeta -> \eta)
+      ('r1)       - - - - - - - - - -
+                  (M ^ (\zeta -> \eta) P ^ \zeta) ^ \eta ->\beta (N ^ (\zeta -> \eta) P ^ \zeta) ^ \eta 
+      +
+                  M ^ \zeta ->\beta P ^ \zeta
+      ('r2)       - - - - - - - - - -
+                  (M ^ (\zeta -> \eta) N ^ \zeta) ^ \eta ->\beta (M ^ (\zeta -> \eta) P ^ \zeta) ^ \eta 
+      +
+                  empty
+      ('refl)     - - - - - - - - - -
+                  M ^ \zeta ->\beta* M ^ \zeta 
+      +
+                  (M ^ \zeta ->\beta N ^ \zeta)        (N ^ \zeta ->\beta* P ^ \zeta)
+      ('seq)      - - - - - - - - - -
+                  M ^ \zeta ->\beta* P ^ \zeta
+      [nonexec] .       
+endfm
+
+fmod TYPED-LAMBDA-CALCULUS-PROOF-JUMP-SET is
+  pr PROOF-JUMP-SET{TLCFormula} .
+endfm
+
+fmod TYPED-LAMBDA-CALCULUS-PROCESSING is
+  ex LOGIC-PROCESSING .
+
+  eq MIS('lambda-calculus) = upModule('TYPED-LAMBDA-CALCULUS-INFERENCE-SYSTEM, false) .
+  eq MPJ('lambda-calculus) = upModule('TYPED-LAMBDA-CALCULUS-PROOF-JUMP-SET, false) .
+  
+  eq getInferenceSystem('lambda-calculus) = getInferenceSystem(MIS('lambda-calculus)) .
+endfm
+
+
+----red metaPrettyPrint(MPJ, genProofJumps(getInferenceSystem(MIS))) .
+---(
+'`( ''r\lambda '`) '\lambda 'x:Variable '^ '\zeta:Type '.
+    'M:Term '^ '\eta:Type '^ '`( '\zeta:Type '-> '\eta:Type '`) '->\beta
+    '\lambda 'x:Variable '^ '\zeta:Type '. 'N:Term '^ '\eta:Type '^ '`(
+    '\zeta:Type '-> '\eta:Type '`) '|| 'M:Term '^ '\eta:Type '->\beta
+    'N:Term '^ '\eta:Type '+ '`( ''r2 '`) 'M:Term '^ '`( '\zeta:Type '->
+    '\eta:Type '`) 'N:Term '^ '\zeta:Type '^ '\eta:Type '->\beta '`(
+    'M:Term '^ '`( '\zeta:Type '-> '\eta:Type '`) 'P:Term '^ '\zeta:Type
+    '`) '^ '\eta:Type '|| 'M:Term '^ '\zeta:Type '->\beta 'P:Term '^
+    '\zeta:Type '+ '`( ''r1 '`) 'M:Term '^ '`( '\zeta:Type '-> '\eta:Type
+    '`) 'P:Term '^ '\zeta:Type '^ '\eta:Type '->\beta '`( 'N:Term '^ '`(
+    '\zeta:Type '-> '\eta:Type '`) 'P:Term '^ '\zeta:Type '`) '^
+    '\eta:Type '|| 'M:Term '^ '`( '\zeta:Type '-> '\eta:Type '`) '->\beta
+    'N:Term '^ '`( '\zeta:Type '-> '\eta:Type '`) '+ '`( 'empty '`)
+    '.ProofJumpSet
+---)

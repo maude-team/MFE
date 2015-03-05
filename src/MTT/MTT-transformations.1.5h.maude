@@ -258,7 +258,7 @@ fmod MTT-PRELIMINARIES is
  ceq filterTPDB(Tp TpL) = filterTPDB(Tp) filterTPDB(TpL) if TpL =/= nil .
   eq filterTPDB((nil).TypeList) = nil .
   eq filterTPDB(F) 
-    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
+    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
                                           "`[", "osb-"), 
                                           "`]", "-csb"), 
                                           "`{", "ocb-"), 
@@ -268,7 +268,8 @@ fmod MTT-PRELIMINARIES is
                                           ";", "-semicolon-"), 
                                           "`,", "-comma-"), 
                                           "`", "-bq-"), 
-                                          "_", "-")) 
+                                          "_", "-"), 
+                                          "|", "vertical-bar")) 
     [owise] .
  ceq filterTPDB(F ; FS) = filterTPDB(F) ; filterTPDB(FS) if FS =/= none .
   eq filterTPDB((none).QidSet) = none .

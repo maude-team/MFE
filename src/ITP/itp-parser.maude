@@ -669,7 +669,6 @@ fmod ITP-MODULE-PARSER is
   vars Mbs Mbs' : MembAxSet .
   var  M : Module .
   var  Mod : FModule .
-  var  Mode : ITPMode .
   var  N : Nat .
   var  Op : OpDecl .
   vars Ops Ops' : OpDeclSet .

@@ -2157,7 +2157,6 @@ mod ITP-TOOL is
 ---- ITP objects now follow the standard notation for objects
 ----  sort ITPAttr ITPAttrSet .
 ----  subsort ITPAttr < ITPAttrSet .
-----  op mode :_ : ITPMode -> ITPAttr [ctor].
 ----  --- Module used for parsing commands (defaults to ['ITP-GRAMMAR]).
 ----  op cmdMod :_ : Module -> ITPAttr [ctor].
 ----  op proofState :_ : ProofState -> ITPAttr [ctor].
@@ -2168,7 +2167,6 @@ mod ITP-TOOL is
 ----  op attrs : ITPAttrSet ITPAttrSet -> ITPAttrSet
 ----     [ctor assoc comm id: emptyAttrSet] .
 
-  op mode :_ : ITPMode -> Attribute [ctor].
   --- [DEPRECATED] Module used for parsing commands (defaults to ['ITP-GRAMMAR]).
   --- Instead of carrying around the grammar module, global constant 'itp-grammar'
   --- is used in place
@@ -2190,7 +2188,7 @@ mod ITP-TOOL is
 ----  op next : ITPAttrSet QidList -> ExecResult [ctor].
   op next : AttributeSet QidList -> ExecResult [ctor].
 
-  op init-itp : ITPMode Module -> System [ctor].
+  op init-itp : Module -> System [ctor].
 
   var AF : Atomic .
   var AS AS' AtS : AttrSet .
@@ -2213,7 +2211,6 @@ mod ITP-TOOL is
   var Atts Atts' : AttributeSet .
   var EM  : ITPInternalMessage .
   var EML : ITPInternalMessageList .
-  var Mode : ITPMode .
   var LFS LFS' : LabeledFormulaSet .
   var LR : LabeledRules .
   var Mb NewMb : MembAx .
@@ -2271,23 +2268,9 @@ mod ITP-TOOL is
   eq varsToNewConstants(VS, Alpha, ST)
    = substitute(Alpha, createNewConstantSubst(VS, "")) .
 
-  --- Formats an error message based on the ITP mode.
-----  op print-error : ITPAttrSet QidList ~> QidList .
-----  eq print-error(attrs(mode : ucm, Atts), Msg)
-----   = 'ERROR: Msg 'END-ERROR .
-----  eq print-error(attrs(mode : uiuc, Atts), Msg)
-----   = '\r 'ERROR: '\o Msg .
-  op print-error : AttributeSet QidList ~> QidList .
-  eq print-error((mode : ucm, Atts), Msg) = 'ERROR: Msg 'END-ERROR .
-  eq print-error((mode : uiuc, Atts), Msg) = '\r 'ERROR: '\o Msg .
-
-  --- Init itp in default "uiuc" mode.
+  --- Init itp with default grammar.
   op init-itp : -> System .
-  eq init-itp = init-itp(uiuc) .
-
-  --- Init itp with given mode and default grammar.
-  op init-itp : ITPMode -> System .
-  eq init-itp(Mode) = init-itp(Mode, ['ITP-GRAMMAR]) .
+  eq init-itp = init-itp(['ITP-GRAMMAR]) .
 
   --- Parses command using command module in attribute set.
 ----  op parse-cmd : ITPAttrSet NeQidList ~> ParseInputResult .

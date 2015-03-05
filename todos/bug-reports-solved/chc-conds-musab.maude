@@ -1,0 +1,32 @@
+---- De:     Musab AlTurki <alturki@illinois.edu>
+---- Asunto:     Another issue with crchc3j
+---- Fecha:  9 de diciembre de 2010 22:19:03 GMT+01:00
+---- Para:   Francisco Dur‡n <duran@lcc.uma.es>Dear Paco,
+---- 
+---- It seems I've found another issue with the tool that you might want to add 
+---- to the list. The coherence checking command terminates but does not return 
+---- any output for the following module (It also seems to break the state of 
+---- the tool, since any subsequent command fails):
+
+(set include BOOL off .)        ---- added by PD
+(set include TRUTH-VALUE on .)  ---- added by PD
+
+(mod FOO is
+  sort Foo .
+  ops a b c d : -> Foo .
+  eq a = c .
+  crl a => b if c => d .
+endm)
+
+(select tool CRC .)             ---- added by PD
+
+(check Church-Rosser .)
+
+(select tool ChC .)             ---- added by PD
+
+(check coherence .)
+
+---- Thank you.
+---- 
+---- Regards,
+---- Musab

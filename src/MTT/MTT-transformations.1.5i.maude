@@ -1,14 +1,12 @@
 ---- owise attribute is not supported
----- id attribute is not supported (do the full maude transformation first)
----- assoc attribute without comm is not supported (do the full maude transformation first)
----- if the (original) specification has mbs the tool doesn't work
+---- if the (original) specification has mbs the tool doesn't work, only order-sorted case
 
 ******************************************************************************
 *** Transformation of Maude specs for the Maude Termination Tool (MTT) 
 ******************************************************************************
 ***                                             
-***                                             MTT specification version 1.5h
-***                                          To be run on Full Maude Alpha 95b
+***                                             MTT specification version 1.5i
+***                                          To be run on Full Maude Alpha 103
 *** Author: Francisco Duran                     
 *** Last modified: January 1st, 2011
 ***                                             
@@ -258,17 +256,18 @@ fmod MTT-PRELIMINARIES is
  ceq filterTPDB(Tp TpL) = filterTPDB(Tp) filterTPDB(TpL) if TpL =/= nil .
   eq filterTPDB((nil).TypeList) = nil .
   eq filterTPDB(F) 
-    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
-                                          "`[", "osb-"), 
-                                          "`]", "-csb"), 
-                                          "`{", "ocb-"), 
-                                          "`}", "-ccb"), 
-                                          "`(", "op-"), 
-                                          "`)", "-cp"), 
-                                          ";", "-semicolon-"), 
-                                          "`,", "-comma-"), 
-                                          "`", "-bq-"), 
-                                          "_", "-")) 
+    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
+                                          "`[", "@osb@"), 
+                                          "`]", "@csb@"), 
+                                          "`{", "@ocb@"), 
+                                          "`}", "@ccb@"), 
+                                          "`(", "@opar@"), 
+                                          "`)", "@cpar@"), 
+                                          ";", "@semicolon@"), 
+                                          "`,", "@comma@"), 
+                                          "`", "@bq@"), 
+                                          "_", "@underscore@"), 
+                                          "|", "@vertical-bar@")) 
     [owise] .
  ceq filterTPDB(F ; FS) = filterTPDB(F) ; filterTPDB(FS) if FS =/= none .
   eq filterTPDB((none).QidSet) = none .
@@ -1381,7 +1380,7 @@ fmod SCS-MCTRS->CS-OSCTRS is
   ---- MB(S) is the smallest subset of S such that
   ----   (i) if a membership t : s if C belongs to M, then s is in MB(S)
   ----  (ii) if s is in MB(S) and s <= s', then s' is in MB(S)
-  ---- (iii) if f : s1 · · · sn -> s and some si in MB(S) then s in MB(S)
+  ---- (iii) if f : s1 \B7 \B7 \B7 sn -> s and some si in MB(S) then s in MB(S)
   eq MB(M) = MB(M, getMbs(M), getSubsorts(M), getOps(M), none) .
   eq MB(M, mb T : S [AtS] . MAS, SDS, ODS, SS) 
     = MB(M, MAS, SDS, ODS, S ; SS) .
@@ -2785,7 +2784,7 @@ fmod PROC-TPDB is
   var  Cond : Condition .
 
  ceq $procTPDB(M, PP, CONDITIONS, CONTEXT)
-    = if ((vars(getRls(M'))) =/= nil)
+    = if ((vars(getRls(M'))) =/= none)
       then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
       else nil
       fi
@@ -2805,7 +2804,7 @@ fmod PROC-TPDB is
       else nil
       fi
       '\n
-    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), non-handled))), PP, CONDITIONS) .
+    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), all))), PP, CONDITIONS) .
   eq $procTPDB(unitError(QIL), PP, CONDITIONS, CONTEXT) = QIL .
   eq $procTPDB(M, PP, CONDITIONS, CONTEXT) 
     = 'error: 'possibly 'a 'non-supported 'feature 'in 'the 'module 
