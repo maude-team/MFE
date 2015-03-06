@@ -1,0 +1,31 @@
+load unordered-channel.maude
+
+ mod UNORDERED-CHANNEL-INVARIANT is
+    pr UNORDERED-CHANNEL .
+
+    sort Truth .
+    ops tt ff : -> Truth [ctor] .
+    op _~_ : Natural Natural -> Truth [comm] . *** equality predicate
+    op _and_ : Truth Truth -> Truth [assoc comm id: tt] . *** conjunction
+
+    vars M N K P : Natural .
+    vars L L' L'' : List .
+    var  C : Conf .
+    var  B : Truth .
+
+    eq 0 ~ 0 = tt . ---- covered by the following non-linear equation
+    eq M ~ M = tt . ---- added for confluence, not considered by the SCC
+    eq 0 ~ s(N) = ff .
+    eq s(N) ~ 0 = ff . ---- _~_ is not commutative
+    eq s(N) ~ s(M) = N ~ N .
+
+    eq ff and ff = ff .
+
+    op prefix : List State -> Truth .
+
+    eq [I1]: prefix(M ; L, {L', N | C | K ; L'', P}) 
+      = (M ~ K) and  prefix(L, {L', N | C | L'', P}) .
+    eq [I3]: prefix(L, {L', N | C | nil, K}) = tt .
+    eq [I4]: prefix(nil, {L', N | C | M ; L'', K}) = ff .
+  endm
+

@@ -1,14 +1,12 @@
 ---- owise attribute is not supported
----- id attribute is not supported (do the full maude transformation first)
----- assoc attribute without comm is not supported (do the full maude transformation first)
----- if the (original) specification has mbs the tool doesn't work
+---- if the (original) specification has mbs the tool doesn't work, only order-sorted case
 
 ******************************************************************************
 *** Transformation of Maude specs for the Maude Termination Tool (MTT) 
 ******************************************************************************
 ***                                             
-***                                             MTT specification version 1.5h
-***                                          To be run on Full Maude Alpha 95b
+***                                             MTT specification version 1.5i
+***                                          To be run on Full Maude Alpha 103
 *** Author: Francisco Duran                     
 *** Last modified: January 1st, 2011
 ***                                             

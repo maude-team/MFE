@@ -5,7 +5,7 @@
 
 set show loop stats off .
 set show loop timing off .
-set show advisories off .
+----set show advisories off .
 
 fmod BANNER is 
   pr STRING .
@@ -329,7 +329,7 @@ endfm
 
 set include BOOL off .
 set include TRUTH-VALUE on .
-set show advisories off .
+----set show advisories off .
 
 mod CONFIGURATION is
   sorts Attribute AttributeSet .
@@ -3274,8 +3274,8 @@ fmod META-MATCH is
   op metaBuiltInEqual : Module TermList Term Term -> Bool .
   eq metaBuiltInEqual(M,TL,T,T')
    = canonice(M,T) == canonice(M,T') .
-endfm
 
+endfm
 fmod VARIANT-HANDLING is
   pr SUBSTITUTION-HANDLING .
   pr META-MINIMIZE-BINDINGS .
@@ -4004,6 +4004,7 @@ fmod META-E-UNIFICATION is
          and isAssociative(M,F,getTypes(M,TL)) 
       then 1 else 0 fi 
       + howManyAC$$(M,EqS) .
+
 endfm
 
 fmod META-ACU-UNIFICATION is
@@ -19259,6 +19260,7 @@ endfm
 fmod CHECK-INPUT-MODULE is
   inc EXT-TERM .
   inc MODULE-HANDLING  * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) .
+  inc COMMAND-PROCESSING .
   
   op checkModule : Module -> Bool .
   op attr : OpDeclSet Attr -> Bool .
@@ -19447,8 +19449,8 @@ fmod MODULE-VARIANTS is
   sort VariantProcedure .
   ops narrowing ad-hoc built-in : -> VariantProcedure .
   var VP : VariantProcedure .
-  sort IdsToRemove .                             ---- moved to COMMAND-PROCESSING
-  ops all non-handled : -> IdsToRemove .         ---- moved to COMMAND-PROCESSING
+----  sort IdsToRemove .                             ---- moved to COMMAND-PROCESSING
+----  ops all non-handled : -> IdsToRemove .         ---- moved to COMMAND-PROCESSING
   var Which : IdsToRemove .  
   
   op removeIds : Module IdsToRemove ~> Module .  ---- moved to COMMAND-PROCESSING

@@ -71,7 +71,7 @@ fmod LOGIC-PROCESSING is
   eq breakInferenceSystem('_+_['_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3], T4]) 
     = ('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3]) | breakInferenceSystem(T4) . 
   eq breakInferenceSystem('_+_[T1, '_`(_`)-`-`-`-`-`-`-`-`-`-_[T2, T3, T4]]) 
-    = '_`(_`)-`-`-`-`-`-`-`-`-`-_[T2, T3, T4] | breakInferenceSystem(T1) . 
+    = ('_`(_`)-`-`-`-`-`-`-`-`-`-_[T2, T3, T4]) | breakInferenceSystem(T1) . 
   eq breakInferenceSystem('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3]) 
     = '_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, T2, T3] . 
   eq breakInferenceSystem('empty.InferenceSystem) = emptyTermSet . 
@@ -93,9 +93,9 @@ fmod LOGIC-PROCESSING is
               genProofJumps(TS)))), 
         '+, '\n) .
         
-  eq genProofJumps('_`(_`)-`-`-`-`-`-`-`-`-`-_['empty.FormulaList, N, T] | TS) 
+  eq genProofJumps(('_`(_`)-`-`-`-`-`-`-`-`-`-_['empty.FormulaList, N, T]) | TS) 
     = genProofJumps(TS) .
-  eq genProofJumps('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, N, T2] | TS) 
+  eq genProofJumps(('_`(_`)-`-`-`-`-`-`-`-`-`-_[T1, N, T2]) | TS) 
     = '_+_[genProofJumps(breakFormulaList(T1), N, T2), 
            genProofJumps(TS)] 
     [owise] .

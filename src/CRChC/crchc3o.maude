@@ -414,7 +414,7 @@ fmod MEMBERSHIP-ASSERTION-SET is
              else nil
              fi)
             if All then '\s status2qid(Status) else nil fi
-            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) '. '\o
+            '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) '. '\o '\n
        else nil
        fi 
        eMetaPrettyPrint(M, MAS, All)) .
@@ -427,7 +427,7 @@ fmod MEMBERSHIP-ASSERTION-SET is
              fi)
             if All then '\s status2qid(Status) else nil fi
             '\n '\s '\s '\s '\s metaPrettyPrint(M, T) '\s ': '\s eMetaPrettyPrint(S) 
-            '\n '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o
+            '\n '\s '\s '\s '\s '\b 'if '\o eMetaPrettyPrint(M, Cd) '\b '. '\o '\n
        else nil
        fi 
        eMetaPrettyPrint(M, MAS, All)) .
@@ -2016,12 +2016,12 @@ mod CRChC-TOOLS is
   op $prepareModule : Module Bool -> Module .
   ---- The 2nd arg. indicates whether we are in the ground case or not
   eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
-  eq $prepareModule(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), non-handled)) .
+  eq $prepareModule(M, false) = removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), non-handled)) .
   
 ----  op $prepareModuleNoIds : Module Bool -> Module .
 ----  ---- The 2nd arg. indicates whether we are in the ground case or not
 ----  eq $prepareModuleNoIds(M, true) = $prepareModuleNoIds(freezeNonCtors(M), false) .
-----  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(acuCohComplete(removeNonExecs(M)), all)) .
+----  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), all)) .
   
   op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
   op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .

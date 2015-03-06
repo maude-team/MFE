@@ -1,0 +1,14 @@
+(set include BOOL off .)
+(set include BOOL-OPS off .)
+
+(fmod FOO is 
+   sort Foo .
+   ops f g : -> Foo .
+   ceq f = g if f = f .
+ endfm)
+
+(select tool MTT .)
+(select external tool aprove .)
+(select path C;A .)
+
+(ct FOO .)

@@ -1,24 +1,26 @@
   load readers-writers-preds.maude
   
   mod READERS-WRITERS-ABS is
-    including READERS-WRITERS-PREDS .
-    including READERS-WRITERS .
-    eq < s(s(N:Nat)), 0 > = < s(0), 0 > .
+----   including READERS-WRITERS-PREDS .
+    including READERS-WRITERS * (sort Nat to MNat) .
+    eq < s(s(N:MNat)), 0 > = < s(0), 0 > .
   endm
 
+---(
   load model-checker.maude
-
   mod READERS-WRITERS-ABS-CHECK is
     protecting READERS-WRITERS-ABS * (sort Nat to MNat, sort State to MState, sort Prop to MProp) .
     including MODEL-CHECKER .
     including LTL-SIMPLIFIER .
   endm
+---)
 
 select MFE .
 loop init .
 
 (select tool MTT .)
 (select external tool aprove .)
+(ct READERS-WRITERS .)
 (ct READERS-WRITERS-PREDS .)
 ----(trust .)
 (ct READERS-WRITERS-ABS .)
@@ -32,7 +34,7 @@ loop init .
 
 (select tool SCC .)
 (scc READERS-WRITERS-PREDS .)
-(submit .)
+(trust .)
 
 (scc READERS-WRITERS-ABS .)
 (submit .)
@@ -40,6 +42,7 @@ loop init .
 (select tool ChC .)
 (cch READERS-WRITERS-PREDS .)
 (submit .)
+
 (cch READERS-WRITERS-ABS .)
 (submit .)
 

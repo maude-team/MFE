@@ -28,7 +28,7 @@ fmod TERMINATION-CHECK is
         special (id-hook TerminationCheckerSymbol (checktermination)
                  op-hook succSymbol (s_ : Nat ~> NzNat)
                  op-hook stringSymbol (<Strings> : ~> String))].
-
+   
 *** First parameter: Name of the log file.
 *** Second parameter: String to be written to the file.
 *** Third parameter: true -> remove previous file content,

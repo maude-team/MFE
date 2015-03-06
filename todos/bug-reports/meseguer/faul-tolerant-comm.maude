@@ -1,0 +1,101 @@
+load model-checker.maude 
+
+*** should load model-cheker.maude before importing this file
+*** in my version of model-checker.maude SATISFACTION only imports BOOL-OPS
+
+set include BOOL off .
+
+fmod LIST-NATURAL is
+  sorts Natural NeList List .
+  subsorts Natural < NeList < List .
+  op 0 : -> Natural [ctor] .
+  op s : Natural -> Natural [ctor] .
+  op nil : -> List [ctor] .
+  op _ _ : Natural NeList -> NeList [ctor] .
+  op _ + _ : List List -> List .
+  vars L P Q : List .
+  var  N : Natural .
+  var  NL : NeList .
+  eq L + nil = L .
+  eq nil + L = L .
+  eq (L + P) + Q = L + (P + Q) .
+  eq N + NL = N NL .
+  eq (N NL) + P = N (NL + P) .
+endfm
+
+mod FT-COMM is protecting LIST-NATURAL .
+  sorts Msg MsgConf System Label .
+  subsort Msg < MsgConf .
+  op ack : Natural -> Msg [ctor] .
+  op [_,_] : Natural Natural -> Msg [ctor] .
+  op null : -> MsgConf [ctor] .
+  op _,_ : MsgConf MsgConf -> MsgConf [ctor assoc comm id: null] .
+  ops init snd1 snd2 rec1 rec2 drop ack-rec1 ack-rec2 : -> Label [ctor] .
+  op {_;_|_|_;_}_ : List Natural MsgConf Natural List Label -> System [ctor] .
+  var LB : Label .  vars M N K : Natural .  var L : NeList .  vars P Q : List .
+  var MSG : Msg . var C : MsgConf .
+  rl [snd1] : {K L ; N | C | M ; Q}LB => {K L ; N | [K,N],C | M ; Q}snd1 .
+  rl [snd2] : {K ; N | C | M ; Q}LB => {K ; N | [K,N],C | M ; Q}snd2 .
+  rl [rec1] : {P ; N | C,[K,M] | M ; Q}LB => {P ; N | C,ack(M) | s(M) ; Q + K}rec1 .
+  rl [rec2] : {P ; N | C,[K,M] | s(M) ; Q}LB => {P ; N | C,ack(M) | s(M) ; Q}rec2 .
+  rl [drop] : {P ; N | C,MSG | M ; Q}LB => {P ; N | C | M ; Q}drop .
+  rl [ack-rec1] : {K L ; N | C,ack(N) | M ; Q}LB => {L ; s(N) | C | M ; Q}ack-rec1 .
+  rl [ack-rec2] : {K ; N | C,ack(N) | M ; Q}LB => {nil ; s(N) | C | M ; Q}ack-rec2 .  
+endm
+
+mod FT-COMM-ABS is including FT-COMM .
+  var LB : Label .  vars M N K : Natural .  var L : NeList .  vars P Q : List .
+  var MSG : Msg . var C : MsgConf .
+  eq MSG,MSG = MSG .
+  rl [rec1] : {P ; N | C,[K,M]| M ; Q}LB => {P ; N | C,ack(M),[K,M]| s(M); Q + K}rec1 .
+  rl [rec2] : {P ; N | C,[K,M]| s(M); Q}LB => {P ; N | C,ack(M),[K,M]| s(M); Q}rec2 .
+  rl [drop] : {P ; N | MSG,C | M ; Q}LB => {P ; N | MSG,C | M ; Q}drop .
+  rl [ack-rec1] : {K L ; N | C,ack(N)| M ; Q}LB => {L ; s(N)| C,ack(N)| M ; Q}ack-rec1 .
+  rl [ack-rec2] : {K ; N | C,ack(N)| M ; Q}LB => {nil ; s(N)| C,ack(N)| M ; Q}ack-rec2 .
+endm
+
+mod FT-COMM-ABS-PREDS is protecting FT-COMM-ABS .
+  including SATISFACTION .
+  subsort System < State .
+  var LB : Label .  vars M N K : Natural .  var L R : NeList .  vars P Q U : List .
+  var MSG : Msg . var C : MsgConf .
+
+  op initial : -> System .
+
+  eq initial = {0 (s(0) s(s(0))) ; 0 | null | 0 ; nil}init .
+
+  op _~_ : Natural Natural -> Bool [comm] .
+  op prefix : List List -> Bool .
+
+  eq 0 ~ 0 = true .
+  eq 0 ~ s(N) = false .
+  eq s(N) ~ s(M) = N ~ M .
+  eq prefix(nil,Q) = true .
+  eq prefix(L,nil) = false .
+  eq prefix(N,M) = N ~ M .
+  eq prefix(N,M L) = N ~ M .
+  eq prefix(N L,M) = false .
+  eq prefix(N L,M R) = (N ~ M) and prefix(L,R) .
+
+  ops enabled taken fair : Label -> Prop .
+  ops rec rec-prefix : List -> Prop .
+
+  eq {P ; N | C,[K,M]| M ; Q}LB |= enabled(rec1) = true .
+  eq {P ; N | C,[K,M]| s(M) ; Q}LB |= enabled(rec2) = true .
+  eq {K L ; N | C,ack(N) | M ; Q}LB |= enabled(ack-rec1) = true .
+  eq {P ; N | MSG,C | M ; Q}LB |= enabled(drop) = true .
+  eq {P ; N | C | M ; Q}LB |= taken(LB) = true .
+  eq {P ; N | C | M ; Q}LB |= rec(Q) = true .  
+  eq {P ; N | C | M ; Q}LB |= rec-prefix(U) = prefix(Q,U) .    
+endm
+
+mod CHECK-FT-COMM-ABS-PREDS is
+  protecting FT-COMM-ABS-PREDS .
+  including MODEL-CHECKER .
+endm
+
+red modelCheck(initial,[] rec-prefix(0 (s(0) s(s(0))))) .
+  
+red modelCheck(initial,(((fair(rec1) /\ fair(rec2) ) /\
+fair(ack-rec1))
+  -> <> rec(0 (s(0) s(s(0)))))) .

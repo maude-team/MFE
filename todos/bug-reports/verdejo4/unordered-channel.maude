@@ -1,0 +1,56 @@
+ set include BOOL off .
+
+  fmod UNORDERED-CHANNEL-EQ is
+    sorts Natural List Msg Conf State .
+    subsort Msg < Conf .
+    op 0 : -> Natural [ctor] .
+    op s : Natural -> Natural [ctor] .
+    op nil : -> List [ctor] .
+    op _;_ : Natural List -> List [ctor] .   *** list constructor
+    op _@_ : List List -> List .      *** list append
+    op [_,_] : Natural Natural -> Msg [ctor] .
+    op ack : Natural -> Msg [ctor] .
+    op null : -> Conf [ctor] .
+    op __ : Conf Conf -> Conf [ctor assoc comm id: null] .
+    op {_,_|_|_,_} : List Natural Conf List Natural -> State [ctor] .
+
+    vars N M J K : Natural .      
+    vars L P Q : List .
+    var  C : Conf .
+
+    eq nil @ L = L .
+    eq (N ; L) @ P = N ; (L @ P) . 
+  endfm
+
+  mod UNORDERED-CHANNEL is
+    pr UNORDERED-CHANNEL-EQ .
+
+    vars N M J K : Natural .      
+    vars L P Q : List .
+    var  C : Conf .
+
+    rl [snd]: {N ; L, M | C | P, K} => {N ; L, M | [N, M] C | P, K} .     
+    rl [rec]: {L, M | [N, J] C | P, J}  
+      => {L, M | ack(J) C | P @ (N ; nil), s(J)}  .
+    rl [rec-ack]: {N ; L, J | ack(J) C | P, M}  => {L, s(J) | C | P, M} .
+  endm
+
+select MFE .
+loop init .
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct UNORDERED-CHANNEL .)
+
+(select tool CRC .)
+(ccr UNORDERED-CHANNEL .)
+(submit .)
+
+(select tool SCC .)
+(scc UNORDERED-CHANNEL .)
+(submit .)
+
+(select tool ChC .)
+(cch UNORDERED-CHANNEL .)
+(submit .)
+

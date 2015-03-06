@@ -1,0 +1,3334 @@
+******************************************************************************
+*** Transformation of Maude specs for the Maude Termination Tool (MTT) 
+******************************************************************************
+***                                             
+***                                             MTT specification version 1.5j
+***                                          To be run on Full Maude Alpha 103
+*** Author: Francisco Duran                     
+*** Last modified: August 11th, 2014
+***                                             
+******************************************************************************
+
+fmod MTT-BANNER is 
+  pr STRING .
+  op mtt-banner : -> String .
+  eq mtt-banner = "Maude Termination Tool 1.5j - August 11th 2014" .
+endfm
+
+******************************************************************************
+***
+*** Transformation functions provided:
+*** - scs-mctrs2cs-mctrs: desugar order-sorted information in rewrite theories 
+***   SRT[MEL] -> RT[MEL]. (It leaves the subsorts relations to allow the 
+***   module be accepted by Maude.) 
+*** - cs-mctrs2cs-ctrs: takes a membership equational theory and returns an
+***   unsorted rewrite theory (it takes two arguments, the type of 
+***   transformation, which can be either complete, no-sorts, or no-kinds, 
+***   and a boolean value indicating whether the and-optimization is to be 
+***   considered)
+*** - cs-ctrs2cs-trs: takes an unsorted conditional rewrite theory and
+***   returns an unsorted unconditional rewrite theory
+***
+*** Given these transformation functions:
+*** - Given a membership equational theory, procTPDB returns
+***   the corresponding CiME specification as a list of qids. It calls 
+***   the above transformation functions and then does the basic conversion
+***   to the TPDB TRS notation. 
+***   Commands available:
+***
+***     TPDB <path> and-optimization [on/off] context-sensitive [on/off] .
+***
+***     where <path> can be C;A;B, C;Uk;B, C;U;B, C;A, C;Uk, C;U, C;OS;B;O-L, 
+***     C;OS;B;Uk, C;OS;B;U, C;OS;Uk;B, C;OS;U;B, OS;T;B;O-L, OS;T;B;Uk, OS;T;B;U, 
+***     OS;T;Uk;B, or OS;T;U;B
+***  See IJCAR'08 paper (or other papers on the MTT) for details on these transformations.
+***
+***               SRWT
+***              /    \
+***           C /      \ OS
+***            /        \
+***       SCS-MCTRS    OS-RWT
+***         /     \      /
+*** A,Uk,U /    OS \    / T
+***       /         \  /
+***  CS-CTRS <---- CS-OS-CTRS
+***      \    Uk,U   |
+***       \          | B
+***        \         |
+***       B \      CS-OS-TRS
+***          \      /
+***           \    / O-L,Uk,U
+***            \  /
+***           CS-TRS
+***  
+*** RESTRICTIONS:                                                          
+*** - Built-ins are not handled. This includes BOOL. The default importation
+***   of BOOL is disabled at the end of this file.
+*** - AC and C are the only combinations of attributes supported. Remove all 
+***   other attributes with the procedures described at FroCoS.
+*** - owise attribute is not supported
+*** - if the (original) specification has mbs the tool doesn't work, only order-sorted case
+***
+*** TO DO
+*** - show path
+*** - select path
+*** - allows submitting CTRS (CS-CTRS without strategies) to termination tools
+*** 
+******************************************************************************
+
+set show loop stats off .
+set show loop timing off .
+set show advisories off .
+
+fmod TPDB-SIGN is
+  including FULL-MAUDE-SIGN .
+  sorts @DTT@ @Value@ @Path@ .
+  ops on off : -> @Value@ . 
+----  ops complete no-sorts no-kinds : -> @DTT@ .
+----  op C;A;B_ : @DTT@ -> @Path@ .
+----  op C;OS;B';O-L : -> @Path@ .
+----  op C;OS;B';A`no-sorts : -> @Path@ .
+----  op C;OS;A;B_ : @DTT@ -> @Path@ . ---- only no-sorts and no-kinds
+----  op OS;T;B';O-L : -> @Path@ .
+----  op OS;T;B';A`no-sorts : -> @Path@ .
+----  op OS;T;A;B_ : @DTT@ -> @Path@ . ---- only no-sorts and no-kinds
+----  op C;A_ : @DTT@ -> @Path@ . ---- conditional context sensitive not yet supported by AProVE
+  
+  op C;A;B : -> @Path@ .
+  op C;Uk;B : -> @Path@ .
+  op C;U;B : -> @Path@ .
+  op C;A : -> @Path@ .  ---- conditional context sensitive not yet supported by AProVE
+  op C;Uk : -> @Path@ . ---- conditional context sensitive not yet supported by AProVE
+  op C;U : -> @Path@ .  ---- conditional context sensitive not yet supported by AProVE
+  op C;OS;B;O-L : -> @Path@ .
+  op C;OS;B;Uk : -> @Path@ .
+  op C;OS;B;U : -> @Path@ .
+  op C;OS;Uk;B : -> @Path@ .
+  op C;OS;U;B : -> @Path@ .
+  op OS;T;B;O-L : -> @Path@ .
+  op OS;T;B;Uk : -> @Path@ .
+  op OS;T;B;U : -> @Path@ .
+  op OS;T;Uk;B : -> @Path@ .
+  op OS;T;U;B : -> @Path@ .
+  
+  
+  op TPDB_and-optimization_context-sensitive_. : 
+       @Path@ @Value@ @Value@ -> @Command@ .
+  op TPDB_and-optimization_context-sensitive__. : 
+       @Path@ @Value@ @Value@ @ModExp@ -> @Command@ .
+endfm
+
+fmod OTHER-SIGN is  --------------------------- to be removed
+  including TPDB-SIGN .
+  op ac? . : -> @Command@ .
+  op ac?_. : @ModExp@ -> @Command@ .
+  op strat? . : -> @Command@ .
+  op strat?_. : @ModExp@ -> @Command@ .
+endfm
+
+view OpDeclSet from TRIV to META-MODULE is
+  sort Elt to OpDeclSet .
+endv
+
+view MembAxSet from TRIV to META-MODULE is
+  sort Elt to MembAxSet .
+endv
+
+fmod MTT-PRELIMINARIES is
+  pr META-LEVEL .
+  pr EXT-SORT .
+  pr UNIT .
+  
+  sort NeKindList KindList .
+  subsort Kind < NeKindList < KindList < TypeList .
+  subsort NeKindList < NeTypeList .
+
+  op nil : -> KindList [ctor].
+  op __ : KindList KindList -> KindList [ctor ditto].
+  op __ : NeKindList KindList -> NeKindList [ctor ditto].
+  op __ : KindList NeKindList -> NeKindList [ctor ditto].
+  
+  var  M : Module .
+  var  Tp : Type .
+  vars TpL SL : TypeList .
+  vars T T' T'' T''' T'''' : Term .
+  var  C : Constant .
+  var  V : Variable .
+  var  MN F G : Qid .
+  var  QIL : QidList .
+  var  TL : TermList .
+  vars Cond Cond' : Condition .
+  var  AtS : AttrSet .
+  var  EqS : EquationSet .
+  var  RlS : RuleSet .
+  var  S : Sort .
+  vars SS SS' : SortSet .
+  vars St St' St'' : String .
+  var  OPDS : OpDeclSet .
+  var  FS : QidSet .
+  var  SSD : SubsortDecl .
+  var  SSDS : SubsortDeclSet .
+  var  AND : Bool .
+  var  N : Nat .
+  vars NL NL' : NatList .
+  
+  op SINGLE-SORT : -> Sort .
+  eq SINGLE-SORT = 'S .
+
+  op getKind : Module TypeList ~> KindList [ditto] .
+ ceq getKind(M, Tp TpL) = getKind(M, Tp) getKind(M, TpL) if TpL =/= nil .
+  eq getKind(M, nil) = nil .
+  
+  sorts Path TransfType .
+  ops C;A;B C;OS;A;B OS;T;A;B C;A OS;T;B;A C;OS;B;A : TransfType -> Path .
+  ops C;OS;B;O-L OS;T;B;O-L : -> Path .
+  ops complete no-sorts no-kinds : -> TransfType .
+  
+  op string : Path -> String .
+  op string : TransfType -> String .
+  eq string(C;A;B(TT:TransfType)) = "C;" + string(TT:TransfType) + ";B" . 
+  eq string(C;OS;A;B(TT:TransfType)) = "C;OS;" + string(TT:TransfType) + ";B" . 
+  eq string(OS;T;A;B(TT:TransfType)) = "OS;T;" + string(TT:TransfType) + ";B" . 
+  eq string(C;A(TT:TransfType)) = "C;" + string(TT:TransfType) . 
+  eq string(OS;T;B;A(TT:TransfType)) = "OS;T;B;" + string(TT:TransfType) .
+  eq string(C;OS;B;A(TT:TransfType)) = "C;OS;B;" + string(TT:TransfType) .
+  eq string(C;OS;B;O-L) = "C;OS;B;O-L" .
+  eq string(OS;T;B;O-L) = "OS;T;B;O-L" .
+  eq string(complete) = "A" .
+  eq string(no-kinds) = "Uk" .
+  eq string(no-sorts) = "U" .
+  
+  op vars : Term -> QidSet .
+  op vars : Condition -> QidSet .
+  op vars : RuleSet -> QidSet .
+  op varsAux : Term -> QidSet .
+  op varsAux : Condition -> QidSet .
+  op varsAux : RuleSet -> QidSet .
+
+  eq vars(T) = varsAux(T) .
+  eq varsAux(C) = none .
+  eq varsAux(V) = V .
+  eq varsAux(F[TL]) = varsAux(TL) .
+  eq varsAux((T, TL)) = (varsAux(T) ; varsAux(TL)) .
+
+  eq vars(Cond) = varsAux(Cond) .
+  eq varsAux(T => T' /\ Cond) = (vars(T) ; vars(T') ; varsAux(Cond)) .
+  eq varsAux(T = T'  /\ Cond) = (vars(T) ; vars(T') ; varsAux(Cond)) .
+  eq varsAux(T := T' /\ Cond) = (vars(T) ; vars(T') ; varsAux(Cond)) .
+  eq varsAux(T : S   /\ Cond) = (vars(T) ; varsAux(Cond)) .
+  eq varsAux((nil).Condition) = none .
+
+  eq vars(RlS) = varsAux(RlS) .
+  eq varsAux(rl T => T' [AtS] . RlS) = (varsAux(T) ; varsAux(RlS)) .
+  eq varsAux(crl T => T' if Cond [AtS] . RlS) 
+    = (varsAux(T) ; vars(Cond) ; varsAux(RlS)) .
+  eq varsAux((none).RuleSet) = none .
+  
+  op replace : String String String -> String .
+  eq replace(St, St', St'') 
+    = if find(St, St', 0) == notFound
+      then St
+      else replace(substr(St, 0, find(St, St', 0)) 
+                     + St'' 
+                     + substr(St, find(St, St', 0) + length(St'), length(St)),
+             St', St'')
+      fi .
+
+  op size : TermList -> Nat .
+  eq size((T, TL)) = s size(TL) .
+  eq size(empty) = 0 .
+
+  ---- filterTPDB filters any symbol not accepted by the termiantion tools (`[, `], `{, `}, ` and `,)
+  ---- possibly `{ and `} do not appear  
+  op filterTPDB : Module ~> Module .
+  op filterTPDB : OpDeclSet ~> OpDeclSet .
+  op filterTPDB : RuleSet ~> RuleSet .
+  op filterTPDB : EquationSet ~> EquationSet .
+  op filterTPDB : Condition -> Condition .
+  op filterTPDB : AttrSet -> AttrSet .
+  op filterTPDB : Term -> Term [memo] .
+  op filterTPDB : TermList -> TermList [memo] .
+  op filterTPDB : TypeList -> TypeList [memo] .
+  op filterTPDB : Sort -> Sort [memo] .
+  op filterTPDB : Kind -> Kind [memo] .
+  op filterTPDB : Type -> Type [memo] .
+  op filterTPDB : TermQid -> TermQid [memo] .
+  op filterTPDB : Variable -> Variable [memo] .
+  op filterTPDB : Constant -> Constant [memo] .
+  op filterTPDB : QidSet -> QidSet [memo] .
+  eq filterTPDB(mod MN is nil sorts 'S . none OPDS none none RlS endm) 
+    = mod MN is nil sorts 'S . none filterTPDB(OPDS) none none filterTPDB(RlS) endm .
+  eq filterTPDB(op F : TpL -> Tp [AtS] . OPDS) 
+    = op filterTPDB(F) : filterTPDB(TpL) -> filterTPDB(Tp) [filterTPDB(AtS)] . filterTPDB(OPDS) .
+  eq filterTPDB((none).OpDeclSet) = none .
+  eq filterTPDB(rl T => T' [AtS] . RlS)
+    = rl filterTPDB(T) => filterTPDB(T') [filterTPDB(AtS)] . filterTPDB(RlS) .
+  eq filterTPDB(crl T => T' if Cond [AtS] . RlS)
+    = crl filterTPDB(T) => filterTPDB(T') if filterTPDB(Cond) [filterTPDB(AtS)] . filterTPDB(RlS) .
+  eq filterTPDB((none).RuleSet) = none .
+  eq filterTPDB(eq T = T' [AtS] . EqS)
+    = eq filterTPDB(T) = filterTPDB(T') [filterTPDB(AtS)] . filterTPDB(EqS) .
+  eq filterTPDB(ceq T = T' if Cond [AtS] . EqS)
+    = ceq filterTPDB(T) = filterTPDB(T') if filterTPDB(Cond) [filterTPDB(AtS)] . filterTPDB(EqS) .
+  eq filterTPDB((none).EquationSet) = none .
+  eq filterTPDB(T = T' /\ Cond) = filterTPDB(T) = filterTPDB(T') /\ filterTPDB(Cond) .
+  eq filterTPDB(T := T' /\ Cond) = filterTPDB(T) := filterTPDB(T') /\ filterTPDB(Cond) .
+  eq filterTPDB(T => T' /\ Cond) = filterTPDB(T) => filterTPDB(T') /\ filterTPDB(Cond) .
+  eq filterTPDB(T : S /\ Cond) = filterTPDB(T) : filterTPDB(S) /\ filterTPDB(Cond) .
+  eq filterTPDB((nil).Condition) = nil .
+  eq filterTPDB(id(T) AtS) = id(filterTPDB(T)) filterTPDB(AtS) .
+  eq filterTPDB(format(QIL) AtS) = filterTPDB(AtS) .
+  eq filterTPDB(AtS) = AtS [owise] .
+  eq filterTPDB(V) = qid(string(filterTPDB(getName(V))) + ":" + string(filterTPDB(getType(V)))) .
+  eq filterTPDB(C) = qid(string(filterTPDB(getName(C))) + "." + string(filterTPDB(getType(C)))) .
+  eq filterTPDB(F[TL]) = filterTPDB(F) [ filterTPDB(TL) ] .
+  eq filterTPDB((T, TL)) = (filterTPDB(T), filterTPDB(TL)) .
+  eq filterTPDB(empty) = empty .
+ ceq filterTPDB(Tp TpL) = filterTPDB(Tp) filterTPDB(TpL) if TpL =/= nil .
+  eq filterTPDB((nil).TypeList) = nil .
+  eq filterTPDB(F) 
+    = qid(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string(F), 
+                                          "`[", "@osb@"), 
+                                          "`]", "@csb@"), 
+                                          "`{", "@ocb@"), 
+                                          "`}", "@ccb@"), 
+                                          "`(", "@opar@"), 
+                                          "`)", "@cpar@"), 
+                                          ";", "@semicolon@"), 
+                                          "`,", "@comma@"), 
+                                          "`", "@bq@"), 
+                                          "_", "@underscore@"), 
+                                          "|", "@vertical-bar@")) 
+    [owise] .
+ ceq filterTPDB(F ; FS) = filterTPDB(F) ; filterTPDB(FS) if FS =/= none .
+  eq filterTPDB((none).QidSet) = none .
+  
+  op _in_ : SubsortDecl SubsortDeclSet -> Bool .
+  eq SSD in SSD SSDS = true .
+  eq SSD in SSDS = false [owise] .
+
+  op and-optimization : Module -> Module .
+  op and-optimization : RuleSet -> RuleSet .
+*** - A conditional fragment without extra variables like
+***     T1 => tt /\ ... /\ Tn => tt
+***   in a conditional rule can be collapsed into a single expression
+***     and(T1, and(..., Tn, ...) => tt
+***   by introducing a binary and operator defined by
+***     op and : S S -> S [frozen (2)] ---- strat (1 0 2 0)
+***     rl and(tt, T) => T .
+***   Moreover, if the right-hand side of the conditional rule is tt, we
+***   can use the previous expression with and as the new right hand-side
+***   of the rule: the conditional rule
+***     T => tt if T1 => tt /\ ... /\ Tn => tt
+***   eventually collapses into the unconditional one
+***     T => and(T1, and(..., Tn), ...) 
+  eq and-optimization(M)
+    = addOps( 
+        op 'and : SINGLE-SORT SINGLE-SORT -> SINGLE-SORT [frozen (2)] ., ----[strat (1 0 2 0)]
+        setRls(M, 
+          (rl 'and[qid("tt." + string(SINGLE-SORT)), qid("X:" + string(SINGLE-SORT))]
+             => qid("X:" + string(SINGLE-SORT)) 
+             [none] .
+           and-optimization(getRls(M))))) .
+ ceq and-optimization(
+       crl T => T' 
+         if Cond /\ T'' => T''' /\ T'''' => T''' /\ Cond' 
+         [AtS] .
+       RlS) 
+    = and-optimization(
+       crl T => T' 
+         if Cond /\ 'and[T'', T''''] => T''' /\ Cond' 
+         [AtS] .
+       RlS)
+    if T''' := qid("tt." + string(SINGLE-SORT)) .
+ ceq and-optimization(crl T => T' if T'' => T' [AtS] . RlS) 
+    = and-optimization(rl T => T'' [AtS] . RlS)
+    if T' := qid("tt." + string(SINGLE-SORT)) .
+  eq and-optimization(RlS) = RlS [owise] .
+
+  eq (crl T => T' if nil [AtS] .) = (rl T => T' [AtS] .) .
+  eq (crl T => T' if 'tt.S => 'tt.S [AtS] .) = (rl T => T' [AtS] .) .
+  eq (cmb T : S if nil [AtS] .) = (mb T : S [AtS] .) .
+  eq (cmb T : S if 'tt.S => 'tt.S [AtS] .) = (mb T : S [AtS] .) .
+
+  op complement : NatList Nat -> NatList .
+  ---- given a nat list n3 n4 n7 and a natural number 10 returns its compementary 
+  ---- lit of size 10: n1 n2 n5 n6 n8 n9 n10
+  ---- used to generate frozen attrs from strat ones
+  eq complement(NL (s N) NL', s N) = complement(NL NL', N) .
+  eq complement(NL, s N) = complement(NL, N) (s N) .
+  eq complement(NL, 0) = nil .
+
+endfm
+
+---(
+red vars('V:Nat) .
+red eLeastSort(upModule('NAT, false), 
+        ('_+_['0.Nat, '0.Nat], '0.Nat)) .
+red getKind(upModule('NAT, false), 
+      eLeastSort(upModule('NAT, false), 
+        ('_+_['0.Nat, '0.Nat], '0.Nat))) .
+red replace("asdfghjklasdfghjkl", "dfg", "---") .
+red complement(2 4 6, 10) .
+eof
+)
+
+******************************************************************************
+***                                             
+*** C) srwt2scs-mctrs : SRWT -> SCS-MCTRS
+*** -------------------------------------        
+***                                             
+*** srwt2scs-mctrs merges equations and rules
+***
+*** (First step in HOL paper's A transformation)
+***                                             
+*** - a new kind [Thruth]                       
+*** - a new constant tt : -> [Thruth]           
+*** - for each kind K (used in an equational condition _=_)            
+***     - a binary operator equal : K K -> Thruth ----[strat (1 2 0)]  
+***     - a rule equal(X:K, X:K) -> tt.K        
+*** - an operator declaration f : S1 ... Sn -> S [strat(S) AtS] is replaced by        
+***      - an operation declaration f : [S1] ... [Sn] -> [S] [frozen(S^c) AtS]           
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ An                
+***   a conditional mb of the form  
+***     t : S if ~A1 /\ ... /\ ~An               
+*** - for each conditional equation of the form 
+***     t = t' if A1 /\ ... /\ An               
+***   involving variables X1:S1...Xn:Sn, a conditional rule of the form
+***     t -> t' if ~A1 /\ ... /\ ~An               
+***   where                                     
+***     - if Ai is a membership ui : Si, then ~Ai is ui : Si   
+***     - if Ai is a matching equation ui := vi, then ~Ai is the rewrite  
+***       condition vi -> ui 
+***     - if Ai is an ordinary equation ui = vi, then ~Ai is the rewrite  
+***       condition equal(vi, ui) -> tt.[Thruth]  
+*** The equal operators are introduced only if required for the conditions
+*** of equations and memberships.               
+***                                             
+******************************************************************************
+
+fmod SRWT->SCS-MCTRS is
+  ex UNIT . ---- addMbs, setSubsorts 
+  pr MTT-PRELIMINARIES .
+
+  op srwt2scs-mctrs : Module -> SModule .
+
+  vars M M' M2 M3 M4 M5 M6 : [Module] .
+  vars S S' : Sort .
+  vars Tp Tp' : Type .
+  var  K : Kind .
+  var  TpL : TypeList .
+  var  KS : KindSet .
+  var  SS : SortSet .
+  vars N N' N'' : Nat .
+  vars NL NL' : NatList .
+  var  F : Qid .
+  var  SSDS : SubsortDeclSet .
+  vars OPDS OPDS' : OpDeclSet .
+  var  AtS : AttrSet .
+  var  MAS : MembAxSet .
+  vars EqS EqS' : EquationSet .
+  vars RlS RlS' : RuleSet .
+  vars MbS MbS' : MembAxSet .
+  vars T T' T'' T''' : Term .
+  vars Cond Cond' : Condition .
+  var  C : Constant .
+  var  V : Variable .
+  var  VS : QidSet .
+  var  TL : TermList .
+
+  ceq srwt2scs-mctrs(M)
+    = M5
+    if M' := addSorts('Thruth, M)
+       /\ M2 := setOps(M', op 'tt : nil -> 'Thruth [none] .
+                           muphiOps(M, getOps(M))
+                           equalOps(kindsInEqConds(M, getEqs(M), getMbs(M), getRls(M))))
+       /\ M3 := setMbs(M2, rmEqs(getMbs(M)))
+       /\ M4 := setEqs(M3, none) 
+       /\ M5 := setRls(M4, rmEqs(getRls(M))
+                           rmEqs(getEqs(M))
+                           equalRls(kindsInEqConds(M, getEqs(M), getMbs(M), getRls(M)))) .
+
+  op kindsInEqConds : Module EquationSet MembAxSet RuleSet -> KindSet .
+  eq kindsInEqConds(M, 
+       ceq T = T' if Cond /\ T'' = T''' /\ Cond' [AtS] . EqS, MAS, RlS)
+    = getKind(M, leastSort(M, T'')) ; kindsInEqConds(M, EqS, MAS, RlS) . 
+  eq kindsInEqConds(M, 
+       EqS, MAS, crl T => T' if Cond /\ T'' = T''' /\ Cond' [AtS] . RlS)
+    = getKind(M, leastSort(M, T'')) ; kindsInEqConds(M, EqS, MAS, RlS) . 
+  eq kindsInEqConds(M, EqS, 
+       cmb T : S if Cond /\ T' = T'' /\ Cond' [AtS] . MAS, RlS)
+    = getKind(M, S) ; kindsInEqConds(M, EqS, MAS, RlS) . 
+  eq kindsInEqConds(M, EqS, MAS, RlS) = none [owise] .
+  
+  op equalOps : KindSet -> OpDeclSet .
+  eq equalOps(K ; KS) = (op 'equal : K K -> 'Thruth [none] .) equalOps(KS) .
+  eq equalOps(none) = none .
+  
+  op equalRls : KindSet -> RuleSet .
+  eq equalRls(K ; KS) 
+    = (rl 'equal[qid("X:" + string(K)), qid("X:" + string(K))] 
+         => qid("tt.`[Thruth`]") 
+         [none] .)
+      equalRls(KS) .
+  eq equalRls(none) = none .
+
+  op muphiOps : Module OpDeclSet -> OpDeclSet .
+  ---- replaces the strat attributes by frozen ones
+  ---- 
+  eq muphiOps(M, op F : nil -> Tp [AtS] . OPDS)
+    = op F : nil -> Tp [AtS] .
+      muphiOps(M, OPDS) .
+  eq muphiOps(M, op F : TpL -> Tp [AtS] . OPDS)
+    = op F : TpL -> Tp [muphiAttrs(AtS, size(TpL))] .
+      muphiOps(M, OPDS)
+    [owise] .
+  eq muphiOps(M, none) = none .
+  
+  op muphiAttrs : AttrSet Nat -> AttrSet .
+  op muphiAttrs : AttrSet Nat NatList NatList -> AttrSet .
+  eq muphiAttrs(AtS, N) = muphiAttrs(AtS, N, nil, nil) .
+  eq muphiAttrs(strat(NL) AtS, N, nil, NL') = muphiAttrs(AtS, N, NL, NL') .
+  eq muphiAttrs(frozen(NL) AtS, N, NL', nil) = muphiAttrs(AtS, N, NL', NL) .
+  eq muphiAttrs(AtS, N, nil, N' NL) = frozen(N' NL) AtS [owise] . 
+  eq muphiAttrs(AtS, N, N' NL, nil) 
+    = if complement(N' NL, N) == nil 
+      then AtS
+      else frozen(complement(N' NL, N)) AtS
+      fi
+    [owise] .
+  eq muphiAttrs(AtS, N, nil, nil) = AtS [owise] .
+  eq muphiAttrs(AtS, N, N' NL, N'' NL') 
+    = if intersectionNatList(N'' NL', complement(N' NL, N)) == nil
+      then AtS 
+      else frozen(intersectionNatList(N'' NL', complement(N' NL, N))) AtS 
+      fi
+    [owise] .
+   
+  op intersectionNatList : NatList NatList -> NatList .
+  eq intersectionNatList(N NL, NL')
+    = if occurs(N, NL') 
+      then N intersectionNatList(NL, NL') 
+      else intersectionNatList(NL, NL') 
+      fi .
+  eq intersectionNatList(nil, NL) = nil .
+    
+*** - for each conditional equation of the form 
+***     t = t' if A1 /\ ... /\ An               
+***   a conditional rule of the form
+***     t -> t' if ~A1 /\ ... /\ ~An               
+  op rmEqs : EquationSet -> RuleSet .
+  eq rmEqs(eq T = T' [AtS] . EqS)
+    = rl T => T' [AtS] . rmEqs(EqS) .
+  eq rmEqs(ceq T = T' if Cond [AtS] . EqS)
+    = crl T => T' if rmEqs(Cond) [AtS] .
+      rmEqs(EqS) .
+  eq rmEqs((none).EquationSet) = none .
+
+*** - for each conditional rule of the form 
+***     t => t' if A1 /\ ... /\ An               
+***   a conditional rule of the form
+***     t -> t' if ~A1 /\ ... /\ ~An               
+  op rmEqs : RuleSet -> RuleSet .
+  eq rmEqs(rl T => T' [AtS] . RlS)
+    = rl T => T' [AtS] . rmEqs(RlS) .
+  eq rmEqs(crl T => T' if Cond [AtS] . RlS)
+    = crl T => T' if rmEqs(Cond) [AtS] .
+      rmEqs(RlS) .
+  eq rmEqs((none).RuleSet) = none .
+
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ An                
+***   a conditional mb of the form  
+***     t : S if ~A1 /\ ... /\ ~An               
+  op rmEqs : MembAxSet -> MembAxSet .
+  eq rmEqs(mb T : S [AtS] . MbS)
+    = mb T : S [AtS] . rmEqs(MbS) .
+  eq rmEqs(cmb T : S if Cond [AtS] . MbS)
+    = cmb T : S if rmEqs(Cond) [AtS] .
+      rmEqs(MbS) .
+  eq rmEqs((none).MembAxSet) = none .
+  
+  op rmEqs : Condition -> Condition .
+  eq rmEqs(T : S /\ Cond) = T : S /\ rmEqs(Cond) .
+  eq rmEqs(T := T' /\ Cond) 
+    = T' => T /\ rmEqs(Cond) .
+  eq rmEqs(T = T' /\ Cond)
+    = 'equal[T, T'] => 'tt.`[Thruth`] /\ rmEqs(Cond) .
+  eq rmEqs(nil) = nil .
+endfm
+
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select SRWT->SCS-MCTRS .
+red srwt2scs-mctrs(upModule('DIE-HARD, true)) .
+red metaFrewrite(
+      srwt2scs-mctrs(upModule('DIE-HARD, true)), 
+      'initial.BasinSet,
+      100, 1) .
+set include BOOL on .
+eof
+)
+
+
+******************************************************************************
+***                                             
+*** A) scs-mctrs2cs-mctrs : SCS-MCTRS -> CS-MCTRS        
+*** ---------------------------------------------        
+***                                             
+*** (First step in HOL paper's A transformation)
+***                                             
+*** Desugar order-sorted information in MEL theories      
+*** Leaves the subsort relations to allow the module be accepted by Maude. 
+***                                             
+*** - for each subsort declaration S1 < S2      
+***      - a membership X:[S1] : S2 if X:[S1] : S1        
+*** - for each operator declaration f : S1 ... Sn -> S [AtS]       
+***      - a membership                         
+***          cmb f(X1:[S1], ..., Xn:[Sn]) : S   
+***            if X1:[S1] ::: S1 /\ ... /\ Xn:[Sn] ::: Sn .            
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ An                
+***   involving variables X1:S1...Xn:Sn, a conditional mb of the form  
+***     kinded(t) : S                           
+***       if X1:[S1] ::: S1 /\ ... /\ Xn:[Sn] ::: Sn      
+***          /\ kinded(A1) /\ ... /\ kinded(An)               
+*** - for each conditional equation of the form 
+***     t = t' if A1 /\ ... /\ An               
+***   involving variables X1:S1...Xn:Sn, a conditional rule of the form
+***     kinded(t) -> kinded(t')                 
+***       if X1:[S1] ::: S1 /\ ... /\ Xn:[Sn] ::: Sn      
+***          /\ kinded(A1) /\ ... /\ kinded(An)               
+***   where for a term t kinded(t) is the term resulting from replacing
+***   ocurrences of a variable Xi:Si for its corresponding Xi:[Si].    
+***   Similarly for conditions.
+***
+******************************************************************************
+
+fmod SCS-MCTRS->CS-MCTRS is
+  pr SRWT->SCS-MCTRS .
+  pr CONVERSION .
+  pr 2TUPLE{OpDeclSet, MembAxSet} 
+     * (op ((_,_)) to <_;_>, op p1_ to getOps, op p2_ to getMbs) .
+
+  op scs-mctrs2cs-mctrs : FModule -> SModule .
+
+  vars M M' M2 M3 M4 M5 M6 : [Module] .
+  vars S S' : Sort .
+  vars Tp Tp' : Type .
+  var  K : Kind .
+  var  TpL : TypeList .
+  var  KS : KindSet .
+  var  SS : SortSet .
+  var  N : Nat .
+  vars NL NL' : NatList .
+  var  F : Qid .
+  var  SSDS : SubsortDeclSet .
+  vars OPDS OPDS' : OpDeclSet .
+  var  AtS : AttrSet .
+  var  MAS : MembAxSet .
+  vars EqS EqS' : EquationSet .
+  vars RlS RlS' : RuleSet .
+  vars MbS MbS' : MembAxSet .
+  vars T T' T'' T''' : Term .
+  vars Cond Cond' : Condition .
+  var  C : Constant .
+  var  V : Variable .
+  var  VS : QidSet .
+  var  TL : TermList .
+
+  ceq scs-mctrs2cs-mctrs(M)
+    = M5
+    if M' := addSorts('Thruth, M)
+       /\ M2 := setOps(M', getOps(desugarOps(M, getOps(M), none, none))
+                           makeOpsSorts(M, getSorts(M)))
+       /\ M3 := setMbs(M2, kinded(M, getMbs(M))
+                           desugarSubsorts(M, getSubsorts(M))
+                           getMbs(desugarOps(M, getOps(M), none, none)))
+       ---- /\ M4 := setSubsorts(M3, none) if removed the meberships produce errors
+       /\ M4 := setEqs(M3, none) 
+       /\ M5 := setRls(M4, kinded(M, getRls(M))) .
+
+  op makeOpsSorts : Module SortSet -> OpDeclSet .
+  ---- for each sort P, an operator _::`P : `[P`] -> 'Thruth [frozen(1)]
+  eq makeOpsSorts(M, S ; SS)
+    = op qid("_::`" + string(S)) : getKind(M, S) -> '`[Thruth`] [frozen (1)] .
+      makeOpsSorts(M, SS) .
+  eq makeOpsSorts(M, (none).SortSet) = none .
+
+  op desugarSubsorts : Module SubsortDeclSet -> MembAxSet .
+  eq desugarSubsorts(M, subsort S < S' . SSDS)
+    = cmb qid("V:" + string(getKind(M, S))) : S'
+        if qid("V:" + string(getKind(M, S))) : S [none] .
+      desugarSubsorts(M, SSDS) .
+  eq desugarSubsorts(M, none) = none .
+
+  op desugarOps : Module OpDeclSet OpDeclSet MembAxSet 
+       -> Tuple{OpDeclSet, MembAxSet} .
+  eq desugarOps(M, op F : nil -> Tp [AtS] . OPDS, OPDS', MAS)
+    = desugarOps(M, OPDS,
+        op F : nil -> getKind(M, Tp) [AtS] . OPDS',
+        (if Tp :: Sort 
+         then mb qid(string(F) + "." + string(getKind(M, Tp))) : Tp [none] .
+         else none
+         fi
+         MAS)) .
+  eq desugarOps(M, op F : TpL -> Tp [AtS] . OPDS, OPDS', MAS)
+    = desugarOps(M, OPDS,
+        OPDS' op F : getKind(M, TpL) -> getKind(M, Tp) [AtS] .,
+        (if Tp :: Sort 
+         then cmb F[varArgs(M, TpL, 1)] : Tp if varCond(M, TpL, 1) [none] .
+         else none
+         fi
+         MAS))
+    [owise] .
+  eq desugarOps(M, none, OPDS, MAS) = < OPDS ; MAS > .
+
+  op varArgs : Module TypeList Nat -> TermList .
+  eq varArgs(M, Tp TpL, N)
+    = qid("V" + string(N, 10) + ":" + string(getKind(M, Tp))),
+      varArgs(M, TpL, N + 1) .
+  eq varArgs(M, nil, N) = empty .
+
+  op varCond : Module TypeList Nat -> Condition .
+  eq varCond(M, Tp TpL, N)
+    = if not Tp :: Sort
+      then nil
+      ----else qid("V" + string(N, 10) + ":" + string(getKind(M, Tp))) ::: Tp
+      else qid("_::`" + string(Tp))[qid("V" + string(N, 10) + ":" + string(getKind(M, Tp)))] = 'tt.`[Thruth`]
+      fi
+      /\ varCond(M, TpL, N + 1) .
+  eq varCond(M, nil, N) = nil .
+
+*** - for each conditional rule of the form 
+***     t => t' if A1 /\ ... /\ An               
+***   involving variables X1:S1...Xn:Sn, a conditional rule of the form
+***     kinded(t) -> kinded(t')                 
+***       if X1:[S1] ::: S1 /\ ... /\ Xn:[Sn] ::: Sn
+***          /\ kinded(A1) /\ ... /\ kinded(An)               
+  op kinded : Module RuleSet -> RuleSet .
+  eq kinded(M, rl T => T' [AtS] . RlS)
+    = if makeCondForVars(M, vars(T)) == nil 
+      then rl kinded(M, T) => kinded(M, T') [AtS] .
+      else crl kinded(M, T) => kinded(M, T') if makeCondForVars(M, vars(T)) [AtS] .
+      fi
+      kinded(M, RlS) .
+  eq kinded(M, crl T => T' if Cond [AtS] . RlS)
+    = crl kinded(M, T) => kinded(M, T')
+        if makeCondForVars(M, vars(T)) 
+           /\ kinded(M, Cond)
+           /\ makeCondForVars(M, vars(Cond) \ vars(T))
+        [AtS] .
+      kinded(M, RlS) .
+  eq kinded(M, (none).RuleSet) = none .
+
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ An                
+***   involving variables X1:S1...Xn:Sn, a conditional mb of the form  
+***     kinded(t) : S                           
+***       if X1:[S1] : S1 /\ ... /\ Xn:[Sn] : Sn
+***          /\ kinded(A1) /\ ... /\ kinded(An)               
+  op kinded : Module MembAxSet -> MembAxSet .
+  eq kinded(M, mb T : S [AtS] . MbS)
+    = if makeCondForVars(M, vars(T)) == nil
+      then mb kinded(M, T) : S [AtS] .
+      else cmb kinded(M, T) : S if makeCondForVars(M, vars(T)) [AtS] .
+      fi
+      kinded(M, MbS) .
+  eq kinded(M, cmb T : S if Cond [AtS] . MbS)
+    = cmb kinded(M, T) : S 
+        if makeCondForVars(M, vars(T)) 
+        /\ kinded(M, Cond)
+        /\ makeCondForVars(M, vars(T) \ vars(Cond))
+        [AtS] .
+      kinded(M, MbS) .
+  eq kinded(M, (none).MembAxSet) = none .
+  
+  op kinded : Module Condition ~> Condition .
+  eq kinded(M, T : S /\ Cond) = kinded(M, T) : S /\ kinded(M, Cond) .
+  eq kinded(M, T => T' /\ Cond) 
+    = kinded(M, T) => kinded(M, T') /\ kinded(M, Cond) .
+  eq kinded(M, (nil).Condition) = nil .
+
+  op makeCondForVars : Module QidSet -> Condition .
+  eq makeCondForVars(M, (V ; VS))
+    = if not getType(V) :: Sort 
+      then nil
+      ----else kinded(M, V) ::: getType(V)
+      else qid("_::`" + string(getType(V)))[kinded(M, V)] = 'tt.`[Thruth`]
+      fi
+      /\ makeCondForVars(M, VS) .
+  eq makeCondForVars(M, none) = nil .
+
+  op kinded : Module Term -> Term .
+  op kinded : Module TermList -> TermList .
+  eq kinded(M, C) 
+    = qid(string(getName(C)) + "." + string(getKind(M, getType(C)))) .
+  eq kinded(M, V) 
+    = qid(string(getName(V)) + ":" + string(getKind(M, getType(V)))) .
+  eq kinded(M, F[TL]) = F[kinded(M, TL)] .
+  eq kinded(M, (T, TL)) = (kinded(M, T), kinded(M, TL)) .
+  eq kinded(M, (nil).TermList) = nil .
+
+endfm
+
+---(
+set include BOOL off .
+load Samples/peanoSimple.maude
+select SCS-MCTRS->CS-MCTRS .
+red scs-mctrs2cs-mctrs(upModule('MYNAT, true)) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select SCS-MCTRS->CS-MCTRS .
+red scs-mctrs2cs-mctrs(
+      srwt2scs-mctrs(upModule('DIE-HARD, true))) .
+red metaFrewrite(
+      scs-mctrs2cs-mctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true))), 
+      'initial.BasinSet,
+      100, 1) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***
+*** A) cs-mctrs2cs-ctrs : CS-MCTRS -> CS-CTRS
+*** -----------------------------------------
+***
+*** (Second step in HOL paper's A transformation)
+***                                             
+*** from a context-sensitive membership rewrite theory (CS-MCTRS) to a
+*** context-sensitive conditional rewrite system (CS-CTRS):
+***                                             
+*** - for each operator f : K1...Kn -> K [frozen(NL)] an operator        
+***   fK1...Kn : S...S -> S [frozen(NL)] of arity n         
+*** - for each kind K, an operator isK : S -> S [frozen (1)]            
+*** - for each sort P, operators                
+***     isP : S -> S [frozen (1)] and            
+***     is'P : S -> S              
+***   where isP(T) encodes T ::: P and is'P(T) encodes T : P           
+*** - the set of rules includes                 
+***   - a conditional rule of the form          
+***         isK(fK1...Kn(X1:S,...,Xn:S)) -> tt  
+***           if isK1(X1:S) -> tt /\ ... /\ isKn(Xn:S) -> tt           
+***     for each f : K1...Kn -> K               
+***   - a rule is'P(X:S) => isP(X:S) for each sort P      
+***   - for each conditional rule of the form   
+***       T => T' if A1 /\ ... /\ An            
+***     involving variables X1:K1...Xm:Km, a conditional rule of the form 
+***       unsorted(T) -> unsorted(T')           
+***         if isK1(X1:S) => tt /\ ... /\ isKn(Xn:S) => tt
+***            /\ ~A1 /\ ... /\ ~An             
+***     where                                   
+***     - if Ai is a membership Ui : Si, then   
+***       - if Ui is a nonvariable term, ~Ai is a rewrite condition    
+***         is'Si(unsorted(Ui)) -> tt           
+***       - if Ui is a variable term, ~Ai is a rewrite condition       
+***         isSi(unsorted(Ui)) -> tt            
+***       - if Ai is a rewrite condition Ui => Vi, then ~Ai is the rewrite
+***         condition unsorted(Ui) => unsorted(Vi)        
+***   - for each conditional membership of the form       
+***       T : P if A1 /\ ... /\ Am              
+***     involving variables X1:K1...Xm:Km, a rule of the form          
+***       isP(unsorted(T)) -> tt                
+***         if isK1(X1:S) -> tt /\ ... /\ isKm(Xm:S) -> tt
+***         /\ ~A1 /\ ... /\ ~An                
+***     where the ~Ai are defined as before.     
+*** Optimizations:                              
+*** - no-kinds: if K is the kind of a sort P, then        
+***   isP(X:S) => tt is used instead of isP(X:S) => tt /\ isK(X:S) => tt  
+*** - A conditional fragment without extra variables like 
+***     isS1(X1:S) => tt /\ ... /\ isSn(Xn) => tt         
+***   in a conditional rule can be collapsed into a single expression  
+***     and(isS1(X1:S), and(..., isSn(Xn:S)), ...) => tt  
+***   by introducing a binary and operator defined by     
+***     op and : S S -> S [strat (1 0 2 0)] .   
+***     eq and(tt, T) = T .                     
+***   Moreover, if the right-hand side of the conditional rule is tt, we  
+***   can use the previous expression with and as the new right hand-side 
+***   of the rule: the conditional rule         
+***     T => tt if isS1(X1:S) => tt /\ ... /\ isSn(Xn) => tt           
+***   eventually collapses into the unconditional one     
+***     T => and(isS1(X1:S), and(..., isSn(Xn:S)), ...)    
+*** - no-sorts: For order-sorted rewrite theories, the isS predicates can 
+***   be dropped.                               
+***                                             
+******************************************************************************
+
+
+fmod CS-MCTRS->CS-CTRS is
+  pr SCS-MCTRS->CS-MCTRS .
+
+  var  M : Module .
+  var  DTT : TransfType .
+  vars K K' : Kind .
+  var  KL : KindList .
+  var  KS : KindSet .
+  var  S : Sort .
+  var  SS : SortSet .
+  var  OPDS : OpDeclSet .
+  var  F : Qid . 
+  var  C : Constant .
+  var  V : Variable .
+  var  VS : QidSet .
+  var  AtS : AttrSet .
+  vars T T' T'' T''' T'''' : Term .
+  var  TL : TermList .
+  vars Cond Cond' : Condition .
+  var  N : Nat .
+  var  RlS : RuleSet .
+  var  MAS : MembAxSet .
+  vars Tp Tp' : Type .
+  var  TpL : TypeList .
+  var  AND : Bool .
+
+  op cs-mctrs2cs-ctrs : SModule TransfType -> SModule .
+  eq cs-mctrs2cs-ctrs(M, DTT)
+    = mod getName(M) is
+        nil                 ---- it should be a flatten module
+        sorts SINGLE-SORT . ---- a single sort
+        none                ---- no subsort relation
+        makeOps(getOps(M))
+        (if DTT == complete then makeOpsKinds(getKinds(M)) else none fi)
+        (if DTT =/= no-sorts then makeOpsSorts(getSorts(M)) else none fi)
+        none
+        none
+        (if DTT =/= no-sorts then makeRlsSorts(getSorts(M)) else none fi)
+        (if DTT == complete then makeRls(getOps(M)) else none fi)
+        makeRls(M, getRls(M), DTT)
+        makeRls(M, getMbs(M), DTT)
+     endm .
+
+  op makeOps : OpDeclSet -> OpDeclSet .
+  --- for each operator f : K1...Kn -> K [AtS] an operator 
+  --- fK1...Kn : S...S -> S [AtS] of arity n    
+ ceq makeOps(op F : TpL -> Tp [AtS] . OPDS)
+    = makeOps(OPDS) 
+    if "_::`" = substr(string(F), 0, 4).
+  eq makeOps(op F : TpL -> Tp [AtS] . OPDS)
+    = op opName(F, TpL) : singleTypeList(TpL) -> SINGLE-SORT [AtS] . 
+      makeOps(OPDS) 
+      [owise] .
+  eq makeOps((none).OpDeclSet) = none .
+
+  op singleTypeList : TypeList -> TypeList .
+  --- given a list of kinds K1...Kn returns a lists S...S of size n 
+  eq singleTypeList(Tp TpL) = SINGLE-SORT singleTypeList(TpL) .
+  eq singleTypeList(nil) = nil .
+
+  op opName : Qid TypeList -> Qid .
+  --- given a function name F and a list of kinds K1...Kn returns a 
+  --- qid FK1...Kn 
+  eq opName(F, Tp TpL) = opName(qid(string(F) + "-" + string(Tp)), TpL) .
+  eq opName(F, nil) = F .
+
+  op makeOpsKinds : KindSet -> OpDeclSet .
+  --- for each kind K an operator isK : S -> S [frozen(1)] ---- [strat (0)]
+  eq makeOpsKinds(K ; KS)
+    = (op qid("is" + string(K)) : SINGLE-SORT -> SINGLE-SORT [frozen (1)] .)
+      makeOpsKinds(KS) .
+  eq makeOpsKinds((none).KindSet) = (none).OpDeclSet .
+
+  op makeOpsSorts : SortSet -> OpDeclSet .
+  ---- for each sort P, operators isP : S -> S [frozen(1)] ---- [strat (0)] 
+  ---- and is'P : S -> S [none] ---- [strat (1 0)]
+  eq makeOpsSorts(S ; SS)
+    = (op qid("is" + string(S)) : SINGLE-SORT -> SINGLE-SORT [frozen (1)] .)
+      (op qid("is'" + string(S)) : SINGLE-SORT -> SINGLE-SORT [none] .)
+      makeOpsSorts(SS) .
+  eq makeOpsSorts((none).SortSet) = none .
+
+  op makeRlsSorts : SortSet -> RuleSet .
+  ---- for each sort P a rule is'P(X:S) => isP(X:S)
+  eq makeRlsSorts(S ; SS)
+    = rl qid("is'" + string(S)) [qid("V:" + string(SINGLE-SORT))] 
+        => qid("is" + string(S)) [qid("V:" + string(SINGLE-SORT))] 
+        [none] .
+      makeRlsSorts(SS) .
+  eq makeRlsSorts((none).SortSet) = none .
+
+  op makeRls : OpDeclSet -> RuleSet .
+***   - a conditional rule of the form          
+***         isK(fK1...Kn(X1:S,...,Xn:S)) -> tt  
+***           if isK1(X1:S) -> tt /\ ... /\ isKn(Xn:S) -> tt           
+***     for each f : K1...Kn -> K               
+  eq makeRls(op F : nil -> K [AtS] . OPDS)
+    = rl qid("is" + string(K))[qid(string(F) + "." + string(SINGLE-SORT))]
+        => qid("tt." + string(SINGLE-SORT)) [none] .
+      makeRls(OPDS) .
+ ceq makeRls(op F : KL -> K [AtS] . OPDS)
+    = makeRls(OPDS)
+    if "_::`" = substr(string(F), 0, 4) .
+  eq makeRls(op F : KL -> K [AtS] . OPDS)
+    = crl qid("is" + string(K)) [ opName(F, KL) [ singleSortVarList(KL) ] ]
+        => qid("tt." + string(SINGLE-SORT))     
+        if varRightKindsCond(KL) 
+        [none] .
+      makeRls(OPDS)
+    [owise] .
+  eq makeRls((none).OpDeclSet) = none .
+
+  op singleSortVarList : TypeList -> TermList .
+  op singleSortVarList : TypeList Nat -> TermList .
+  ---- for K1...Kn returns a term list V1:S,...,Vn:S
+  eq singleSortVarList(TpL) = singleSortVarList(TpL, 1) .
+  eq singleSortVarList(Tp Tp' TpL, N)
+    = qid("V" + string(N, 10) + ":" + string(SINGLE-SORT)),
+      singleSortVarList(Tp' TpL, N + 1) .
+  eq singleSortVarList(Tp, N)
+    = qid("V" + string(N, 10) + ":" + string(SINGLE-SORT)) .
+  eq singleSortVarList(nil, N) = empty .
+
+  op varRightKindsCond : KindList -> Condition .
+  op varRightKindsCond : KindList Nat -> Condition .
+  ---- for K1...Kn returns a condition isK1(V1:S) -> tt /\ ... /\ isKn(Vn:S) -> tt
+  eq varRightKindsCond(KL) = varRightKindsCond(KL, 1) .
+  eq varRightKindsCond(K KL, N)
+    = qid("is" + string(K))[
+            qid("V" + string(N, 10) + ":" + string(SINGLE-SORT))]
+        => qid("tt." + string(SINGLE-SORT)) 
+      /\ varRightKindsCond(KL, N + 1) .
+  eq varRightKindsCond(nil, N) = nil .
+
+  op makeRls : SortSet -> RuleSet .
+***   - a rule is'P(V:S) => isP(V:S) for each sort P      
+  eq makeRls(S ; SS) 
+    = rl qid("is'" + string(S))[qid("V:" + string(SINGLE-SORT))] 
+        => qid("is" + string(S))[qid("V:" + string(SINGLE-SORT))] 
+        [none] . 
+      makeRls(SS) .
+  eq makeRls((none).SortSet) = none .
+      
+  op makeRls : Module RuleSet TransfType -> RuleSet .
+***   - for each conditional rule of the form   
+***       T => T' if A1 /\ ... /\ An            
+***     involving variables X1:K1...Xm:Km, a conditional rule of the form 
+***       unsorted(T) -> unsorted(T')           
+***         if isK1(X1:S) => tt /\ ... /\ isKn(Xn:S) => tt
+***            /\ ~A1 /\ ... /\ ~An             
+***     where                                   
+***     - if Ai is a membership Ui : Si, then   
+***       - if Ui is a nonvariable term, ~Ai is a rewrite condition    
+***         is'Si(unsorted(Ui)) -> tt           
+***       - if Ui is a variable term, ~Ai is a rewrite condition       
+***         isSi(unsorted(Ui)) -> tt            
+***       - if Ai is a rewrite condition Ui => Vi, then ~Ai is the rewrite
+***         condition unsorted(Ui) => unsorted(Vi)        
+  eq makeRls(M, rl T => T' [AtS] . RlS, DTT)
+    = crl unsorted(M, T) => unsorted(M, T') 
+        if if DTT == complete then condForVars(M, vars(T)) else nil fi 
+        [AtS] .
+      makeRls(M, RlS, DTT) .
+  eq makeRls(M, crl T => T' if Cond [AtS] . RlS, DTT)
+    = crl unsorted(M, T) => unsorted(M, T')
+        if if DTT == complete then condForVars(M, vars(T)) else nil fi
+        /\ makeCond(M, Cond, DTT)
+        ---- since rules come from a SCS-MCTRS there cannot be new variables in conditions
+        ---- /\ if DTT == complete then condForVars(M, vars(Cond) \ vars(T)) else nil fi
+        [AtS] .
+      makeRls(M, RlS, DTT) .
+  eq makeRls(M, (none).RuleSet, DTT) = none .
+
+  op makeRls : Module MembAxSet TransfType -> RuleSet .
+***   - for each conditional membership of the form       
+***       T : P if A1 /\ ... /\ Am              
+***     involving variables X1:K1...Xm:Km, a rule of the form          
+***       isP(unsorted(M, T)) -> tt                
+***         if isK1(X1:S) -> tt /\ ... /\ isKm(Xm:S) -> tt
+***         /\ ~A1 /\ ... /\ ~An                
+***     where the ~Ai are defined as before.     
+ ceq makeRls(M, mb T : S [AtS] . MAS, DTT)
+    = crl qid("is" + string(S))[unsorted(M, T)] 
+        => qid("tt." + string(SINGLE-SORT)) 
+        if if DTT == complete then condForVars(M, vars(T)) else nil fi
+        [AtS] .
+      makeRls(M, MAS, DTT) 
+    if DTT =/= no-sorts .
+ ceq makeRls(M, cmb T : S if Cond [AtS] . MAS, DTT)
+    = crl qid("is" + string(S))[unsorted(M, T)] 
+        => qid("tt." + string(SINGLE-SORT)) 
+        if if DTT == complete then condForVars(M, vars(T)) else nil fi 
+        /\ makeCond(M, Cond, DTT)
+        [AtS] .
+      makeRls(M, MAS, DTT)
+    if DTT =/= no-sorts .
+  eq makeRls(M, MAS, DTT) = none [owise] .
+
+  op condForVars : Module QidSet -> Condition .
+  ---- given variables X1:K1...Xm:Km returns isK1(X1:S) => tt /\ ... /\ isKn(Xn:S) => tt 
+  eq condForVars(M, (V ; VS))
+    = qid("is" + string(getKind(M, getType(V))))[
+            qid(string(getName(V)) + ":" + string(SINGLE-SORT))]
+        => qid("tt." + string(SINGLE-SORT))
+      /\ condForVars(M, VS) .
+  eq condForVars(M, none) = nil .
+
+  op makeCond : Module Condition TransfType -> Condition .
+  ---- given a condition A1 /\ ... /\ An it generates ~A1 /\ ... /\ ~An                                    
+  ---- where                                                          
+  ---- - if Ai is a membership Ui : Si, then                          
+  ----   - if Ui is a nonvariable term, ~Ai is a rewrite condition    
+  ----     is'Si(unsorted(Ui)) -> tt                                  
+  ----   - if Ui is a variable term, ~Ai is a rewrite condition       
+  ----     isSi(unsorted(Ui)) -> tt                                   
+  ---- - if Ai is a rewrite condition Ui => Vi, then ~Ai is the rewrite
+  ----   condition unsorted(Ui) => unsorted(Vi)
+  eq makeCond(M, T : S /\ Cond, DTT)
+    = if DTT == complete or DTT == no-kinds
+      then qid("is'" + string(S))[
+                  unsorted(M, T)] => qid("tt." + string(SINGLE-SORT))
+      else nil
+      fi
+      /\ makeCond(M, Cond, DTT) .
+  ----eq makeCond(M, T ::: S /\ Cond, DTT)
+ ceq makeCond(M, F[T] = 'tt.`[Thruth`] /\ Cond, DTT)
+    = if DTT == complete or DTT == no-kinds
+      then qid("is" + string(S))[
+                  unsorted(M, T)] => qid("tt." + string(SINGLE-SORT))
+      else nil
+      fi
+      /\ makeCond(M, Cond, DTT) 
+    if "_::`" = substr(string(F), 0, 4) 
+    /\ S := qid(substr(string(F), 4, length(string(F)))) .
+  eq makeCond(M, T => T' /\ Cond, DTT)
+    = unsorted(M, T) => unsorted(M, T') /\ makeCond(M, Cond, DTT)  [owise] .
+  eq makeCond(M, nil, DTT) = nil .
+
+  op unsorted : Module Term -> Term .
+  op unsorted : Module TermList -> TermList .
+  ---- unsorted replaces kinds in constants and variables by the 
+  ---- single sort and operators by their corresponding non-overloaded
+  eq unsorted(M, C) = qid(string(getName(C)) + "." + string(SINGLE-SORT)) .
+  eq unsorted(M, V) = qid(string(getName(V)) + ":" + string(SINGLE-SORT)) .
+  eq unsorted(M, F[TL]) 
+    = opName(F, getKind(M, eLeastSort(setMbs(M, none), TL)))[unsorted(M, TL)] .
+  eq unsorted(M, (T, TL)) = (unsorted(M, T), unsorted(M, TL)) .
+endfm
+
+---(
+set include BOOL off .
+load Samples/peanoSimple.maude
+select CS-MCTRS->CS-CTRS .
+red cs-mctrs2cs-ctrs(scs-mctrs2cs-mctrs(upModule('MYNAT, true)), complete) .
+red cs-mctrs2cs-ctrs(scs-mctrs2cs-mctrs(upModule('MYNAT, true)), no-kinds) .
+red cs-mctrs2cs-ctrs(scs-mctrs2cs-mctrs(upModule('MYNAT, true)), no-sorts) .
+red metaRewrite(
+      filter(cs-mctrs2cs-ctrs(scs-mctrs2cs-mctrs(upModule('MYNAT, true)), complete)), 
+      filter('plus-`[Nat`]-`[Nat`]['s-`[Nat`]['0.S],'0.S]),
+      unbounded) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select CS-MCTRS->CS-CTRS .
+red cs-mctrs2cs-ctrs(
+      scs-mctrs2cs-mctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true))), complete) .
+red cs-mctrs2cs-ctrs(
+      scs-mctrs2cs-mctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true))), no-kinds) .
+red cs-mctrs2cs-ctrs(
+      scs-mctrs2cs-mctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true))), no-sorts) .
+red metaFrewrite(
+      filter(
+        cs-mctrs2cs-ctrs(
+          scs-mctrs2cs-mctrs(
+            srwt2scs-mctrs(upModule('DIE-HARD, true))), complete)), 
+      'initial.S,
+      100, 1) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***                                             
+*** B) cs-ctrs2cs-trs : CS-CTRS -> CS-TRS            
+*** -------------------------------------            
+***                                             
+*** from unsorted conditional rewrite theories to unconditional ones   
+***                                             
+*** - We assume rules of the form l => r if a1 => b1 /\ ... /\ an => bn
+*** - For rule i, with n rewrites in its condition, we make n + 1      
+***   unconditional rules, using n new operators Uij, with 1<=j<=n.    
+***                                             
+******************************************************************************
+
+view RuleSet from TRIV to META-MODULE is
+  sort Elt to RuleSet .
+endv
+
+view OpDeclSet from TRIV to META-MODULE is
+  sort Elt to OpDeclSet .
+endv
+
+fmod CS-CTRS->CS-TRS is
+  pr CS-MCTRS->CS-CTRS .
+  pr LIST-AND-SET{Qid} * (sort NeList{Qid} to NeQidList, 
+                          sort List{Qid} to QidList,
+                          sort NeSet{Qid} to NeQidSet, 
+                          sort Set{Qid} to QidSet)
+                       * (op empty to none, 
+                          op _,_ to _;_ [prec 43]) .
+  pr 2TUPLE{RuleSet,OpDeclSet} 
+       * (op `(_`,_`) to <_;_>,
+          op p1_ to getRls,
+          op p2_ to getOps) .
+  
+  vars R L T T' T'' : Term .
+  var  M : Module .
+  var  Rl : Rule .
+  vars RlS RlS' : RuleSet .
+  var  OPDS : OpDeclSet .
+  var  AtS : AttrSet .
+  vars N I J : Nat .
+  var  Cond : Condition .
+  vars QI V V' : Qid .
+  var  QIL VL : QidList .
+  vars VS VS' VS'' : QidSet .
+
+  op cs-ctrs2cs-trs : Module -> Module .
+  op cs-ctrs2cs-trs : RuleSet RuleSet OpDeclSet Nat -> Tuple{RuleSet,OpDeclSet} .
+
+  eq cs-ctrs2cs-trs(M)
+    = setOps(
+        setRls(M, getRls(cs-ctrs2cs-trs(getRls(M), none, none, 1))),
+        getOps(M) getOps(cs-ctrs2cs-trs(getRls(M), none, none, 1))) .
+
+  eq cs-ctrs2cs-trs(rl T => T' [AtS] . RlS, RlS', OPDS, I)
+    = cs-ctrs2cs-trs(RlS, rl T => T' [AtS] . RlS', OPDS, I) .
+  eq cs-ctrs2cs-trs(crl T => T' if Cond [AtS] . RlS, RlS', OPDS, I)
+    = cs-ctrs2cs-trs(RlS,
+        getRls(cs-ctrs2cs-trs(crl T => T' if Cond [AtS] ., I)) RlS',
+        getOps(cs-ctrs2cs-trs(crl T => T' if Cond [AtS] ., I)) OPDS, I + 1) .
+  eq cs-ctrs2cs-trs(none, RlS, OPDS, I) = < RlS ; OPDS > .
+
+  op cs-ctrs2cs-trs : Rule Nat -> Tuple{RuleSet,OpDeclSet} .
+  op cs-ctrs2cs-trsAux : Rule RuleSet OpDeclSet Nat -> Tuple{RuleSet,OpDeclSet} .
+  op cs-ctrs2cs-trsAux : Term Term Condition AttrSet QidSet QidSet Nat Nat 
+    RuleSet OpDeclSet -> Tuple{RuleSet,OpDeclSet} .
+
+  eq cs-ctrs2cs-trs(Rl, I) = cs-ctrs2cs-trsAux(Rl, none, none, I) .
+
+  ceq cs-ctrs2cs-trsAux(crl L => R if T => T' /\ Cond [AtS] ., RlS, OPDS, I)
+    = cs-ctrs2cs-trsAux(R, T', Cond, AtS, vars(L), VS, I, 1,
+        rl L => makeUTerm(T, makeList(VS), I, 1) [AtS] . RlS,
+        makeUOp(I, 1, | VS | + 1) OPDS) 
+    if VS := intersection(vars(L), vars(R) ; vars(Cond)) . ---- known variables 
+  eq cs-ctrs2cs-trsAux(crl L => R if nil [AtS] ., RlS, OPDS, I)
+    = < rl L => R [AtS] . RlS ; OPDS > .
+
+  op makeList : QidSet ~> QidSet .
+  eq makeList(none) = nil .
+  eq makeList((V ; VS)) = V makeList(VS) .
+
+  ceq cs-ctrs2cs-trsAux(R, T, T' => T'' /\ Cond, AtS, VS, VS', I, J, RlS, OPDS)
+    = cs-ctrs2cs-trsAux(R, T'', Cond, AtS, VS ; vars(T), VS'', I, J + 1,
+        rl makeUTerm(T, makeList(VS'), I, J)
+          => makeUTerm(T', makeList(VS''), I, J + 1) [AtS] . RlS,
+        makeUOp(I, J + 1, | VS'' | + 1) OPDS) 
+    if VS'' := intersection(VS ; vars(T), vars(R) ; vars(Cond)) .
+  eq cs-ctrs2cs-trsAux(R, T, nil, AtS, VS, VS', I, J, RlS, OPDS)
+    = < rl makeUTerm(T, makeList(VS'), I, J) => R [AtS] . RlS ; OPDS > .
+
+  op makeUId : Nat Nat -> Qid .
+  op makeUTerm : Term Nat Nat -> Term .
+  op makeUTerm : Term QidList Nat Nat -> Term .
+  op makeUOp : Nat Nat Nat -> OpDecl .
+  op termList : QidList -> TermList .
+
+  eq makeUTerm(T, I, J) = makeUId(I, J) [ T ] .
+  eq makeUTerm(T, nil, I, J) = makeUId(I, J) [ T ] .
+  eq makeUTerm(T, V VL, I, J) = makeUId(I, J) [ T , termList(V VL) ] [owise] .
+
+  eq makeUOp(I, J, N)
+  ---- the Uij are created with mu(Uij) = (1)
+    = op makeUId(I, J) : makeSingleTypeList(N) -> SINGLE-SORT 
+           [if N == 1 then none else frozen (complement(1, N)) fi] . .
+
+  eq makeUId(I, J) = qid("U" + string(I, 10) + string(J, 10)) .
+
+  op length : QidList -> Nat .
+  eq length(QI QIL) = 1 + length(QIL) .
+  eq length(nil) = 0 .
+
+  eq termList(V VL) = (V, termList(VL)) .
+  eq termList(nil) = empty .
+
+  op makeSingleTypeList : Nat -> TypeList .
+  eq makeSingleTypeList(N)
+    = if N == 0 then nil else SINGLE-SORT makeSingleTypeList(sd(N, 1)) fi .
+endfm
+
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select CS-CTRS->CS-TRS .
+red cs-ctrs2cs-trs(
+      cs-mctrs2cs-ctrs(
+        scs-mctrs2cs-mctrs(
+          srwt2scs-mctrs(upModule('DIE-HARD, true))), complete)) .
+red cs-ctrs2cs-trs(
+      cs-mctrs2cs-ctrs(
+        scs-mctrs2cs-mctrs(
+          srwt2scs-mctrs(upModule('DIE-HARD, true))), no-kinds)) .
+red cs-ctrs2cs-trs(
+      cs-mctrs2cs-ctrs(
+        scs-mctrs2cs-mctrs(
+          srwt2scs-mctrs(upModule('DIE-HARD, true))), no-sorts)) .
+red metaFrewrite(
+      filter(
+        cs-ctrs2cs-trs(
+          cs-mctrs2cs-ctrs(
+            scs-mctrs2cs-mctrs(
+              srwt2scs-mctrs(upModule('DIE-HARD, true))), complete))), 
+      'initial.S,
+      100, 1) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***                                             
+*** OS) scs-mctrs2cs-osctrs : SCS-MCTRS -> CS-OSCTRS        
+*** ------------------------------------------------        
+***                                             
+*** As described in Lucas & Meseguer WRLA'08    
+***                                             
+******************************************************************************
+
+fmod SCS-MCTRS->CS-OSCTRS is
+  pr SRWT->SCS-MCTRS .
+  pr CONVERSION .
+  
+  var  M : Module .
+  vars T T' : Term .
+  var  TL : TermList .
+  vars S S' : Sort .
+  vars SS SS' : SortSet .
+  var  AtS : AttrSet .
+  var  OPDS : OpDeclSet .
+  var  EqS : EquationSet .
+  var  MAS : MembAxSet .
+  var  RlS : RuleSet .
+  vars SDS SDS' : SubsortDeclSet .
+  var  ODS : OpDeclSet .
+  var  Cond : Condition .
+  var  Tp : Type .
+  vars TpL TpL' : TypeList .
+  var  F : Qid .
+  var  QIL : QidList .
+  var  V : Variable .
+  var  C : Constant .
+  var  VS FS : QidSet .
+  var  N : Nat .
+  
+  op scs-mctrs2cs-osctrs : Module -> Module .
+  eq scs-mctrs2cs-osctrs(M)
+    = mod getName(M) is
+        nil 
+        sorts OS(M) ; filterOS(getKinds(M)) ; 'Thruth ; filterOS('`[Thruth`]) .
+        makeSubsorts(M, OS(M), getSubsorts(M), none)
+        subsort 'Thruth < filterOS('`[Thruth`]) .
+        filterOS(makeOps(M, getOps(M), OS(M))
+                 makeIs'Ops(M, getSorts(M))
+                 makeIsOps(M, MB(M))
+                 op 'tt : nil -> '`[Thruth`] [none] .)
+        none 
+        none
+        filterOS(makeRlsEqs(M, getRls(M), MB(M))       ---- (v)
+                 makeRlsMbs(M, getMbs(M), MB(M))       ---- (vi)
+                 makeRlsSortsMB(M, MB(M))              ---- (vii) (a)
+                 makeRlsSortsOS(OS(M))                 ---- (vii) (b)
+                 makeRlsSortsOSMB(M, OS(M), MB(M))     ---- (vii) (c)
+                 makeRls(M, getOps(M), MB(M))          ---- (vii) (d) and (e)
+                 makeRlsMB(M, MB(M)))                  ---- (vii) (f)
+      endm .
+
+  ---- filterOS transforms kinds into normal sorts by replacing [ and ] by osb- and -csb, respectively
+  op filterOS : Module ~> Module .
+  op filterOS : OpDeclSet ~> OpDeclSet .
+  op filterOS : RuleSet ~> RuleSet .
+  op filterOS : EquationSet ~> EquationSet .
+  op filterOS : Condition -> Condition .
+  op filterOS : AttrSet -> AttrSet .
+  op filterOS : Term -> Term [memo] .
+  op filterOS : TermList -> TermList [memo] .
+  op filterOS : TypeList -> TypeList [memo] .
+  op filterOS : Sort -> Sort [memo] .
+  op filterOS : Kind -> Kind [memo] .
+  op filterOS : Type -> Type [memo] .
+  op filterOS : TermQid -> TermQid [memo] .
+  op filterOS : Variable -> Variable [memo] .
+  op filterOS : Constant -> Constant [memo] .
+  op filterOS : QidSet -> QidSet [memo] .
+  eq filterOS(op F : TpL -> Tp [AtS] . OPDS) 
+    = op filterOS(F) : filterOS(TpL) -> filterOS(Tp) [filterOS(AtS)] . filterOS(OPDS) .
+  eq filterOS((none).OpDeclSet) = none .
+  eq filterOS(rl T => T' [AtS] . RlS)
+    = rl filterOS(T) => filterOS(T') [filterOS(AtS)] . filterOS(RlS) .
+  eq filterOS(crl T => T' if Cond [AtS] . RlS)
+    = crl filterOS(T) => filterOS(T') if filterOS(Cond) [filterOS(AtS)] . filterOS(RlS) .
+  eq filterOS((none).RuleSet) = none .
+  eq filterOS(eq T = T' [AtS] . EqS)
+    = eq filterOS(T) = filterOS(T') [filterOS(AtS)] . filterOS(EqS) .
+  eq filterOS(ceq T = T' if Cond [AtS] . EqS)
+    = ceq filterOS(T) = filterOS(T') if filterOS(Cond) [filterOS(AtS)] . filterOS(EqS) .
+  eq filterOS((none).EquationSet) = none .
+  eq filterOS(T = T' /\ Cond) = filterOS(T) = filterOS(T') /\ filterOS(Cond) .
+  eq filterOS(T := T' /\ Cond) = filterOS(T) := filterOS(T') /\ filterOS(Cond) .
+  eq filterOS(T => T' /\ Cond) = filterOS(T) => filterOS(T') /\ filterOS(Cond) .
+  eq filterOS(T : S /\ Cond) = filterOS(T) : filterOS(S) /\ filterOS(Cond) .
+  eq filterOS((nil).Condition) = nil .
+  eq filterOS(id(T) AtS) = id(filterOS(T)) filterOS(AtS) .
+  eq filterOS(format(QIL) AtS) = filterOS(AtS) .
+  eq filterOS(AtS) = AtS [owise] .
+  eq filterOS(V) = qid(string(filterOS(getName(V))) + ":" + string(filterOS(getType(V)))) .
+  eq filterOS(C) = qid(string(filterOS(getName(C))) + "." + string(filterOS(getType(C)))) .
+  eq filterOS(F[TL]) = filterOS(F) [ filterOS(TL) ] .
+  eq filterOS((T, TL)) = (filterOS(T), filterOS(TL)) .
+  eq filterOS(empty) = empty .
+ ceq filterOS(Tp TpL) = filterOS(Tp) filterOS(TpL) if TpL =/= nil .
+  eq filterOS((nil).TypeList) = nil .
+  eq filterOS(F) 
+    = qid(replace(replace(replace(string(F), "`[", "os-osb-"), "`]", "-csb-os"), "`,", "-comma-")) 
+    [owise] .
+ ceq filterOS(F ; FS) = filterOS(F) ; filterOS(FS) if FS =/= none .
+  eq filterOS((none).QidSet) = none .
+
+  op OS : Module -> SortSet .
+  op MB : Module -> SortSet .
+  op MB : Module MembAxSet SubsortDeclSet OpDeclSet SortSet -> SortSet .
+  ---- MB(S) is the smallest subset of S such that
+  ----   (i) if a membership t : s if C belongs to M, then s is in MB(S)
+  ----  (ii) if s is in MB(S) and s <= s', then s' is in MB(S)
+  ---- (iii) if f : s1 \B7 \B7 \B7 sn -> s and some si in MB(S) then s in MB(S)
+  eq MB(M) = MB(M, getMbs(M), getSubsorts(M), getOps(M), none) .
+  eq MB(M, mb T : S [AtS] . MAS, SDS, ODS, SS) 
+    = MB(M, MAS, SDS, ODS, S ; SS) .
+  eq MB(M, cmb T : S if Cond [AtS] . MAS, SDS, ODS, SS) 
+    = MB(M, MAS, SDS, ODS, S ; SS) .
+  eq MB(M, MAS, subsort S < S' . SDS, ODS, S ; SS) 
+    = MB(M, MAS, SDS, ODS, S ; S' ; SS) .
+  eq MB(M, MAS, SDS, op F : TpL S TpL' -> S' [AtS] . ODS, S ; SS) 
+    = MB(M, MAS, SDS, ODS, S ; S' ; SS) .
+  eq MB(M, MAS, SDS, ODS, SS) = SS [owise] .
+  eq OS(M) = getSorts(M) \ MB(M) .
+  
+  op makeSubsorts : Module SortSet SubsortDeclSet SubsortDeclSet -> SubsortDeclSet .
+  eq makeSubsorts(M, S ; S' ; SS, subsort S < S' . SDS, SDS')
+    = makeSubsorts(M, S ; S' ; SS, SDS, subsort S < S' . SDS') .
+  eq makeSubsorts(M, S ; SS, SDS, SDS')
+    = makeSubsorts(M, SS, SDS, subsort S < filterOS(getKind(M, S)) . SDS') 
+    [owise] .
+  eq makeSubsorts(M, none, SDS, SDS') = SDS' .
+  
+  op makeOps : Module OpDeclSet SortSet -> OpDeclSet .
+  eq makeOps(M, op F : TpL -> Tp [AtS] . ODS, SS)
+    = (if Tp in SS then op F : TpL -> Tp [AtS] . else none fi
+       op F : getKind(M, TpL) -> getKind(M, Tp) [AtS] .
+       makeOps(M, ODS, SS)) .
+  eq makeOps(M, none, SS) = none .
+
+  op makeIsOps : Module SortSet -> OpDeclSet .
+  eq makeIsOps(M, S ; SS)
+    = op qid("is" + string(S)) : getKind(M, S) -> filterOS('`[Thruth`]) 
+         [frozen(1)] . ---- [strat (0)]
+      makeIsOps(M, SS) .
+  eq makeIsOps(M, (none).SortSet) = none .
+
+  op makeIs'Ops : Module SortSet -> OpDeclSet .
+  eq makeIs'Ops(M, S ; SS)
+    = op qid("is'" + string(S)) : filterOS(getKind(M, S)) -> filterOS('`[Thruth`]) 
+         [none] . ----[strat (1 0)] .
+      makeIs'Ops(M, SS) .
+  eq makeIs'Ops(M, (none).SortSet) = none .
+
+  op makeRlsSortsMB : Module SortSet -> RuleSet .
+  ---- for each sort P a rule is'P(X:S) => isP(X:S)
+  eq makeRlsSortsMB(M, S ; SS)
+    = rl qid("is'" + string(S)) [qid("V:" + string(getKind(M, S)))] 
+        => qid("is" + string(S)) [qid("V:" + string(getKind(M, S)))] 
+        [none] .
+      makeRlsSortsMB(M, SS) .
+  eq makeRlsSortsMB(M, (none).SortSet) = none .
+
+*** - for each conditional equation of the form 
+***     t = t' if A1 /\ ... /\ An               
+***   involving variables X1:S1...Xm:Sm, a conditional rule of the form
+***     kinded(t, SS) -> kinded(t', SS)         
+***       if is'Sk+1(Xk+1:[Sk+1]) /\ ... /\ is'Sm(Xm:[Sm])
+***          /\ ~A1 /\ ... /\ ~Am               
+***   with S1...Sk in OS(S) and Sk+1..Sm in MB(S)
+***   and ~ T = T' is kinded(equal(T, T'), MB(S)) => tt
+***   and ~ T : S  is isS(kinded(T, MB(S))) => tt
+  op makeRlsEqs : Module RuleSet SortSet -> RuleSet .
+  eq makeRlsEqs(M, rl T => T' [AtS] . RlS, SS)
+    = if makeCondForVars(M, vars(T), SS) =/= nil
+      then (rl kinded(M, T, SS) 
+              => kinded(M, T', SS) 
+              [kinded(M, AtS, SS)] .)
+      else (crl kinded(M, T, SS) 
+              => kinded(M, T', SS) 
+              if makeCondForVars(M, vars(T), SS) 
+              [kinded(M, AtS, SS)] .)
+      fi
+      makeRlsEqs(M, RlS, SS) .
+  eq makeRlsEqs(M, crl T => T' if Cond [AtS] . RlS, SS)
+    = (crl kinded(M, T, SS) 
+         => kinded(M, T', SS)
+         if makeCondForVars(M, vars(T), SS) 
+            /\ makeCond(M, Cond, SS)
+            /\ makeCondForVars(M, vars(Cond) \ vars(T), SS)
+         [kinded(M, AtS, SS)] .)
+      makeRlsEqs(M, RlS, SS) .
+  eq makeRlsEqs(M, (none).RuleSet, SS) = none .
+
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ Am                
+***   involving variables X1:S1...Xn:Sn, a conditional mb of the form  
+***     is'S(kinded(t), MB(S)) => tt            
+***       if is'Sk+1(Xk+1:[Sk+1]) /\ ... /\ is'Sm(Xm:[Sm])
+***          /\ ~A1 /\ ... /\ ~Am               
+***   with S1...Sk in OS(S) and Sk+1..Sm in MB(S)
+***   and ~ T = T' is kinded(equal(T, T'), MB(S)) => tt
+***   and ~ T : S  is isS(kinded(T, MB(S))) => tt
+  op makeRlsMbs : Module MembAxSet SortSet -> RuleSet .
+  eq makeRlsMbs(M, mb T : S [AtS] . MAS, SS)
+    = (crl qid("is'" + string(S))[kinded(M, T, SS)] 
+         => filterOS('tt.`[Thruth`])
+         if makeCondForVars(M, vars(T), SS) 
+         [kinded(M, AtS, SS)] .)
+      makeRlsMbs(M, MAS, SS) .
+  eq makeRlsMbs(M, cmb T : S if Cond [AtS] . MAS, SS)
+    = (crl qid("is'" + string(S))[kinded(M, T, SS)] 
+         => filterOS('tt.`[Thruth`])
+         if makeCondForVars(M, vars(T), SS) 
+            /\ makeCond(M, Cond, SS)
+            /\ makeCondForVars(M, vars(T) \ vars(Cond), SS)
+         [kinded(M, AtS, SS)] .)
+      makeRlsMbs(M, MAS, SS) .
+  eq makeRlsMbs(M, none, SS) = none .
+  
+  op makeCond : Module Condition SortSet -> Condition .
+  eq makeCond(M, T : S /\ Cond, SS) 
+    = qid("is'" + string(S))[kinded(M, T, SS)] => 'tt.`[Thruth`]
+      /\ makeCond(M, Cond, SS) .
+----  eq makeCond(M, T := T' /\ Cond, SS) 
+----    = kinded(M, T, SS) => kinded(M, T', SS) 
+----      /\ makeCond(M, Cond, SS) .
+----  eq makeCond(M, T = T' /\ Cond, SS)
+----    = 'equal[kinded(M, T, SS), kinded(M, T', SS)] => 'tt.`[Thruth`]
+----      /\ makeCond(M, Cond, SS) .
+  eq makeCond(M, T => T' /\ Cond, SS)
+    = kinded(M, T, SS) => kinded(M, T', SS)
+      /\ makeCond(M, Cond, SS) .
+  eq makeCond(M, nil, SS) = nil .
+
+  op makeCondForVars : Module QidSet SortSet -> Condition .
+ ceq makeCondForVars(M, (V ; VS), SS)
+    = qid("is" + string(getType(V)))[kinded(M, V, SS)] => 'tt.`[Thruth`]
+      /\ makeCondForVars(M, VS, SS) 
+    if getType(V) in SS .
+  eq makeCondForVars(M, VS, SS) = nil [owise] .
+
+  op kinded : Module Term SortSet -> Term [memo] .
+  op kinded : Module TermList SortSet -> TermList [memo] .
+  eq kinded(M, C, SS) 
+    = if getType(C) in SS
+      then qid(string(getName(C)) + "." + string(getKind(M, getType(C)))) 
+      else C
+      fi .
+  eq kinded(M, V, SS) 
+    = if getType(V) in SS
+      then qid(string(getName(V)) + ":" + string(getKind(M, getType(V)))) 
+      else V
+      fi .
+  eq kinded(M, F[TL], SS) = F[kinded(M, TL, SS)] .
+  eq kinded(M, (T, TL), SS) = (kinded(M, T, SS), kinded(M, TL, SS)) .
+  eq kinded(M, (nil).TermList, SS) = nil .
+  
+  op kinded : Module AttrSet SortSet -> AttrSet .
+  eq kinded(M, id(T) AtS, SS) = id(kinded(M, T, SS)) kinded(M, AtS, SS) .
+  eq kinded(M, AtS, SS) = AtS [owise] .
+  
+  op makeRlsSortsOS : SortSet -> RuleSet .
+  ---- for each sort S a rule isS(X:S) => tt
+  eq makeRlsSortsOS(S ; SS)
+    = (rl qid("is'" + string(S)) [qid("V:" + string(S))] 
+         => 'tt.`[Thruth`]
+         [none] .)
+      makeRlsSortsOS(SS) .
+  eq makeRlsSortsOS((none).SortSet) = none .
+
+  op makeRlsSortsOSMB : Module SortSet SortSet -> RuleSet .
+  ---- for each sort S in OS(M) and S' in MB(M) with S < S' 
+  ---- rules isS'(X:S) => tt and is'S'(X:S) => tt
+  eq makeRlsSortsOSMB(M, S ; SS, S' ; SS')
+    = if sortLeq(M, S, S')
+      then (rl qid("is" + string(S')) [qid("V:" + string(S))] 
+              => 'tt.`[Thruth`]
+              [none] .)
+           (rl qid("is'" + string(S')) [qid("V:" + string(S))] 
+              => 'tt.`[Thruth`]
+              [none] .)
+      else none
+      fi
+      makeRlsSortsOSMB(M, S ; SS, SS')
+      makeRlsSortsOSMB(M, SS, S' ; SS') .
+  eq makeRlsSortsOSMB(M, (none).SortSet, SS) = none .
+  eq makeRlsSortsOSMB(M, SS, (none).SortSet) = none .
+
+  op makeRls : Module OpDeclSet SortSet -> RuleSet .
+***   - a conditional rule of the form          
+***       is'S(f(X1:S1,...,Xn:Sn)) -> tt        
+***         if isSj1(Xj1:[Sj1]) -> tt /\ ... /\ isSjn(Xjn:[Sjn]) -> tt 
+***     for each f : S1...Sn -> S with Sj1..Sjn in MB(M)  
+  eq makeRls(M, op F : nil -> S [AtS] . ODS, SS)
+    = if S in SS
+      then (rl qid("is" + string(S))[qid(string(F) + "." + string(getKind(M, S)))]
+              => 'tt.`[Thruth`] [none] .)
+      else none
+      fi
+      makeRls(M, ODS, SS) .
+  eq makeRls(M, op F : TpL -> Tp [AtS] . ODS, SS)
+    = if varCond(M, TpL, SS) == nil
+      then none
+      else (crl qid("is" + string(Tp)) [ F [ varList(M, TpL, SS) ] ]
+              => 'tt.`[Thruth`]     
+              if varCond(M, TpL, SS) 
+              [none] .)
+      fi
+      makeRls(M, ODS, SS)
+    [owise] .
+  eq makeRls(M, (none).OpDeclSet, SS) = none .
+
+  op varList : Module TypeList SortSet -> TermList .
+  op varList : Module TypeList SortSet Nat -> TermList .
+  ---- for a TypeList S1...Sn returns a term list V1:~S1,...,Vn:~Sn
+  ---- with ~Si equal to Si if Si is not in MB(M); [Si] otherwise
+  eq varList(M, TpL, SS) = varList(M, TpL, SS, 1) .
+  eq varList(M, Tp TpL, SS, N)
+    = qid("V" + string(N, 10) + ":" 
+          + string(if Tp in SS then getKind(M, Tp) else Tp fi)),
+      varList(M, TpL, SS, N + 1) .
+  eq varList(M, nil, SS, N) = empty .
+
+  op varCond : Module TypeList SortSet -> Condition .
+  op varCond : Module TypeList SortSet Nat -> Condition .
+  ---- for a TypeList S1...Sn returns a condition 
+  ---- isSj1(Vj1:[Sj1]) -> tt /\ ... /\ isSjn(Vjn:Sjn) -> tt
+  ---- for those Sji in MB(M) 
+  eq varCond(M, TpL, SS) = varCond(M, TpL, SS, 1) .
+  eq varCond(M, Tp TpL, SS, N)
+    = if Tp in SS
+      then qid("is" + string(Tp))[
+             qid("V" + string(N, 10) + ":" 
+                 + string(if Tp in SS then getKind(M, Tp) else Tp fi))]
+             => 'tt.`[Thruth`]   
+      else nil
+      fi  
+      /\ varCond(M, TpL, SS, N + 1) .
+  eq varCond(M, nil, SS, N) = nil .
+
+  op makeRlsMB : Module SortSet -> RuleSet .
+  eq makeRlsMB(M, S ; S' ; SS)
+    = if sortLeq(M, S, S')
+      then (crl qid("is" + string(S')) [ qid("V:" + string(getKind(M, S'))) ] 
+              => 'tt.`[Thruth`] 
+              if qid("is" + string(S)) [ qid("V:" + string(getKind(M, S'))) ] 
+                 => 'tt.`[Thruth`] 
+              [none] .)
+      else none
+      fi 
+      makeRlsMB(M, S' ; SS)
+      makeRlsMB(M, S ; SS) .
+  eq makeRlsMB(M, SS) = none [owise] .
+  
+endfm
+
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists-and-take.maude
+select SCS-MCTRS->CS-OSCTRS .
+red MB(upModule('LengthOfFiniteListsAndTake, true)) .
+red OS(upModule('LengthOfFiniteListsAndTake, true)) .
+red scs-mctrs2cs-osctrs(upModule('LengthOfFiniteListsAndTake, true)) .
+red metaReduce(scs-mctrs2cs-osctrs(upModule('LengthOfFiniteListsAndTake, true)), '0.Nat) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists.maude
+select SCS-MCTRS->CS-OSCTRS .
+red MB(upModule('LengthOfFiniteLists, true)) .
+red OS(upModule('LengthOfFiniteLists, true)) .
+red scs-mctrs2cs-osctrs(upModule('LengthOfFiniteLists, true)) .
+red metaReduce(scs-mctrs2cs-osctrs(upModule('LengthOfFiniteLists, true)), '0.Nat) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/inf.maude
+select SCS-MCTRS->CS-OSCTRS .
+red MB(upModule('INF, true)) .
+red OS(upModule('INF, true)) .
+red scs-mctrs2cs-osctrs(upModule('INF, true)) .
+red metaReduce(scs-mctrs2cs-osctrs(upModule('INF, true)), '0.obNatcb) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***                                             
+*** OS) srwt2os-rwt : SRWT -> OS-RWT       
+*** --------------------------------
+***                                             
+*** Generalization of the one described in Lucas & Meseguer WRLA'08
+*** As described in Duran, Lucas & Meseguer 08    
+***                                             
+******************************************************************************
+
+fmod SRWT->OS-RWT is
+  pr SCS-MCTRS->CS-OSCTRS .
+  
+  var  M : Module .
+  vars T T' : Term .
+  var  TL : TermList .
+  vars S S' : Sort .
+  vars SS SS' : SortSet .
+  var  AtS : AttrSet .
+  var  RlS : RuleSet .
+  var  EqS : EquationSet .
+  var  MAS : MembAxSet .
+  vars SDS SDS' : SubsortDeclSet .
+  var  ODS : OpDeclSet .
+  var  Cond : Condition .
+  var  Tp : Type .
+  vars TpL TpL' : TypeList .
+  var  F : Qid .
+  var  V : Variable .
+  var  C : Constant .
+  var  VS : QidSet .
+  var  N : Nat .
+  
+  op srwt2os-rwt : Module -> Module .
+  eq srwt2os-rwt(M)
+    = mod getName(M) is
+        nil 
+        sorts OS(M) ; filterOS(getKinds(M)) ; 'Thruth ; filterOS('`[Thruth`]) .
+        makeSubsorts(M, OS(M), getSubsorts(M), none)
+        subsort 'Thruth < filterOS('`[Thruth`]) .
+        filterOS(makeOps(M, getOps(M), OS(M))
+                 makeIs'OpsRWT(M, getSorts(M))
+                 makeIsOpsRWT(M, MB(M))
+                 op 'tt : nil -> '`[Thruth`] [none] .)
+        none 
+        filterOS(makeEqsEqs(M, getEqs(M), MB(M))       ---- (v)
+                 makeEqsMbs(M, getMbs(M), MB(M))       ---- (vi)
+                 makeEqsSortsMB(M, MB(M))              ---- (vii) (a)
+                 makeEqsSortsOS(OS(M))                 ---- (vii) (b)
+                 makeEqsSortsOSMB(M, OS(M), MB(M))     ---- (vii) (c)
+                 makeEqs(M, getOps(M), MB(M))          ---- (vii) (d) and (e)
+                 makeEqsMB(M, MB(M)))                  ---- (vii) (f)
+        filterOS(makeRlsRls(M, getRls(M), MB(M)))
+      endm .
+
+  op makeIsOpsRWT : Module SortSet -> OpDeclSet .
+  eq makeIsOpsRWT(M, S ; SS)
+    = op qid("is" + string(S)) : getKind(M, S) -> filterOS('`[Thruth`]) 
+         [frozen(1)] . ---- [strat (0)] .
+      makeIsOpsRWT(M, SS) .
+  eq makeIsOpsRWT(M, (none).SortSet) = none .
+
+  op makeIs'OpsRWT : Module SortSet -> OpDeclSet .
+  eq makeIs'OpsRWT(M, S ; SS)
+    = op qid("is'" + string(S)) : filterOS(getKind(M, S)) -> filterOS('`[Thruth`]) 
+         [none] .
+      makeIs'OpsRWT(M, SS) .
+  eq makeIs'OpsRWT(M, (none).SortSet) = none .
+
+  op makeEqsSortsMB : Module SortSet -> EquationSet .
+  ---- for each sort P a rule is'P(X:S) => isP(X:S)
+  eq makeEqsSortsMB(M, S ; SS)
+    = eq qid("is'" + string(S)) [qid("V:" + string(getKind(M, S)))] 
+        = qid("is" + string(S)) [qid("V:" + string(getKind(M, S)))] 
+        [none] .
+      makeEqsSortsMB(M, SS) .
+  eq makeEqsSortsMB(M, (none).SortSet) = none .
+
+*** - for each conditional equation of the form 
+***     t = t' if A1 /\ ... /\ An               
+***   involving variables X1:S1...Xm:Sm, a conditional equation of the form
+***     kinded(t, SS) = kinded(t', SS)         
+***       if is'Sk+1(Xk+1:[Sk+1]) /\ ... /\ is'Sm(Xm:[Sm])
+***          /\ ~A1 /\ ... /\ ~Am               
+***   with S1...Sk in OS(S) and Sk+1..Sm in MB(S)
+***   and ~ T = T' is kinded(T, MB(S)) = kinded(T', MB(S))
+***   and ~ T : S  is isS(kinded(T, MB(S))) = tt
+  op makeEqsEqs : Module EquationSet SortSet -> EquationSet .
+  eq makeEqsEqs(M, eq T = T' [AtS] . EqS, SS)
+    = if makeCondForVarsRWT(M, vars(T), SS) == nil
+      then (eq kinded(M, T, SS) 
+              = kinded(M, T', SS) 
+              [kinded(M, AtS, SS)] .)
+      else (ceq kinded(M, T, SS) 
+              = kinded(M, T', SS) 
+              if makeCondForVarsRWT(M, vars(T), SS) 
+              [kinded(M, AtS, SS)] .)
+      fi
+      makeEqsEqs(M, EqS, SS) .
+  eq makeEqsEqs(M, ceq T = T' if Cond [AtS] . EqS, SS)
+    = (ceq kinded(M, T, SS) 
+         = kinded(M, T', SS)
+         if makeCondForVarsRWT(M, vars(T), SS) 
+            /\ makeCondRWT(M, Cond, SS)
+            /\ makeCondForVarsRWT(M, vars(Cond) \ vars(T), SS)
+         [kinded(M, AtS, SS)] .)
+      makeEqsEqs(M, EqS, SS) .
+  eq makeEqsEqs(M, (none).EquationSet, SS) = none .
+
+  op makeRlsRls : Module RuleSet SortSet -> RuleSet .
+  eq makeRlsRls(M, rl T => T' [AtS] . RlS, SS)
+    = if makeCondForVarsRWT(M, vars(T), SS) == nil
+      then (rl kinded(M, T, SS) 
+              => kinded(M, T', SS) 
+              [kinded(M, AtS, SS)] .)
+      else (crl kinded(M, T, SS) 
+              => kinded(M, T', SS) 
+              if makeCondForVarsRWT(M, vars(T), SS) 
+              [kinded(M, AtS, SS)] .)
+      fi
+      makeRlsRls(M, RlS, SS) .
+  eq makeRlsRls(M, crl T => T' if Cond [AtS] . RlS, SS)
+    = (crl kinded(M, T, SS) 
+         => kinded(M, T', SS)
+         if makeCondForVarsRWT(M, vars(T), SS) 
+            /\ makeCondRWT(M, Cond, SS)
+            /\ makeCondForVarsRWT(M, vars(Cond) \ vars(T), SS)
+         [kinded(M, AtS, SS)] .)
+      makeRlsRls(M, RlS, SS) .
+  eq makeRlsRls(M, (none).RuleSet, SS) = none .
+
+*** - for each conditional membership axiom of the form   
+***     t : S if A1 /\ ... /\ Am                
+***   involving variables X1:S1...Xn:Sn, a conditional eq of the form  
+***     is'S(kinded(t), MB(S)) = tt            
+***       if is'Sk+1(Xk+1:[Sk+1]) /\ ... /\ is'Sm(Xm:[Sm])
+***          /\ ~A1 /\ ... /\ ~Am               
+***   with S1...Sk in OS(S) and Sk+1..Sm in MB(S)
+***   and ~ T = T' is kinded(T, MB(S)) = kinded(T', MB(S))
+***   and ~ T : S  is isS(kinded(T, MB(S))) = tt
+  op makeEqsMbs : Module MembAxSet SortSet -> EquationSet .
+  eq makeEqsMbs(M, mb T : S [AtS] . MAS, SS)
+    = if makeCondForVarsRWT(M, vars(T), SS) == nil 
+      then (eq qid("is" + string(S))[kinded(M, T, SS)] 
+              = filterOS('tt.`[Thruth`]) 
+              [kinded(M, AtS, SS)] .)
+      else (ceq qid("is" + string(S))[kinded(M, T, SS)] 
+              = filterOS('tt.`[Thruth`])
+              if makeCondForVarsRWT(M, vars(T), SS) 
+              [kinded(M, AtS, SS)] .)
+      fi
+      makeEqsMbs(M, MAS, SS) .
+  eq makeEqsMbs(M, cmb T : S if Cond [AtS] . MAS, SS)
+    = (ceq qid("is" + string(S))[kinded(M, T, SS)] 
+         = filterOS('tt.`[Thruth`])
+         if makeCondForVarsRWT(M, vars(T), SS) 
+            /\ makeCondRWT(M, Cond, SS)
+            /\ makeCondForVarsRWT(M, vars(T) \ vars(Cond), SS)
+         [kinded(M, AtS, SS)] .)
+      makeEqsMbs(M, MAS, SS) .
+  eq makeEqsMbs(M, none, SS) = none .
+  
+  op makeCondRWT : Module Condition SortSet -> Condition .
+  eq makeCondRWT(M, T : S /\ Cond, SS) 
+    = 'tt.`[Thruth`] := qid("is'" + string(S))[kinded(M, T, SS)] 
+      /\ makeCondRWT(M, Cond, SS) .
+  eq makeCondRWT(M, T := T' /\ Cond, SS) 
+    = kinded(M, T, SS) := kinded(M, T', SS) 
+      /\ makeCondRWT(M, Cond, SS) .
+  eq makeCondRWT(M, T = T' /\ Cond, SS)
+    = kinded(M, T, SS) = kinded(M, T', SS)
+      /\ makeCondRWT(M, Cond, SS) .
+  eq makeCondRWT(M, nil, SS) = nil .
+
+  op makeCondForVarsRWT : Module QidSet SortSet -> Condition .
+ ceq makeCondForVarsRWT(M, (V ; VS), SS)
+    = 'tt.`[Thruth`] := qid("is" + string(getType(V)))[kinded(M, V, SS)] 
+      /\ makeCondForVarsRWT(M, VS, SS) 
+    if getType(V) in SS .
+  eq makeCondForVarsRWT(M, VS, SS) = nil [owise] .
+
+  op makeEqsSortsOS : SortSet -> EquationSet .
+  ---- for each sort S an eq isS(X:S) = tt
+  eq makeEqsSortsOS(S ; SS)
+    = (eq qid("is'" + string(S)) [qid("V:" + string(S))] 
+         = 'tt.`[Thruth`]
+         [none] .)
+      makeEqsSortsOS(SS) .
+  eq makeEqsSortsOS((none).SortSet) = none .
+
+  op makeEqsSortsOSMB : Module SortSet SortSet -> EquationSet .
+  ---- for each sort S in OS(M) and S' in MB(M) with S < S' 
+  ---- equations isS'(X:S) = tt and is'S'(X:S) = tt
+  eq makeEqsSortsOSMB(M, S ; SS, S' ; SS')
+    = (eq qid("is" + string(S')) [qid("V:" + string(S))] 
+         = 'tt.`[Thruth`]
+         [none] .)
+      (eq qid("is'" + string(S')) [qid("V:" + string(S))] 
+         = 'tt.`[Thruth`]
+         [none] .)
+      makeEqsSortsOSMB(M, S ; SS, SS')
+      makeEqsSortsOSMB(M, SS, S' ; SS') .
+  eq makeEqsSortsOSMB(M, (none).SortSet, SS) = none .
+  eq makeEqsSortsOSMB(M, SS, (none).SortSet) = none .
+
+  op makeEqs : Module OpDeclSet SortSet -> EquationSet .
+***   - a conditional eq of the form          
+***       is'S(f(X1:S1,...,Xn:Sn)) = tt        
+***         if isSj1(Xj1:[Sj1]) = tt /\ ... /\ isSjn(Xjn:[Sjn]) = tt 
+***     for each f : S1...Sn -> S with Sj1..Sjn in MB(M)  
+  eq makeEqs(M, op F : nil -> S [AtS] . ODS, SS)
+    = if S in SS
+      then (eq qid("is" + string(S))[qid(string(F) + "." + string(getKind(M, S)))]
+              = 'tt.`[Thruth`] [none] .)
+      else none
+      fi
+      makeEqs(M, ODS, SS) .
+  eq makeEqs(M, op F : TpL -> Tp [AtS] . ODS, SS)
+    = if Tp in SS 
+      then if varCondRWT(M, TpL, SS) == nil
+           then (eq qid("is" + string(Tp)) [ F [ varList(M, TpL, SS) ] ]
+                   = 'tt.`[Thruth`] 
+                   [none] .)
+           else (ceq qid("is" + string(Tp)) [ F [ varList(M, TpL, SS) ] ]
+                   = 'tt.`[Thruth`]     
+                   if varCondRWT(M, TpL, SS) 
+                   [none] .)
+           fi
+      else none
+      fi
+      makeEqs(M, ODS, SS)
+    [owise] .
+  eq makeEqs(M, (none).OpDeclSet, SS) = none .
+
+  op varCondRWT : Module TypeList SortSet -> Condition .
+  op varCondRWT : Module TypeList SortSet Nat -> Condition .
+  ---- for a TypeList S1...Sn returns a condition 
+  ---- isSj1(Vj1:[Sj1]) -> tt /\ ... /\ isSjn(Vjn:Sjn) -> tt
+  ---- for those Sji in MB(M) 
+  eq varCondRWT(M, TpL, SS) = varCondRWT(M, TpL, SS, 1) .
+  eq varCondRWT(M, Tp TpL, SS, N)
+    = if Tp in SS
+      then 'tt.`[Thruth`] := 
+             qid("is" + string(Tp))[
+               qid("V" + string(N, 10) + ":" 
+                 + string(if Tp in SS then getKind(M, Tp) else Tp fi))]
+      else nil
+      fi  
+      /\ varCondRWT(M, TpL, SS, N + 1) .
+  eq varCondRWT(M, nil, SS, N) = nil .
+
+  op makeEqsMB : Module SortSet -> EquationSet .
+  eq makeEqsMB(M, S ; S' ; SS)
+    = if sortLeq(M, S, S')
+      then (ceq qid("is" + string(S')) [ qid("V:" + string(getKind(M, S'))) ] 
+              = 'tt.`[Thruth`] 
+              if 'tt.`[Thruth`] 
+                 := qid("is" + string(S)) [ qid("V:" + string(getKind(M, S'))) ] 
+              [none] .)
+      else none
+      fi 
+      makeEqsMB(M, S' ; SS)
+      makeEqsMB(M, S ; SS) .
+  eq makeEqsMB(M, SS) = none [owise] .
+  
+endfm
+
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists-and-take.maude
+select SRWT->OS-RWT .
+red MB(upModule('LengthOfFiniteListsAndTake, true)) .
+red OS(upModule('LengthOfFiniteListsAndTake, true)) .
+red srwt2os-rwt(upModule('LengthOfFiniteListsAndTake, true)) .
+red metaReduce(srwt2os-rwt(upModule('LengthOfFiniteListsAndTake, true)), '0.Nat) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists.maude
+select SRWT->OS-RWT .
+red MB(upModule('LengthOfFiniteLists, true)) .
+red OS(upModule('LengthOfFiniteLists, true)) .
+red srwt2os-rwt(upModule('LengthOfFiniteLists, true)) .
+red metaReduce(srwt2os-rwt(upModule('LengthOfFiniteLists, true)), '0.Nat) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/inf.maude
+select SRWT->OS-RWT .
+red MB(upModule('INF, true)) .
+red OS(upModule('INF, true)) .
+red srwt2os-rwt(upModule('INF, true)) .
+red metaReduce(srwt2os-rwt(upModule('INF, true)), '0.obNatcb) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select SRWT->OS-RWT .
+red MB(upModule('DIE-HARD, true)) .
+red OS(upModule('DIE-HARD, true)) .
+red srwt2os-rwt(upModule('DIE-HARD, true)) .
+red metaReduce(srwt2os-rwt(upModule('DIE-HARD, true)), '0.ob-Nat-cb) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***                                             
+*** T) os-rwt2cs-osctrs : OS-RWT -> CS-OSCTRS  
+*** ----------------------------------------------  
+***                                             
+*** - We assume only axioms A, C or AC, and the equations E are sort-decreasing
+***                                             
+******************************************************************************
+
+fmod OS-RWT->CS-OSCTRS is
+  pr SRWT->OS-RWT .
+  
+  vars W P : String .
+  var  M : Module .
+  var  K : Kind .
+  var  KS : KindSet .
+  vars S S' : Sort .
+  var  SS : SortSet .
+  vars Tp Tp' : Type .
+  var  TpL : TypeList .
+  var  TpLS : TypeListSet .
+  var  F : Qid .
+  var  AtS : AttrSet .
+  var  OPDS : OpDeclSet .
+  vars T T' U V : Term .
+  var  TL : TermList .
+  var  EqS : EquationSet .
+  var  RlS : RuleSet .
+  vars Cd Cd' : Condition .
+  vars N N' : Nat .
+  var  NL : NatList .
+  
+  op os-rwt2cs-osctrs : Module -> Module .
+  eq os-rwt2cs-osctrs(M) 
+    = if eqtlConds(M)
+      then setEqs(
+             setRls( 
+               addOps(newOpsT(M, getKinds(M)), 
+                 addSorts(newSortsT(getKinds(M)), M)),
+               (mkRlsT(getEqs(M))
+                mkRlsT(getRls(M))
+                eqRlsT(M, getKinds(M))
+                mkRlsT(M, getOps(M)))), 
+             none) 
+      else setEqs(addRls(mkRlsT2(getEqs(M)), M), none)
+      fi .
+  
+  op eqtlConds : Module -> Bool .
+  op eqtlConds : EquationSet -> Bool .
+  op eqtlConds : RuleSet -> Bool .
+  ---- eqtlConds checks whether the module has equations or rules with equational conditions. 
+  ---- If there is no conditional equation and rules has onlt rewrites in their conditions 
+  ---- then it returns false; true otherwise.
+  eq eqtlConds(M) = eqtlConds(getEqs(M)) or eqtlConds(getRls(M)) .
+  eq eqtlConds(ceq T = T' if Cd [AtS] . EqS) = true .
+  eq eqtlConds(EqS) = false [owise] .
+  eq eqtlConds(crl T => T' if Cd /\ U = V /\ Cd' [AtS] . RlS) = true . 
+  eq eqtlConds(crl T => T' if Cd /\ U := V /\ Cd' [AtS] . RlS) = true . 
+  eq eqtlConds(crl T => T' if Cd /\ U : S /\ Cd' [AtS] . RlS) = true . 
+  eq eqtlConds(RlS) = false [otherwise] .
+  
+  op newSortsT : KindSet -> SortSet .
+  ----  - a new sort Thruth
+  ----  - for each connected component C of sorts a fresh new sort C'
+  eq newSortsT(K ; KS) = filterOS(K) ; newSortsT(KS) .
+  eq newSortsT(none) = 'Thruth .
+  
+  op newOpsT : Module KindSet -> OpDeclSet .
+  op newOpsT : Module Kind SortSet -> OpDeclSet .
+  ----  - a constant tt : -> Thruth
+  ----  - for each connected component of sorts C 
+  ----     - an operator equal : C C -> Thruth [comm strat (0)]
+  ----  - for each connected component of sorts C and each maximal sort s of C
+  ----    operators [_] {_} : s -> C' [strat (0)]
+  eq newOpsT(M, K ; KS) 
+    = newOpsT(M, filterOS(K), maximalSorts(M, K)) 
+      (op 'equal : filterOS(K) filterOS(K) -> 'Thruth [frozen(1 2)] .) ----[strat(0)] 
+      newOpsT(M, KS) .
+  eq newOpsT(M, none) = op 'tt : nil -> 'Thruth [none] . .
+    
+  eq newOpsT(M, S, S' ; SS)
+    = (op '`[_`] : S' -> S [frozen(1)] .) ----[strat(0)]
+      (op '`{_`} : S' -> S [frozen(1)] .) ----[strat(0)]
+      newOpsT(M, S, SS) .
+  eq newOpsT(M, S, none) = none .
+
+  ---- For each (possibly conditional) equation eq t = t' if A1 /\ ... /\ An  rules
+  ----   rl t => t' if A1' /\ ... /\ An'  
+  ---- and 
+  ----   rl {t} => [t'] if A1' /\ ... /\ An' 
+  ---- where
+  ----  - if Ai is a matching equation ui := vi then Ai' is [vi] => [ui]
+  ----  - if Ai is an ordinary equation ui = vi then Ai' is equal([ui], [vi]) => tt
+  op mkRlsT : EquationSet -> RuleSet .
+  eq mkRlsT(eq T = T' [AtS] . EqS)
+    = ((rl T => T' [AtS] .)
+       (rl '`{_`}[T] => '`[_`][T'] [AtS] .) 
+       mkRlsT(EqS)) .
+  eq mkRlsT(ceq T = T' if Cd [AtS] . EqS)
+    = ((crl T => T' if mkCondT(Cd) [AtS] .) 
+       (crl '`[_`][T] => '`[_`][T'] if mkCondT(Cd) [AtS] .)
+       mkRlsT(EqS)) .
+  eq mkRlsT((none).EquationSet) = none .
+    
+  op mkRlsT2 : EquationSet -> RuleSet .
+  ---- if the Ai are not equational rewrite conditions then we do not need 
+  ---- any extra rule
+  eq mkRlsT2(eq T = T' [AtS] . EqS)
+    = ((rl T => T' [AtS] .)
+       mkRlsT2(EqS)) .
+  eq mkRlsT2(ceq T = T' if Cd [AtS] . EqS)
+    = ((crl T => T' if mkCondT(Cd) [AtS] .) mkRlsT2(EqS)) .
+  eq mkRlsT2((none).EquationSet) = none .
+    
+  op mkRlsT : RuleSet -> RuleSet .
+  ---- For each (possibly conditional) rule rl t => t' if C a rule
+  ---- rl t => t' if C' is given.
+  eq mkRlsT(rl T => T' [AtS] . RlS) = ((rl T => T' [AtS] .) mkRlsT(RlS)) .
+  eq mkRlsT(crl T => T' if Cd [AtS] . RlS)
+    = ((crl T => T' if mkCondT(Cd) [AtS] .) mkRlsT(RlS)) .
+  eq mkRlsT((none).RuleSet) = none .
+    
+  op mkCondT : Condition -> Condition .
+  ----  - if Ai is a matching equation ui := vi then Ai' is [vi] => [ui]
+  ----  - if Ai is an ordinary equation ui = vi then Ai' is equal([ui], [vi]) => tt
+  eq mkCondT(T : S /\ Cd) = T : S /\ mkCondT(Cd) .
+  eq mkCondT(T => T' /\ Cd) = T => T' /\ mkCondT(Cd) .
+  eq mkCondT(T := T' /\ Cd) = '`[_`][T'] => '`[_`][T]  /\ mkCondT(Cd) .
+  eq mkCondT(T = T' /\ Cd)
+    = 'equal['`[_`][T], '`[_`][T']] => qid("tt.Thruth") /\ mkCondT(Cd) .
+  eq mkCondT(nil) = nil .
+  
+  op eqRlsT : Module KindSet -> RuleSet .
+  op eqRlsT : SortSet -> RuleSet .
+  op eqRlsT : Sort SortSet -> RuleSet .
+  ---- for each S, S' (not necessarily distint) maximal sorts in the same
+  ---- connected component
+  ----  eq([X:S], [X:S]) => tt
+  ----  eq([X:S], [Y:S']) => eq([Z:S], [Y:S']) if {X:S} => [Z:S]   
+  eq eqRlsT(M, K ; KS) = eqRlsT(maximalSorts(M, K)) eqRlsT(M, KS) .
+  eq eqRlsT(M, none) = none .
+  eq eqRlsT(S ; SS) = eqRlsT(S, SS) eqRlsT(SS) .
+  eq eqRlsT(none) = none .
+  eq eqRlsT(S, S' ; SS) 
+    = (crl 'equal['`[_`][qid("X:" + string(S))], '`[_`][qid("Y:" + string(S'))]] 
+         => 'equal['`[_`][qid("Z:" + string(S))], '`[_`][qid("Y:" + string(S'))]]
+         if '`{_`}[qid("X:" + string(S))] => '`[_`][qid("Z:" + string(S))] 
+         [none] .)
+      eqRlsT(S, SS) .
+  eq eqRlsT(S, (none).SortSet) 
+    = (rl 'equal['`[_`][qid("X:" + string(S))], '`[_`][qid("X:" + string(S))]] 
+         => 'tt.Thruth [none] .) .
+      
+  op mkRlsT : Module OpDeclSet -> RuleSet .
+  op mkRlsT : Qid TypeListSet NatList -> RuleSet .
+  op mkRlsT : Qid TypeList TermList NatList -> RuleSet .
+  ---- for each nonconstant f having a maximal arity S1...Sn and each i in \mu(f) 
+  ----   [f(X1:S1,...,Xi:Si,...,Xn)] => [f(X1:S1,...,Y:Si,...,Xn:Sn)] 
+  ----     if {Xi:Si] => [Y:Si]
+  eq mkRlsT(M, op F : nil -> Tp [AtS] . OPDS) = mkRlsT(M, OPDS) . 
+  eq mkRlsT(M, op F : Tp TpL -> Tp' [strat(NL) AtS] . OPDS) 
+    = mkRlsT(F, maximalAritySet(M, F, Tp TpL, Tp'), NL) mkRlsT(M, OPDS) .
+  eq mkRlsT(M, op F : Tp TpL -> Tp' [AtS] . OPDS) 
+    = mkRlsT(F, maximalAritySet(M, F, Tp TpL, Tp'), mkStratT(Tp TpL)) mkRlsT(M, OPDS) 
+    [owise] .
+  eq mkRlsT(M, (none).OpDeclSet) = none .
+  
+  eq mkRlsT(F, TpL ; TpLS, NL) 
+    = mkRlsT(F, TpL, mkArgsT(TpL, 1), NL)
+      mkRlsT(F, TpLS, NL) .
+  eq mkRlsT(F, none, NL) = none . 
+  
+  eq mkRlsT(F, TpL, TL, N NL)
+    = if N == 0 
+      then none
+      else (crl '`{_`}[F[TL]] 
+              => '`[_`][F[mkArgiT(TL, TpL, N)]] 
+              if '`{_`}[qid("X" + string(N, 10) + ":" + string(elementAt(TpL, N)))]  
+                 => '`[_`][qid("Y:" + string(elementAt(TpL, N)))] [none] .)
+      fi
+      mkRlsT(F, TpL, TL, NL) .
+  eq mkRlsT(F, TpL, TL, nil) = none .
+  
+  op elementAt : TypeList Nat ~> Type .
+  eq elementAt(Tp TpL, 1) = Tp .
+  eq elementAt(Tp TpL, s N) = elementAt(TpL, N) [owise] .
+
+  op mkArgsT : TypeList Nat -> TermList .
+  eq mkArgsT(Tp TpL, N)
+    = (qid("X" + string(N, 10) + ":" + string(Tp)), 
+       mkArgsT(TpL, s N)) .
+  eq mkArgsT(nil, N) = empty .
+ 
+  op mkArgiT : TermList TypeList Nat -> TermList .
+  eq mkArgiT((T, TL), Tp TpL, 1) = (qid("Y:" + string(Tp)), TL) .
+  eq mkArgiT((T, TL), Tp TpL, s N) = (T, mkArgiT(TL, TpL, N)) .
+  
+  op mkStratT : TypeList -> NatList .
+  op mkStratT : TypeList Nat -> NatList .
+  eq mkStratT(TpL) = mkStratT(TpL, s 0) .
+  eq mkStratT(Tp TpL, N) = N mkStratT(TpL, s N) .
+  eq mkStratT(nil, N) = nil .
+endfm
+
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select OS-RWT->CS-OSCTRS .
+red MB(upModule('DIE-HARD, true)) .
+red OS(upModule('DIE-HARD, true)) .
+red os-rwt2cs-osctrs(srwt2os-rwt(upModule('DIE-HARD, true))) .
+red metaReduce(os-rwt2cs-osctrs(srwt2os-rwt(upModule('DIE-HARD, true))), '0.ob-Nat-cb) .
+set include BOOL on .
+eof
+)
+---(
+set include BOOL off .
+load Samples/blackboard.maude
+select OS-RWT->CS-OSCTRS .
+red os-rwt2cs-osctrs(srwt2os-rwt(upModule('BLACKBOARD, true))) .
+red metaReduce(os-rwt2cs-osctrs(srwt2os-rwt(upModule('BLACKBOARD, true))), '0.Nat) .
+set include BOOL on .
+eof
+)
+  
+******************************************************************************
+***                                             
+*** B') cs-osctrs2cs-ostrs : CS-OSCTRS -> CS-OSTRS  
+*** ----------------------------------------------  
+***                                             
+*** - We assume rules of the form l => r if a1 => b1 /\ ... /\ an => bn
+*** - For rule i, with n rewrites in its condition, we make n + 1      
+***   unconditional rules, using n new operators Uij, with 1<=j<=n.    
+***                                             
+******************************************************************************
+
+fmod CS-OSCTRS->CS-OSTRS is
+  pr SCS-MCTRS->CS-OSCTRS .
+  pr CS-CTRS->CS-TRS .
+  pr OS-RWT->CS-OSCTRS .
+  
+  vars R L T T' T'' : Term .
+  var  TL : TermList .
+  var  M : Module .
+  var  Rl : Rule .
+  vars RlS RlS' : RuleSet .
+  var  OPDS : OpDeclSet .
+  var  AtS : AttrSet .
+  vars N I J : Nat .
+  var  Cond : Condition .
+  vars QI V V' : Qid .
+  var  QIL VL : QidList .
+  vars VS VS' VS'' : QidSet .
+  var  Tp : Type .
+
+  op cs-osctrs2cs-ostrs : Module -> Module .
+  op cs-osctrs2cs-ostrs : 
+       Module RuleSet RuleSet OpDeclSet Nat -> Tuple{RuleSet,OpDeclSet} .
+  op cs-osctrs2cs-ostrs : Module Rule Nat -> Tuple{RuleSet,OpDeclSet} .
+  op cs-osctrs2cs-ostrsAux : 
+       Module Rule RuleSet OpDeclSet Nat -> Tuple{RuleSet,OpDeclSet} .
+  op cs-osctrs2cs-ostrsAux : Module Term Term Condition AttrSet QidSet QidSet  
+       Nat Nat RuleSet OpDeclSet Type -> Tuple{RuleSet,OpDeclSet} .
+
+  eq cs-osctrs2cs-ostrs(M)
+    = setOps(
+        setRls(M, getRls(cs-osctrs2cs-ostrs(M, getRls(M), none, none, 1))),
+        getOps(M) getOps(cs-osctrs2cs-ostrs(M, getRls(M), none, none, 1))) .
+
+  eq cs-osctrs2cs-ostrs(M, rl T => T' [AtS] . RlS, RlS', OPDS, I)
+    = cs-osctrs2cs-ostrs(M, RlS, rl T => T' [AtS] . RlS', OPDS, I) .
+  eq cs-osctrs2cs-ostrs(M, crl T => T' if Cond [AtS] . RlS, RlS', OPDS, I)
+    = cs-osctrs2cs-ostrs(M, RlS,
+        getRls(cs-osctrs2cs-ostrs(M, crl T => T' if Cond [AtS] ., I)) RlS',
+        getOps(cs-osctrs2cs-ostrs(M, crl T => T' if Cond [AtS] ., I)) OPDS, I + 1) .
+  eq cs-osctrs2cs-ostrs(M, none, RlS, OPDS, I) = < RlS ; OPDS > .
+
+  eq cs-osctrs2cs-ostrs(M, Rl, I) = cs-osctrs2cs-ostrsAux(M, Rl, none, none, I) .
+
+  ceq cs-osctrs2cs-ostrsAux(M, crl L => R if T => T' /\ Cond [AtS] ., RlS, OPDS, I)
+    = cs-osctrs2cs-ostrsAux(M, R, T', Cond, AtS, vars(L), VS, I, 1,
+        rl L => makeUTerm(T, makeList(VS), I, 1) [AtS] . RlS,
+        makeUOp(M, I, 1, (T, termList(makeList(VS))), leastSort(M, L)) OPDS, leastSort(M, L)) 
+    if VS := intersection(vars(L), vars(R) ; vars(Cond)) . ---- known variables 
+  eq cs-osctrs2cs-ostrsAux(M, crl L => R if nil [AtS] ., RlS, OPDS, I)
+    = < rl L => R [AtS] . RlS ; OPDS > .
+
+  ceq cs-osctrs2cs-ostrsAux(M, R, T, T' => T'' /\ Cond, AtS, VS, VS', I, J, RlS, OPDS, Tp)
+    = cs-osctrs2cs-ostrsAux(M, R, T'', Cond, AtS, VS ; vars(T), VS'', I, J + 1,
+        rl makeUTerm(T, makeList(VS'), I, J)
+          => makeUTerm(T', makeList(VS''), I, J + 1) [AtS] . RlS,
+        makeUOp(M, I, J + 1, (T, termList(makeList(VS''))), Tp) OPDS, Tp) 
+    if VS'' := intersection(VS ; vars(T), vars(R) ; vars(Cond)) .
+  eq cs-osctrs2cs-ostrsAux(M, R, T, nil, AtS, VS, VS', I, J, RlS, OPDS, Tp)
+    = < rl makeUTerm(T, makeList(VS'), I, J) => R [AtS] . RlS ; OPDS > .
+
+  op makeList : QidSet ~> QidList .
+  eq makeList(none) = nil .
+  eq makeList((V ; VS)) = (V makeList(VS)) .
+
+  op makeUTerm : Term QidList Nat Nat -> Term .
+  op makeUOp : Module Nat Nat TermList Type -> OpDecl .
+  op makeUId : Nat Nat -> Qid .
+  op makeUTerm : Term Nat Nat -> Term .
+  op termList : QidList -> TermList .
+
+  eq makeUTerm(T, (V VL), I, J) = makeUId(I, J) [ T , termList(V VL) ] [owise] .
+  eq makeUTerm(T, nil, I, J) = makeUId(I, J) [ T ] .
+
+  eq makeUTerm(T, I, J) = makeUId(I, J) [ T ] .
+
+  eq makeUOp(M, I, J, TL, Tp)
+  ---- the Uij are created with mu(Uij) = (1)
+    = op makeUId(I, J) : makeTypeList(M, TL) -> Tp 
+         [if size(TL) == 1 then none else frozen (complement(1, size(TL))) fi] . .
+
+  eq makeUId(I, J) = qid("U" + string(I, 10) + string(J, 10)) .
+
+  op length : QidList -> Nat .
+  eq length(QI QIL) = 1 + length(QIL) .
+  eq length(nil) = 0 .
+
+  eq termList(V VL) = (V, termList(VL)) .
+  eq termList(nil) = empty .
+
+  op makeTypeList : Module TermList -> TypeList .
+  eq makeTypeList(M, (T, TL)) = leastSort(M, T) makeTypeList(M, TL) .
+  eq makeTypeList(M, empty) = nil .
+endfm
+
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists-and-take.maude
+select CS-OSCTRS->CS-OSTRS .
+red cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(upModule('LengthOfFiniteListsAndTake, true))) .
+red metaReduce(
+      cs-osctrs2cs-ostrs(
+        scs-mctrs2cs-osctrs(upModule('LengthOfFiniteListsAndTake, true))), '0.Nat) .
+set include BOOL on .
+)
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists.maude
+select CS-OSCTRS->CS-OSTRS .
+red cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(upModule('LengthOfFiniteLists, true))) .
+red metaReduce(
+      cs-osctrs2cs-ostrs(
+        scs-mctrs2cs-osctrs(upModule('LengthOfFiniteLists, true))), '0.Nat) .
+set include BOOL on .
+)
+---(
+set include BOOL off .
+load Samples/inf.maude
+select CS-OSCTRS->CS-OSTRS .
+red cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(upModule('INF, true))) .
+red metaReduce(
+      cs-osctrs2cs-ostrs(
+        scs-mctrs2cs-osctrs(upModule('INF, true))), '0.obNatcb) .
+set include BOOL on .
+)
+---(
+set include BOOL off .
+load Samples/die-hard.maude
+select CS-OSCTRS->CS-OSTRS .
+red MB(upModule('DIE-HARD, true)) .
+red OS(upModule('DIE-HARD, true)) .
+red 't .
+red upModule('DIE-HARD, true) .
+red srwt2scs-mctrs(upModule('DIE-HARD, true)) .
+red scs-mctrs2cs-osctrs(
+      srwt2scs-mctrs(upModule('DIE-HARD, true))) .
+red cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true)))) .
+red metaReduce(cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(
+        srwt2scs-mctrs(upModule('DIE-HARD, true)))), '0.ob-Nat-cb) .
+set include BOOL on .
+eof
+)
+
+******************************************************************************
+***                                             
+*** cs-ostrs2cs-trs : CS-OSTRS -> CS-TRS         
+*** -----------------------------------         
+***                                             
+******************************************************************************
+
+fmod CS-OSTRS->CS-TRS is
+  pr CS-MCTRS->CS-CTRS .
+  pr CS-OSCTRS->CS-OSTRS .
+  
+  op cs-ostrs2cs-trs : Module -> Module .
+  
+  eq cs-ostrs2cs-trs(M)
+    = mod getName(M) is
+        nil 
+        sorts SINGLE-SORT .
+        none
+        mkops(getOps(M), close(getSubsorts(M)))
+        none
+        none
+        specializations(M, getRls(M), close(getSubsorts(M)))
+        ----if sort-preserving(M)
+        ----then none
+        ----else 
+        mkoprls(getOps(M), close(getSubsorts(M)))
+        ----fi
+      endm .
+
+  sort Set{Substitution} .
+  subsort Substitution < Set{Substitution} .
+  op mt : -> Set{Substitution} .
+  op __ : Set{Substitution} Set{Substitution} -> Set{Substitution} 
+          [assoc comm id: mt] .
+
+----  sort Set{TypeList} .
+----  subsort TypeList < Set{TypeList} .
+----  op mt : -> Set{TypeList} .
+----  op _._ : Set{TypeList} Set{TypeList} -> Set{TypeList} 
+----          [assoc comm id: mt] .
+
+  sort TypeListList .
+  op nilTpLL : -> TypeListList .
+  op cons : TypeList TypeListList -> TypeListList .
+  op _++_ : TypeListList TypeListList -> TypeListList [assoc id: nilTpLL] .
+  eq cons(TpL, TpLL) ++ cons(TpL', TpLL') = cons(TpL, cons(TpL', TpLL ++ TpLL')) .
+
+  vars S S' S'' : Sort .
+  var  SS : SortSet .
+  vars SL TpL TpL' : TypeList .
+  vars SLL TpLL TpLL' : TypeListList .
+----  var  SLS : Set{TypeList} .
+  var  SSDS : SubsortDeclSet .
+  var  Rl : Rule .
+  var  RlS : RuleSet .
+  vars Subst Subst' : Substitution .
+  vars SubstS SubstS' : Set{Substitution} .
+  var  V W : Variable .
+  var  C : Constant .
+  vars T T' : Term .
+  var  TL : TermList .
+  var  M : Module .
+  var  F : Qid .
+  var  VS : QidSet .
+  var  Cond : Condition .
+  var  AtS : AttrSet .
+  var  Tp : Type .
+  var  ODS : OpDeclSet .
+  
+  op floor : Module Rule -> Rule .
+  op floor : Module AttrSet -> AttrSet .
+  op floor : Module Condition -> Condition .
+  op floor : Module Term -> Term .
+  op floor : Module TermList -> TermList .
+  
+  eq floor(M, rl T => T' [AtS] .)
+    = rl floor(M, T) => floor(M, T') [floor(M, AtS)] . .  
+  eq floor(M, crl T => T' if Cond [AtS] .)
+    = crl floor(M, T) => floor(M, T') if floor(M, Cond) 
+        [floor(M, AtS)] . .
+
+  eq floor(M, id(T) AtS) = id(floor(M, T)) floor(M, AtS) .
+  eq floor(M, AtS) = AtS [owise] .
+  
+  eq floor(M, T = T' /\ Cond) 
+    = floor(M, T) = floor(M, T') /\ floor(M, Cond) .  
+  eq floor(M, T := T' /\ Cond) 
+    = floor(M, T) := floor(M, T') /\ floor(M, Cond) .  
+  eq floor(M, T => T' /\ Cond) 
+    = floor(M, T) => floor(M, T') /\ floor(M, Cond) .  
+  eq floor(M, T : S /\ Cond) 
+    = floor(M, T) : S /\ floor(M, Cond) .
+  eq floor(M, (nil).Condition) = nil .
+    
+  eq floor(M, V) = qid(string(getName(V)) + ":" + string(SINGLE-SORT)) .
+  eq floor(M, C) = qid(string(getName(C)) + "." + string(SINGLE-SORT)) .
+  eq floor(M, F[TL]) = opName(F, eLeastSort(setMbs(M, none), TL)) [ floor(M, TL) ] .
+
+  eq floor(M, (T, TL)) = (floor(M, T), floor(M, TL)) .
+  eq floor(M, empty) = empty .
+  
+  op close : SubsortDeclSet -> SubsortDeclSet .
+  ---- Closes the set of subsort declarations under transitivity.
+ ceq close(subsort S < S' . subsort S' < S'' . SSDS)
+    = close(subsort S < S' . subsort S' < S'' . subsort S < S'' . SSDS)
+    if not subsort S < S'' . in (subsort S < S' . subsort S' < S'' . SSDS) .
+  eq close(SSDS) = SSDS [owise] .
+  
+  op specializations : Module RuleSet SubsortDeclSet -> RuleSet .
+  op specializations : Module Rule Set{Substitution} -> Rule .
+
+  eq specializations(M, Rl RlS, SSDS)
+    = specializations(M, Rl, specializations(vars(Rl), SSDS)) 
+      specializations(M, RlS, SSDS) . 
+  eq specializations(M, none, SSDS) = none .
+
+  eq specializations(M, Rl, Subst SubstS)
+    = floor(M, substitute(Rl, Subst)) 
+      specializations(M, Rl, SubstS) .
+  eq specializations(M, Rl, (mt).Set{Substitution}) = none .
+  
+  op specializations : QidSet SubsortDeclSet -> Set{Substitution} .
+  ---- Given a set of variables X1:S1...Xn:Sn gives all possible 
+  ---- substitutions specializing them. The subsorts given are suppose
+  ---- to be closed under transitivity. 
+ ceq specializations(V ; VS, SSDS) 
+    = combineSubst(specializations(V, SSDS), specializations(VS, SSDS)) 
+    if VS =/= none .
+ ceq specializations(V, subsort S < S' . SSDS) 
+    = (V <- qid(string(getName(V)) + ":" + string(S)))
+      specializations(V, SSDS) 
+    if getType(V) == S' .
+  eq specializations(V, SSDS) = (V <- V) [owise] .
+  eq specializations((none).QidSet, SSDS) = none .
+  
+  op combineSubst : Set{Substitution} Set{Substitution} -> Set{Substitution} .
+ ceq combineSubst(Subst SubstS, Subst' SubstS')
+    = (Subst ; Subst') 
+      combineSubst(Subst, SubstS') 
+      combineSubst(SubstS, Subst' SubstS') 
+    if Subst =/= none /\ Subst' =/= none .    
+  eq combineSubst(SubstS, mt) = mt . 
+  eq combineSubst(mt, SubstS) = mt .
+  eq combineSubst(SubstS, none) = mt . 
+  eq combineSubst(none, SubstS) = mt .
+   
+  op substitute : Rule Substitution -> Rule .
+  op substitute : AttrSet Substitution -> AttrSet .
+  op substitute : Condition Substitution -> Condition .
+  op substitute : Term Substitution -> Term .
+  op substitute : TermList Substitution -> TermList .
+  ---- applies the given substitution on the given rule
+  eq substitute(rl T => T' [AtS] ., Subst)
+    = rl substitute(T, Subst) => substitute(T', Subst) 
+        [substitute(AtS, Subst)] . . 
+  eq substitute(crl T => T' if Cond [AtS] ., Subst)
+    = crl substitute(T, Subst) => substitute(T', Subst) 
+        if substitute(Cond, Subst)
+        [substitute(AtS, Subst)] . . 
+  eq substitute(id(T) AtS, Subst) 
+    = id(substitute(T, Subst)) substitute(AtS, Subst) .
+  eq substitute(AtS, Subst) = AtS [owise] .
+  eq substitute(T = T' /\ Cond, Subst)
+    = substitute(T, Subst) = substitute(T', Subst) 
+      /\ substitute(Cond, Subst) .
+  eq substitute(T := T' /\ Cond, Subst)
+    = substitute(T, Subst) := substitute(T', Subst) 
+      /\ substitute(Cond, Subst) .
+  eq substitute(T => T' /\ Cond, Subst)
+    = substitute(T, Subst) => substitute(T', Subst) 
+      /\ substitute(Cond, Subst) .
+  eq substitute(T : S /\ Cond, Subst)
+    = substitute(T, Subst) : S /\ substitute(Cond, Subst) .
+  eq substitute((nil).Condition, Subst) = nil .
+  eq substitute(T, none) = T .
+  eq substitute(V, ((W <- T) ; Subst)) 
+  ---- PERHAPS WE MAY HAVE TO CHECK SOMETHING LIKE
+  ----      getName(V) == getName(W) and sameKind(V, W)
+    = if V == W then T else substitute(V, Subst) fi .
+  eq substitute(C, ((W <- T) ; Subst)) = C .
+  eq substitute(F[TL], Subst) = F[substitute(TL, Subst)] .
+  eq substitute((T, TL), Subst)
+    = (substitute(T, Subst), substitute(TL, Subst)) .
+
+  op mkoprls : OpDeclSet SubsortDeclSet -> RuleSet .
+  op mkoprls : Qid TypeList TypeListList -> RuleSet .
+  eq mkoprls(op F : TpL -> Tp [AtS] . ODS, SSDS)
+    = mkoprls(F, TpL, subsort1Lists(TpL, SSDS))
+      mkoprls(ODS, SSDS) .
+  eq mkoprls(none, SSDS) = none .
+    
+  eq mkoprls(F, TpL, cons(SL, SLL))
+    = if TpL == nil 
+      then none
+      else rl opName(F, TpL) [ singleSortVarList(TpL) ]
+             => opName(F, SL) [ singleSortVarList(TpL) ] 
+             [none] .
+      fi
+      mkoprls(F, TpL, SLL) .
+  eq mkoprls(F, TpL, nilTpLL) = none .
+    
+  op subsorts : Sort SubsortDeclSet -> SortSet .
+  eq subsorts(S, subsort S' < S . SSDS) 
+    = S' ; subsorts(S, SSDS) .
+  eq subsorts(S, SSDS) = none [owise] .
+  
+  op combine : SortSet TypeListList -> TypeListList .
+  eq combine(S ; SS, cons(SL, SLL)) 
+    = cons(S SL, nilTpLL) ++ combine(S, SLL) ++ combine(SS, cons(SL, SLL)) .    
+  eq combine(SS, nilTpLL) = nilTpLL . 
+  eq combine(none, SLL) = nilTpLL .
+
+  op subsortLists : TypeList SubsortDeclSet -> TypeListList .
+  ---- Given a type list S1...Sn gives all S1'...Sn' with Si' <= Si 
+  eq subsortLists(Tp TpL, SSDS) 
+    = combine(Tp ; subsorts(Tp, SSDS), subsortLists(TpL, SSDS)) .
+  eq subsortLists((nil).TypeList, SSDS) = cons(nil, nilTpLL) .
+
+  op subsort1Lists : TypeList SubsortDeclSet -> TypeListList .
+  ---- Given a type list S1...Si...Sn gives all S1...Si'...Sn with Si' < Si 
+  eq subsort1Lists(Tp TpL, SSDS) 
+    = if TpL == nil 
+      then combine(subsorts(Tp, SSDS), cons(TpL, nilTpLL))
+      else combine(subsorts(Tp, SSDS), subsortLists(TpL, SSDS))
+             ++ combine(Tp, subsort1Lists(TpL, SSDS)) 
+      fi .    
+  eq subsort1Lists((nil).TypeList, SSDS) = cons(nil, nilTpLL) .
+
+  op mkops : OpDeclSet SubsortDeclSet -> OpDeclSet .
+  op mkops : Qid TypeListList AttrSet -> OpDeclSet .
+  eq mkops(op F : TpL -> Tp [AtS] . ODS, SSDS)
+    = mkops(F, subsortLists(TpL, SSDS), AtS)
+      mkops(ODS, SSDS) .
+  eq mkops(none, SSDS) = none .
+  
+  eq mkops(F, cons(SL, SLL), AtS)
+    = op opName(F, SL) : singleTypeList(SL) -> SINGLE-SORT [AtS] .  
+      mkops(F, SLL, AtS) .
+  eq mkops(F, nilTpLL, AtS) = none .
+    
+endfm
+
+---(
+set include BOOL off .
+load Samples/length-of-finite-lists-and-take.maude
+select CS-OSTRS->CS-TRS .
+red cs-osctrs2cs-ostrs(
+      scs-mctrs2cs-osctrs(
+        srwt2scs-mctrs(
+          upModule('LengthOfFiniteListsAndTake, true)))) .
+red cs-ostrs2cs-trs(
+      cs-osctrs2cs-ostrs(
+        scs-mctrs2cs-osctrs(
+          srwt2scs-mctrs(
+            upModule('LengthOfFiniteListsAndTake, true))))) .
+red metaReduce(
+      cs-ostrs2cs-trs(
+        cs-osctrs2cs-ostrs(
+          scs-mctrs2cs-osctrs(
+            srwt2scs-mctrs(
+              upModule('LengthOfFiniteListsAndTake, true))))), '0.S) .
+set include BOOL on .
+eof
+)
+
+---(
+set include BOOL off .
+load Samples/inf.maude
+select CS-OSTRS->CS-TRS .
+red cs-ostrs2cs-trs(
+      cs-osctrs2cs-ostrs(
+        scs-mctrs2cs-osctrs(upModule('INF, true)))) .
+red metaReduce(
+      cs-ostrs2cs-trs(
+        cs-osctrs2cs-ostrs(
+          scs-mctrs2cs-osctrs(upModule('INF, true)))), '0.Nat) .
+set include BOOL on .
+eof
+)
+
+********************************************************************************
+
+fmod PROCESS is
+  pr CS-CTRS->CS-TRS .
+  pr CS-MCTRS->CS-CTRS .
+  pr SCS-MCTRS->CS-MCTRS .
+  pr CS-OSTRS->CS-TRS .
+  pr OS-RWT->CS-OSCTRS .
+  
+  vars M M' : Module .
+  var  DTT : TransfType .
+  var  AND : Bool .
+  var  QIL : QidList .
+
+  op proc : Module Path Bool -> Module .
+  eq proc(unitError(QIL), P:Path, AND) = unitError(QIL) .  
+ ceq proc(M, C;A;B(DTT), AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-ctrs2cs-trs(
+                 cs-mctrs2cs-ctrs(
+                   scs-mctrs2cs-mctrs(
+                     srwt2scs-mctrs(M)), 
+                   DTT))) .
+ ceq proc(M, C;A(DTT), AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-mctrs2cs-ctrs(
+                 scs-mctrs2cs-mctrs(
+                   srwt2scs-mctrs(M)), 
+                 DTT)) .
+ ceq proc(M, C;OS;B;O-L, AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-ostrs2cs-trs(
+                 cs-osctrs2cs-ostrs(
+                   scs-mctrs2cs-osctrs(
+                     srwt2scs-mctrs(M))))) .
+ eq proc(M, C;OS;A;B(DTT), AND) ---- DTT is no-sorts or no-kinds
+    = if AND then and-optimization(filterTPDB(
+               cs-ctrs2cs-trs(
+                 cs-mctrs2cs-ctrs(
+                   scs-mctrs2cs-mctrs(
+                     scs-mctrs2cs-osctrs(
+                       srwt2scs-mctrs(M))),
+                   DTT)))) else filterTPDB(
+               cs-ctrs2cs-trs(
+                 cs-mctrs2cs-ctrs(
+                   scs-mctrs2cs-mctrs(
+                     scs-mctrs2cs-osctrs(
+                       srwt2scs-mctrs(M))),
+                   DTT))) fi .
+---(
+ ceq proc(M, C;OS;A;B(DTT), AND) ---- DTT is no-sorts or no-kinds
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-ctrs2cs-trs(
+                 cs-mctrs2cs-ctrs(
+                   scs-mctrs2cs-mctrs(
+                     scs-mctrs2cs-osctrs(
+                       srwt2scs-mctrs(M))),
+                   DTT))) .
+)
+ ceq proc(M, C;OS;B;A(no-sorts), AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-mctrs2cs-ctrs(
+                 scs-mctrs2cs-mctrs(
+                   cs-osctrs2cs-ostrs(
+                     scs-mctrs2cs-osctrs(
+                       srwt2scs-mctrs(M)))),
+                 no-sorts)) .
+ ceq proc(M, OS;T;B;O-L, AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-ostrs2cs-trs(
+                 cs-osctrs2cs-ostrs(
+                   os-rwt2cs-osctrs(
+                     srwt2os-rwt(M))))) .
+ ceq proc(M, OS;T;B;A(no-sorts), AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-mctrs2cs-ctrs(
+                 scs-mctrs2cs-mctrs(
+                   cs-osctrs2cs-ostrs(
+                     os-rwt2cs-osctrs(
+                       srwt2os-rwt(M)))),
+                 no-sorts)) .
+ ceq proc(M, OS;T;A;B(DTT), AND) 
+    = if AND then and-optimization(M') else M' fi
+    if M' := filterTPDB(
+               cs-ctrs2cs-trs(
+                 cs-mctrs2cs-ctrs(
+                   scs-mctrs2cs-mctrs(
+                     os-rwt2cs-osctrs(
+                       srwt2os-rwt(M))),
+                     DTT))) .
+endfm
+
+******************************************************************************
+***                                             
+*** procTPDB                                    
+*** --------                                    
+*** produces the rewrite system in TPDB syntax  
+***                                             
+******************************************************************************
+
+fmod PROC-TPDB is
+  pr PROCESS .
+  pr MODULE-VARIANTS .
+  pr AX-COHERENCE-COMPLETION .
+
+  op procTPDB : Module Path Bool Bool -> QidList .
+  op $procTPDB : Module Path Bool Bool -> QidList .
+  ---- 2nd arg. proof path
+  ----          C;A;B(complete/no-sorts/no-kinds)
+  ----          C;OS;B;O-L
+  ----          C;OS;B;A(no-sorts)
+  ----          C;OS;A;B(no-sorts/no-kinds)
+  ---- 3er arg. true -> conditions are processed 
+  ----          false -> conditions are left
+  ---- 3er arg. true -> context-sensitive information is provided
+  ----          false -> context-sensitive information is removed
+
+  vars M M' : Module .
+  var  MN : ModuleName .
+  vars F QI : Qid .
+  var  QIS VS FS : QidSet .
+  vars S S' : Sort .
+  var  SS : SortSet .
+  var  SSDS : SubsortDeclSet .
+  var  N : Nat .  
+  var  NL : NatList .
+  var  At : Attr .
+  var  AtS : AttrSet .
+  var  OPDS : OpDeclSet .
+  var  EqS : EquationSet .
+  var  MAS : MembAxSet .
+  var  C : Constant .
+  var  V : Variable .
+  vars T T' : Term .
+  var  TL : TermList .
+  var  RlS : RuleSet .
+  var  PP : Path .
+  vars CONDITIONS CONTEXT : Bool .
+  vars Tp Tp' : Type .
+  var  TpL : TypeList .
+  var  QIL : QidList .
+  var  Cond : Condition .
+
+ ceq $procTPDB(M, PP, CONDITIONS, CONTEXT)
+    = if ((vars(getRls(M'))) =/= none)
+      then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
+      else nil
+      fi
+      '\n
+      if (theoriesTPDB(getOps(M')) =/= nil)
+      then '`( 'THEORY '\n theoriesTPDB(getOps(M')) '`)
+      else nil
+      fi
+      '\n
+      if (CONTEXT and strategiesTPDB(getOps(M')) =/= nil)
+      then '`( 'STRATEGY 'CONTEXTSENSITIVE '\n strategiesTPDB(getOps(M')) '`)
+      else nil
+      fi
+      '\n
+      if ((getRls(M')) =/= none)
+      then '`( 'RULES '\n rulesTPDB(getRls(M')) '`)
+      else nil
+      fi
+      '\n
+    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), all))), PP, CONDITIONS) .
+  eq $procTPDB(unitError(QIL), PP, CONDITIONS, CONTEXT) = QIL .
+  eq $procTPDB(M, PP, CONDITIONS, CONTEXT) 
+    = 'error: 'possibly 'a 'non-supported 'feature 'in 'the 'module 
+    [owise] .
+
+  eq procTPDB(M, PP, CONDITIONS, CONTEXT)
+    = '/@@@ '\n $procTPDB(M, PP, CONDITIONS, CONTEXT) '@@@/ '\n .
+
+  ---- Maude has problems with curly brackets in operator names. filterMaude cleans parameterized sorts
+  op filterMaude : Module ~> Module .
+  op filterMaude : SubsortDeclSet ~> SubsortDeclSet .
+  op filterMaude : MembAxSet ~> MembAxSet .
+  op filterMaude : OpDeclSet ~> OpDeclSet .
+  op filterMaude : RuleSet ~> RuleSet .
+  op filterMaude : EquationSet ~> EquationSet .
+  op filterMaude : Condition -> Condition .
+  op filterMaude : AttrSet -> AttrSet .
+  op filterMaude : Term -> Term [memo] .
+  op filterMaude : TermList -> TermList [memo] .
+  op filterMaude : TypeList -> TypeList [memo] .
+  op filterMaude : Sort -> Sort [memo] .
+  op filterMaude : Kind -> Kind [memo] .
+  op filterMaude : Type -> Type [memo] .
+  op filterMaude : TermQid -> TermQid [memo] .
+  op filterMaude : Qid -> Qid [memo] .
+  op filterMaude : Variable -> Variable [memo] .
+  op filterMaude : Constant -> Constant [memo] .
+  op filterMaude : QidSet -> QidSet [memo] .
+  
+  eq filterMaude(mod MN is nil sorts SS . SSDS OPDS MAS EqS RlS endm) 
+    = mod MN is nil sorts filterMaude(SS) . filterMaude(SSDS) filterMaude(OPDS) filterMaude(MAS) filterMaude(EqS) filterMaude(RlS) endm .
+  eq filterMaude(fmod MN is nil sorts SS . SSDS OPDS MAS EqS endfm) 
+    = fmod MN is nil sorts filterMaude(SS) . filterMaude(SSDS) filterMaude(OPDS) filterMaude(MAS) filterMaude(EqS) endfm .
+  eq filterMaude(unitError(QIL)) = unitError(QIL) .
+
+ ceq filterMaude(F ; FS) = filterMaude(F) ; filterMaude(FS) if FS =/= none .
+  eq filterMaude((none).QidSet) = none .
+  
+  eq filterMaude(subsort S < S' . SSDS) = subsort filterMaude(S) < filterMaude(S') . filterMaude(SSDS) .
+  eq filterMaude((none).SubsortDeclSet) = none .
+
+  eq filterMaude(op F : TpL -> Tp [AtS] . OPDS) 
+    = op filterMaude(F) : filterMaude(TpL) -> filterMaude(Tp) [filterMaude(AtS)] . filterMaude(OPDS) .
+  eq filterMaude((none).OpDeclSet) = none .
+
+  eq filterMaude(mb T : S [AtS] . MAS)
+    = mb filterMaude(T) : filterMaude(S) [filterMaude(AtS)] . filterMaude(MAS) .
+  eq filterMaude(cmb T : S if Cond [AtS] . MAS)
+    = cmb filterMaude(T) : filterMaude(S) if filterMaude(Cond) [filterMaude(AtS)] . filterMaude(MAS) .
+  eq filterMaude((none).MembAxSet) = none .
+
+  eq filterMaude(eq T = T' [AtS] . EqS)
+    = eq filterMaude(T) = filterMaude(T') [filterMaude(AtS)] . filterMaude(EqS) .
+  eq filterMaude(ceq T = T' if Cond [AtS] . EqS)
+    = ceq filterMaude(T) = filterMaude(T') if filterMaude(Cond) [filterMaude(AtS)] . filterMaude(EqS) .
+  eq filterMaude((none).EquationSet) = none .
+
+  eq filterMaude(rl T => T' [AtS] . RlS)
+    = rl filterMaude(T) => filterMaude(T') [filterMaude(AtS)] . filterMaude(RlS) .
+  eq filterMaude(crl T => T' if Cond [AtS] . RlS)
+    = crl filterMaude(T) => filterMaude(T') if filterMaude(Cond) [filterMaude(AtS)] . filterMaude(RlS) .
+  eq filterMaude((none).RuleSet) = none .
+
+  eq filterMaude(T = T' /\ Cond) = filterMaude(T) = filterMaude(T') /\ filterMaude(Cond) .
+  eq filterMaude(T := T' /\ Cond) = filterMaude(T) := filterMaude(T') /\ filterMaude(Cond) .
+  eq filterMaude(T => T' /\ Cond) = filterMaude(T) => filterMaude(T') /\ filterMaude(Cond) .
+  eq filterMaude(T : S /\ Cond) = filterMaude(T) : filterMaude(S) /\ filterMaude(Cond) .
+  eq filterMaude((nil).Condition) = nil .
+
+  eq filterMaude(id(T) AtS) = id(filterMaude(T)) filterMaude(AtS) .
+  eq filterMaude(format(QIL) AtS) = filterMaude(AtS) .
+  eq filterMaude(AtS) = AtS [owise] .
+
+  eq filterMaude(V) = qid(string(filterMaude(getName(V))) + ":" + string(filterMaude(getType(V)))) .
+  eq filterMaude(C) = qid(string(filterMaude(getName(C))) + "." + string(filterMaude(getType(C)))) .
+  eq filterMaude(F[TL]) = filterMaude(F) [ filterMaude(TL) ] .
+  eq filterMaude((T, TL)) = (filterMaude(T), filterMaude(TL)) .
+  eq filterMaude(empty) = empty .
+ ceq filterMaude(Tp TpL) = filterMaude(Tp) filterMaude(TpL) if TpL =/= nil .
+  eq filterMaude((nil).TypeList) = nil .
+  eq filterMaude(F) 
+    = qid(replace(replace(replace(string(F), "`{", "ocb-"), "`}", "-ccb"), "`,", "-comma-")) 
+    [owise] .
+
+  op varsTPDB : QidSet -> QidList .
+  eq varsTPDB(QI ; QIS) = getName(QI) varsTPDB(QIS) .
+  eq varsTPDB(none) = nil .
+
+  op strategiesTPDB : OpDeclSet -> QidList .
+  eq strategiesTPDB(op F : nil -> Tp [AtS] . OPDS)
+    = ---- " " + string('\s) + " (" + string(F) + ") " + string('\n) + " " +
+      strategiesTPDB(OPDS) .
+  eq strategiesTPDB(op F : TpL -> Tp [strat(NL) AtS] . OPDS)
+    = '\s '`( F numberList(NL) '`) '\n 
+      strategiesTPDB(OPDS) .
+  eq strategiesTPDB(op F : TpL -> Tp [frozen(NL) AtS] . OPDS)
+    = '\s '`( F numberList(complement(NL, size(TpL))) '`) '\n
+      strategiesTPDB(OPDS) .
+  eq strategiesTPDB(op F : TpL -> Tp [AtS] . OPDS)
+    = ---- " " + string('\s) + " (" + string(F) + " " + string('\s) + " " + 
+      ----  createNumberList(Tp TpL) + ") " + string('\n) + " " + 
+      strategiesTPDB(OPDS) 
+    [owise] .
+  eq strategiesTPDB(none) = nil .
+
+  op theoriesTPDB : OpDeclSet -> QidList .
+  eq theoriesTPDB(op F : nil -> Tp [AtS] . OPDS)
+    = theoriesTPDB(OPDS) .
+  eq theoriesTPDB(op F : Tp TpL -> Tp' [AtS] . OPDS)
+    = if getTheory(AtS) == nil
+      then nil
+      else '\s '`( getTheory(AtS) F '`) '\n
+      fi
+      theoriesTPDB(OPDS) .
+  eq theoriesTPDB(none) = nil .
+  
+  op getTheory : AttrSet ~> QidList .
+  eq getTheory(ctor AtS) = getTheory(AtS) . 
+  eq getTheory(memo AtS) = getTheory(AtS) . 
+  eq getTheory(strat(NL) AtS) = getTheory(AtS) . 
+  eq getTheory(frozen(NL) AtS) = getTheory(AtS) . 
+  eq getTheory(prec(N) AtS) = getTheory(AtS) . 
+  eq getTheory(gather(QIL) AtS) = getTheory(AtS) . 
+  eq getTheory(format(QIL) AtS) = getTheory(AtS) . 
+  eq getTheory(config AtS) = getTheory(AtS) . 
+  eq getTheory(object AtS) = getTheory(AtS) . 
+  eq getTheory(msg AtS) = getTheory(AtS) . 
+  eq getTheory(metadata(St:String) AtS) = getTheory(AtS) .
+  eq getTheory(assoc comm) = 'AC . 
+  eq getTheory(assoc) = 'A . 
+  eq getTheory(comm) = 'C . 
+  eq getTheory(none) = nil .
+
+  op numberList : NatList -> QidList .
+  eq numberList(0) = nil .
+  eq numberList(s N) = qid(string(s N, 10)) .
+  eq numberList(N 0 NL) = qid(string(N, 10)) .
+  eq numberList(N NL) = qid(string(N, 10)) numberList(NL) [owise] .
+  eq numberList(nil) = nil .
+
+  op createNumberList : TypeList -> QidList .
+  op createNumberList : TypeList Nat -> QidList .
+  eq createNumberList(TpL) = createNumberList(TpL, 1) .
+  eq createNumberList(Tp TpL, N) 
+    = if TpL == nil 
+      then qid(string(N, 10))
+      else qid(string(N, 10)) createNumberList(TpL, N + 1) 
+      fi .
+  eq createNumberList(nil, N) = nil .
+
+  op rulesTPDB : RuleSet -> QidList .
+  op TPDBPrettyPrint : Term -> QidList .
+  op TPDBPrettyPrint : TermList -> QidList .
+  op condTPDB : Condition -> QidList .
+
+  eq rulesTPDB(rl T => T' [AtS] . RlS)
+    = '\s TPDBPrettyPrint(T) '-> TPDBPrettyPrint(T') '\n rulesTPDB(RlS) .
+  eq rulesTPDB(crl T => T' if Cond [AtS] . RlS)
+    = '\s TPDBPrettyPrint(T) '-> TPDBPrettyPrint(T') '| condTPDB(Cond) '\n rulesTPDB(RlS) .
+  eq rulesTPDB(none) = nil .
+  
+  eq condTPDB(T => T' /\ Cond) 
+    = TPDBPrettyPrint(T) '-> TPDBPrettyPrint(T') 
+      if Cond == nil
+      then nil
+      else '`, condTPDB(Cond) 
+      fi .
+
+  eq TPDBPrettyPrint(C) = getName(C) .
+  eq TPDBPrettyPrint(V) = getName(V) .
+  eq TPDBPrettyPrint(F[TL]) = F '`( TPDBPrettyPrint(TL) '`) .
+  eq TPDBPrettyPrint((T, TL)) = TPDBPrettyPrint(T) '`, '\s TPDBPrettyPrint(TL) .
+endfm
+
+
+******************************************************************************
+***                                             
+*** ac? & strat?                                
+*** ------------                                
+***                                             
+*** Check whether a given module has associative or commutative ops, or
+*** has ops with local strategies, i.e., strat attributes.
+***                                             
+******************************************************************************
+
+fmod PROC-OTHER is
+  pr META-LEVEL .
+  pr EXT-BOOL .
+
+  op ac? : Module -> QidList .
+  op ac? : OpDeclSet -> Bool .
+  op ac? : AttrSet -> Bool .
+  op strat? : Module -> QidList .
+  op strat? : OpDeclSet -> Bool .
+  op strat? : AttrSet -> Bool .
+
+  var  M : Module .
+  var  F : Qid .
+  var  QIL : QidList .
+  var  Ty : Type .
+  var  TyL : TypeList .
+  var  AtS : AttrSet .
+  var  OPDS : OpDeclSet .
+  var  T : Term .
+  var  N : Nat .
+  var  NL : NatList .
+  var  HkL : HookList .
+
+  eq ac?(M) = if ac?(getOps(M)) then '/@@@ 'yes '@@@/ else '/@@@ 'no '@@@/ fi .
+
+  eq ac?(op F : TyL -> Ty [AtS] . OPDS) = ac?(AtS) or-else ac?(OPDS) .
+  eq ac?((none).OpDeclSet) = false .
+
+  eq ac?((assoc AtS)) = true .
+  eq ac?((comm AtS))  = true .
+  eq ac?((idem AtS))  = ac?(AtS) .
+  eq ac?((iter AtS))  = ac?(AtS) .
+  eq ac?((id(T) AtS)) = ac?(AtS) .
+  eq ac?((right-id(T) AtS)) = ac?(AtS) .
+  eq ac?((left-id(T) AtS))  = ac?(AtS) .
+  eq ac?((poly(NL) AtS)) = ac?(AtS) .
+  eq ac?((strat(NL) AtS)) = ac?(AtS) .
+  eq ac?((memo AtS)) = ac?(AtS) .
+  eq ac?((prec(N) AtS)) = ac?(AtS) .
+  eq ac?((gather(QIL) AtS)) = ac?(AtS) .
+  eq ac?((format(QIL) AtS)) = ac?(AtS) .
+  eq ac?((ctor AtS)) = ac?(AtS) .
+  eq ac?((frozen(NL) AtS)) = ac?(AtS) .
+  eq ac?((config AtS)) = ac?(AtS) .
+  eq ac?((object AtS)) = ac?(AtS) .
+  eq ac?((msg AtS)) = ac?(AtS) .
+  eq ac?((special(HkL) AtS)) = ac?(AtS) .
+  eq ac?((none).AttrSet) = false .
+
+  eq strat?(M) = if strat?(getOps(M)) then '/@@@ 'yes '@@@/ else '/@@@ 'no '@@@/ fi .
+
+  eq strat?(op F : TyL -> Ty [AtS] . OPDS) = strat?(AtS) or-else strat?(OPDS) .
+  eq strat?((none).OpDeclSet) = false .
+
+  eq strat?((assoc AtS)) = strat?(AtS) .
+  eq strat?((comm AtS))  = strat?(AtS) .
+  eq strat?((idem AtS))  = strat?(AtS) .
+  eq strat?((iter AtS))  = strat?(AtS) .
+  eq strat?((id(T) AtS)) = strat?(AtS) .
+  eq strat?((right-id(T) AtS)) = strat?(AtS) .
+  eq strat?((left-id(T) AtS))  = strat?(AtS) .
+  eq strat?((poly(NL) AtS)) = strat?(AtS) .
+  eq strat?((strat(NL) AtS)) = true .
+  eq strat?((memo AtS)) = strat?(AtS) .
+  eq strat?((prec(N) AtS)) = strat?(AtS) .
+  eq strat?((gather(QIL) AtS)) = strat?(AtS) .
+  eq strat?((format(QIL) AtS)) = strat?(AtS) .
+  eq strat?((ctor AtS)) = strat?(AtS) .
+  eq strat?((frozen(NL) AtS)) = strat?(AtS) .
+  eq strat?((config AtS)) = strat?(AtS) .
+  eq strat?((object AtS)) = strat?(AtS) .
+  eq strat?((msg AtS)) = strat?(AtS) .
+  eq strat?((special(HkL) AtS)) = strat?(AtS) .
+  eq strat?((none).AttrSet) = false .
+endfm
+
+mod TPDB-DATABASE-HANDLING is
+  pr PROC-TPDB .
+  pr DATABASE-HANDLING .
+
+  vars DB DB' : Database .
+  var  Atts : AttributeSet .
+  vars MN MN' : ModuleName .
+  vars T T' T'' T''' : Term .
+  var  O : Oid .
+  var  X@Database : DatabaseClass .
+  vars ME ME' : ModuleExpression .
+
+  crl [TPDB-complete] :
+    < O : X@Database | 
+          db : DB, 
+          input : ('TPDB_and-optimization_context-sensitive_.[T, T', T'']),
+          output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : procTPDB(getFlatModule(MN', DB'), 
+                            parsePath(T), 
+                            parseValue(T'), 
+                            parseValue(T'')), 
+          default : MN', Atts >
+    if DB' := database(evalModExp(MN, DB)) 
+       /\ MN' := modExp(evalModExp(MN, DB)) .
+  crl [TPDB-complete] :
+    < O : X@Database | 
+          db : DB, 
+          input : ('TPDB_and-optimization_context-sensitive__.[T, T', T'', T''']),
+          output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : procTPDB(getFlatModule(ME', DB'), 
+                            parsePath(T), 
+                            parseValue(T'), 
+                            parseValue(T'')), 
+          default : ME', Atts >
+    if ME := parseModExp(T''') 
+       /\ DB' := database(evalModExp(ME, DB)) 
+       /\ ME' := modExp(evalModExp(ME, DB)) .
+
+  op parsePath : Term ~> Path .
+----  eq parsePath('C;A;B_[T]) = C;A;B(parseTransfType(T)) .
+----  eq parsePath('C;A_[T]) = C;A(parseTransfType(T)) .
+----  eq parsePath('C;OS;B';O-L.@Path@) = C;OS;B';O;L .
+----  eq parsePath('C;OS;B';A`no-sorts.@Path@) = C;OS;B';A(no-sorts) .
+----  eq parsePath('C;OS;A;B_[T]) = C;OS;A;B(parseTransfType(T)) .
+----  eq parsePath('OS;T;B';O-L.@Path@) = OS;T;B';O-L .
+----  eq parsePath('OS;T;B';A`no-sorts.@Path@) = OS;T;B';A(no-sorts) .
+----  eq parsePath('OS;T;A;B_[T]) = OS;T;A;B(parseTransfType(T)) .
+
+  eq parsePath('C;A;B.@Path@) = C;A;B(complete) .
+  eq parsePath('C;Uk;B.@Path@) = C;A;B(no-kinds) .
+  eq parsePath('C;U;B.@Path@) = C;A;B(no-sorts) .
+  eq parsePath('C;A.@Path@) = C;A(complete) .
+  eq parsePath('C;Uk.@Path@) = C;A(no-kinds) .
+  eq parsePath('C;U.@Path@) = C;A(no-sorts) .
+  eq parsePath('C;OS;B;O-L.@Path@) = C;OS;B;O-L .
+  eq parsePath('C;OS;B;Uk.@Path@) = C;OS;B;A(no-kinds) .
+  eq parsePath('C;OS;B;U.@Path@) = C;OS;B;A(no-sorts) .
+  eq parsePath('C;OS;Uk;B.@Path@) = C;OS;A;B(no-kinds) .
+  eq parsePath('C;OS;U;B.@Path@) = C;OS;A;B(no-sorts) .
+  eq parsePath('OS;T;B;O-L.@Path@) = OS;T;B;O-L .
+  eq parsePath('OS;T;B;Uk.@Path@) = OS;T;B;A(no-kinds) .
+  eq parsePath('OS;T;B;U.@Path@) = OS;T;B;A(no-sorts) .
+  eq parsePath('OS;T;Uk;B.@Path@) = OS;T;A;B(no-kinds) .
+  eq parsePath('OS;T;U;B.@Path@) = OS;T;A;B(no-sorts) .
+
+----  op parseTransfType : Term ~> TransfType .
+----  eq parseTransfType('complete.@DTT@) = complete .
+----  eq parseTransfType('no-sorts.@DTT@) = no-sorts .
+----  eq parseTransfType('no-kinds.@DTT@) = no-kinds .
+
+  op parseValue : Term ~> Bool .
+  eq parseValue('on.@Value@) = true .
+  eq parseValue('off.@Value@) = false .
+endm
+
+
+mod OTHER-DATABASE-HANDLING is
+  pr PROC-OTHER .
+  pr DATABASE-HANDLING .
+
+  vars DB DB' : Database .
+  var  Atts : AttributeSet .
+  vars MN MN' : ModuleName .
+  var  T : Term .
+  var  O : Oid .
+  var  X@Database : DatabaseClass .
+  vars ME ME' : ModuleExpression .
+
+  crl [ac?] :
+    < O : X@Database | db : DB, input : ('ac?`..@Command@),
+                       output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : ac?(getFlatModule(MN', DB')), 
+          default : MN', Atts >
+    if DB' := database(evalModExp(MN, DB)) 
+       /\ MN' := modExp(evalModExp(MN, DB)) .
+  crl [ac?] :
+    < O : X@Database | db : DB, input : ('ac?_.[T]),
+                       output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : ac?(getFlatModule(ME', DB')), 
+          default : ME', Atts >
+    if ME := parseModExp(T) 
+       /\ DB' := database(evalModExp(ME, DB)) 
+       /\ ME' := modExp(evalModExp(ME, DB)) .
+  crl [strat?] :
+    < O : X@Database | db : DB, input : ('strat?`..@Command@),
+                       output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : strat?(getFlatModule(MN', DB')), 
+          default : MN', Atts >
+    if DB' := database(evalModExp(MN, DB)) 
+       /\ MN' := modExp(evalModExp(MN, DB)) .
+  crl [strat?] :
+    < O : X@Database | db : DB, input : ('strat?_.[T]),
+                       output : nil, default : MN, Atts >
+    => < O : X@Database | db : DB', input : nilTermList,
+          output : strat?(getFlatModule(ME', DB')), 
+          default : ME', Atts >
+    if ME := parseModExp(T) 
+       /\ DB' := database(evalModExp(ME, DB)) 
+       /\ ME' := modExp(evalModExp(ME, DB)) .
+endm
+
+fmod META-MTT-SIGN is
+  inc META-LEVEL .
+  pr META-FULL-MAUDE-SIGN .
+  inc UNIT .
+
+  op MTT-GRAMMAR : -> FModule .
+
+  eq MTT-GRAMMAR
+    = addImports(
+        (including 'TPDB-SIGN .)
+        (including 'OTHER-SIGN .),
+        GRAMMAR) .
+endfm
+
+mod FULL-MAUDE is
+  pr META-MTT-SIGN .
+  pr TPDB-DATABASE-HANDLING .
+  pr OTHER-DATABASE-HANDLING .
+  pr PREDEF-UNITS .
+  inc LOOP-MODE .
+  pr MTT-BANNER .
+
+*** The state of the persistent system, which is supported by the built-in
+*** module \texttt{LOOP-MODE}, described in Section~\ref{loop}, is represented
+*** as a single object.
+
+  subsort Object < State .
+
+  op o : -> Oid .
+  op init : -> System .
+
+  var  Atts : AttributeSet .
+  var  X@Database : DatabaseClass .
+  var  O : Oid .
+  var  DB : Database .
+  var  MN : ModuleName .
+  vars QIL QIL' QIL'' : QidList .
+  var  TL : TermList .
+  var  N : Nat .
+  vars RP RP' : ResultPair .
+
+  rl [init] :
+     init
+     => [nil,
+         < o : Database | 
+            db : initialDatabase,
+            input : nilTermList, output : nil, 
+            default : 'TRIV >,
+         ('\n '\t '\s '\s '\s '\s '\s string2qidList(mtt-banner) '\n)] .
+
+
+  crl [in] :
+    [QIL,
+     < O : X@Database |
+         db : DB, input : nilTermList, output : nil, default : MN, Atts >,
+     QIL']
+    => [nil,
+        < O : X@Database | db : DB,
+            input : getTerm(
+                      metaParse(MTT-GRAMMAR, QIL, '@Input@)),
+            output : nil, default : MN, Atts >,
+         QIL']
+    if QIL =/= nil 
+       /\ metaParse(MTT-GRAMMAR, QIL, '@Input@) : ResultPair .
+
+  crl [in] :
+    [QIL,
+     < O : X@Database |
+         db : DB, input : nilTermList, output : nil, default : MN, Atts >,
+     QIL']
+    => [nil,
+       < O : X@Database | db : DB, input : nilTermList,
+           output : ('\r 'Error: '\o 'No 'parse 'for 'input. '\n),
+           default : MN, Atts >,
+       QIL']
+    if QIL =/= nil 
+       /\ noParse(N) := metaParse(MTT-GRAMMAR, QIL, '@Input@) .
+
+  crl [in] :
+    [QIL,
+     < O : X@Database |
+         db : DB, input : nilTermList, output : nil, default : MN, Atts >,
+     QIL']
+    => [nil,
+        < O : X@Database | db : DB, input : nilTermList,
+            output : ('\r 'Error: '\o 'Ambiguous 'input. '\n),
+            default : MN, Atts >,
+        QIL']
+    if QIL =/= nil 
+       /\ ambiguity(RP, RP') 
+            := metaParse(MTT-GRAMMAR, QIL, 'Input) .
+
+  crl [out] :
+    [QIL,
+     < O : X@Database |
+         db : DB, input : TL, output : QIL', default : MN, Atts >,
+     QIL'']
+    => [QIL,
+        < O : X@Database |
+            db : DB, input : TL, output : nil, default : MN, Atts >,
+        (QIL' QIL'')]
+    if QIL' =/= nil .
+endm
+
+----loop init .
+
+----(set include BOOL off .)

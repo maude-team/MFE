@@ -10,9 +10,9 @@ mod READERS-WRITERS is
     op <_`,_> : Nat Nat -> RWState [ctor] .  --- readers/writers
     
     vars R W : Nat .
-    rl < 0, 0 > => < 0, s(0) > .
-    rl < R, s(W) > => < R, W > .
-    rl < R, 0 > => < s(R), 0 > .
-    rl < s(R), W > => < R, W > .
+    rl [rl1] : < 0, 0 > => < 0, s(0) > .
+    rl [rl2] : < R, s(W) > => < R, W > .
+    rl [rl3] : < R, 0 > => < s(R), 0 > .
+    rl [rl4] : < s(R), W > => < R, W > .
 endm
 

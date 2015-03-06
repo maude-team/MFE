@@ -1,6 +1,7 @@
 (set include BOOL off .) 
 load qlock.maude 
 (select tool MTT .) 
+(select external tool aprove .)
 (ctf QLOCK .) 
 (select tool CRC .) 
 (ccr QLOCK .) 
@@ -12,6 +13,7 @@ load qlock.maude
 (scc QLOCK .) 
 (submit .) 
 (select tool MTT .) 
+(select external tool aprove .)
 (ct QLOCK-PROPS .) 
 (select tool CRC .) 
 (ccr QLOCK-PROPS .) 
