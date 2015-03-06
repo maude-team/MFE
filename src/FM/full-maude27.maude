@@ -42,6 +42,25 @@ endfm
 
 ---- Main changes and bugs fixed:
 ----
+---- - Feb 18th, 2015
+----   - An operator <_[,_]*> was added to the modules for narrowing. It has been 
+----     renamed as @<@_[,_]*@>@ to avoid clashes with user-defined operators. 
+----   - acu coherence completion has been renamed to ax coherence completion. 
+----     This applies to the acu coherence completion [<module-name>] ., to the 
+----     metalevel operation axCohComplete and to the module AX-COHERENCE-COMPLETION.
+----     The completion was already performed for the different combinations of 
+----     attributes, but the name was the original one.   
+---- - Nov 12th, 2014
+----   - Classes without attributes may be defined as class Foo . or class Foo | .
+----     Requested by A. Riesco.
+----   - Parameter sorts used in sort constraints were not appropriately instantiated.
+----     Reported by A. Riesco.
+---- - July 14th, 2014
+----   - Fixed bug in the parsing of terms with operators '=' or '=>'. Although the first-level 
+----     parsing was done correctly, to solve bubbles an operator = (resp. =>) was introduced
+----     to handle equations (resp. rules). Reported by Adrian Riesco.
+----   - Fixed bug on the pretty printing of views. Typical error on structures with id elements.  
+----     Probably due to changes in the definion of map sets. Reported by Adrian Riesco. 
 ---- - September 12th, 2013
 ----   - Bug in ACU completion when handling modules with explicit use of kinds. Reported 
 ----     by Luis Aguirre  
@@ -343,8 +362,12 @@ set include TRUTH-VALUE off .
 *** Narrowing and Equational Unification
 *** by Santiago Escobar
 ***
+fmod META-LEVEL-MNPA is
+  pr META-LEVEL * (op `{_`,_`} : Term Nat -> SmtResult to `{_`,_`}Smt )  .
+endfm
+
 fmod UNIFICATIONTRIPLE is
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting INT .
 
   --- UnificationPair --------------------------------------------
@@ -375,7 +398,7 @@ endfm
 
 fmod TERM-HANDLING is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting EXT-BOOL . *** For and-then
 
   var T T' T'' : Term .
@@ -553,7 +576,7 @@ endfm
 
 fmod SUBSTITUTION-HANDLING is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting TERM-HANDLING .
 
   var S S' Subst Subst' : Substitution .
@@ -717,14 +740,14 @@ fmod SUBSTITUTION-HANDLING is
 endfm
 
 fmod TERMSET is
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting SUBSTITUTION-HANDLING .
 
   sort TermSet .
   subsort Term < TermSet .
   op emptyTermSet : -> TermSet [ctor] .
   op _|_ : TermSet TermSet -> TermSet
-    [ctor assoc comm id: emptyTermSet format (d n d d) prec 42] .
+    [ctor assoc comm id: emptyTermSet format (d n d d)] .
   eq X:Term | X:Term = X:Term .
 
   op _in_ : Term TermSet -> Bool .
@@ -736,11 +759,12 @@ fmod TERMSET is
    = emptyTermSet .
   eq TermSet((T:Term,TL:TermList))
    = T:Term | TermSet(TL:TermList) .
+
 endfm
 
 fmod RENAMING is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting TERM-HANDLING .
   protecting SUBSTITUTION-HANDLING .
   protecting TERMSET .
@@ -907,7 +931,7 @@ endfm
 
 fmod SUBSTITUTIONSET is
   protecting SUBSTITUTION-HANDLING .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting TERMSET .
   protecting RENAMING .
 
@@ -1231,7 +1255,7 @@ endfm
 
 fmod MODULE-HANDLING is
   protecting INT .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting EXT-BOOL . *** From Full Maude
   protecting SUBSTITUTION-HANDLING .
   protecting UNIFICATIONTRIPLESET .
@@ -2675,7 +2699,7 @@ endfm
 fmod VARIANT is
   pr SUBSTITUTION-HANDLING .
   pr MODULE-HANDLING .
-  pr META-LEVEL .
+  pr META-LEVEL-MNPA .
 
   var M : Module .
   vars T T' TS TS' CtTS CtTS' Lhs Rhs : Term .
@@ -2738,7 +2762,7 @@ fmod META-MINIMIZE-BINDINGS is
   pr SUBSTITUTIONSET .
   pr UNIFICATIONTRIPLESET .
   pr CONVERSION .
-  pr META-LEVEL .
+  pr META-LEVEL-MNPA .
   pr VARIANT .
 
   vars M : Module .
@@ -2868,8 +2892,8 @@ fmod META-MINIMIZE-BINDINGS is
   op remDup : Substitution -> Substitution .
   eq remDup(V <- V ; S) = remDup(S) .
   eq remDup(S) = S [owise] .
-endfm
 
+endfm
 fmod TYPEOFNARROWING is
   pr QID .
   pr META-TERM .
@@ -2987,7 +3011,7 @@ endfm
 
 fmod RESULT-CONTEXT-SET is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting TERM-HANDLING .
   protecting SUBSTITUTION-HANDLING .
   protecting RENAMING .
@@ -3080,7 +3104,7 @@ fmod RESULT-CONTEXT-SET is
       TraceNarrow
       Flags 
       -> ResultContext [ctor] .
-               
+		       
   subsort ResultContext < ResultContextNeSet < ResultContextSet .
   op empty : -> ResultContextSet [ctor] .
   op _|_ : ResultContextSet ResultContextSet -> ResultContextSet
@@ -3105,7 +3129,7 @@ fmod RESULT-CONTEXT-SET is
   eq getRSubst(
       {T,TP,S,S',Ct:Context,CtS:Context,TS:Term,CtTS:Term,NextVar,Tr:TraceNarrow,B:Flags})
    = S' .
-               
+		       
   op _<<_ : ResultContext UnificationTripleSet -> ResultContextSet .
   eq {T,TP,S,S',Ct:Context,CtS:Context,TS:Term,CtTS:Term,NextVar,Tr:TraceNarrow,B:Flags} 
      << (empty).UnificationTripleSet
@@ -3185,13 +3209,14 @@ fmod RESULT-CONTEXT-SET is
   eq | (empty).ResultContextSet | = 0 .
   eq | (RT:ResultContext | RTS:ResultContextSet) | 
    = | RTS:ResultContextSet | + 1 .
+
 endfm
 
 fmod META-MATCH is
   protecting TERM-HANDLING .
   protecting MODULE-HANDLING .
   protecting SUBSTITUTION-HANDLING .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting RENAMING .
   protecting SUBSTITUTIONSET .
 
@@ -3256,7 +3281,7 @@ fmod VARIANT-HANDLING is
   pr META-MINIMIZE-BINDINGS .
   pr RESULT-CONTEXT-SET .
   pr MODULE-HANDLING .
-  pr META-LEVEL .
+  pr META-LEVEL-MNPA .
   pr VARIANT .
 
   var M : Module .
@@ -3303,6 +3328,7 @@ fmod VARIANT-HANDLING is
   eq toVariantTripleSet({T,S,S',NextVar} | VTS)
 ---    = {T,S ; S',NextVar} | toVariantTripleSet(VTS) .
    = {T,S,NextVar} | toVariantTripleSet(VTS) .
+
 endfm
 
 fmod RIGIDIFE is
@@ -3546,6 +3572,7 @@ fmod RIGIDIFE is
 
   op qid : Nat -> Qid .
   eq qid(N:Nat) = qid(string(N:Nat,10)) .
+
 endfm
 
 fmod META-E-UNIFICATION is
@@ -3556,7 +3583,7 @@ fmod META-E-UNIFICATION is
   pr META-MINIMIZE-BINDINGS .
   pr RESULT-CONTEXT-SET .
   pr MODULE-HANDLING .
-  pr META-LEVEL .
+  pr META-LEVEL-MNPA .
   pr VARIANT .
   pr RIGIDIFE .
 
@@ -3610,7 +3637,7 @@ fmod META-E-UNIFICATION is
 
   --- metaVariantUnify --------------------------------------------------
   op metaVariantUnify : Module Term Term -> SubstitutionSet .
-  eq metaVariantUnify(M, T, T') = metaEACUUnify(M, T, T', none) .
+  eq metaVariantUnify(M, T, T') = metaEACUUnify(M, T, T', empty) .
 
   op metaVariantUnify : Module Term Term TermList -> SubstitutionSet .
   eq metaVariantUnify(M, T, T', TL) = metaEACUUnify(M, T, T', TL) .
@@ -3619,7 +3646,7 @@ fmod META-E-UNIFICATION is
   eq metaVariantUnify?(M, T, T', TL) = metaEACUUnify?(M, T, T', TL) .
 
   op metaVariantUnify : Module Term Term Nat IrrFlags -> UnificationTripleSet .
-  eq metaVariantUnify(M, T, T',NextVar,IRR) = metaEACUUnify(M, T, T',none,NextVar,IRR) .
+  eq metaVariantUnify(M, T, T',NextVar,IRR) = metaEACUUnify(M, T, T',empty,NextVar,IRR) .
 
   op metaVariantUnify : Module Term Term TermList Nat IrrFlags -> UnificationTripleSet .
   eq metaVariantUnify(M, T, T',TL,NextVar,IRR) = metaEACUUnify(M, T, T',TL,NextVar,IRR) .
@@ -3986,7 +4013,7 @@ fmod META-ACU-UNIFICATION is
   pr SUBSTITUTIONSET .
   pr UNIFICATIONPAIRSET .
   pr CONVERSION .
-  pr META-LEVEL .
+  pr META-LEVEL-MNPA .
   pr META-MINIMIZE-BINDINGS .
   pr META-E-UNIFICATION .
 
@@ -4084,6 +4111,7 @@ fmod META-UNIFICATION is
                     --- Term Lhs
   eq metaCoreUnify?(M, T, T', N) 
    = metaACUUnify?(M, T, T', N)  .
+
 endfm
 
 fmod META-MSG-UNIFICATION is
@@ -4125,28 +4153,45 @@ fmod META-MSG-UNIFICATION is
   ******* metaBuiltInUnify ***********************************************
   op metaBuiltInUnify : Module Term Term -> SubstitutionSet .
   eq metaBuiltInUnify(M, T, T')
-   = toSubstitution(metaBuiltInUnify(M, T, T', highestVar((T,T')) + 1)) .
+   = metaBuiltInUnify(M, empty, T, T') .
+
+  op metaBuiltInUnify : Module TermList Term Term -> SubstitutionSet .
+  eq metaBuiltInUnify(M, TL T, T')
+   = toSubstitution(metaBuiltInUnify(M, TL, T, T', highestVar((T,T')) + 1)) .
 
   *** General Call for UnificationPairSet
-  op metaBuiltInUnify : Module Term Term Nat -> UnificationTripleSet .
+  op metaBuiltInUnify : Module TermList Term Term Nat -> UnificationTripleSet .
                        --- Term Lhs
+  eq metaBuiltInUnify(M, TL, T1, T2, N) 
+   = metaBuiltInUnify(M, T1, T2, N) .
+
+  op metaBuiltInUnify : Module Term Term Nat -> UnificationTripleSet .
   eq metaBuiltInUnify(M, T1, T2, N) 
-   = metaCoreUnify(M, T1, T2, N)  . 
+   = metaCoreUnify(M, T1, T2, N) . 
 
   op metaBuiltInUnify? : Module Term Term -> Bool .
   eq metaBuiltInUnify?(M, T, T')
-   = metaBuiltInUnify?(M, T, T',highestVar((T,T')) + 1) .
+   = metaBuiltInUnify?(M, empty, T, T') .
+
+  op metaBuiltInUnify? : Module TermList Term Term -> Bool .
+  eq metaBuiltInUnify?(M, TL, T, T')
+   = metaBuiltInUnify?(M, TL, T, T',highestVar((T,T')) + 1) .
+
+  op metaBuiltInUnify? : Module TermList Term Term Nat -> Bool .
+  eq metaBuiltInUnify?(M, TL, T1, T2, N) 
+   = metaBuiltInUnify?(M, T1, T2, N)  .
 
   op metaBuiltInUnify? : Module Term Term Nat -> Bool .
   eq metaBuiltInUnify?(M, T1, T2, N) 
    = metaCoreUnify?(M, T1, T2, N) . 
-endfm
 
+
+endfm
 fmod ORDERS-TERM-SUBSTITUTION is
   protecting TERM-HANDLING .
   protecting SUBSTITUTION-HANDLING .
   protecting META-MATCH .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting META-UNIFICATION .
   protecting META-E-UNIFICATION .
   protecting RENAMING .
@@ -4456,11 +4501,11 @@ fmod ORDERS-TERM-SUBSTITUTION is
   eq eqNormalizeSubstitution*(M, V <- T ; S:Substitution)
    = V <- getTerm(metaReduce(eraseRls(M),T)) 
      ; eqNormalizeSubstitution*(M, S:Substitution) .
-endfm
 
+endfm
 fmod META-NORMALIZE is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting META-UNIFICATION .
   protecting RESULT-CONTEXT-SET .
   protecting ORDERS-TERM-SUBSTITUTION .
@@ -4559,7 +4604,7 @@ fmod META-NORMALIZE is
                             Bound --- chosen solution
                             TypeOfNarrowing
                             ResultContextSet
-             -> ResultContextSet .
+			 -> ResultContextSet .
   --- Not defined in this module-------------
 
   op metaNormalizeCollect : Module Term ~> ResultTripleSet .
@@ -4676,11 +4721,12 @@ fmod META-NORMALIZE is
           {T',TP',S',S'*,Ct',CtS',TS',CtTS',NextVar',Tr:TraceNarrow,B':Flags}
      fi
      | noSelf*({T,TP,S,S*,[],[],T,T,NextVar,Tr':TraceNarrow,B:Flags},RTS) .
+
 endfm
 
 fmod META-E-NARROWING is
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting META-UNIFICATION .
   protecting META-MSG-UNIFICATION .
   protecting META-E-UNIFICATION .
@@ -4893,20 +4939,20 @@ fmod META-E-NARROWING is
      then if CtS == []
           then *** Term CtTS is a normal form so we return it
                {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags}
-      else *** Term T is a rigid normal form inside a context Ct
-           *** but since no rewrite has been done and
+	  else *** Term T is a rigid normal form inside a context Ct
+	       *** but since no rewrite has been done and
                *** this can be part of a previous metaNarrowSub call,
                *** this path is discarded
                empty
           fi
      else if metaENarrowStra(M,B,ON,{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
-         =/= empty
+	     =/= empty
           then metaENarrowStra(M,B,ON,{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
           else if CtS == []
                then *** Term CtTS is a normal form so we return it
                     {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,end(true,B:Flags)}
-           else *** Term T is a rigid normal form inside a context Ct
-                *** but since no rewrite has been done and
+	       else *** Term T is a rigid normal form inside a context Ct
+	            *** but since no rewrite has been done and
                     *** this can be part of a previous metaNarrowSub call,
                     *** this path is discarded
                     empty
@@ -4951,7 +4997,7 @@ fmod META-E-NARROWING is
   *** Generic call to metaUnification with different parameters
   op auxMetaUnify : Module TypeOfNarrowing 
                     Term Term Nat ~> UnificationTripleSet .
-        --- Term Lhs
+		--- Term Lhs
   eq auxMetaUnify(M,variant(N') ON,T,T',N)
    = unrigidife(qid(N'),
        auxMetaUnify*(getM(rigidifeNat(M,qid(N'),T,N')),
@@ -4966,7 +5012,7 @@ fmod META-E-NARROWING is
 
   op auxMetaUnify* : Module TypeOfNarrowing 
                     Term Term Nat ~> UnificationTripleSet .
-        --- Term Lhs
+		--- Term Lhs
  ceq auxMetaUnify*(M,rigidife(F:Qid) ON,T,T',N)
    = unrigidife(Q:Qid,
        auxMetaUnify**(M#:Module,rigidife(F:Qid) ON,T#:Term,T',N) 
@@ -4982,7 +5028,7 @@ fmod META-E-NARROWING is
 
   op auxMetaUnify** : Module TypeOfNarrowing 
                      Term Term Nat ~> UnificationTripleSet .
-         --- Term Lhs
+		 --- Term Lhs
                  --- [memo] . --- Very useful but huge space use 
   eq auxMetaUnify**(M,E-rewriting ON,T,T',N)
    = toUnificationTriple[N](metaCoreMatch(removeBoolEqs(M),T,T')) .
@@ -5048,10 +5094,10 @@ fmod META-E-NARROWING is
                     -> ResultContextSet .
   eq metaENarrowRls*(M,B,ON, 
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags})
    = metaENarrowRls**$(M,B,ON, 
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
            Tr:TraceNarrow {CtTS,none,leastSort(M,CtTS),(rl Lhs => Rhs [Att].)},
                           --- Subst none here is key to write the real stuff 
                           --- later in function _<<_
@@ -5066,10 +5112,10 @@ fmod META-E-NARROWING is
                       -> ResultContextSet .
   eq metaENarrowRls**$(M,B,ON,
         (rl Lhs => Rhs [Att].), 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'})
    = metaENarrowRls**$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs,Rhs,'none.AttrSet] << Subst) .
 
@@ -5078,13 +5124,13 @@ fmod META-E-NARROWING is
                           UnificationPair Term
                        -> ResultContextSet .
   eq metaENarrowRls**$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
           Tr:TraceNarrow {CtTS,none,TP$:Type,(rl Lhs => Rhs [Att].)},
           B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs',Rhs','none.AttrSet])
    = metaENarrowRls**$$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,
            Tr:TraceNarrow {CtTS,none,TP$:Type,(rl Lhs' => Rhs' [Att].)},
            B:Flags},
         {Subst,NextVar'},
@@ -5096,19 +5142,19 @@ fmod META-E-NARROWING is
                            UnificationPair Term UnificationTripleSet
                         -> ResultContextSet .
   eq metaENarrowRls**$$$(M,B,ON, 
-    {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
+	{T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr:TraceNarrow,B:Flags},
         {Subst,NextVar'},
         'rl_=>_`[_`].[Lhs',Rhs','none.AttrSet],US)
     = if US =/= empty
       then rebuildTypeAndDiscardErroneous(M,ON,
                {Ct[Rhs'],
-            TP,
-        S,S',
-        [],
-        [],
-        CtS[Rhs'],
-        CtS[Rhs'],
-        NextVar',
+	        TP,
+		S,S',
+		[],
+		[],
+		CtS[Rhs'],
+		CtS[Rhs'],
+		NextVar',
                 Tr:TraceNarrow,
                 B:Flags} 
                <<(M,ON) US
@@ -5129,7 +5175,7 @@ fmod META-E-NARROWING is
                                        ResultContext -> ResultContextSet .
   eq rebuildTypeAndDiscardErroneous*(M,ON,
        {T,TP,S,S',[],[],TS,TS,NextVar,Tr:TraceNarrow,B:Flags})
-   = if leastSort(M,TS) :: Type
+   = if	leastSort(M,TS) :: Type
      then normalize-terms?(M,ON,
              {canonice(M,T),leastSort(M,TS),S,S',
               [],[],canonice(M,TS),canonice(M,TS),
@@ -5322,12 +5368,13 @@ fmod META-E-NARROWING is
   op |_| : Substitution -> Nat .
   eq | (none).Substitution | = 0 .
   eq | V <- T ; S | = s(| S |) .
+
 endfm
 
 fmod META-NARROWING-SEARCH is
   protecting META-E-NARROWING .
   protecting META-TERM .
-  protecting META-LEVEL .
+  protecting META-LEVEL-MNPA .
   protecting META-UNIFICATION .
   protecting RESULT-CONTEXT-SET .
   protecting ORDERS-TERM-SUBSTITUTION .
@@ -5375,6 +5422,25 @@ fmod META-NARROWING-SEARCH is
    = metaNarrowSearchGen(M,T,T',SCond,QQ,BN,B,Sol,
          full E-BuiltIn-unify noStrategy E-normalize-terms) .
 
+  *** Shortcuts to Paramodulation Search
+  op metaParamodulationSearch : Module Term Term SubstitutionCond 
+                                TypeOfRelation Bound Bound Bound
+                             -> ResultTripleSet .
+  eq metaParamodulationSearch(M,T,T',SCond,QQ,BN,B,Sol)
+   = if (BN == unbounded and-then Sol =/= unbounded)
+        or-else
+        (BN =/= unbounded and-then Sol =/= unbounded and-then BN < Sol)
+     then metaParamodulationSearch*(M,T,T',SCond,QQ,Sol,B,Sol) 
+     else metaParamodulationSearch*(M,T,T',SCond,QQ,BN,B,Sol) 
+     fi .
+
+  op metaParamodulationSearch* : Module Term Term SubstitutionCond 
+                         TypeOfRelation Bound Bound Bound
+                         -> ResultTripleSet .
+  eq metaParamodulationSearch*(M,T,T',SCond,QQ,BN,B,Sol)
+   = metaNarrowSearchGen(M,T,T',SCond,QQ,BN,B,Sol,
+         full E-BuiltIn-unify noStrategy E-normalize-terms alsoAtVarPosition) .
+
   *** General Call
   op metaNarrowSearchGen : Module Term Term SubstitutionCond 
                            TypeOfRelation 
@@ -5382,15 +5448,15 @@ fmod META-NARROWING-SEARCH is
                            Bound --- number of solutions
                            Bound --- chosen solution
                            TypeOfNarrowing 
-            -> ResultTripleSet .
-  eq metaNarrowSearchGen(M,T,T',SCond,QQ,BN,B,Sol,ON)
+			-> ResultTripleSet .
+  eq metaNarrowSearchGen(M,T,T',SCond,QQ,B,BN,Sol,ON)
    = toTriple(M,metaNarrowSearchGenAll(M,T,T',SCond,QQ,B,BN,Sol,ON)) .
 
   *** Shortcuts to Narrowing Search Path
   op metaNarrowSearchPath : Module Term Term SubstitutionCond 
                             TypeOfRelation Bound Bound Bound
                          -> TraceNarrowSet .
-  eq metaNarrowSearchPath(M,T,T',SCond,QQ,BN,B,Sol)
+  eq metaNarrowSearchPath(M,T,T',SCond,QQ,B,BN,Sol)
    = if (BN == unbounded and-then Sol =/= unbounded)
         or-else
         (BN =/= unbounded and-then Sol =/= unbounded and-then BN < Sol)
@@ -5430,7 +5496,7 @@ fmod META-NARROWING-SEARCH is
   *** One Narrowing step in the search process (including possible filters)
   op metaNarrowStep : Module SubstitutionCond 
                       ResultContextSet TypeOfNarrowing 
-           -> ResultContextSet .
+		   -> ResultContextSet .
   eq metaNarrowStep(M,SCond,RTS,ON)
    = filterSCond(M,SCond,metaENarrowGen(M,1,ON,RTS)) .
 
@@ -5465,7 +5531,7 @@ fmod META-NARROWING-SEARCH is
                             Bound --- chosen solution
                             TypeOfNarrowing
                             ResultContextSet
-             -> ResultContextSet .
+			 -> ResultContextSet .
   eq metaNarrowSearchAll(M,TOrig,T',SCond,QQ,B,BN,Sol,ON,RTS)
    = if QQ == '+
      then noSelf(RTS,
@@ -5505,7 +5571,7 @@ fmod META-NARROWING-SEARCH is
   op metaNarrowSearchCheck : Module Term Term SubstitutionCond 
                              TypeOfRelation Bound Bound Bound TypeOfNarrowing
                              ResultContextSet ResultContextSet ResultContextSet
-                 -> ResultContextSet .
+			     -> ResultContextSet .
 
   eq metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,B,BN,Sol,ON,RTSSol,RTS',empty)
    = if B == 0 or-else BN == 0 or-else Sol == 0 or-else RTS' == empty
@@ -5539,14 +5605,14 @@ fmod META-NARROWING-SEARCH is
                   | RTSSol,
                   RTS',RTS)
      else *** Continue with the remaining
-      metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,
+	  metaNarrowSearchCheck(M,TOrig,T',SCond,QQ,
              B,BN,Sol,ON,RTSSol,RTS',RTS)
      fi .
 
   op isSolution? : Module Term Term  
                    TypeOfRelation Bound Bound TypeOfNarrowing
                    ResultContextSet ResultContext
-            -> Bool .
+	        -> Bool .
   eq isSolution?(M,TOrig,T',QQ,BN,Sol,ON,RTSSol,RT)
    = *** Is this the chosen solution?
      (BN == unbounded or-else BN > 0)
@@ -5576,8 +5642,8 @@ fmod META-NARROWING-SEARCH is
    = S':Substitution .
   eq upDown#(M,S':Substitution,V <- T ; S:Substitution)
    = upDown#(M,S':Substitution ; V <- getTerm(metaReduce(M,T)),S:Substitution) .
-endfm
 
+endfm
 *************************************
 ****** End of Santiago Escobar's code
 *******************************************************************************
@@ -5931,6 +5997,7 @@ fmod O-MODS&THS is
 
   *** class declaration
   op class_|_. : @Sort@ @AttrDeclList@ -> @ClassDecl@ .
+  op class_|`. : @Sort@ -> @ClassDecl@ .
   op class_. : @Sort@ -> @ClassDecl@ .
   op _`,_ : @AttrDeclList@ @AttrDeclList@ -> @AttrDeclList@ [assoc] .
   op _:_ : @Token@ @Sort@ -> @AttrDecl@ [prec 40] .
@@ -6073,8 +6140,8 @@ fmod COMMANDS is
   ops remove`identity`attributes_. rm`ids_. : @ModExp@ -> @Command@ .
   op remove`assoc`attributes`. : -> @Command@ .
   op remove`assoc`attributes_. : @ModExp@ -> @Command@ .
-  op acu`coherence`completion`. : -> @Command@ .
-  op acu`coherence`completion_. : @ModExp@ -> @Command@ .
+  op ax`coherence`completion`. : -> @Command@ .
+  op ax`coherence`completion_. : @ModExp@ -> @Command@ .
   op help`. : -> @Command@ .
 endfm
 
@@ -6273,8 +6340,8 @@ fmod HELP is
       '\t '\t string2qidList("Shows the module with the id attributes removed using a variant-based transformation.") '\n
       '\t string2qidList("(remove assoc attributes") '\s string2qidList("[<module-expr.>]") '\s string2qidList(".)") '\n
       '\t '\t string2qidList("Shows the module with the assoc (if not with comm) attributes removed using a variant-based transformation.") '\n
-      '\t string2qidList("(acu coherence completion") '\s string2qidList("[<module-expr.>]") '\s string2qidList(".)") '\n
-      '\t '\t string2qidList("Shows the module resulting from completing for ACU coherence.") '\n .
+      '\t string2qidList("(ax coherence completion") '\s string2qidList("[<module-expr.>]") '\s string2qidList(".)") '\n
+      '\t '\t string2qidList("Shows the module resulting from completing for coherence for the different combinations of axioms.") '\n .
 endfm
 
 
@@ -8201,6 +8268,7 @@ fmod UNIT is
   op $rmVariants : RuleSet -> RuleSet .
   op $rmVariants : MembAxSet -> MembAxSet .
   eq rmVariantAttrs(M) = setRls(setEqs(setMbs(M, $rmVariants(getMbs(M))), $rmVariants(getEqs(M))), $rmVariants(getRls(M))) .
+  eq rmVariantAttrs(unitError(QIL)) = unitError(QIL) .   
   
   eq $rmVariants(eq T = T' [variant AtS] . EqS) = (eq T = T' [variant AtS] .) $rmVariants(EqS) .
   eq $rmVariants(ceq T = T' if Cond [variant AtS] . EqS) = (ceq T = T' if Cond [variant AtS] .) $rmVariants(EqS) .
@@ -8278,7 +8346,7 @@ fmod META-FULL-MAUDE-SIGN is
              [special(
                (id-hook('Bubble, '1 '1)
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
-                id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ':
+                id-hook('Exclude, '`[ '`] '< 'to '`, '. '`( '`) '`{ '`} ': '|
                                   'ditto 'precedence 'prec 'gather
                                   'assoc 'associative 'comm 'commutative 
                                   'ctor 'constructor 'id: 'strat 'strategy 
@@ -10539,14 +10607,14 @@ fmod UNIT-BUBBLE-PARSING is
            fi 
       else qidError('\r 'Warning: 
                  '\o printSyntaxError(RP, '`( QIL '`) '= '`( QIL' '`)) '\n
-                 '\r 'Error: '\o 'no 'parse 'for 'eq QIL '\s '~ '\s QIL' '\n)
+                 '\r 'Error: '\o 'no 'parse 'for 'eq QIL '\s '= '\s QIL' '\n)
       fi 
     if M' := addOps((VDS
-                     op '_=_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
+                     op '_@@@=@@@_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
                addSorts('@@@, M)) 
        /\ QIL := downQidList(T) 
        /\ QIL' := downQidList(T') 
-       /\ RP := metaParse(M', '`( QIL '`) '= '`( QIL' '`), '@@@) .
+       /\ RP := metaParse(M', '`( QIL '`) '@@@=@@@ '`( QIL' '`), '@@@) .
 
   ceq solveBubblesCEq('bubble[T], 'bubble[T'], M, B, VDS, DB)
     = if RP :: ResultPair
@@ -10556,14 +10624,14 @@ fmod UNIT-BUBBLE-PARSING is
            fi 
       else qidError('\r 'Warning: 
                  '\o printSyntaxError(RP, '`( QIL '`) '= '`( QIL' '`)) '\n
-                 '\r 'Error: '\o 'no 'parse 'for 'ceq QIL '\s '~ '\s QIL' '\n)
+                 '\r 'Error: '\o 'no 'parse 'for 'ceq QIL '\s '= '\s QIL' '\n)
       fi 
     if M' := addOps((VDS
-                     op '_=_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
+                     op '_@@@=@@@_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
                addSorts('@@@, M)) 
        /\ QIL := downQidList(T) 
        /\ QIL' := downQidList(T') 
-       /\ RP := metaParse(M', '`( QIL '`) '= '`( QIL' '`), '@@@) .
+       /\ RP := metaParse(M', '`( QIL '`) '@@@=@@@ '`( QIL' '`), '@@@) .
 
   ceq solveBubblesRl('bubble[T], 'bubble[T'], M, B, VDS, DB)
     = if RP :: ResultPair
@@ -10576,11 +10644,11 @@ fmod UNIT-BUBBLE-PARSING is
                  '\r 'Error: '\o 'no 'parse 'for 'rl QIL '\s '=> '\s QIL' '\n)
       fi 
     if M' := addOps((VDS
-                     op '_=>_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
+                     op '_@@@=>@@@_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
                addSorts('@@@, M)) 
        /\ QIL := downQidList(T) 
        /\ QIL' := downQidList(T') 
-       /\ RP := metaParse(M', '`( QIL '`) '=> '`( QIL' '`), '@@@) .
+       /\ RP := metaParse(M', '`( QIL '`) '@@@=>@@@ '`( QIL' '`), '@@@) .
   ceq solveBubblesCRl('bubble[T], 'bubble[T'], M, B, VDS, DB)
     = if RP :: ResultPair
       then if B 
@@ -10592,11 +10660,11 @@ fmod UNIT-BUBBLE-PARSING is
                  '\r 'Error: '\o 'no 'parse 'for 'crl QIL '\s '=> '\s QIL' '\n)
       fi 
     if M' := addOps((VDS
-                     op '_=>_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
+                     op '_@@@=>@@@_ : 'Universal 'Universal -> '@@@ [poly(1 2)] .), 
                addSorts('@@@, M)) 
        /\ QIL := downQidList(T) 
        /\ QIL' := downQidList(T') 
-       /\ RP := metaParse(M', '`( QIL '`) '=> '`( QIL' '`), '@@@) .
+       /\ RP := metaParse(M', '`( QIL '`) '@@@=>@@@ '`( QIL' '`), '@@@) .
 
 
   ceq solveBubbles2('bubble[T], T?:Type?, M, true, VDS, DB)
@@ -10849,10 +10917,10 @@ fmod UNIT-BUBBLE-PARSING is
       fi .
 
   ops lhs rhs : Term -> Term .
-  eq lhs('_=_[T, T']) = T .
-  eq lhs('_=>_[T, T']) = T .
-  eq rhs('_=_[T, T']) = T' .
-  eq rhs('_=>_[T, T']) = T' .
+  eq lhs(F[T, T']) = T .
+  eq lhs(F[T, T']) = T .
+  eq rhs(F[T, T']) = T' .
+  eq rhs(F[T, T']) = T' .
   eq lhs(qidError(QIL)) = qidError(QIL) .
   eq rhs(qidError(QIL)) = qidError(QIL) .
 
@@ -12482,8 +12550,8 @@ fmod RENAMING-SET-APPL-ON-TERM is
   ceq applyMapsToTerm2(SRS, ORS, F[TL], M)
     = qid("_::`" + string(applyMapsToType(SRS, qid(substr(string(F), 4, length(string(F))))))) [
         applyMapsToTerm2(SRS, ORS, TL, M)]
-    if substr(string(F), 0, 4) == "_::`" 
-    /\ substr(string(F), sd(length(string(F)), 2), 2) = "`}" .
+    if substr(string(F), 0, 4) == "_::`" .
+----    /\ substr(string(F), sd(length(string(F)), 2), 2) = "`}" .
     
   ceq applyMapsToTerm2(SRS, ORS, (T, TL), M) 
     = (applyMapsToTerm2(SRS, ORS, T, M), 
@@ -16096,6 +16164,8 @@ fmod UNIT-DECL-PARSING is
   eq parseDecl('crl_=>_if_.[T, T', T''], PU, U, VDS)
     = < addRls((crl T => T' if T'' = 'true.Bool [none] .), PU) ; U ; VDS > .
 
+  eq parseDecl('class_|`.[T], PU, U, VDS)
+    = parseDecl('class_.[T], PU, U, VDS) .
   eq parseDecl('class_.[T], PU, U, VDS)
     = < addClasses((class parseType(T) | none .), PU) ; 
         addClasses((class parseType(T) | none .), U) ; VDS > .
@@ -17014,8 +17084,8 @@ fmod VIEW-META-PRETTY-PRINT is
                  if QI == '`) then '\s else nil fi
               '\b 'from '\o eMetaPrettyPrint(ME) 
               '\b 'to '\o eMetaPrettyPrint(ME') '\b 'is '\o '\n 
-       '\s '\s eMetaPrettyPrint(ME, ME', DB, SMS, SMS, OMS) 
-       '\s '\s eMetaPrettyPrint(ME, ME', DB, OMS, SMS, OMS) 
+       if SMS =/= none then '\s '\s eMetaPrettyPrint(ME, ME', DB, SMS, SMS, OMS) else nil fi 
+       if OMS =/= none then '\s '\s eMetaPrettyPrint(ME, ME', DB, OMS, SMS, OMS) else nil fi 
        '\b 'endv '\o '\n) 
     if QIL QI := eMetaPrettyPrint(VE) .
   ceq eMetaPrettyPrint(DB, view VE{PDL} from ME to ME' is SMS OMS endv)
@@ -17027,8 +17097,8 @@ fmod VIEW-META-PRETTY-PRINT is
                   fi) 
               '\b 'from '\o eMetaPrettyPrint(ME) 
               '\b 'to '\o eMetaPrettyPrint(ME') '\b 'is '\o '\n 
-       '\s '\s eMetaPrettyPrint(ME, ME', DB, SMS, SMS, OMS) 
-       '\s '\s eMetaPrettyPrint(ME, ME', DB, OMS, SMS, OMS) 
+       if OMS =/= none then '\s '\s eMetaPrettyPrint(ME, ME', DB, SMS, SMS, OMS) else nil fi 
+       if OMS =/= none then '\s '\s eMetaPrettyPrint(ME, ME', DB, OMS, SMS, OMS) else nil fi 
        '\b 'endv '\o '\n ) 
     if QIL QI := eMetaPrettyPrint(VE) .
   eq eMetaPrettyPrint(DB, viewError(QIL)) = QIL .
@@ -17039,14 +17109,14 @@ fmod VIEW-META-PRETTY-PRINT is
     if VE =/= nil /\ VE' =/= nil .
   eq eMetaPrettyPrint(QI{VE}) = QI '`{ eMetaPrettyPrint(VE) '`} '\s .
 
-  eq eMetaPrettyPrint(ME, ME', DB, SM SMS, SMS', OMS')
+ ceq eMetaPrettyPrint(ME, ME', DB, SM SMS, SMS', OMS')
     = (eMetaPrettyPrint(ME, ME', DB, SM, SMS', OMS') '\n 
        '\s '\s eMetaPrettyPrint(ME, ME', DB, SMS, SMS', OMS'))
-    [owise] .     
-  eq eMetaPrettyPrint(ME, ME', DB, OM OMS, SMS', OMS')
+    if SMS =/= none .     
+ ceq eMetaPrettyPrint(ME, ME', DB, OM OMS, SMS', OMS')
     = (eMetaPrettyPrint(ME, ME', DB, OM, SMS', OMS') '\n 
        '\s '\s eMetaPrettyPrint(ME, ME', DB, OMS, SMS', OMS'))
-    [owise] .     
+    if OMS =/= none .     
   eq eMetaPrettyPrint(ME, ME', DB, (none).SortMappingSet, SMS, OMS) = nil .
   eq eMetaPrettyPrint(ME, ME', DB, (none).OpMappingSet, SMS, OMS) = nil .
 
@@ -17054,25 +17124,26 @@ fmod VIEW-META-PRETTY-PRINT is
     = ('\b 'op '\o eMetaPrettyPrint(getFlatModule(ME, DB), T) '\b 'to 
                'term '\o eMetaPrettyPrint(getFlatModule(ME', DB), T') '\b '. '\o) .
 
-  eq eMetaPrettyPrint(op_to`term_.(T, T')) 
-    = ('op eMetaPrettyPrint(T) '\b 'to 'term '\o eMetaPrettyPrint(T') '.) .
-  eq eMetaPrettyPrint(op F to F' .)
-    = ('\b 'op '\o F '\b 'to '\o F' '.) .
-  eq eMetaPrettyPrint(op F : TyL -> Ty to F' .)
+  eq eMetaPrettyPrint(ME, ME', DB, op_to`term_.(T, T'), SMS, OMS) 
+    = ('op eMetaPrettyPrint(T) '\b 'to 'term '\o eMetaPrettyPrint(T') '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, op F to F' ., SMS, OMS)
+    = ('\b 'op '\o F '\b 'to '\o F' '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, op F : TyL -> Ty to F' ., SMS, OMS)
     = ('\b 'op '\o F '\b ': 
        '\o eMetaPrettyPrint(TyL) '\b '-> '\o eMetaPrettyPrint(Ty) 
-       '\b 'to '\o F' '.) .
-  eq eMetaPrettyPrint(sort S to S' .) 
-    = ('\b 'sort '\o eMetaPrettyPrint(S) '\b 'to '\o eMetaPrettyPrint(S') '.) .
-  eq eMetaPrettyPrint(class S to S' .)
-    = ('\b 'class '\o eMetaPrettyPrint(S) '\b 'to '\o eMetaPrettyPrint(S') '.) .
-  eq eMetaPrettyPrint(attr QI . S to QI' .) 
-    = ('\b 'attr '\o eMetaPrettyPrint(S) '\b '. '\o QI '\b 'to '\o QI' '.) .
-  eq eMetaPrettyPrint(msg F to F' .) = ('\b 'msg '\o F '\b 'to '\o F' '.) .
-  eq eMetaPrettyPrint(msg F : TyL -> Ty to F' .)
+       '\b 'to '\o F' '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, sort S to S' ., SMS, OMS) 
+    = ('\b 'sort '\o eMetaPrettyPrint(S) '\b 'to '\o eMetaPrettyPrint(S') '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, class S to S' ., SMS, OMS)
+    = ('\b 'class '\o eMetaPrettyPrint(S) '\b 'to '\o eMetaPrettyPrint(S') '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, attr QI . S to QI' ., SMS, OMS) 
+    = ('\b 'attr '\o eMetaPrettyPrint(S) '\b '. '\o QI '\b 'to '\o QI' '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, msg F to F' ., SMS, OMS) 
+    = ('\b 'msg '\o F '\b 'to '\o F' '. '\n) .
+  eq eMetaPrettyPrint(ME, ME', DB, msg F : TyL -> Ty to F' ., SMS, OMS)
     = ('\b 'msg '\o F '\b ': 
        '\o eMetaPrettyPrint(TyL) '\b '-> '\o eMetaPrettyPrint(Ty) 
-       '\b 'to '\o F' '.) .
+       '\b 'to '\o F' '. '\n) .
 endfm
 
 *******************************************************************************
@@ -17282,6 +17353,9 @@ fmod UNIT-PROCESSING is
     = warning(DB, QIL) .
   eq procModule4(T, T', V:[Module], V':[Module], opDeclError(QIL), DB) 
     = warning(DB, QIL) .
+  eq procModule4(T, F[TL], PU, U, VDS, DB)
+    = warning(DB,'Error: 'no 'parse 'for F 'declaration) 
+    [owise] .
 
   ceq procModule4('__[T, T'], PU, U, VDS, DB)
     = procModule4(T', preModule(PDR), unit(PDR), vars(PDR), DB) 
@@ -17293,6 +17367,9 @@ fmod UNIT-PROCESSING is
   eq procModule4(T, unitError(QIL), U, VDS, DB) = warning(DB, QIL) .
   eq procModule4(T, PU, unitError(QIL), VDS, DB) = warning(DB, QIL) .
   eq procModule4(T, PU, U, opDeclError(QIL), DB) = warning(DB, QIL) .
+  eq procModule4(F[TL], PU, U, VDS, DB)
+    = warning(DB,'Error: 'no 'parse 'for F 'declaration) 
+    [owise] .
 
 endfm
 
@@ -18516,7 +18593,7 @@ fmod COMMAND-PROCESSING is
   eq solveBubblesNarrowSearchR2(M, T, F[T', T'', TL], QI, D, I, VDS)
     = procNarrowSearch2(M, T, constsToVars(F[T', T'', TL], VDS), nil, QI, D, I) .
 
-  op acuCohComplete : SModule -> SModule .       ---- Defined later in module ACU-COHERENCE-COMPLETION
+  op axCohComplete : SModule -> SModule .       ---- Defined later in module AX-COHERENCE-COMPLETION
 
   sort IdsToRemove .                             ---- moved from VARIANTS
   ops all non-handled : -> IdsToRemove .         ---- moved from VARIANTS
@@ -18574,7 +18651,7 @@ fmod COMMAND-PROCESSING is
        /\ RTS:[ResultTripleSet]
           := upDown(M,
               metaNarrowSearchGen(
-                 removeIds(acuCohComplete(M), non-handled),
+                 removeIds(axCohComplete(M), non-handled),
                  T,
                  T'', 
                  none, 
@@ -18603,7 +18680,7 @@ fmod COMMAND-PROCESSING is
        /\ (RTS' | RTS:[ResultTripleSet])
           := upDown(M,
               metaNarrowSearchGen(
-                 removeIds(acuCohComplete(M), non-handled),
+                 removeIds(axCohComplete(M), non-handled),
                  T,
                  T'', 
                  none, 
@@ -19042,7 +19119,7 @@ fmod COMMAND-PROCESSING is
     if X:[SubstitutionSet] 
        := toSubstitution(
             metaVariantUnify(
-               removeIds(acuCohComplete(M), non-handled),
+               removeIds(axCohComplete(M), non-handled),
                T,
                T',
                highestVar((T,T')) + 1,
@@ -19077,7 +19154,7 @@ fmod COMMAND-PROCESSING is
       fi
     if B := included('META-MODULE, getImports(getTopModule(ME, DB)), DB) .
 
-  ---op acuCohComplete : SModule -> SModule . --- Defined later in module ACU-COHERENCE-COMPLETION
+  ---op axCohComplete : SModule -> SModule . --- Defined later in module AX-COHERENCE-COMPLETION
   ---op removeIds : Module ~> Module . ---Defined later in module VARIANTS
 
   ceq procAsymmetricVariantUnify2(M, T =? T', D)
@@ -19095,7 +19172,7 @@ fmod COMMAND-PROCESSING is
     if X:[SubstitutionSet] 
        := toSubstitution(
             metaVariantUnify(
-               removeIds(acuCohComplete(M), non-handled),
+               removeIds(axCohComplete(M), non-handled),
                T,
                T',
                highestVar((T,T')) + 1,
@@ -19146,7 +19223,7 @@ fmod COMMAND-PROCESSING is
       fi 
     if X:[VariantFourSet] 
          := getVariants(
-              removeIds(acuCohComplete(M), non-handled),
+              removeIds(axCohComplete(M), non-handled),
               T,
               highestVar(T) + 1,
               ACUUnify irreducible minimal-unifiers
@@ -19446,7 +19523,7 @@ fmod MODULE-VARIANTS is
 ----      else metaGenerateVariant(M, T, 0, N), getVariants#(M, T, s N)
 ----      fi .
   
-  eq getRlVariants(M, ({'<_>[T], Subst, N} | VtS), T', nil, AtS)
+  eq getRlVariants(M, ({'@<@_@>@[T], Subst, N} | VtS), T', nil, AtS)
     = (rl getTerm(metaNormalize(M, T)) => getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
       getRlVariants(M, VtS, T', nil, AtS) .
   eq getRlVariants(M, ({F[T, TL], Subst,N} | VtS), T', Cond, AtS)
@@ -19454,7 +19531,7 @@ fmod MODULE-VARIANTS is
       getRlVariants(M, VtS, T', Cond, AtS) .
   eq getRlVariants(M, empty, T', Cond, AtS) = none .
 
-  eq getEqVariants(M, ({'<_>[T], Subst, N} | VtS), T', nil, AtS)
+  eq getEqVariants(M, ({'@<@_@>@[T], Subst, N} | VtS), T', nil, AtS)
     = (eq getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
       getEqVariants(M, VtS, T', nil, AtS) .
   eq getEqVariants(M, ({F[T, TL], Subst, N} | VtS), T', Cond, AtS)
@@ -19468,8 +19545,8 @@ fmod MODULE-VARIANTS is
   op tupleTermList : Condition -> TermList .
   eq makeTuple(T, Cond) 
     = if Cond == nil
-      then qid("<_>")[T]
-      else qid("<_" + tupleId(Cond) + ">")[T, tupleTermList(Cond)]
+      then qid("@<@_@>@")[T]
+      else qid("@<@_" + tupleId(Cond) + "@>@")[T, tupleTermList(Cond)]
       fi .
   eq tupleTermList(T' => T'' /\ Cond) = (T'', tupleTermList(Cond)) . 
   eq tupleTermList(T' = T'' /\ Cond) = tupleTermList(Cond) . 
@@ -19587,17 +19664,17 @@ fmod MODULE-VARIANTS is
   op tuplingOps : Module RuleSet -> OpDeclSet .
   eq tuplingOps(M, EqS, RlS) = tuplingOps(M, EqS) tuplingOps(M, RlS) .
   eq tuplingOps(M, eq LHS = RHS [AtS] . EqS)
-    = (op qid("<_>") : getKind(M, leastSort(M, LHS)) -> '`[Tuple`] [none] .)
+    = (op qid("@<@_@>@") : getKind(M, leastSort(M, LHS)) -> '`[Tuple`] [none] .)
       tuplingOps(M, EqS) .
   eq tuplingOps(M, ceq LHS = RHS if Cond [AtS] . EqS)
-    = (op qid("<_" + tupleId(Cond) + ">") : getKind(M, leastSort(M, LHS)) arityCond(M, Cond) -> '`[Tuple`] [none] .)
+    = (op qid("@<@_" + tupleId(Cond) + "@>@") : getKind(M, leastSort(M, LHS)) arityCond(M, Cond) -> '`[Tuple`] [none] .)
       tuplingOps(M, EqS) .
   eq tuplingOps(M, (none).EquationSet) = none .
   eq tuplingOps(M, rl LHS => RHS [AtS] . RlS)
-    = (op qid("<_>") : getKind(M, leastSort(M, LHS)) -> '`[Tuple`] [none] .)
+    = (op qid("@<@_@>@") : getKind(M, leastSort(M, LHS)) -> '`[Tuple`] [none] .)
       tuplingOps(M, RlS) .
   eq tuplingOps(M, crl LHS => RHS if Cond [AtS] . RlS)
-    = (op qid("<_" + tupleId(Cond) + ">") : getKind(M, leastSort(M, LHS)) arityCond(M, Cond) -> '`[Tuple`] [none] .)
+    = (op qid("@<@_" + tupleId(Cond) + "@>@") : getKind(M, leastSort(M, LHS)) arityCond(M, Cond) -> '`[Tuple`] [none] .)
       tuplingOps(M, RlS) .
   eq tuplingOps(M, (none).RuleSet) = none .
   
@@ -19771,9 +19848,9 @@ endfm
 
 -------------------------------------------------------------------------------
 
-fmod ACU-COHERENCE-COMPLETION is 
+fmod AX-COHERENCE-COMPLETION is 
   inc UNIT .
-  inc MODULE-HANDLING * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) .
+----  inc MODULE-HANDLING * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) .
 
   vars V W : Variable .
   var  C : Constant .
@@ -19801,108 +19878,108 @@ fmod ACU-COHERENCE-COMPLETION is
   ---- coherence completion
   ------------------------------------------------------------------------------
   
-  op acuCohComplete : SModule -> SModule .
-  op acuCohComplete : SModule OpDeclSet RuleSet -> RuleSet .
-  op acuCohComplete : SModule Type AttrSet Rule -> RuleSet .
-  op acuCohComplete : SModule OpDeclSet EquationSet -> EquationSet .
-  op acuCohComplete : SModule Type AttrSet Equation -> EquationSet .
+  op axCohComplete : SModule -> SModule .
+  op axCohComplete : SModule OpDeclSet RuleSet -> RuleSet .
+  op axCohComplete : SModule Type AttrSet Rule -> RuleSet .
+  op axCohComplete : SModule OpDeclSet EquationSet -> EquationSet .
+  op axCohComplete : SModule Type AttrSet Equation -> EquationSet .
     
-  eq acuCohComplete(FM) 
-    = moreGeneralEqs(setEqs(FM, acuCohComplete(FM, getOps(FM), getEqs(FM)))) .
-  eq acuCohComplete(SM) 
+  eq axCohComplete(FM) 
+    = moreGeneralEqs(setEqs(FM, axCohComplete(FM, getOps(FM), getEqs(FM)))) .
+  eq axCohComplete(SM) 
     = moreGeneralEqs(
         moreGeneralRls(
           setRls(
             setEqs(SM, 
-              acuCohComplete(SM, getOps(SM), getEqs(SM))), 
-            acuCohComplete(SM, getOps(SM), getRls(SM))))) 
+              axCohComplete(SM, getOps(SM), getEqs(SM))), 
+            axCohComplete(SM, getOps(SM), getRls(SM))))) 
     [owise] .
-  eq acuCohComplete(unitError(QIL)) = unitError(QIL) .  
+  eq axCohComplete(unitError(QIL)) = unitError(QIL) .  
   
-  ceq acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, rl F[TL] => RHS [AtS'] . RlS)
-    = acuCohComplete(M, Tp, assoc AtS, rl F[TL] => RHS [AtS'] .)
-      acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, RlS)
+  ceq axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, rl F[TL] => RHS [AtS'] . RlS)
+    = axCohComplete(M, Tp, assoc AtS, rl F[TL] => RHS [AtS'] .)
+      axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, RlS)
     if sameKind(M, Tp, Tp')
     /\ sameKind(M, Tp', Tp'')
     /\ sameKindAll(M, Tp, eLeastSort(M, TL)) .
-  ceq acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, crl F[TL] => RHS if Cond [AtS'] . RlS)
-    = acuCohComplete(M, Tp, assoc AtS, crl F[TL] => RHS if Cond [AtS'] .)
-      acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, RlS)
+  ceq axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, crl F[TL] => RHS if Cond [AtS'] . RlS)
+    = axCohComplete(M, Tp, assoc AtS, crl F[TL] => RHS if Cond [AtS'] .)
+      axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, RlS)
     if sameKind(M, Tp, Tp')
     /\ sameKind(M, Tp', Tp'')
     /\ sameKindAll(M, Tp, eLeastSort(M, TL)) .
-  eq acuCohComplete(M, ODS, rl LHS => RHS [AtS] . RlS) 
-    = rl LHS => RHS [AtS] . acuCohComplete(M, ODS, RlS) 
+  eq axCohComplete(M, ODS, rl LHS => RHS [AtS] . RlS) 
+    = rl LHS => RHS [AtS] . axCohComplete(M, ODS, RlS) 
     [owise] . 
-  eq acuCohComplete(M, ODS, crl LHS => RHS if Cond [AtS] . RlS) 
-    = crl LHS => RHS if Cond [AtS] . acuCohComplete(M, ODS, RlS) 
+  eq axCohComplete(M, ODS, crl LHS => RHS if Cond [AtS] . RlS) 
+    = crl LHS => RHS if Cond [AtS] . axCohComplete(M, ODS, RlS) 
     [owise] . 
-  eq acuCohComplete(M, ODS, (none).RuleSet) = none . 
+  eq axCohComplete(M, ODS, (none).RuleSet) = none . 
     
-  ceq acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, eq F[TL] = RHS [AtS'] . EqS)
-    = acuCohComplete(M, Tp, assoc AtS, eq F[TL] = RHS [AtS'] .)
-      acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, EqS)
+  ceq axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, eq F[TL] = RHS [AtS'] . EqS)
+    = axCohComplete(M, Tp, assoc AtS, eq F[TL] = RHS [AtS'] .)
+      axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, EqS)
     if sameKind(M, Tp, Tp')
     /\ sameKind(M, Tp', Tp'')
     /\ sameKindAll(M, Tp, eLeastSort(M, TL)) .
-  ceq acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, ceq F[TL] = RHS if Cond [AtS'] . EqS)
-    = acuCohComplete(M, Tp, assoc AtS, ceq F[TL] = RHS if Cond [AtS'] .)
-      acuCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, EqS)
+  ceq axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, ceq F[TL] = RHS if Cond [AtS'] . EqS)
+    = axCohComplete(M, Tp, assoc AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+      axCohComplete(M, op F : Tp Tp' -> Tp'' [assoc AtS] . ODS, EqS)
     if sameKind(M, Tp, Tp')
     /\ sameKind(M, Tp', Tp'')
     /\ sameKindAll(M, Tp, eLeastSort(M, TL)) .
-  eq acuCohComplete(M, ODS, eq LHS = RHS [AtS] . EqS) 
-    = eq LHS = RHS [AtS] . acuCohComplete(M, ODS, EqS) 
+  eq axCohComplete(M, ODS, eq LHS = RHS [AtS] . EqS) 
+    = eq LHS = RHS [AtS] . axCohComplete(M, ODS, EqS) 
     [owise] . 
-  eq acuCohComplete(M, ODS, ceq LHS = RHS if Cond [AtS] . EqS) 
-    = ceq LHS = RHS if Cond [AtS] . acuCohComplete(M, ODS, EqS) 
+  eq axCohComplete(M, ODS, ceq LHS = RHS if Cond [AtS] . EqS) 
+    = ceq LHS = RHS if Cond [AtS] . axCohComplete(M, ODS, EqS) 
     [owise] . 
-  eq acuCohComplete(M, ODS, (none).EquationSet) = none . 
+  eq axCohComplete(M, ODS, (none).EquationSet) = none . 
     
   ---- Given f(t1,...,tn) -> r if C
   ---- if f AC add f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
-  eq acuCohComplete(M, Tp, assoc comm AtS, rl F[TL] => RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[TL] => RHS [AtS'] .)
       (rl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .)
     [owise] . 
-  eq acuCohComplete(M, Tp, assoc comm AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[TL] => RHS if Cond [AtS'] .)
       (crl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
     [owise] . 
   ---- if f ACU replace by f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
-  eq acuCohComplete(M, Tp, assoc comm id(T) AtS, rl F[TL] => RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm id(T) AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
-  eq acuCohComplete(M, Tp, assoc comm id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[TL, qid("X@@@:" + string(getKind(M, Tp)))] => F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f AU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
-  ceq acuCohComplete(M, Tp, assoc id(T) AtS, rl F[TL] => RHS [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc id(T) AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS . 
-  ceq acuCohComplete(M, Tp, assoc id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS . 
   ---- if f ALU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(x:[s],t1,...,tn) -> f(x:[s],r) if C
-  eq acuCohComplete(M, Tp, assoc left-id(T) AtS, rl F[TL] => RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc left-id(T) AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
       (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .)  . 
-  eq acuCohComplete(M, Tp, assoc left-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc left-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
       (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .)  . 
   ---- if f ARU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
-  eq acuCohComplete(M, Tp, assoc right-id(T) AtS, rl F[TL] => RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc right-id(T) AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
       (rl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
-  eq acuCohComplete(M, Tp, assoc right-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc right-id(T) AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
       (crl F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
@@ -19910,7 +19987,7 @@ fmod ACU-COHERENCE-COMPLETION is
   ---- if f A add f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----            f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   ----            f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
-  ceq acuCohComplete(M, Tp, assoc AtS, rl F[TL] => RHS [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc AtS, rl F[TL] => RHS [AtS'] .)
     = (rl F[TL] => RHS [AtS'] .) 
       (rl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
@@ -19920,7 +19997,7 @@ fmod ACU-COHERENCE-COMPLETION is
          => F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS 
     [owise] . 
-  ceq acuCohComplete(M, Tp, assoc AtS, crl F[TL] => RHS if Cond [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc AtS, crl F[TL] => RHS if Cond [AtS'] .)
     = (crl F[TL] => RHS if Cond [AtS'] .) 
       (crl F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          => F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
@@ -19933,48 +20010,48 @@ fmod ACU-COHERENCE-COMPLETION is
 
   ---- Given f(t1,...,tn) -> r if C
   ---- if f AC add f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
-  eq acuCohComplete(M, Tp, assoc comm AtS, eq F[TL] = RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[TL] = RHS [AtS'] .)
       (eq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .)
     [owise] . 
-  eq acuCohComplete(M, Tp, assoc comm AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[TL] = RHS if Cond [AtS'] .)
       (ceq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
     [owise] . 
   ---- if f ACU replace by f(t1,...,tn,x:[s]) -> f(r,x:[s]) if C
-  eq acuCohComplete(M, Tp, assoc comm id(T) AtS, eq F[TL] = RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm id(T) AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
-  eq acuCohComplete(M, Tp, assoc comm id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc comm id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[TL, qid("X@@@:" + string(getKind(M, Tp)))] = F[RHS, qid("X@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) . 
   ---- if f AU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
-  ceq acuCohComplete(M, Tp, assoc id(T) AtS, eq F[TL] = RHS [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc id(T) AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS . 
-  ceq acuCohComplete(M, Tp, assoc id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
     if not comm in AtS . 
   ---- if f ALU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(x:[s],t1,...,tn) -> f(x:[s],r) if C
-  eq acuCohComplete(M, Tp, assoc left-id(T) AtS, eq F[TL] = RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc left-id(T) AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
       (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] [AtS'] .)  . 
-  eq acuCohComplete(M, Tp, assoc left-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc left-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
       (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS] if Cond [AtS'] .)  . 
   ---- if f ARU replace by f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----             and add f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
-  eq acuCohComplete(M, Tp, assoc right-id(T) AtS, eq F[TL] = RHS [AtS'] .)
+  eq axCohComplete(M, Tp, assoc right-id(T) AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .)
       (eq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) . 
-  eq acuCohComplete(M, Tp, assoc right-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  eq axCohComplete(M, Tp, assoc right-id(T) AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .)
       (ceq F[TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
@@ -19982,7 +20059,7 @@ fmod ACU-COHERENCE-COMPLETION is
   ---- if f A add f(x:[s],t1,...,tn,y:[s]) -> f(x:[s],r,y:[s]) if C
   ----            f(x:[s],t1,...,tn) -> f(x:[s],r) if C
   ----            f(t1,...,tn,y:[s]) -> f(r,y:[s]) if C
-  ceq acuCohComplete(M, Tp, assoc AtS, eq F[TL] = RHS [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc AtS, eq F[TL] = RHS [AtS'] .)
     = (eq F[TL] = RHS [AtS'] .) 
       (eq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
@@ -19992,7 +20069,7 @@ fmod ACU-COHERENCE-COMPLETION is
          = F[RHS, qid("Y@@@:" + string(getKind(M, Tp)))] [AtS'] .) 
     if not comm in AtS 
     [owise] . 
-  ceq acuCohComplete(M, Tp, assoc AtS, ceq F[TL] = RHS if Cond [AtS'] .)
+  ceq axCohComplete(M, Tp, assoc AtS, ceq F[TL] = RHS if Cond [AtS'] .)
     = (ceq F[TL] = RHS if Cond [AtS'] .) 
       (ceq F[qid("X@@@:" + string(getKind(M, Tp))), TL, qid("Y@@@:" + string(getKind(M, Tp)))] 
          = F[qid("X@@@:" + string(getKind(M, Tp))), RHS, qid("Y@@@:" + string(getKind(M, Tp)))] if Cond [AtS'] .) 
@@ -20089,7 +20166,7 @@ mod DATABASE-HANDLING is
   pr COMMAND-PROCESSING .
   pr PREDEF-UNITS .
   pr MODULE-VARIANTS .
-  pr ACU-COHERENCE-COMPLETION .
+  pr AX-COHERENCE-COMPLETION .
   pr HELP .
 
   var  F : Qid .
@@ -20646,7 +20723,7 @@ mod DATABASE-HANDLING is
     < O : X@DatabaseClass | db : DB, input : ('remove`identity`attributes_.[T]), output : nil, default : ME,   Atts >
     => < O : X@DatabaseClass | 
           db : DB', input : nilTermList, 
-          output : (eMetaPrettyPrint(getFlatModule(ME'', DB'), removeIds(acuCohComplete(getFlatModule(ME'', DB')), all))),
+          output : (eMetaPrettyPrint(getFlatModule(ME'', DB'), removeIds(axCohComplete(getFlatModule(ME'', DB')), all))),
           default : ME, Atts > 
     if < DB' ; ME'' > := evalModExp(parseModExp(T), DB) .
 
@@ -20687,17 +20764,17 @@ mod DATABASE-HANDLING is
 
   crl [acu-coherence-completion] :
     < O : X@DatabaseClass | db : DB, 
-       input : ('acu`coherence`completion`..@Command@), 
+       input : ('ax`coherence`completion`..@Command@), 
        output : nil, default : ME, Atts >
     => < O : X@DatabaseClass | db : DB', input : nilTermList, 
-          output : (eMetaPrettyPrint(getFlatModule(ME', DB'), acuCohComplete(getFlatModule(ME', DB')))),
+          output : (eMetaPrettyPrint(getFlatModule(ME', DB'), axCohComplete(getFlatModule(ME', DB')))),
           default : ME', Atts > 
     if < DB' ; ME' > := evalModExp(ME, DB) .
   crl [acu-coherence-completion] :
-    < O : X@DatabaseClass | db : DB, input : ('acu`coherence`completion_.[T]), output : nil, default : ME,   Atts >
+    < O : X@DatabaseClass | db : DB, input : ('ax`coherence`completion_.[T]), output : nil, default : ME,   Atts >
     => < O : X@DatabaseClass | 
           db : DB', input : nilTermList, 
-          output : (eMetaPrettyPrint(getFlatModule(ME'', DB'), acuCohComplete(getFlatModule(ME'', DB')))),
+          output : (eMetaPrettyPrint(getFlatModule(ME'', DB'), axCohComplete(getFlatModule(ME'', DB')))),
           default : ME, Atts > 
     if < DB' ; ME'' > := evalModExp(parseModExp(T), DB) .
 
