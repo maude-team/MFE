@@ -755,33 +755,33 @@ fmod ITP-MODULE-PARSER is
   eq $builtin-imports(5, SS) = 'BOOL .
   eq $builtin-imports(N, SS) = $builtin-imports(s N, SS) [owise].
 
-  op normalize : Module TypeList ~> TypeList .
-  eq normalize(M, S TpL) = S normalize(M, TpL) .
-  eq normalize(M, K TpL) = getKind(M, K) normalize(M, TpL) .
-  eq normalize(M, (nil).TypeList) = nil .
+  op normalizeTypeList : Module TypeList ~> TypeList .
+  eq normalizeTypeList(M, S TpL) = S normalizeTypeList(M, TpL) .
+  eq normalizeTypeList(M, K TpL) = getKind(M, K) normalizeTypeList(M, TpL) .
+  eq normalizeTypeList(M, (nil).TypeList) = nil .
 
-  op normalize : Module HookList ~> HookList .
-  eq normalize(M, HL term-hook(Q, T) HL')
-   = normalize(M, HL) term-hook(Q, getTerm(metaNormalize(M, T)))
-     normalize(M, HL') .
-  eq normalize(M, HL) = HL [owise].
+  op normalizeHookList : Module HookList ~> HookList .
+  eq normalizeHookList(M, HL term-hook(Q, T) HL')
+   = normalizeHookList(M, HL) term-hook(Q, getTerm(metaNormalize(M, T)))
+     normalizeHookList(M, HL') .
+  eq normalizeHookList(M, HL) = HL [owise].
 
-  op normalize : Module AttrSet ~> AttrSet .
-  eq normalize(M, id(T) AS)
-   = id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
-  eq normalize(M, left-id(T) AS)
-   = left-id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
-  eq normalize(M, right-id(T) AS)
-   = left-id(getTerm(metaNormalize(M, T))) normalize(M, AS) .
-  eq normalize(M, special(HL) AS)
-   = special(normalize(M, HL)) normalize(M, AS) .
-  eq normalize(M, AS) = AS [owise].
+  op normalizeAttrSet : Module AttrSet ~> AttrSet .
+  eq normalizeAttrSet(M, id(T) AS)
+   = id(getTerm(metaNormalize(M, T))) normalizeAttrSet(M, AS) .
+  eq normalizeAttrSet(M, left-id(T) AS)
+   = left-id(getTerm(metaNormalize(M, T))) normalizeAttrSet(M, AS) .
+  eq normalizeAttrSet(M, right-id(T) AS)
+   = left-id(getTerm(metaNormalize(M, T))) normalizeAttrSet(M, AS) .
+  eq normalizeAttrSet(M, special(HL) AS)
+   = special(normalizeHookList(M, HL)) normalizeAttrSet(M, AS) .
+  eq normalizeAttrSet(M, AS) = AS [owise].
 
-  op normalize : Module OpDeclSet ~> OpDeclSet .
-  eq normalize(M, (op Q : TpL -> Tp [AS].) Ops)
-   = (op Q : normalize(M, TpL) -> normalize(M, Tp)[normalize(M, AS)].)
-     normalize(M, Ops) .
-  eq normalize(M, (none).OpDeclSet) = none .
+  op normalizeOpDeclSet : Module OpDeclSet ~> OpDeclSet .
+  eq normalizeOpDeclSet(M, (op Q : TpL -> Tp [AS].) Ops)
+   = (op Q : normalizeTypeList(M, TpL) -> normalizeTypeList(M, Tp) [normalizeAttrSet(M, AS)].)
+     normalizeOpDeclSet(M, Ops) .
+  eq normalizeOpDeclSet(M, (none).OpDeclSet) = none .
 
   --- Returns ImportList that protecting imports each module in set with
   --- name prefixed with "ITP-".
@@ -822,8 +822,8 @@ fmod ITP-MODULE-PARSER is
         nil
         sorts (SS \ up-all-sorts(QS)) ; up-all-sorts(ItpQS) .
         (SSDS \ up-all-subsorts(QS)) up-all-subsorts(ItpQS)
-        (Ops \ normalize(M, up-all-ops(QS)))
-               normalize(M, up-all-ops(ItpQS))
+        (Ops \ normalizeOpDeclSet(M, up-all-ops(QS)))
+               normalizeOpDeclSet(M, up-all-ops(ItpQS))
         Mbs
         (Eqs \ up-all-eqs(QS)) up-all-eqs(ItpQS)
       endfm)
@@ -838,7 +838,7 @@ fmod ITP-MODULE-PARSER is
         make-imports(QS)
         sorts (SS \ up-all-sorts(QS)) .
         (SSDS \ up-all-subsorts(QS))
-        (Ops \ normalize(M, up-all-ops(QS)))
+        (Ops \ normalizeOpDeclSet(M, up-all-ops(QS)))
         Mbs
         (Eqs \ up-all-eqs(QS))
       endfm)

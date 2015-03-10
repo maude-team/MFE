@@ -18,8 +18,8 @@
 ---- - A new attribute goalName has been added to the state of the ITP to 
 ----   be able to keep the name of the main goal. The idea is to be able to access
 ----   the name of the main goal even after a successful proof
----- - File ext-term.maude changed by Paco Dur‡n on March 1st, 2010 to make it work on alpha92a
-----   Look for "---- Paco Dur‡n" on that file
+---- - File ext-term.maude changed by Paco Duran on March 1st, 2010 to make it work on alpha92a
+----   Look for "---- Paco Duran" on that file
 
 ***(
 *** this is now done in itp.maude
@@ -1117,16 +1117,16 @@ fmod COVERSET-INDUCTION is
   eq substitute-rhs((none).CondSubstSet, SB) = none .
 
   --- Normalizes each term in the condition.
-  op normalize : Module EqCondition ~> EqCondition .
-  eq normalize(M, T = T' /\ EqC)
+  op normalizeEqCondition : Module EqCondition ~> EqCondition .
+  eq normalizeEqCondition(M, T = T' /\ EqC)
    = getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, T'))
-     /\ normalize(M, EqC) .
-  eq normalize(M, T : S /\ EqC)
-   = getTerm(metaNormalize(M, T)) : S /\ normalize(M, EqC) .
-  eq normalize(M, T := T' /\ EqC)
+     /\ normalizeEqCondition(M, EqC) .
+  eq normalizeEqCondition(M, T : S /\ EqC)
+   = getTerm(metaNormalize(M, T)) : S /\ normalizeEqCondition(M, EqC) .
+  eq normalizeEqCondition(M, T := T' /\ EqC)
    = getTerm(metaNormalize(M, T)) := getTerm(metaNormalize(M, T'))
-     /\ normalize(M, EqC) .
-  eq normalize(M, nil) = nil .
+     /\ normalizeEqCondition(M, EqC) .
+  eq normalizeEqCondition(M, nil) = nil .
 
   --- Returns true if the first conditional substitution subsumes the second.
   --- A conditional substitution cs(SB, EqC) subsumes cs(SB', EqC') if there
@@ -1135,8 +1135,8 @@ fmod COVERSET-INDUCTION is
   op subsumes? : Module CondSubst CondSubst ~> Bool .
   eq subsumes?(M, cs(SB, EqC), cs(SB', EqC'))
    = if first-match(M, SB, SB') :: Substitution then
-       subset?(normalize(M, substitute(EqC, first-match(M, SB, SB'))),
-               normalize(M, EqC'))
+       subset?(normalizeEqCondition(M, substitute(EqC, first-match(M, SB, SB'))),
+               normalizeEqCondition(M, EqC'))
      else
        false
      fi .
