@@ -4,6 +4,14 @@ The *Maude Formal Environment* (MFE) is an executable and highly extensible soft
 
 ## Where to Start?
 
-### Installation
+The project's documentation is maintained in the [Wiki section](https://github.com/antmordel/MFE/wiki). Please visit:
 
-The Maude Formal Environment can be used both on the official distribution of [Maude](http://maude.cs.illinois.edu) (Maude 2.7) or on the Maude++ extended version. The termination tool and sufficient completion tool require internal hooks not available in the official distribution, and therefore these tools will not be available inside the MFE if the official version of Maude is used. The rest of the tools will work normally on both versions of Maude.
+ * [Installation](https://github.com/antmordel/MFE/wiki/Installation) for installation and configuration instructions.
+ * [Use](https://github.com/antmordel/MFE/wiki/Use) for use instructions.
+ * [Tools](https://github.com/antmordel/MFE/wiki/Tools) for a list of tools available in MFE's latest release.
+ * [Maude++](https://github.com/antmordel/MFE/wiki/Maudeplusplus) for a brief explanation on how the Maude system has been extended with new operators to handle calls to the CETA library and termination back-ends.
+
+
+## Papers on the MFE
+ * F. Durán, C. Rocha, J. M. Álvarez: *Tool Interoperability in the Maude Formal Environment*. CALCO 2011. Lecture Notes in Computer Science, 2011, Volume 6859/2011, 400-406, DOI: 10.1007/978-3-642-22944-2_30
+ * F. Durán, C. Rocha, J. M. Álvarez: *Towards a Maude Formal Environment. Formal Modeling: Actors, Open Systems, Biological Systems*. Lecture Notes in Computer Science, 2011, Volume 7000/2011, 329-351, DOI: 10.1007/978-3-642-24933-4_17.
