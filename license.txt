@@ -1,0 +1,1 @@
+This software is licensed under the terms of the GPL 3.0 license. Additional information can be found at the GNU Project http://www.gnu.org/licenses/old-licenses/gpl-3.0.html website.
