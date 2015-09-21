@@ -1,0 +1,67 @@
+<div class="row full-page" ng-controller="maudeSyntaxController">
+    <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
+        <h2>Hello MFE!</h2>
+        <p> If MFE is now
+            <a href="/installation">running</a> in your favourite platform, it is the moment to have fun with a pretty
+            small example. As it has been pointed out in the <a href="/installation">installation</a> section, some tools
+            can be left out either because your platform or because you do not need them.
+
+            Tools programmed completely in Maude are CRC, ChC and ITP, so then we started with these.
+        </p>
+        <p>Let's run Maude & MFE with the following command:</p>
+        <pre>
+$ <i>maude</i> ~/MFE/src/mfe.maude</pre>
+        <h4>Let's begin with the Church-Rosser Checker...</h4>
+        <p> If the Maude banner and the info of every tool has been shown, Maude has been correctly started.
+            So let's suppose that we have a small snippet of code:</p>
+            <pre class="maude"
+                ng-bind-html="processCode(
+'(set include BOOL off .)
+
+(fmod MYNAT is
+   sort MyNat .
+   op 0 : -> MyNat [ctor] .
+   op s : MyNat -> MyNat [ctor] .
+
+   op _+_ : MyNat MyNat -> MyNat [comm] .
+   op _*_ : MyNat MyNat -> MyNat [comm] .
+
+   vars N M : MyNat .
+   eq 0 + N = N .
+   eq s(N) + M = s(N + M) .
+
+   eq 0 * N = 0 .
+   eq s(N) * M = M + (N * M) .
+endfm)')">
+</pre>
+        <p>
+            Note that in the above snippet there are two odd things: (i) Maude automatically includes in every module
+            the <i>built-in</i> <code>BOOL</code> module, and built-ins are not supported by CRC; and (ii) each module,
+            or command is enclosed in parenthesis because MFE is developed using Full Maude.
+
+            Running the following commands, the CRC is selected and the tool is launched for the above
+            module <code>MYNAT</code>.
+        </p>
+
+        <pre>
+Maude> (select tool CRC .)
+Maude> (ccr MYNAT .)
+
+Church-Rosser check for MYNAT
+<span class="maude-info">The following critical pairs must be proved joinable:
+  cp</span> MYNAT4
+    s(N:MyNat +(#2:MyNat +(N:MyNat * #2:MyNat)))
+    = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat))).
+	The module is sort-decreasing.</pre>
+
+        <p>
+            How to figure out how to solve or prove critical pairs is not a short story so we recommend to the interested
+            reader to take a look to <!-- todo: publications -->
+            In this case we can see that the second equation for the multiplication is to general, and if we change it for
+            <code class="maude maude-inline" ng-bind-html="processCode('eq s(N) * s(M) = s(M) + (N * s(M)) .')"></code>
+            the test succeeds.
+        </p>
+
+
+    </div> <!--col-->
+</div> <!--row-->

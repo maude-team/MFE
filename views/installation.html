@@ -1,0 +1,81 @@
+<div class="row full-page">
+    <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
+        <h2>Installation</h2>
+
+        <p>
+            Before starting with the installation of the MFE, you should know which of the available tools
+            are going to be used. Some of the tools come with external tools that are not available in all platforms.
+        </p>
+
+        <p>
+            The current available tools are:
+        </p>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <span class="badge">
+                    <i class="fa fa-windows"></i>
+                    <i class="fa fa-apple"></i>
+                    <i class="fa fa-linux"></i>
+                </span>
+                Inductive Theorem Prover (ITP)
+            </li>
+            <li class="list-group-item">
+                <span class="badge">
+                    <i class="fa fa-windows"></i>
+                    <i class="fa fa-apple"></i>
+                    <i class="fa fa-linux"></i>
+                </span>
+                Church-Rosser Checker (CRC)
+            </li>
+            <li class="list-group-item">
+                <span class="badge">
+                    <i class="fa fa-windows"></i>
+                    <i class="fa fa-apple"></i>
+                    <i class="fa fa-linux"></i>
+                </span>
+                Coherence Checker (ChC)
+            </li>
+            <li class="list-group-item">
+                <span class="badge">
+                    <i class="fa fa-apple"></i>
+                    <i class="fa fa-linux"></i>
+                </span>
+                Maude Termination Tool (MTT)
+            </li>
+            <li class="list-group-item">
+                <span class="badge">
+                    <i class="fa fa-linux"></i>
+                </span>
+                Sufficient Completeness Checker (SCC)
+            </li>
+        </ul>
+
+        <h3>Common installation for all platforms</h3>
+
+        <p>ITP, CRC and ChC come without any external tool, so the installation for this three tools are
+            straightforward.
+            Once Maude has been installed (see
+            <a href="http://maude.cs.illinois.edu/w/index.php?title=Maude_download_and_installation" target="_blank">here</a>
+            the instructions for the very last version), the MFE repository can be either cloned or downloaded.</p>
+
+        <div class="center">
+            <a href="https://github.com/antmordel/MFE" target="_blank">
+                <button type="button" class="btn btn-normal">
+                    <i class="fa fa-github"></i> View on <strong>GitHub</strong>
+                </button>
+            </a>
+            <a href="https://github.com/antmordel/MFE/archive/master.zip" target="_blank">
+                <button type="button" class="btn btn-normal">
+                    <i class="fa fa-download"></i> Download repo
+                </button>
+            </a>
+        </div>
+        <p>
+            After downloading (and unzip) the MFE repo in a folder like <code>MFE</code>, it can be just loaded using
+            the following command:
+        </p>
+        <pre><code class="bash">$ maude <i>&lt;folderMFE&gt;</i>/src/mfe.maude</code></pre>
+        <p>Now you are <strong>ready</strong> for starting with the <i>Hello MFE!</i> example.</p>
+
+    </div> <!--col-->
+</div> <!--row-->
