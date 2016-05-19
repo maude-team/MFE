@@ -1,3 +1,7 @@
+---- May 19th, 2016
+---- - op none : -> NatSet renamed as noneNS, due to conflict with none of new 
+----   sort Parent (introduced in Alpha 109)
+
 fmod CC-BANNER is
   pr STRING .
   op cc-banner : -> String .
@@ -103,7 +107,7 @@ fmod META-BASICS is
   pr INT .
   pr SET{Nat} * (sort NeSet{Nat} to NeNatSet,
                  sort Set{Nat} to NatSet,
-                 op empty to none,
+                 op empty to noneNS,
                  op _,_ to _;_) .
 
   sort NeKindList KindList .
@@ -241,9 +245,9 @@ fmod META-BASICS is
 
   ops getFrozenSet getStratSet : AttrSet -> NatSet .
   eq getFrozenSet(frozen(NeNL) AS) = list-to-set(NeNL) .
-  eq getFrozenSet(AS) = none [owise] .
+  eq getFrozenSet(AS) = noneNS [owise] .
   eq getStratSet(strat(NeNL) AS) = list-to-set(NeNL) .
-  eq getStratSet(AS) = none [owise] .
+  eq getStratSet(AS) = noneNS [owise] .
 
   op dom-card : OpDecl -> Nat .
   eq dom-card(op Q : TpL -> Tp [AS].)
@@ -255,7 +259,7 @@ fmod META-BASICS is
    = if N < N' then
        N ; nats-in-range(s N, N')
      else
-       none
+       noneNS
      fi .
 
   --- natlist-in-range(N, N') returns the list N ; ... ; N' - 1
@@ -273,7 +277,7 @@ fmod META-BASICS is
 
   op list-to-set : NatList -> NatSet .
   eq list-to-set(N NL) = N ; list-to-set(NL) .
-  eq list-to-set(nil) = none .
+  eq list-to-set(nil) = noneNS .
 
   --- Returns replacement indices for op declaration.
   op mu : OpDecl -> NatSet .

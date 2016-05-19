@@ -1,0 +1,6 @@
+set show advisories off .
+load dining-phils-2.fm
+
+(check ground coherence DINING-PHILS{5} .)
+
+(check Church-Rosser DINING-PHILS{5} .)
