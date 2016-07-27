@@ -6,9 +6,9 @@ The *Maude Formal Environment* (MFE) is an executable and highly extensible soft
 
 The project's documentation is maintained in the [Wiki section](https://github.com/antmordel/MFE/wiki). Please visit:
 
- * [Installation](https://github.com/antmordel/MFE/wiki/Installation) for installation and configuration instructions.
- * [Use](https://github.com/antmordel/MFE/wiki/Use) for use instructions.
- * [Tools](https://github.com/antmordel/MFE/wiki/Tools) for a list of tools available in MFE's latest release.
+ * [Installation](https://github.com/maude-team/MFE/wiki/Installation) for installation and configuration instructions.
+ * [Use](https://github.com/maude-team/MFE/wiki/Use) for use instructions.
+ * [Tools](https://github.com/maude-team/MFE/wiki/Tools) for a list of tools available in MFE's latest release.
  * [Maude++](https://github.com/maude-team/maude/releases) for a brief explanation on how the Maude system has been extended with new operators to handle calls to the CETA library and termination back-ends.
 
 
