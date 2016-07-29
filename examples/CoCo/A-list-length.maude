@@ -1,3 +1,5 @@
+---- by Meseguer
+
 fmod NAT-ACU is
     sorts Nat NzNat .
     subsorts NzNat < Nat .
@@ -7,7 +9,8 @@ fmod NAT-ACU is
     op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
 endfm
 
-fmod NAT-LIST-ACU is protecting NAT-ACU .
+fmod NAT-LIST-ACU is 
+  protecting NAT-ACU .
   sort NeList List .
   subsort Nat < NeList < List .
   op __ : NeList NeList -> NeList [ctor assoc] .
@@ -25,4 +28,4 @@ select MFE .
 
 (select tool CRC .)
 
-(ccr NAT-ACU .)
+(ccr NAT-LIST-ACU .)
