@@ -1,0 +1,24 @@
+load qlock.maude 
+
+(set include BOOL off .) 
+load qlock.maude 
+
+(ccr QLOCK .) 
+(check Church-Rosser QLOCK .)
+(select QLOCK .) 
+(ccr .) 
+(check Church-Rosser .) 
+
+(cch QLOCK .) 
+(check coherence QLOCK .) 
+(select QLOCK .) 
+(cch .) 
+(check coherence .) 
+
+(ccr QLOCK-PROPS .) 
+(check Church-Rosser QLOCK-PROPS .) 
+(select QLOCK-PROPS .) 
+(ccr .) 
+(check Church-Rosser .) 
+
+
