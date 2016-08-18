@@ -1,0 +1,12 @@
+<spec>         ::= REC-SPEC <id>                   [ SORTS <idlist> ] 
+                   [ OPS <opdecllist>  ]
+                   [ VARS <vardecllist> ]                    [ RULES <rulelist> ]                   END-SPEC<idlist>       ::= <id> <idlist> | e
+<vardecllist>  ::= <idlist> : <id> <vardecllist> | e
+<opdecllist>   ::= <opdecl> <opdecllist> | e               
+<opdecl>       ::= <id> : <idlist> -> <id> |
+                   <id> : <idlist> -> <id> { <opattrlist> }
+<opattrlist>   ::= <opattr> <opattrlist> |Êe
+<opattr>       ::= assoc | comm | id( <term> ) | strat( <intlist> )
+<rulelist>     ::= <rule> <listofrules> | e<rule>         ::= <term> -> <term> | 
+                   <term> -> <term> if <condlist><condlist>     ::= <cond> | <cond> , <condlist><cond>         ::= <term> -><- <term> |                       % ==                   <term> ->/<- <term> |                      % =/=                   <term> --> <term> |                        % rewrites to<term>         ::= <id> | <id> ( <termlist> )<termlist>     ::= <term> | <term> , <termlist><intlist>      ::= <int> <intlist> | e<command>      ::= get all normal forms of: <term> |                   Instead |                   does <term> rewrites to <term> ? |                   check the confluence of: <term> -><- <term>
+id are non-empty sequences of characters except space, '(', ')', '{', '}', '.' and ','; and excluding special sequences '->', '-><-', '->/<-', 'if', and keywords REC-SPEC, SORTS, VARS, OPS, and RULES, and END-SPEC. int are non-empty sequences of digitscomments are given using '%'. All the text written in the a line after a '%' is discarded

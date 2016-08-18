@@ -1,0 +1,393 @@
+----                                              Execution environment for REC
+----                                                    extends Full Maude 2.3i
+----                                                      To be run on Alpha 90
+----                                                    author: Francisco Duran
+fmod REC-BANNER is 
+  pr STRING .
+  op rec-banner : -> String .
+  eq rec-banner = "REC (March 24th 2008 - confluent and terminating systems) " .
+endfm
+
+fmod REC-SYNTAX is
+  sort <spec> <id> <idlist> <vardecl> <vardecllist> <opdecllist> <rulelist> 
+       <opdecl> <opattr> <opattrlist> <rule> <cond> <condlist> <term> <termlist> 
+       <int> <intlist> <command> .
+  sort @Input@ .
+  subsorts <spec> <command> < @Input@ .
+  subsort <id> < <idlist> .
+  subsort <vardecl> < <vardecllist> .
+  subsort <opdecl> < <opdecllist> .
+  subsort <opattr> < <opattrlist> .
+  subsort <rule> < <rulelist> .
+  subsort <cond> < <condlist> .
+  subsorts <id> < <term> < <termlist> .
+  subsort <int> < <intlist> .
+  
+  op REC-SPEC_SORTS_VARS_RULES_END-SPEC : <id> <idlist> <vardecllist> <rulelist> -> <spec> .
+  op REC-SPEC_SORTS_OPS_RULES_END-SPEC : <id> <idlist> <opdecllist> <rulelist> -> <spec> .
+  op REC-SPEC_SORTS_OPS_VARS_RULES_END-SPEC : <id> <idlist> <opdecllist> <vardecllist> <rulelist> -> <spec> .
+
+  op __ : <id> <idlist> -> <idlist> [gather(e E)] .
+
+  op _:_ : <idlist> <id> -> <vardecl> [gather(E e)] .
+  op __ : <vardecl> <vardecllist> -> <vardecllist> [gather(e E) prec 50] . 
+
+  op _:`->_ : <id> <id> -> <opdecl> [gather(e e) prec 45] .
+  op _:_->_ : <id> <idlist> <id> -> <opdecl> [gather(e E e) prec 45] .
+  op _:_->_`{_`} : <id> <idlist> <id> <opattrlist> -> <opdecl> .
+  op __ : <opdecl> <opdecllist> -> <opdecllist> [gather(e E) prec 50] .
+
+  op __ : <opattr> <opattrlist> -> <opattrlist> [gather(e E)] .
+  op assoc : -> <opattr> .
+  op comm : -> <opattr> .
+  op id`(_`) : <term> -> <opattr> .
+  op strat`(_`) : <intlist> -> <opattr> . 
+
+  op _->_ : <term> <term> -> <rule> [prec 45] . 
+  op _->_if_. : <term> <term> <condlist> -> <rule> [gather(e & &) prec 45] . ----- bug in MSCP
+  op __ : <rule> <rulelist> -> <rulelist> [gather(e E) prec 50] .
+  
+  op _`,_ : <cond> <condlist> -> <condlist> [gather(e E) prec 40] .
+  op _-><-_ : <term> <term> -> <cond> [gather(e e) prec 37] .
+  op _->/<-_ : <term> <term> -> <cond> [gather(e e) prec 37] .
+----  op _-->_ : <term> <term> -> <cond> [gather(e e) prec 37] .
+
+  op _`(_`) : <id> <termlist> -> <term> [gather(e &) prec 30] .
+  op _`,_ : <term> <termlist> -> <termlist> [gather(e E)] .
+
+  op __ : <int> <intlist> -> <intlist> .
+
+----  op get all normal forms of:_ : <term> -> <command> [gather(&)] .
+  op get normal form for:_ : <term> -> <command> [gather(&)] .
+----  op does_rewrites to_? : <term> <term> -> <command> [gather(& &)] .
+  op check the confluence of:_-><-_ : <term> <term> -> <command> [gather(& &)] .
+  op show rec module : -> <command> .
+endfm
+
+fmod META-REC-SYNTAX is
+  including META-LEVEL .
+  including UNIT .
+
+  op REC-BUBBLES : -> FModule .
+  op REC-GRAMMAR : -> FModule .
+
+  eq REC-BUBBLES
+    = (fmod 'REC-GRAMMAR is
+        including 'QID-LIST .
+        sorts none .
+        none
+        op 'token : 'Qid -> '<id> 
+             [special(
+               (id-hook('Bubble, '1 '1)
+                op-hook('qidSymbol, '<Qids>, nil, 'Qid)
+                id-hook('Exclude, '`[ '`] '`, '. '`( '`) '`{ '`} '-> ': '-><- '->/<-
+                                  'REC-SPEC 'SORTS 'VARS 'OPS 'RULES 'END-SPEC)
+                                  ))] .
+        op 'number : 'Qid -> '<int> 
+             [special(
+               (id-hook('Bubble, '1 '1)
+                op-hook('qidSymbol, '<Qids>, nil, 'Qid)
+                id-hook('Exclude, '`[ '`] '`, '. '`( '`) '`{ '`} '-> ': '-><- '->/<-
+                                  'REC-SPEC 'SORTS 'VARS 'OPS 'RULES 'END-SPEC)
+                                  ))] .
+        none
+        none
+     endfm) .
+     
+  eq REC-GRAMMAR = addImports((including 'REC-SYNTAX .), REC-BUBBLES) .
+endfm
+
+fmod REC-UNIT-PROCESSING is
+  pr UNIT-PROCESSING .
+  
+  vars T T' T'' T''' T1 T2 T3 T4 T5 : Term .
+  var  DB : Database .
+  var  M : Module .
+  vars OPDS VDS : OpDeclSet .
+  vars F V S : Qid .
+  
+  op procRecMod : Term -> Module .
+  op procRecModule : Term Term Term Term Term OpDeclSet Module -> Module .
+  op parseRecSortList : Term -> TypeList .
+  op parseRecTerm : OpDeclSet OpDeclSet Term -> Term .
+  
+  eq procRecMod('REC-SPEC_SORTS_VARS_RULES_END-SPEC[T1, T2, T3, T4]) 
+    = procRecModule(T1, T2, 'no-ops.Sort, T3, T4, none, addImports(protecting 'BOOL * (sort 'Bool to 'REC-Bool) ., emptyFModule)) .
+  eq procRecMod('REC-SPEC_SORTS_OPS_RULES_END-SPEC[T1, T2, T3, T4]) 
+    = procRecModule(T1, T2, T3, 'no-vars.Sort, T4, none, addImports(protecting 'BOOL * (sort 'Bool to 'REC-Bool) ., emptyFModule)) .
+  eq procRecMod('REC-SPEC_SORTS_OPS_VARS_RULES_END-SPEC[T1, T2, T3, T4, T5]) 
+    = procRecModule(T1, T2, T3, T4, T5, none, addImports(protecting 'BOOL * (sort 'Bool to 'REC-Bool) ., emptyFModule)) .
+
+  eq procRecModule(T1, '__['token[T], T2], T3, T4, T5, VDS, M)
+    = procRecModule(T1, T2, T3, T4, T5, VDS, 
+        addSorts(downQid(T), M)) .
+  eq procRecModule(T1, 'token[T], T3, T4, T5, VDS, M)
+    = procRecModule(T1, 'no-sort.Sort, T3, T4, T5, VDS, 
+        addSorts(downQid(T), M)) .
+  eq procRecModule(T1, T2, '__['_:`->_['token[T], 'token[T']], T3], T4, T5, VDS, M)
+    = procRecModule(T1, T2, T3, T4, T5, VDS, addOps(op downQid(T) : nil -> downQid(T') [none] ., M)) .
+  eq procRecModule(T1, T2, '_:`->_['token[T], 'token[T']], T4, T5, VDS, M)
+    = procRecModule(T1, T2, 'no-ops.Sort, T4, T5, VDS, addOps(op downQid(T) : nil -> downQid(T') [none] ., M)) .
+  eq procRecModule(T1, T2, '__['_:_->_['token[T], T', 'token[T'']], T3], T4, T5, VDS, M)
+    = procRecModule(T1, T2, T3, T4, T5, VDS, 
+        addOps(op downQid(T) : parseRecSortList(T') -> downQid(T'') [none] ., M)) .
+  eq procRecModule(T1, T2, '_:_->_['token[T], T', 'token[T'']], T4, T5, VDS, M)
+    = procRecModule(T1, T2, 'no-ops.Sort, T4, T5, VDS, 
+        addOps(op downQid(T) : parseRecSortList(T') -> downQid(T'') [none] ., M)) .
+  eq procRecModule(T1, T2, '__['_:_->_`{_`}['token[T], T', 'token[T''], T'''], T3], T4, T5, VDS, M)
+    = procRecModule(T1, T2, T3, T4, T5, VDS, 
+        addOps(op downQid(T) : parseRecSortList(T') -> downQid(T'') [parseRecAttrs(getOps(M), VDS, T''')] ., M)) .
+  eq procRecModule(T1, T2, '_:_->_`{_`}['token[T], T', 'token[T''], T'''], T4, T5, VDS, M)
+    = procRecModule(T1, T2, 'no-ops.Sort, T4, T5, VDS, 
+        addOps(op downQid(T) : parseRecSortList(T') -> downQid(T'') [parseRecAttrs(getOps(M), VDS, T''')] ., M)) .
+  eq procRecModule(T1, T2, T3, '__['_:_['__['token[T], T'], 'token[T'']], T4], T5, VDS, M)
+    = procRecModule(T1, T2, T3, '__['_:_[T', 'token[T'']], T4], T5, op downQid(T) : nil -> downQid(T'') [none] . VDS, M) .
+  eq procRecModule(T1, T2, T3, '__['_:_['token[T], 'token[T']], T4], T5, VDS, M)
+    = procRecModule(T1, T2, T3, T4, T5, op downQid(T) : nil -> downQid(T') [none] . VDS, M) .
+  eq procRecModule(T1, T2, T3, '_:_['__['token[T], T'], 'token[T'']], T5, VDS, M)
+    = procRecModule(T1, T2, T3, '_:_[T', 'token[T'']], T5, op downQid(T) : nil -> downQid(T'') [none] . VDS, M) .
+  eq procRecModule(T1, T2, T3, '_:_['token[T], 'token[T']], T5, VDS, M)
+    = procRecModule(T1, T2, T3, 'no-vars.Sort, T5, op downQid(T) : nil -> downQid(T') [none] . VDS, M) .
+  eq procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, '__['_->_[T, T'], T5], VDS, M)
+    = procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, T5, VDS, 
+        addEqs(eq parseRecTerm(getOps(M), VDS, T) = parseRecTerm(getOps(M), VDS, T') [none] ., M)) .
+  eq procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, '_->_[T, T'], VDS, M)
+    = procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, 'no-rules.Sort, VDS, 
+        addEqs(eq parseRecTerm(getOps(M), VDS, T) = parseRecTerm(getOps(M), VDS, T') [none] ., M)) .
+  eq procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, '__['_->_if_.[T, T', T''], T5], VDS, M)
+    = procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, T5, VDS, 
+        addEqs(ceq parseRecTerm(getOps(M), VDS, T) = parseRecTerm(getOps(M), VDS, T') if parseRecCond(getOps(M), VDS, T'') [none] ., M)) .
+  eq procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, '_->_if_.[T, T', T''], VDS, M)
+    = procRecModule(T1, 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, 'no-rules.Sort, VDS, 
+        addEqs(ceq parseRecTerm(getOps(M), VDS, T) = parseRecTerm(getOps(M), VDS, T') if parseRecCond(getOps(M), VDS, T'') [none] ., M)) .
+
+  eq procRecModule(T1, T2, 'token[T], T4, T5, VDS, M)
+    = procRecModule(T1, T2, 'no-sort.Sort, T4, T5, VDS, addSorts(downQid(T), M)) .
+
+  eq procRecModule('token[T], 'no-sort.Sort, 'no-ops.Sort, 'no-vars.Sort, 'no-rules.Sort, VDS, M)
+    = setName(M, downQid(T)) .    
+
+  eq parseRecSortList('__['token[T], T']) = downQid(T) parseRecSortList(T') .
+  eq parseRecSortList('token[T]) = downQid(T) .
+  
+  eq parseRecTerm(OPDS, VDS, '_`(_`)['token[T], T']) = downQid(T) [ parseRecTerm(OPDS, VDS, T') ] .
+  ceq parseRecTerm(op F : nil -> S [none] . OPDS, VDS, 'token[T]) 
+    = qid(string(F) + "." + string(S)) 
+    if F := downQid(T) .
+  ceq parseRecTerm(OPDS, op V : nil -> S [none] . VDS, 'token[T]) 
+    = qid(string(V) + ":" + string(S)) 
+    if V := downQid(T) .
+  eq parseRecTerm(OPDS, VDS, '_`,_[T, T']) = parseRecTerm(OPDS, VDS, T), parseRecTerm(OPDS, VDS, T') .
+  
+  op parseRecCond : OpDeclSet OpDeclSet Term -> Condition .
+  eq parseRecCond(OPDS, VDS, '_`,_['_-><-_[T, T'], T''])
+    = parseRecTerm(OPDS, VDS, T) = parseRecTerm(OPDS, VDS, T')  
+      /\ parseRecCond(OPDS, VDS, T'') .
+  eq parseRecCond(OPDS, VDS, '_`,_['_->/<-_[T, T'], T''])
+    = '_=/=_[parseRecTerm(OPDS, VDS, T), parseRecTerm(OPDS, VDS, T')] = 'true.REC-Bool 
+----    = '_==_[getTerm(metaRewrite(upModule('Matrix-Closure, false), parseRecTerm(OPDS, VDS, T), unbounded)),
+----            getTerm(metaRewrite(upModule('Matrix-Closure, false), parseRecTerm(OPDS, VDS, T'), unbounded))] = 'false.Bool 
+      /\ parseRecCond(OPDS, VDS, T'') .
+  eq parseRecCond(OPDS, VDS, '_`,_['_-->_[T, T'], T''])
+    = parseRecTerm(OPDS, VDS, T) => parseRecTerm(OPDS, VDS, T') /\ parseRecCond(OPDS, VDS, T'') .
+  eq parseRecCond(OPDS, VDS, '_-><-_[T, T'])
+    = parseRecTerm(OPDS, VDS, T) = parseRecTerm(OPDS, VDS, T') .
+  eq parseRecCond(OPDS, VDS, '_->/<-_[T, T'])
+    = '_=/=_[parseRecTerm(OPDS, VDS, T), parseRecTerm(OPDS, VDS, T')] = 'true.REC-Bool .
+----    = '_==_[getTerm(metaRewrite(upModule('Matrix-Closure, false), parseRecTerm(OPDS, VDS, T), unbounded)),
+----            getTerm(metaRewrite(upModule('Matrix-Closure, false), parseRecTerm(OPDS, VDS, T'), unbounded))] = 'false.Bool .
+  eq parseRecCond(OPDS, VDS, '_-->_[T, T'])
+    = parseRecTerm(OPDS, VDS, T) => parseRecTerm(OPDS, VDS, T') .
+    
+  op parseRecAttrs : OpDeclSet OpDeclSet Term -> AttrSet .
+  op parseRecNatList : Term -> NeNatList .
+  
+  eq parseRecAttrs(OPDS, VDS, '__['assoc.<opattr>, T]) = assoc parseRecAttrs(OPDS, VDS, T) .
+  eq parseRecAttrs(OPDS, VDS, 'assoc.<opattr>) = assoc .
+  eq parseRecAttrs(OPDS, VDS, '__['comm.<opattr>, T]) = comm parseRecAttrs(OPDS, VDS, T) .
+  eq parseRecAttrs(OPDS, VDS, 'comm.<opattr>) = comm .
+  eq parseRecAttrs(OPDS, VDS, '__['id`(_`)[T], T']) = id(parseRecTerm(OPDS, VDS, T)) parseRecAttrs(OPDS, VDS, T') .
+  eq parseRecAttrs(OPDS, VDS, 'id`(_`)[T]) = id(parseRecTerm(OPDS, VDS, T)) .
+  eq parseRecAttrs(OPDS, VDS, '__['strat`(_`)[T], T']) = strat(parseRecNatList(T)) parseRecAttrs(OPDS, VDS, T') .
+  eq parseRecAttrs(OPDS, VDS, 'strat`(_`)[T]) = strat(parseRecNatList(T)) .
+  
+  eq parseRecNatList('__['number[T], T']) = parseNat(T) parseRecNatList(T') .
+  eq parseRecNatList('number[T]) = parseNat(T) .
+endfm
+
+fmod REC-COMMAND-PROCESSING is
+  pr COMMAND-PROCESSING .
+  pr REC-UNIT-PROCESSING .
+  pr UNIT-META-PRETTY-PRINT .
+  
+  var  F : Qid .
+  var  TL : TermList .
+  var  ME : ModuleExpression .
+  var  DB : Database .
+  vars T T' : Term .
+  var  M : Module .
+  var  I : Nat .
+  
+  op procRecCommand : Term Module -> QidList .
+  op procRecSearch : Term Module Nat -> QidList .
+  
+  eq procRecCommand('get`normal`form`for:_[T], M)
+    = metaPrettyPrint(M, getTerm(metaReduce(M, parseRecTerm(getOps(M), none, T)))) .
+  eq procRecCommand('get`all`normal`forms`of:_[T], M)
+    = procRecSearch(T, M, 0) .
+  eq procRecCommand('does_rewrites`to_?[T, T'], M)
+    = if metaSearch(M, 
+            parseRecTerm(getOps(M), none, T), 
+            parseRecTerm(getOps(M), none, T'), 
+            nil,
+            '*,
+            unbounded,
+            0) =/= failure 
+      then 'yes
+      else 'no
+      fi .
+  eq procRecCommand('check`the`confluence`of:_-><-_[T, T'], M)
+    = metaPrettyPrint(M, getTerm(metaReduce(M, '_==_[parseRecTerm(getOps(M), none, T), parseRecTerm(getOps(M), none, T')]))) .
+          
+  eq procRecSearch(T, M, I)  
+    = if metaSearch(M, 
+            parseRecTerm(getOps(M), none, T), 
+            qid("V:" + string(getKind(M, leastSort(M, parseRecTerm(getOps(M), none, T))))), 
+            nil,
+            '!,
+            unbounded,
+            I) =/= failure 
+      then metaPrettyPrint(M, 
+             getTerm(
+               metaSearch(M, 
+                 parseRecTerm(getOps(M), none, T), 
+                 qid("V:" + string(getKind(M, leastSort(M, parseRecTerm(getOps(M), none, T))))), 
+                 nil,
+                 '!,
+                 unbounded,
+                 I))) 
+           '\n
+           procRecSearch(T, M, s I) 
+      else nil
+      fi .
+endfm
+
+mod REC-DATABASE-HANDLING is
+  inc DATABASE-HANDLING .
+  inc REC-COMMAND-PROCESSING .
+  inc REC-UNIT-PROCESSING .
+  
+  sort RecDatabaseClass .
+  subsort RecDatabaseClass < DatabaseClass .
+  op RecDatabase : -> RecDatabaseClass .
+  op last`:_ : Module -> Attribute .
+  
+  vars O : Oid .
+  vars T : Term .
+  var  TL : TermList .
+  vars F : Qid .
+  vars ME : ModuleExpression .
+  vars DB : Database .
+  vars Atts : AttributeSet .
+  var  X@RecDatabaseClass : RecDatabaseClass .
+  var  QIL : QidList .
+  var  M : Module .
+  
+  crl [rec-module] :
+     < O : X@RecDatabaseClass | db : DB, input : (F[T, TL]), output : nil, default : ME, last : M, Atts >
+     => < O : X@RecDatabaseClass | db : DB, last : procRecMod(F[T, TL]), input : nilTermList, 
+           output : ('Introduced 'REC 'module header2Qid(parseHeader(T)) '\n),
+           default : parseHeader(T), Atts > 
+     if  (F == 'REC-SPEC_SORTS_OPS_VARS_RULES_END-SPEC) or-else 
+        ((F == 'REC-SPEC_SORTS_VARS_RULES_END-SPEC) or-else 
+         (F == 'REC-SPEC_SORTS_OPS_RULES_END-SPEC)) .
+
+  crl [REC-commands] :
+     < O : X@RecDatabaseClass | db : DB, input : (F[TL]), output : QIL, default : ME, last : M, Atts >
+     => < O : X@RecDatabaseClass | 
+           db : DB, 
+           input : nilTermList, 
+           output : procRecCommand(F[TL], M), 
+           default : ME, 
+           last : M, Atts > 
+     if  (F == 'get`normal`form`for:_)     or-else 
+        ((F == 'get`all`normal`forms`of:_) or-else 
+        ((F == 'does_rewrites`to_?)        or-else 
+        ((F == 'check`the`confluence`of:_-><-_)))) .
+        
+  rl [REC-commands] :
+     < O : X@RecDatabaseClass | db : DB, input : ('show`rec`module.<command>), output : QIL, default : ME, last : M, Atts >
+     => < O : X@RecDatabaseClass | 
+           db : DB, 
+           input : nilTermList, 
+           output : eMetaPrettyPrint(M, M), 
+           default : ME, 
+           last : M, Atts > . 
+endm
+
+mod REC is
+  pr META-REC-SYNTAX .
+  pr REC-DATABASE-HANDLING .
+  inc LOOP-MODE .
+  pr REC-BANNER .
+
+  subsort Object < State .
+
+  op o : -> Oid .
+  op init : -> System .
+
+  var  Atts : AttributeSet .
+  var  X@RecDatabaseClass : RecDatabaseClass .
+  var  X@DatabaseClass : DatabaseClass .
+  var  O : Oid .
+  var  DB : Database .
+  var  ME : Header .
+  var  QI : Qid .
+  vars QIL QIL' QIL'' : QidList .
+  var  TL : TermList .
+  var  N : Nat .
+  vars RP RP' : ResultPair .
+
+  rl [init] :
+     init
+     => [nil,
+         < o : RecDatabase | 
+            db : initialDatabase,
+            input : nilTermList, output : nil, 
+            default : 'CONVERSION, last : noModule >,
+         ('\n '\t '\s '\s '\s '\s string2qidList(rec-banner) '\n)] .
+
+  rl [in] :
+    [QI QIL, 
+     < O : X@RecDatabaseClass | 
+         db : DB, input : nilTermList, output : nil, default : ME, Atts >, 
+     QIL']
+    => if metaParse(REC-GRAMMAR, QI QIL, '@Input@) :: ResultPair
+       then [nil, 
+             < O : X@RecDatabaseClass | db : DB, 
+                 input : getTerm(metaParse(REC-GRAMMAR, QI QIL, '@Input@)),
+                 output : nil, default : ME, Atts >, 
+              QIL'] 
+       else [nil, 
+             < O : X@RecDatabaseClass | db : DB, input : nilTermList, 
+                 output : ('\r 'Warning: 
+                           printSyntaxError(metaParse(REC-GRAMMAR, QI QIL, '@Input@), 
+                             QI QIL) 
+                           '\n
+                           '\r 'Error: '\o 'No 'parse 'for 'input. '\n), 
+                 default : ME, Atts >, 
+             QIL'] 
+       fi .
+
+  rl [out] :
+    [QIL, 
+     < O : X@DatabaseClass | 
+         db : DB, input : TL, output : (QI QIL'), default : ME, Atts >, 
+     QIL'']
+    => [QIL, 
+        < O : X@DatabaseClass | 
+            db : DB, input : TL, output : nil, default : ME, Atts >, 
+        (QI QIL' QIL'')] .
+endm
+
+loop init .
