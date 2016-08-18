@@ -1,6 +1,6 @@
-----                                          The Maude Formal Environment 1.0b
-----                                         To be run on Maude 2.7 (alpha 103)
-----                                                    author: Francisco Duran
+----                                          The Maude Formal Environment 1.0c
+----                               To be run on Maude 2.7 (alpha 110a + FM27d)
+----                                                   authors: Francisco Duran
 ----                                                               Camilo Rocha
 
 ---- To do: 
@@ -22,6 +22,8 @@
 ---- - Add support for rechability properties
 
 ---- Latest changes
+---- - May 19th, 2016
+----   - MFE is adapted to the new FM27d and Alpha110a
 ---- - August 12th, 2014
 ----   - The different transformations available in MTT are now accesible from MFE. There are new commands 
 ----     (show transformation graph .), (show current path .), and (select path <path> .) which, 
@@ -121,7 +123,7 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude27.maude
+load FM/full-maude27d.maude
 load GLOT/glot.maude
 load ITP/itp.maude
 load CRChC/crchc3o.maude
@@ -152,6 +154,7 @@ mod MFE-GLOBAL-VARS is
   ---- but since they depend on the mfe.config file it is not possible a generic check. 
   ---- eq mtt-hook = termCheck("muterm", "", 30) :: String .  
 endm
+
 
 fmod MFE-BANNER is
   pr STRING .
@@ -675,8 +678,6 @@ mod MFE-CONTROLLER is
         < O : X@Controller | Atts >
         Conf, 
         QIL'' QIL'] .
-
-
 endm 
 
 
@@ -1478,7 +1479,6 @@ endm
 --------------------------------------------------------------------------------
 --- MFE-ChC
 --------------------------------------------------------------------------------
-
 mod MFE-ChC is
   inc MFE-CRC .
   pr ChC-BANNER .
@@ -1931,7 +1931,6 @@ endm
 --------------------------------------------------------------------------------
 --- MFE-ITP
 --------------------------------------------------------------------------------
-
 mod MFE-ITP is
   inc MFE-TOOL .
   inc MFE-CONTROLLER .
@@ -2016,7 +2015,6 @@ mod MFE-ITP is
 ---- Interaction with external tools ----
 -----------------------------------------
 
-----
 ---- successful add commands
 ---- BIGTODO Add support for system modules in the ITP
 
@@ -2240,7 +2238,7 @@ endm
 --- Completeness Checker ---
 ----------------------------
 mod MFE-SCC is
-  pr BANNER .
+----  pr BANNER .
   pr MFE-GLOBAL-VARS .
   inc MFE-TOOL .
   inc MFE-CONTROLLER .
@@ -2594,7 +2592,6 @@ endm
 --------------------------------------------------------------------------------
 --- MFE-MTT
 --------------------------------------------------------------------------------
-
 mod MFE-MTT is
   pr MFE-GLOBAL-VARS .
   inc MFE-TOOL .
@@ -2971,7 +2968,6 @@ endm
 --------------------------------------------------------------------------------
 --- MFE-GLOT
 --------------------------------------------------------------------------------
-
 mod MFE-GLOT is
   pr MFE-GLOBAL-VARS .
   inc MFE-TOOL .
@@ -3218,7 +3214,6 @@ endm
 --------------------------------------------------------------------------------
 ---- MFE-ERTP
 --------------------------------------------------------------------------------
-
 mod MFE-ERTP is
   pr 3BOOL .
   pr DATABASE-HANDLING .
@@ -3329,15 +3324,12 @@ mod MFE-ERTP is
        (to O'' from O' : output('Something 'should 'have 'been 'proved. '\n)) .
 endm
 
-
 --------------------------------------------------------------------------------
 --- MFE
 --------------------------------------------------------------------------------
-
 *** 'Redefinition' of the FULL-MAUDE module. The init rule now creates an 
 *** instance of class CRChC. The init rule now takes CRChC objects, and for them 
 *** it uses CRChC-GRAMMAR instead of GRAMMAR to parse inputs. 
-
 mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   inc LOOP-MODE .
   inc MFE-CONTROLLER .
@@ -3390,7 +3382,6 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
           init-ertp(TOOLS)
           init-glot(TOOLS),
          nil ] .
-
 endm
 
 set print conceal on .

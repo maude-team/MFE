@@ -93,7 +93,7 @@ set show advisories off .
 ----     The metaNarrowSearch function is used instead of metaNarrowSearchGenAll.
 ---- - July, 20th
 ----   - We now support LU, RU, C, CU, AC and ACU cases.
-----   - A message is given if the speficication to be checked does not satisfy the requirements
+----   - A message is given if the specification to be checked does not satisfy the requirements
 ----     (use of iter, idem, owise, assoc without comm, or special, i.e. built-ins, or use of equations or 
 ----     rules with single variables in their left-hand sides)
 ----   - Some conditional critical pairs can now be discarded by checking their context-joinability
@@ -349,16 +349,8 @@ endv
 fmod MEMBERSHIP-ASSERTION-SET is
   pr MATCHING .
   pr DECL-META-PRETTY-PRINT .
-  pr (SET * (op empty to none, op _,_ to __)){MembAssert} * (sort Set{MembAssert} to MembAssertSet) .
-
----(
-  sort MembAssertSet .
-  subsort MembAssert < MembAssertSet .
-  op none : -> MembAssertSet .
-  op __ : MembAssertSet MembAssertSet -> MembAssertSet [assoc comm id: none] .
-
-  eq MA MA = MA .
----)
+  pr (SET * (op empty to none, op _,_ to __)){MembAssert} 
+          * (sort Set{MembAssert} to MembAssertSet) .
 
   vars T T' T'' T''' T1 T1' T1'' T1''' T2 T2' T2'' T2''' : Term .
   vars L L' L1 L1' L2 L2' QI : Qid .
@@ -482,17 +474,9 @@ endv
 fmod CRITICAL-PAIR-SET is
   pr MATCHING .
   pr DECL-META-PRETTY-PRINT .
-  pr (SET * (op empty to none, op _,_ to __)){CritPair} * (sort Set{CritPair} to CritPairSet) .
+  pr (SET * (op empty to none, op _,_ to __)){CritPair} 
+          * (sort Set{CritPair} to CritPairSet) .
   
----(
-  sort CritPairSet .
-  subsort CritPair < CritPairSet .
-  op none : -> CritPairSet .
-  op __ : CritPairSet CritPairSet -> CritPairSet [assoc comm id: none] .
-  
-  eq CP CP = CP .
----)
-
   vars T T' T'' T''' T1 T1' T1'' T1''' T2 T2' T2'' T2''' : Term .
   vars L L' L1 L1' L2 L2' QI : Qid .
   var  CP CP' : CritPair .
