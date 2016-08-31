@@ -1,33 +1,39 @@
 <div class="row full-page">
-    <div class="jumbotron">
-        <h1>Maude Formal Environment</h1>
+  <div class="jumbotron">
+    <h1>Maude Formal Environment</h1>
 
-        <p>
-            The <i>Maude Formal Environment</i> (MFE) is an executable and highly extensible software infrastructure
-            within which a user can interact with several tools to mechanically verify properties of
-            <a href="http://maude.cs.illinois.edu/" target="_blank">Maude</a>
-            specifications. In MFE, tools can interoperate to discharge proof obligations of different nature
-            without
-            switching between different tool environments. The integration of different tools inside MFE's common
-            environment presents the user with a consistent user interface, a mechanism to keep track of pending
-            proof obligations, and allows the execution of several instances of each tool, among other features.
-        </p>
-
-        <div class="center">
-            <a href="https://github.com/antmordel/MFE" target="_blank">
-                <button type="button" class="btn btn-outline">
-                    <i class="fa fa-github"></i> View on <strong>GitHub</strong>
-                </button>
-            </a>
-        </div>
+    <p>
+        The <i>Maude Formal Environment</i> (MFE) is an executable and highly extensible software infrastructure
+        within which a user can interact with several tools to mechanically verify properties of
+        <a href="http://maude.cs.illinois.edu/" target="_blank">Maude</a>
+        specifications. In MFE, tools can interoperate to discharge proof obligations of different nature
+        without
+        switching between different tool environments. The integration of different tools inside MFE's common
+        environment presents the user with a consistent user interface, a mechanism to keep track of pending
+        proof obligations, and allows the execution of several instances of each tool, among other features.
+    </p>
+    <p>
+      MFE is naturally modeled in Maude as an object-based system in which the tools are objects and their communication 
+      mechanism is message passing. User interaction is available through 
+      <a href="https://github.com/maude-team/full-maude" target="_blank">Full Maude</a>, an extension 
+      of Maude that has become a common base on top of which tools can be built, offering a modular design 
+      for easily integrating other tools written in Maude.
+    </p>
+    <div class="center">
+      <a href="https://github.com/antmordel/MFE" target="_blank">
+        <button type="button" class="btn btn-outline">
+          <i class="fa fa-github"></i> View on <strong>GitHub</strong>
+        </button>
+      </a>
     </div>
+  </div>
 </div>
 
 <div class="row">
     <div class="col-10 col-lg-offset-1">
         <h2>Where to Start?</h2>
         <ul>
-            <li>Installation for installation and configuration instructions.</li>
+          <li><a href="#/installation">Installation</a> for installation and configuration instructions.</li>
         </ul>
     </div>
 </div>

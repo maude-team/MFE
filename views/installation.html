@@ -1,69 +1,86 @@
 <div class="row full-page">
-    <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
-        <h2>Installation</h2>
+  <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
+    <h2>Installation</h2>
 
-        <p>
-            Before starting with the installation of the MFE, you should know which of the available tools
-            are going to be used. Some of the tools come with external tools that are not available in all platforms.
-        </p>
+    <p>
+        Before starting with the installation of the MFE, you should know which of the available tools
+        are going to be used. Some of the tools come with external tools that are not available in all platforms.
+    </p>
 
-        <p>
-            The current available tools are:
-        </p>
-        <ul class="list-group">
-            <li class="list-group-item">
-                <span class="badge">
-                    <i class="fa fa-windows"></i>
-                    <i class="fa fa-apple"></i>
-                    <i class="fa fa-linux"></i>
-                </span>
-                Inductive Theorem Prover (ITP)
-            </li>
-            <li class="list-group-item">
-                <span class="badge">
-                    <i class="fa fa-windows"></i>
-                    <i class="fa fa-apple"></i>
-                    <i class="fa fa-linux"></i>
-                </span>
-                Church-Rosser Checker (CRC)
-            </li>
-            <li class="list-group-item">
-                <span class="badge">
-                    <i class="fa fa-windows"></i>
-                    <i class="fa fa-apple"></i>
-                    <i class="fa fa-linux"></i>
-                </span>
-                Coherence Checker (ChC)
-            </li>
-            <li class="list-group-item">
-                <span class="badge">
-                    <i class="fa fa-apple"></i>
-                    <i class="fa fa-linux"></i>
-                </span>
-                Maude Termination Tool (MTT)
-            </li>
-            <li class="list-group-item">
-                <span class="badge">
-                    <i class="fa fa-linux"></i>
-                </span>
-                Sufficient Completeness Checker (SCC)
-            </li>
-        </ul>
+    <p>
+        The current available tools are:
+    </p>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-windows"></i>
+                <i class="fa fa-apple"></i>
+                <i class="fa fa-linux"></i>
+            </span>
+            Inductive Theorem Prover (ITP)
+        </li>
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-windows"></i>
+                <i class="fa fa-apple"></i>
+                <i class="fa fa-linux"></i>
+            </span>
+            Church-Rosser Checker (CRC)
+        </li>
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-windows"></i>
+                <i class="fa fa-apple"></i>
+                <i class="fa fa-linux"></i>
+            </span>
+            Coherence Checker (ChC)
+        </li>
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-apple"></i>
+                <i class="fa fa-linux"></i>
+            </span>
+            Maude Termination Tool (MTT)
+        </li>
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-linux"></i>
+            </span>
+            Sufficient Completeness Checker (SCC)
+        </li>
+    </ul>
 
-        <h3>Common installation for Linux/OS X</h3>
+    <h3>Common installation for Linux/OS X</h3>
 
-        <!--<p>ITP, CRC and ChC come without any external tool, so the installation for this three tools are-->
-            <!--straightforward.-->
-            <!--Once Maude has been installed (see-->
-            <!--<a href="http://maude.cs.illinois.edu/w/index.php?title=Maude_download_and_installation" target="_blank">here</a>-->
-            <!--the instructions for the very last version), the MFE repository can be either cloned or downloaded.</p>-->
-        <p>ITP, CRC, ChC and MTT are available for both Linux and OS X. However, SCC relies on the
-            <a href="http://formal.cs.uiuc.edu/ceta/" target="_blank">CETA library</a>
-            and it is only available on the Linux Maude binary version. The installation follow the
-            same procedure for both platforms, but only SCC is available on Linux.
-        </p>
-        <h4>Automatic installation</h4>
-
+    <p>ITP, CRC, ChC and MTT are available for both Linux and OS X. However, SCC relies on the
+        <a href="http://formal.cs.uiuc.edu/ceta/" target="_blank">CETA library</a>
+        and it is only available on the Linux Maude binary version. The installation follow the
+        same procedure for both platforms, but only SCC is available on Linux.
+    </p>
+    <h4>Required files</h4>
+    <p>
+      The Maude Formal Environment can be used both on the official distribution of 
+      <a href="maude.cs.uiuc.edu" target="_blank">Maude</a>
+      or on the 
+      <a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Maude++</a> extended version. 
+      The termination tool and sufficient completion 
+      tool require internal hooks not available in the official distribution, and therefore these tools will not 
+      be available inside the MFE if the official version of Maude is used. The rest of the tools will work normally on both versions of Maude.
+    </p>
+      
+    
+    <p>
+      The following files, available from the Downloads section, are required to install the MFE:
+      <lu>
+        <li>MFE release</li>
+        <li>maude++ (only if the MTT and SCC tools are to be used)</li>
+      </lu>
+      The Maude Termination Tool requires the installation of external backend termination tools that follow 
+      the rules of the termination competition (the AProVE tool, in its 1.2 pre-release version is available here).
+    
+    </p>
+    
+    
         <!--<div class="center">-->
             <!--<a href="https://github.com/antmordel/MFE" target="_blank">-->
                 <!--<button type="button" class="btn btn-normal">-->
