@@ -3,16 +3,22 @@
     <h2>Installation</h2>
 
     <p>
-        Before starting with the installation of the MFE, you must be aware that
-        some of the tools in the MFE require an extended version of Maude (with
-        some additional hooks providing required functionalities) and external
-        tools that are not available in all platforms.
+        Before starting with the installation of the MFE, you should know which of the available tools
+        are going to be used. Some of the tools come with external tools that are not available in all platforms.
     </p>
 
     <p>
         The current available tools are:
     </p>
     <ul class="list-group">
+        <li class="list-group-item">
+            <span class="badge">
+                <i class="fa fa-windows"></i>
+                <i class="fa fa-apple"></i>
+                <i class="fa fa-linux"></i>
+            </span>
+            Inductive Theorem Prover (ITP)
+        </li>
         <li class="list-group-item">
             <span class="badge">
                 <i class="fa fa-windows"></i>
@@ -42,107 +48,68 @@
             </span>
             Sufficient Completeness Checker (SCC)
         </li>
-        <li class="list-group-item">
-            <span class="badge">
-                <i class="fa fa-windows"></i>
-                <i class="fa fa-apple"></i>
-                <i class="fa fa-linux"></i>
-            </span>
-            Inductive Theorem Prover (ITP)
-        </li>
     </ul>
 
     <h3>Common installation for Linux/OS X</h3>
 
     <p>ITP, CRC, ChC and MTT are available for both Linux and OS X. However, SCC relies on the
-        <a href="http://formal.cs.uiuc.edu/ceta/" target="_blank">CETA library</a>,
-        which is only available on Linux. The installation follows the
-        same procedure for both platforms.
+        <a href="http://formal.cs.uiuc.edu/ceta/" target="_blank">CETA library</a>
+        and it is only available on the Linux Maude binary version. The installation follow the
+        same procedure for both platforms, but only SCC is available on Linux.
     </p>
     <h4>Required files</h4>
     <p>
-      The MFE can be used both on the <a href="maude.cs.uiuc.edu" target="_blank">official distribution of
-      Maude</a>
-      or on the
-      <a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Maude++
-      extended version (with appropriate hooks)</a>.
-      However, the MTT and the SCC require internal hooks not available in the official distribution,
-      and therefore these tools will not be available inside the MFE unless the extended version of Maude is used.
-      The rest of the tools will work normally on both versions of Maude.
-      The tools will give an error message if you try to use them when not available.
+      The Maude Formal Environment can be used both on the official distribution of 
+      <a href="maude.cs.uiuc.edu" target="_blank">Maude</a>
+      or on the 
+      <a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Maude++</a> extended version. 
+      The termination tool and sufficient completion 
+      tool require internal hooks not available in the official distribution, and therefore these tools will not 
+      be available inside the MFE if the official version of Maude is used. The rest of the tools will work normally on both versions of Maude.
     </p>
-
+      
+    
     <p>
       The following files, available from the Downloads section, are required to install the MFE:
     </p>
     <ul>
-      <li><a href="https://github.com/maude-team/MFE/releases/download/mfe-2.7.1/mfe-2.7.1.zip" target="_blank">MFE (Maude executable specifications of the environment and all available tools)</a></li>
-      <li><a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Extended version of Maude</a> (only necessary if the MTT and SCC tools are to be used)</li>
+      <li><a href="https://github.com/maude-team/MFE/releases/download/mfe-2.7.1/mfe-2.7.1.zip" target="_blank">MFE</a></li>
+      <li><a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">maude++</a> (only if the MTT and SCC tools are to be used)</li>
     </ul>
     <p>
-      The MTT requires the installation of external back-end termination tools that follow
-      the rules of the termination competition (the AProVE tool, in its 1.2 pre-release version is
-      available <a href="assets/AProVE.zip">here</a>).
+      The Maude Termination Tool requires the installation of external backend termination tools that follow 
+      the rules of the termination competition (the AProVE tool, in its 1.2 pre-release version is available <a href="assets/AProVE.zip">here</a>).
     </p>
-
+    
     <h4>Installation</h4>
 
     <p>Uncompress the required files to the directories of choice.</p>
-
-    <h4>Termination Back-End Tools</h4>
-
+    
+    <h4>Termination Back-ends</h4>
+    
     <p>
-      Automatic termination checks by the MTT will require back-end tools, like <i>CiME</i>,
-      <i>AProVE</i>, <i>MuTerm</i>, etc.
-      If there are not back-end tools configured properly, then a advisory message will be
-      displayed by the MFE whenever a check of termination is attempted. Any tool that adheres to
-      the specification for participants into the annual termination competition should work.
+      Automatic termination checks by the MTT will require back-end tools, like <i>CiME</i>, <i>AProVE</i>, <i>MuTerm</i>, etc. 
+      If there are not back-end tools configured properly, then a advisory message will be displayed by the MFE whenever a check 
+      of termination is requested. In principle, any tool that adheres to the specification for participants into the annual termination competition.
     </p>
     <p>
       The interaction with the different termination tools is carried out following ideas already in the MTT.
     </p>
-
-    <h4>Configuration of Back-End Tools</h4>
+    
+    <h4>Configuration of Back-end Tools</h4>
     <p>
-      The information of the available back-end tools is read from the file <code>mfe.config</code>.
+      The information of the available back-end tools is read from the file <code>mfe.config</code>
 
-      The MFE searches for this file in maude++'s executable directory, and then in the directory
-      referenced by the shell variable MAUDE_LIB. Such a configuration file must contain one text
-      line per tool, and with the following syntax:
+      The MFE searches for this file in maude++'s executable directory and then in the directory 
+      referenced by the shell variable MAUDE_LIB. Such a configuration file must contain one text line per tool, and with the following syntax:
     </p>
-    <pre>
-      < name-with-which-you-will-refer-to-the-tool-inside-MFE > < path-of-the-batch-of-the-tool > < extension-of-the-files–to-load >
-    </pre>
+      <pre>< name with which you will refer to the tool inside MFE > < path of the batch of the tool > < extension of the files to load ></pre>
     <p>
-      For instance, the <code>mfe.config</code> file could look like this:
+      For instance, the <code>mfe.config</code> file could look like this: 
     </p>
-    <pre>
-      aprove /usr/local/share/runme .trs
-      ttc /usr/local/share/runmepar
-    </pre>
+    <pre>aprove /usr/local/share/runme .trs ttc /usr/local/share/runmepar</pre>
     <p>
-      The third parameter in each text line is optional. See the <code>mfe.config</code> file
-      included in <code>maude++.tar.gz</code> for more details.
+      The third parameter in each text line is optional. See the <code>mfe.config</code> file included in <code>maude++.tar.gz</code> for more details.
     </p>
-
-        <!--<div class="center">-->
-            <!--<a href="https://github.com/antmordel/MFE" target="_blank">-->
-                <!--<button type="button" class="btn btn-normal">-->
-                    <!--<i class="fa fa-github"></i> View on <strong>GitHub</strong>-->
-                <!--</button>-->
-            <!--</a>-->
-            <!--<a href="https://github.com/antmordel/MFE/archive/master.zip" target="_blank">-->
-                <!--<button type="button" class="btn btn-normal">-->
-                    <!--<i class="fa fa-download"></i> Download repo-->
-                <!--</button>-->
-            <!--</a>-->
-        <!--</div>-->
-        <!--<p>-->
-            <!--After downloading (and unzip) the MFE repo in a folder like <code>MFE</code>, it can be just loaded using-->
-            <!--the following command:-->
-        <!--</p>-->
-        <!--<pre><code class="bash">$ maude <i>&lt;folderMFE&gt;</i>/src/mfe.maude</code></pre>-->
-        <!--<p>Now you are <strong>ready</strong> to start with the <i>Hello MFE!</i> example.</p>-->
-
     </div> <!--col-->
 </div> <!--row-->
