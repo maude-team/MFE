@@ -1,0 +1,12 @@
+(VAR x)
+(RULES
+x -> f(x)
+G(A) -> A
+)
+(COMMENT
+First example in Section 5.3 from
+Vincent van Oostrom
+Modularity of Confluence
+IJCAR 2008
+doi: 10.1007/978-3-540-71070-7_31
+)

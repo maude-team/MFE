@@ -1,0 +1,287 @@
+MTT -> AProVE: 
+( VAR x y )    ( RULES   F-@osb@S@csb@-@osb@S@csb@ ( g-@osb@S@csb@ ( x ) ,  x ) -> F-@osb@S@csb@-@osb@S@csb@ ( x ,  g-@osb@S@csb@ ( x ) )   F-@osb@S@csb@-@osb@S@csb@ ( h-@osb@S@csb@ ( x ) ,  x ) -> F-@osb@S@csb@-@osb@S@csb@ ( x ,  h-@osb@S@csb@ ( x ) )   f-@osb@S@csb@-@osb@S@csb@ ( x ,  y ) -> x   f-@osb@S@csb@-@osb@S@csb@ ( x ,  y ) -> f-@osb@S@csb@-@osb@S@csb@ ( x ,  g-@osb@S@csb@ ( y ) )   g-@osb@S@csb@ ( x ) -> h-@osb@S@csb@ ( x )  )  
+
+AProVE -> MTT: 
+NO
+Term Rewriting System R:
+
+   [x, y]
+   F-`[S`]-`[S`](g-`[S`](x), x) -> F-`[S`]-`[S`](x, g-`[S`](x))
+   F-`[S`]-`[S`](h-`[S`](x), x) -> F-`[S`]-`[S`](x, h-`[S`](x))
+   f-`[S`]-`[S`](x, y) -> x
+   f-`[S`]-`[S`](x, y) -> f-`[S`]-`[S`](x, g-`[S`](y))
+   g-`[S`](x) -> h-`[S`](x)
+
+Termination of R to be shown.
+
+
+
+
+
+   R     ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   f-`[S`]-`[S`](x, y) -> x
+
+where the Polynomial interpretation:
+POL(f-`[S`]-`[S`](x_1, x_2)) = 1 + x_1 + x_2
+POL(h-`[S`](x_1)) = x_1
+POL(F-`[S`]-`[S`](x_1, x_2)) = 2 + x_1 + x_2
+POL(g-`[S`](x_1)) = x_1
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->Dependency Pair Analysis
+
+
+
+R contains the following Dependency Pairs: 
+
+
+   F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))
+   F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x))
+   F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, g-`[S`](y))
+   F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> G-@OSB@S@CSB@(y)
+
+Furthermore, R contains two SCCs.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->Size-Change Principle
+           ->DP Problem 2
+             ->MRR
+
+
+Dependency Pairs:
+F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x))
+F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))
+Rules:
+
+   F-`[S`]-`[S`](h-`[S`](x), x) -> F-`[S`]-`[S`](x, h-`[S`](x))
+   F-`[S`]-`[S`](g-`[S`](x), x) -> F-`[S`]-`[S`](x, g-`[S`](x))
+   f-`[S`]-`[S`](x, y) -> f-`[S`]-`[S`](x, g-`[S`](y))
+   g-`[S`](x) -> h-`[S`](x)
+
+
+
+
+We number the DPs as follows: 
+- F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x))
+- F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))and get the following Size-Change Graph(s): [2: F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x)), 1: F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))] -> [2: F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x)), 1: F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))]:
+[1>1, 2=1, 1=2]
+
+which lead(s) to this/these maximal multigraph(s): [2: F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x)), 1: F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))] -> [2: F-@OSB@S@CSB@-@OSB@S@CSB@(g-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, g-`[S`](x)), 1: F-@OSB@S@CSB@-@OSB@S@CSB@(h-`[S`](x), x) -> F-@OSB@S@CSB@-@OSB@S@CSB@(x, h-`[S`](x))]:
+[1>1, 1>2, 2>1, 2>2]
+
+D_P: empty set
+Oriented Rules: none
+We used the order Homeomorphic Embedding Order with Non-Strict Precedence.
+trivial
+
+ with Argument Filtering System:
+
+([h-`[S`](x_1) -> h-`[S`](x_1)])
+We obtain no new DP problems.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->SCP
+           ->DP Problem 2
+             ->Modular Removal of Rules
+
+
+Dependency Pair:
+F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, g-`[S`](y))
+Rules:
+
+   F-`[S`]-`[S`](h-`[S`](x), x) -> F-`[S`]-`[S`](x, h-`[S`](x))
+   F-`[S`]-`[S`](g-`[S`](x), x) -> F-`[S`]-`[S`](x, g-`[S`](x))
+   f-`[S`]-`[S`](x, y) -> f-`[S`]-`[S`](x, g-`[S`](y))
+   g-`[S`](x) -> h-`[S`](x)
+
+
+
+
+We have the following set of usable rules:
+
+   g-`[S`](x) -> h-`[S`](x)
+To remove rules and DPs from this DP problem we used the following monotonic and C_E-compatible order: Polynomial ordering.
+
+Polynomial interpretation:
+POL(F-@OSB@S@CSB@-@OSB@S@CSB@'(x_1, x_2)) = 1 + x_1 + x_2
+POL(h-`[S`](x_1)) = x_1
+POL(g-`[S`](x_1)) = x_1
+
+We have the following set D of usable symbols: {F-@OSB@S@CSB@-@OSB@S@CSB@' :: *|°, *|° -> *|° [] [<f-`[S`]-`[S`]>], h-`[S`] :: *|° -> *|° [], g-`[S`] :: *|° -> *|° []}
+No Dependency Pairs can be deleted.
+
+3 non usable rules have been deleted.
+
+
+ The result of this processor delivers one new DP problem.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->SCP
+           ->DP Problem 2
+             ->MRR
+             ...
+
+               ->DP Problem 3
+                 ->Non-Overlappingness Check
+
+
+Dependency Pair:
+F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, g-`[S`](y))
+Rule:
+
+   g-`[S`](x) -> h-`[S`](x)
+
+
+
+
+Applying the non-overlappingness check to the DPs.
+
+The transformation is resulting in one subcycle:
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->SCP
+           ->DP Problem 2
+             ->MRR
+             ...
+
+               ->DP Problem 4
+                 ->Rewriting Transformation
+
+
+Dependency Pair:
+F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, g-`[S`](y))
+Rule:
+
+   g-`[S`](x) -> h-`[S`](x)
+
+Strategy:
+innermost
+
+
+On this DP problem, a Rewriting SCC transformation can be performed.
+
+As a result of transforming the rule 
+
+   F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, g-`[S`](y))
+one new Dependency Pair
+is created:
+
+
+   F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, h-`[S`](y))
+
+The transformation is resulting in one new DP problem:
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->SCP
+           ->DP Problem 2
+             ->MRR
+             ...
+
+               ->DP Problem 5
+                 ->Usable Rules (Innermost)
+
+
+Dependency Pair:
+F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, h-`[S`](y))
+Rule:
+
+   g-`[S`](x) -> h-`[S`](x)
+
+Strategy:
+innermost
+
+
+As we are in the innermost case, we can delete all 1 non-usable-rules.
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->DPs
+
+           ->DP Problem 1
+             ->SCP
+           ->DP Problem 2
+             ->MRR
+             ...
+
+               ->DP Problem 6
+                 ->Non Termination
+
+
+Dependency Pair:
+F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, h-`[S`](y))
+Rule:
+none
+Strategy:
+innermost
+
+
+Found an infinite P-chain over R:
+
+P =
+   F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y) -> F-@OSB@S@CSB@-@OSB@S@CSB@'(x, h-`[S`](y))
+
+R = none
+s = F-@OSB@S@CSB@-@OSB@S@CSB@'(x, y)
+ evaluates to  t =F-@OSB@S@CSB@-@OSB@S@CSB@'(x, h-`[S`](y))
+
+Thus, s starts an infinite chain as s matches t.
+
+Non-Termination of R could be shown.
+
+Duration: 
+0:00 minutes
+
+
+

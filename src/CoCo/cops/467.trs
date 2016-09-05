@@ -1,0 +1,21 @@
+(FUN
+  abs : (term -> term) -> term
+  app : term -> term -> term  
+)
+(VAR
+  x : term
+  y : term
+  S : term
+  U : term
+  T : term -> term 
+  M : term -> term -> term
+)
+(RULES
+  app (abs (\x. T x)) S -> T S,
+  abs (\x. (app (abs (\y. M y x)) S) ) -> app (abs (\y. (abs (\x. M y x)))) S,
+  app (app (abs (\x. T x)) S) U -> app (abs (\x. (app (T x) U))) S,
+  app (abs (\y. (app (abs (\x. M x y)) S))) U -> app (abs (\x. (app (abs (\y. M x y) ) U))) S
+  
+)
+(COMMENT Untyped lambda-calculus with (non-terminating) Regnier's sigma reduction.
+  See Accattoli and Kesner, The permutative lambda-calculus, LPAR 2012)

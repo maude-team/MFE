@@ -1,0 +1,7 @@
+(VAR x)
+(RULES
+  F(x,A(G(x))) -> G(F(x,x))
+  F(x,G(x)) -> G(F(x,x))
+  A(x) -> x
+  H(x) -> H(B(H(x)))
+)

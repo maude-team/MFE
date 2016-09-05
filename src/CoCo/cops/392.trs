@@ -1,0 +1,15 @@
+(VAR x y)
+(RULES 
+  c -> f(a,b)
+  c -> f(a,a)
+  f(x,x) -> x
+  f(x,y) -> f(y,x)
+  f(a,a) -> f(b,b)
+  f(b,b) -> f(a,a)
+)
+(COMMENT
+Example from 
+Bertram Felgenhauer and Rene Thiemann,
+Reachability Analysis with State-Coherent Automata,
+invited to special issue of LATA 2014.
+)

@@ -1,0 +1,13 @@
+(CONDITIONTYPE SEMI-EQUATIONAL)
+(VAR x)
+(RULES
+  u -> a
+  w -> a
+  v -> b
+  w -> b
+  G -> D | u == v
+)
+(COMMENT
+  \cite{K84}, Example on page 183
+  doi: 10.1016/0304-3975(84)90087-2
+)

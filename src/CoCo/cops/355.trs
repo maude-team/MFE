@@ -1,0 +1,9 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  a -> b | a == b
+)
+(COMMENT
+  \cite{SG10}, example 1
+  doi: 10.1016/j.jlap.2009.08.001
+)

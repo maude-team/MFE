@@ -1,0 +1,10 @@
+(VAR x y z)
+(RULES
+  f(x,h(x)) -> f(h(x),h(x))
+  f(x,k(y,z)) -> f(h(y),h(y))
+  h(x) -> k(x,x)
+  k(a,a) -> h(b)
+  a -> b
+)
+(COMMENT Example 3.10 of \cite{ATU2014})
+(COMMENT from the collection of \cite{ATU2014})

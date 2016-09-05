@@ -1,0 +1,16 @@
+(FUN
+  pi1 : term -> term
+  pi2 : term -> term
+  pi : term -> term -> term
+)
+(VAR
+  z1 : term
+  z2 : term
+  z : term
+)
+(RULES
+  pi1(pi(z1,z2)) -> z1,
+  pi2(pi(z1,z2)) -> z2,
+  pi(pi1(z),pi2(z)) -> z
+)
+(COMMENT Example 11.6.46(1) from \cite{TeReSe})

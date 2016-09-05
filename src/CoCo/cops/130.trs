@@ -1,0 +1,7 @@
+(VAR x y z)
+(RULES
+  and3(x,y,F) -> F
+  and3(T,T,T) -> T
+  and3(x,y,z) -> and3(y,z,x)
+)
+(COMMENT from the collection of \cite{AT2012})

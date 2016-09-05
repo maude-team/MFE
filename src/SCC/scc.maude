@@ -1213,7 +1213,7 @@ fmod MU-SCC is
        pta-rule(identifier(Op),
                 get-kinds(M, inputs(Op)),
                 getKind(M, output(Op)),
-                mu-sca-type-state-list(M, inputs(Op), none),
+                mu-sca-type-state-list(M, inputs(Op), noneNS),
                 sca-def-state(M, output(Op)))
        if is-ctor?(Op) then
          pta-rule(identifier(Op),
@@ -1937,9 +1937,9 @@ fmod SCC-CHECKER is
   op check-strat-frozen : OpDeclSet ~> QidList .
   eq check-strat-frozen(none) = nil .
   eq check-strat-frozen((op Q : TpL -> Tp [AS].) Ops)
-   = if (getFrozenSet(AS) ; getStratSet(AS) == none) or-else
-        ((getFrozenSet(AS) =/= none and getStratSet(AS) =/= none) and-then
-         $diff(nats-in-range(0, s size(TpL)), getFrozenSet(AS), none) == getStratSet(AS))
+   = if (getFrozenSet(AS) ; getStratSet(AS) == noneNS) or-else
+        ((getFrozenSet(AS) =/= noneNS and getStratSet(AS) =/= noneNS) and-then
+         $diff(nats-in-range(0, s size(TpL)), getFrozenSet(AS), noneNS) == getStratSet(AS))
        then nil
        else warning('Strategy 'and 'frozenness 'declarations 'for Q ': TpL '-> Tp
        'are 'incompatible.)

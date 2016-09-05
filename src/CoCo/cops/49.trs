@@ -1,0 +1,12 @@
+(VAR x)
+(RULES
+  F(A,A) -> G(B,B)
+  A -> A'
+  F(A',x) -> F(x,x)
+  F(x,A') -> F(x,x)
+  G(B,B) -> F(A,A)
+  B -> B'
+  G(B',x) -> G(x,x)
+  G(x,B') -> G(x,x)
+)
+(COMMENT due to Levy, from p.814 of \cite{Hue80})

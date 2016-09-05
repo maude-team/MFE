@@ -1,0 +1,6 @@
+(VAR x)
+(RULES
+  I(x) -> I(B(x))
+  F(E(x),x) -> G(x)
+  E(x) -> x
+)

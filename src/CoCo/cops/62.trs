@@ -1,0 +1,18 @@
+(VAR x y)
+(RULES
+  if(true,x,y) -> x
+  if(false,x,y) -> y
+  -(s(x),s(y)) -> -(x,y)
+  -(x,0) -> x
+  -(0,x) -> 0
+  <(s(x),s(y)) -> <(x,y)
+  <(0,s(x)) -> true
+  <(x,0) -> false
+  mod(0,y) -> 0
+  mod(x,s(y)) -> if(<(x,s(y)),x,mod(-(x,s(y)),s(y)))
+  mod(x,0) -> x
+  gcd(x,y) -> gcd(y,mod(x,y))
+  gcd(x,0) -> x
+  gcd(0,x) -> x
+)
+(COMMENT from Example 3 of \cite{OO03})

@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  e -> f(x) | l == d
+  A -> h(x, x)
+)
+(COMMENT
+  \cite{NSS12}, (R_10)^-1 of Example 4.18
+  doi: 10.2168/LMCS-8(3:4)2012
+)

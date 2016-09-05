@@ -1,0 +1,12 @@
+(FUN
+  f : ((A -> A) -> A) -> A
+)
+(VAR
+  z : (A -> A) -> A
+  x : A -> A
+  y : A
+)
+(RULES
+  f(\x. z(\y. x(y))) -> z(\y. y)
+)
+(COMMENT Example 11.4.14 from \cite{TeReSe})

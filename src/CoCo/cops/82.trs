@@ -1,0 +1,6 @@
+(VAR x)
+(RULES
+  f(a) -> f(f(a))
+  f(x) -> f(a)
+)
+(COMMENT Example 3 of \cite{Tiw02})

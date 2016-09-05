@@ -1,0 +1,9 @@
+(VAR x y)
+(RULES
+  W(W(x)) -> W(x)
+  B(I(x)) -> W(x)
+  W(B(x)) -> B(x)
+  F(H(x),y) -> F(H(x),G(y))
+  F(x,I(y)) -> F(G(x),I(y))
+  G(x) -> x
+)

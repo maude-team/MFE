@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x z)
+(RULES
+  a -> c
+  g(a) -> h(b)
+  h(b) -> g(c)
+  f(x) -> z | g(x) == h(z)
+)
+(COMMENT
+  \cite{ALS94}, Example 4.1.b
+  doi: 10.1007/3-540-58216-9_40
+)

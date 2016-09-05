@@ -1,0 +1,11 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  a -> c
+  a -> d
+  f(x) -> x | x == c, d == x
+)
+(COMMENT
+  \cite{G14}, example 19
+  PhD Thesis, not yet published
+)

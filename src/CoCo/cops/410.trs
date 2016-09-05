@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+ f(x,y) -> g(x) | a == d
+ f(x,y) -> h(x) | b == d
+ g(s(x)) -> x
+ h(s(x)) -> x
+ a -> d
+ b -> d
+)

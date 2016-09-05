@@ -1,0 +1,16 @@
+(VAR x y z)
+(RULES
+f(x,y) -> f(z,z)
+f(b,c) -> a
+b -> d
+c -> d
+M(y,x,x) -> y
+M(x,x,y) -> y
+)
+(COMMENT
+Example 20 from
+Vincent van Oostrom
+Modularity of Confluence
+IJCAR 2008
+doi: 10.1007/978-3-540-71070-7_31
+)

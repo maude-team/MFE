@@ -1,0 +1,10 @@
+(VAR x y)
+(RULES
+  f(x,h(x)) -> f(h(x),x)
+  f(g(x),y) -> f(g(y),g(x))
+  f(x,y) -> f(y,x)
+  g(h(x)) -> h(h(x))
+  h(x) -> g(x)
+  g(x) -> x
+)
+(COMMENT from the collection of \cite{ATU2014})

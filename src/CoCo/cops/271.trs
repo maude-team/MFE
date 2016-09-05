@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  p(q(x)) -> p(r(x))
+  q(h(x)) -> r(x)
+  r(x) -> r(h(x)) | s(x) == 0
+  s(x) -> 1
+)
+(COMMENT
+  \cite{BK86}, Counter example for Theorem 6.4.1
+  doi: 10.1016/0022-0000(86)90033-4
+)

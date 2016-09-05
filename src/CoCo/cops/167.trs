@@ -1,0 +1,11 @@
+(VAR x y z)
+(RULES
+  f(g(x),g(y)) -> f(g(x),h(y)) 
+  f(h(x),g(y)) -> f(g(x),g(y)) 
+  f(g(x),h(y)) -> f(x,y) 
+  f(h(x),h(y)) -> f(y,x)
+  f(x,y) -> f(y,x)
+  g(x) -> h(x)
+  h(x) -> g(x)
+)
+(COMMENT from the collection of \cite{AT2012})

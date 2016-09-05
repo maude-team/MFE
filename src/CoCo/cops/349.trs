@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  even(x) -> tt | double(y) == x
+  odd(x) -> ff | double(y) == x
+  double(0) -> 0
+  double(s(y)) -> s(s(z)) | double(y) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 7: E_even + R_double
+  doi: 10.1016/j.tcs.2012.09.005
+)

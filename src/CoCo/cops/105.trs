@@ -1,0 +1,8 @@
+(VAR x y z)
+(RULES
+  +(x,0)  -> x
+  +(x,s(y))  -> s(+(x,y))
+  +(+(x,y),z) -> +(x,+(y,z))
+  +(x,y) -> + (y,x)
+)
+(COMMENT addition + associative law + commutative law)

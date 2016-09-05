@@ -1,0 +1,23 @@
+(FUN
+  nil : natlist
+  cons : nat -> natlist -> natlist
+  append : natlist -> natlist -> natlist
+  map : (nat -> nat) -> natlist -> natlist
+)
+(VAR
+  x : nat
+  F : nat -> nat
+  h : nat
+  t : natlist
+  l : natlist
+  k : natlist
+  m : natlist
+)
+(RULES
+  append nil l -> l,
+  append (cons h t) l -> cons h (append t l),
+  append (append k l) m -> append k (append l m),
+  map (\x.F x) nil -> nil,
+  map (\x.F x) (cons h t) -> cons (F h) (map (\x.F x) t)
+)
+(COMMENT from "http://www.cs.vu.nl/~femke/ps/examples.ps")

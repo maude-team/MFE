@@ -1,0 +1,13 @@
+(CONDITIONTYPE ORIENTED)
+(VAR w x y z)
+(RULES
+  iadd(y) -> tp2(0, y)
+  iadd(s(z)) -> tp2(s(x), y) | iadd(z) == tp2(x, y)
+  imult(0) -> tp2(0, y)
+  imult(0) -> tp2(x, 0)
+  imult(s(z)) -> tp2(s(x), s(y)) | iadd(z) == tp2(w, y), imult(w) == tp2(x, s(y)) 
+)
+(COMMENT
+  \cite{NSS12}, R_2 pf Example 3.2
+  doi: 10.2168/LMCS-8(3:4)2012
+)

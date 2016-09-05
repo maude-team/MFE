@@ -1,0 +1,9 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  f(c(x),c(c(y))) -> a(a(x)) | c(f(x,y)) == c(a(b))
+  f(c(c(c(x))),y) -> a(y) | c(f(c(x),c(c(y)))) == c(a(a(b)))
+  a(x) -> b
+  a(x) -> f(x,x)
+)
+(COMMENT from http://www.trs.cm.is.nagoya-u.ac.jp/co3/index.html#NKYG15v1.2)

@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  add(x, 0) -> x
+  add(x, s(y)) -> s(z) | add(x, y) == z
+  oneThird(z) -> x | add(x, x) == y, add(x, y) == z
+  isTwoThird(y, z) -> x | add(x, x) == y, add(x, y) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 2: E_oneThird + R_add
+  doi: 10.1016/j.tcs.2012.09.005
+)

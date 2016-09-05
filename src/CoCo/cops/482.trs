@@ -1,0 +1,17 @@
+(FUN
+  compo : (o -> o) -> (o -> o) -> o -> o
+  apply : (o -> o) -> o -> o
+)
+(VAR
+  F : o -> o
+  G : o -> o
+  x : o
+  X : o
+  Z : o
+  y : o
+)
+(RULES
+  compo(\x. F(x), \y. G(y), Z) -> F(G(Z)),
+  apply(\x. F(x), X) -> F(X)
+)
+(COMMENT Example 9 from \cite{SK05})

@@ -1,0 +1,26 @@
+(FUN
+  altmap : (int -> int) -> list -> list
+  pls : int -> int -> int
+  mlt : int -> int -> int
+  nil : list
+  cons : int -> list -> list
+  + : int -> int -> int
+  * : int -> int -> int
+  2 : int
+)
+(VAR
+  F : int -> int
+  XS : list
+  X : int
+  Y : int
+  z : int
+)
+(RULES
+  altmap(\z.pls(z,Y),cons(X,XS)) -> cons(pls(X,Y),altmap(\z.mlt(z,Y),XS)),
+  altmap(\z.mlt(z,Y),cons(X,XS)) -> cons(mlt(X,Y),altmap(\z.pls(z,Y),XS)),
+  altmap(\z.F(z),nil) -> nil,
+  pls(X,Y) -> +(X,Y),
+  mlt(X,Y) -> *(X,Y),
+  pls(2,2) -> mlt(2,2)
+)
+(COMMENT Example 20 from \cite{SWS01})

@@ -1,0 +1,11 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  f(x) -> g(y) | x == y
+  a -> c
+  b -> c
+)
+(COMMENT
+  \cite{TO94}, Example 3
+  doi: 10.1007/3-540-60381-6_19
+)

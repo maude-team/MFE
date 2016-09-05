@@ -1,0 +1,24 @@
+(FUN
+  0 : nat
+  s : nat -> nat
+  avg : nat -> nat -> nat
+  check : nat -> nat
+  fun : (nat -> nat) -> nat
+  apply : nat -> nat -> nat
+)
+(VAR
+  x : nat
+  y : nat
+  F : nat -> nat
+)
+(RULES
+  avg (s x) y -> avg x (s y),
+  avg x (s (s (s y))) -> s (avg (s x) y),
+  avg 0 0 -> 0,
+  avg 0 (s 0) -> 0,
+  avg 0 (s (s 0)) -> s 0,
+  apply (fun (\x. F(x))) y -> F(check y),
+  check (s x) -> s (check x),
+  check 0 -> 0
+)
+(COMMENT Example 5 from \cite{FK11})

@@ -1,0 +1,9 @@
+(VAR x y z)
+(RULES
+  g(x,x,y) -> y
+  g(x,y,y) -> x
+  f(x,y,x,y,z) -> f(a,b,z,z,z)
+  a -> 0
+  b -> 0
+)
+(COMMENT from p.204 of \cite{Der97})

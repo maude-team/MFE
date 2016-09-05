@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z1 z2 rest)
+(RULES
+  cons(x, cons(y, rest)) -> cons(z1, cons(z2, rest)) | orient(x, y) == pair(z1, z2)
+  cons(x, cons(x, rest)) -> cons(x, rest)
+  orient(s(x), s(y)) -> pair(s(z1), s(z2)) | orient(x, y) == pair(z1, z2)
+  orient(s(x), 0) -> pair(0, s(x))
+)
+(COMMENT
+  \cite{G14}, example 36
+  PhD Thesis, not yet published
+)

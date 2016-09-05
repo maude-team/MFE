@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  f(x) -> g(k(x))
+  f(x) -> a
+  g(x) -> a
+  k(a) -> k(k(a))
+)
+(COMMENT Example 3.5.7 of \cite{Gra96thesis})

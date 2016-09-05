@@ -1,0 +1,6 @@
+(VAR x y z)
+(RULES
+  f(f(x,y),z) -> f(x,f(y,z))
+  f(x,1) -> x
+)
+(COMMENT Exercise 6.5{d} of \cite{BN98})

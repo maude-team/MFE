@@ -1,0 +1,9 @@
+(VAR x y)
+(RULES
+ f(x,x) -> f(g(x),g(x))
+ f(x,y) -> f(h(x),h(y))
+ g(x) -> p(x)
+ h(x) -> p(x)
+)
+(COMMENT Example 5.15)
+(COMMENT from the collection of \cite{SAT2013})

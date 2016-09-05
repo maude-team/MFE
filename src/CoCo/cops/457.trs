@@ -1,0 +1,18 @@
+(FUN
+  app : o -> o -> o
+  abs : (o -> o) -> o
+  or : o -> o -> o
+  tt : o
+)
+(VAR
+  x : o
+  y : o -> o
+  z : o
+)
+(RULES
+  app (abs (\x. y x)) z -> y z,
+  abs (\x. app z x) -> z,
+  or tt x -> tt,
+  or x tt -> tt
+)
+(COMMENT Example 3.1 of \cite{vO95})

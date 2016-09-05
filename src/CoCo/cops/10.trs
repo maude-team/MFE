@@ -1,0 +1,6 @@
+(VAR x)
+(RULES
+  f(g(f(x))) -> x
+  f(g(x)) -> g(f(x))
+)
+(COMMENT Exercise 6.5{a} of \cite{BN98})

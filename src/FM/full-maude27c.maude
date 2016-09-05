@@ -6311,6 +6311,11 @@ fmod EXT-QID-LIST is
   eq qidList2string('`[ QIL) = "[" + " " + qidList2string(QIL) .
   eq qidList2string('`] QIL) = "]" + " " + qidList2string(QIL) .
   eq qidList2string('`, QIL) = "," + " " + qidList2string(QIL) .
+  eq qidList2string('\s QIL) = " " + qidList2string(QIL) .
+  eq qidList2string('\t QIL) = " " + qidList2string(QIL) .
+  eq qidList2string('\o QIL) = " " + qidList2string(QIL) .
+  eq qidList2string('\b QIL) = " " + qidList2string(QIL) .
+  eq qidList2string('\n QIL) = " " + qidList2string(QIL) .
   eq qidList2string(QI QIL) = string(QI) + " " + qidList2string(QIL) [owise] .
   eq qidList2string(nil) = "" .
 

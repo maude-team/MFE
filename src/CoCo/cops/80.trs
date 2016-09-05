@@ -1,0 +1,8 @@
+(VAR )
+(RULES
+  a -> f(a,b)
+  f(a,b) -> f(b,a)
+)
+(COMMENT Example 1 of \cite{Tiw02}
+         Example 1 of \cite{DHLT90}
+)

@@ -1,0 +1,10 @@
+(VAR x y)
+(RULES
+  -(0,0) -> 0
+  -(s(x),0) -> s(x)
+  -(x,s(y)) -> -(d(x),y)
+  d(s(x)) -> x
+  -(s(x),s(y)) -> -(x,y)
+  -(d(x),y) -> -(x,s(y))
+)
+(COMMENT from Example 3 of \cite{OO04})

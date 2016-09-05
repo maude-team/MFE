@@ -1,0 +1,21 @@
+(FUN
+  0 : nat
+  s : nat -> nat
+  rec : (nat -> nat -> nat) -> nat -> nat -> nat
+  add : nat -> nat -> nat
+)
+(VAR
+  x : nat
+  y : nat
+  a : nat
+  F : nat -> nat -> nat
+  n : nat
+)
+(RULES
+  rec (\x y. F x y) a 0 -> a,
+  rec (\x y. F x y) a (s n) -> F n (rec (\x y. F x y) a n),
+  add a n -> rec (\x y. s y) a n,
+  add a 0 -> a,
+  add a (s n) -> s (add a n)
+)
+(COMMENT addition on natural numbers via recursor and directly)

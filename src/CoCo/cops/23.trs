@@ -1,0 +1,7 @@
+(VAR x y z)
+(RULES
+  from(x) -> :(x,from(s(x)))
+  sel(0,:(y,z)) -> y
+  sel(s(x),:(y,z)) -> sel(x,z)
+)
+(COMMENT Example 6 of \cite{GL06})

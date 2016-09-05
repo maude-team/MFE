@@ -1,0 +1,16 @@
+(FUN 
+  0 : nat
+  s : nat -> nat
+  sum : nat -> (nat -> nat) -> nat
+  a : nat -> nat -> nat
+)
+(VAR
+  i : nat
+  n : nat
+  F: nat -> nat
+)
+(RULES
+  sum 0 (\i. F i) -> F 0,
+  sum (s n) (\i. F i) -> a (sum n (\i. F i)) (F (s n))
+)
+(COMMENT from \cite{vdP96}, p. 6)

@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR l x y)
+(RULES
+  le(0, s(x)) -> true
+  le(x, 0) -> false
+  le(s(x), s(y))  -> le(x, y)
+  min(cons(x, nil)) -> x
+  min(cons(x, l)) -> x | le(x, min(l)) == true
+  min(cons(x, l)) -> min(l) | le(x, min(l)) == false
+  min(cons(x, l)) -> min(l) | min(l) == x
+)
+(COMMENT
+  \cite{KR91}, Example 5.1
+  doi: 10.1007/3-540-54317-1_80
+)

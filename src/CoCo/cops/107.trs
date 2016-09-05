@@ -1,0 +1,9 @@
+(VAR x)
+(RULES
+f(x) -> g(x,h(x))
+g(x,x) -> a
+b -> h(b)
+)
+(COMMENT
+Example 5.9 from [MH94]
+)

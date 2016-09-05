@@ -1,0 +1,9 @@
+(VAR x y z)
+(RULES
+  H(F(x,y)) -> F(H(R(x)),y)
+  F(x,K(y,z)) -> G(P(y),Q(z,x))
+  H(Q(x,y)) -> Q(x,H(R(y)))
+  Q(x,H(R(y))) -> H(Q(x,y))
+  H(G(x,y)) -> G(x,H(y))
+)
+(COMMENT from p.814 of \cite{Hue80})

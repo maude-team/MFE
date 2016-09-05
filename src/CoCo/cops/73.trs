@@ -1,0 +1,11 @@
+(VAR x)
+(RULES
+  f(g(g(x))) -> a
+  f(g(h(x))) -> b
+  f(h(g(x))) -> b
+  f(h(h(x))) -> c
+  g(x) -> h(x)
+  a -> b
+  b -> c
+)
+(COMMENT due to A.Middeldorp, R_1 in p.14 of \cite{Oku98})

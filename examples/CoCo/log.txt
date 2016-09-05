@@ -1,0 +1,131 @@
+MTT -> AProVE: 
+( VAR x y )    ( RULES   or-@osb@S@csb@-@osb@S@csb@ ( true ,  true ) -> true   or-@osb@S@csb@-@osb@S@csb@ ( x ,  y ) -> or-@osb@S@csb@-@osb@S@csb@ ( y ,  x )  )  
+
+AProVE -> MTT: 
+NO
+Term Rewriting System R:
+
+   [x, y]
+   or-`[S`]-`[S`](true, true) -> true
+   or-`[S`]-`[S`](x, y) -> or-`[S`]-`[S`](y, x)
+
+Termination of R to be shown.
+
+
+
+
+
+   R     ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   or-`[S`]-`[S`](true, true) -> true
+
+where the Polynomial interpretation:
+POL(or-`[S`]-`[S`](x_1, x_2)) = 1 + x_1 + x_2
+POL(true) = 0
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->Non-Overlappingness Check
+
+
+
+This program has no overlaps, so it is sufficient to show innermost termination. 
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->NOC
+
+           ->TRS3
+             ->Dependency Pair Analysis
+
+
+
+R contains the following Dependency Pairs: 
+
+
+   OR-@OSB@S@CSB@-@OSB@S@CSB@(x, y) -> OR-@OSB@S@CSB@-@OSB@S@CSB@(y, x)
+
+Furthermore, R contains one SCC.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->NOC
+
+           ->TRS3
+             ->DPs
+             ...
+
+               ->DP Problem 1
+                 ->Usable Rules (Innermost)
+
+
+Dependency Pair:
+OR-@OSB@S@CSB@-@OSB@S@CSB@(x, y) -> OR-@OSB@S@CSB@-@OSB@S@CSB@(y, x)
+Rule:
+
+   or-`[S`]-`[S`](x, y) -> or-`[S`]-`[S`](y, x)
+
+Strategy:
+innermost
+
+
+As we are in the innermost case, we can delete all 1 non-usable-rules.
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->NOC
+
+           ->TRS3
+             ->DPs
+             ...
+
+               ->DP Problem 2
+                 ->Non Termination
+
+
+Dependency Pair:
+OR-@OSB@S@CSB@-@OSB@S@CSB@(x, y) -> OR-@OSB@S@CSB@-@OSB@S@CSB@(y, x)
+Rule:
+none
+Strategy:
+innermost
+
+
+Found an infinite P-chain over R:
+
+P =
+   OR-@OSB@S@CSB@-@OSB@S@CSB@(x, y) -> OR-@OSB@S@CSB@-@OSB@S@CSB@(y, x)
+
+R = none
+s = OR-@OSB@S@CSB@-@OSB@S@CSB@(y', y')
+ evaluates to  t =OR-@OSB@S@CSB@-@OSB@S@CSB@(y', y')
+
+Thus, s starts an infinite chain.
+
+Non-Termination of R could be shown.
+
+Duration: 
+0:00 minutes
+
+
+

@@ -1,0 +1,10 @@
+(VAR n x y xs ys)
+(RULES
+eq(n,xs,xs) -> T
+eq(s(n),c(x, xs),c(x,ys)) -> eq(n, xs, ys)
+nats -> c(0, inc(nats))
+inc(c(x,xs)) -> c(s(x), inc(xs))
+)
+(COMMENT Example 10 from [KH12]
+doi: http://dx.doi.org/10.1007/978-3-642-28717-6_21
+)

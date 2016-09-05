@@ -1,0 +1,13 @@
+(CONDITIONTYPE ORIENTED)
+(VAR a b c)
+(RULES
+  App(App(App(S, a), b), c) -> App(App(a, c), App(b, c)) | a == I, b == I, c == I
+  App(App(K, a), b) -> a | a == I, b == I
+  App(I, a) -> a | a == I
+)
+(COMMENT
+  \cite{BK86}, Example 2.3.ii, (Trivial combinatory logic)
+  doi: 10.1016/0022-0000(86)90033-4
+  see also:
+  \cite{TeReSe}, Example 4.11.8
+)

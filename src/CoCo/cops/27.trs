@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  f(x,x) -> h(x,x)
+  f(g(x),x) -> a
+  c -> g(c)
+  h(g(x), x) -> a
+)
+(COMMENT Example 1 of \cite{GOO98})

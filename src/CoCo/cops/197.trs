@@ -1,0 +1,8 @@
+(VAR x y z)
+(RULES
+  or(T,x) -> T
+  or(x,F) -> x
+  or(or(x,y),z) -> or(x,or(y,z))
+  or(x,y) -> or(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

@@ -1,0 +1,8 @@
+(VAR )
+(RULES
+  b -> a
+  b -> c
+  c -> b
+  c -> d
+)
+(COMMENT Example 3.3.1 of \cite{Gra96thesis})

@@ -1,0 +1,7 @@
+(VAR )
+(RULES
+  a -> b
+  f(a) -> g(a)
+  f(b) -> g(b)
+)
+(COMMENT Example 5.1 of \cite{Toy81})

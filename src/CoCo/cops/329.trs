@@ -1,0 +1,18 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y xs ys zs)
+(RULES
+  le(0, x) -> true
+  le(s(x), 0) -> false
+  le(s(x), s(y)) -> le(x, y)
+  app(nil, x) -> x
+  app(cons(x, xs), ys) -> cons(x, app(xs, ys))
+  split(x, nil) -> pair(nil, nil)
+  qsort(nil) -> nil
+  split(x, cons(y, ys)) -> pair(xs, cons(y, zs)) | split(x, ys) == pair(xs, zs), le(x, y) == true
+  split(x, cons(y, ys)) -> pair(cons(y, xs), zs) | split(x, ys) == pair(xs, zs), le(x, y) == false
+  qsort(cons(x, xs)) -> app(qsort(ys), cons(x, qsort(zs))) | split(x, xs) == pair(ys, zs)
+)
+(COMMENT
+  \cite{O02}, p. 205 (Quicksort)
+  doi: 10.1007/978-1-4757-3661-8
+)

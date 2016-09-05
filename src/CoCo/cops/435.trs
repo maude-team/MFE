@@ -1,0 +1,16 @@
+(VAR
+  x : nat -> nat
+  y : nat
+  z : nat
+  Z : (nat -> nat) -> nat -> nat
+)
+(FUN
+  h : nat -> nat
+  0 : nat
+  g : ((nat -> nat) -> nat -> nat) -> nat
+)
+(RULES
+  h 0 -> g (\x y. x (h y)),
+  g (\x y. Z (\z. (x z)) y) -> Z (\z. 0) 0
+)
+(COMMENT from \cite{Kop12}, p 50)

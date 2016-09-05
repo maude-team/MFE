@@ -1,0 +1,14 @@
+(select tool CoCo .)
+
+load cops/4.trs
+
+trace include FULL-MAUDE .
+set trace on .
+set trace select on .
+trace select ---- $processCRCcheck 
+             ---- confluenceCheck
+             confluenceCheckCoCo
+             .
+
+(cocoload .)
+quit

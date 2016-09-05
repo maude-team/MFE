@@ -1,0 +1,7 @@
+(CONDITIONTYPE ORIENTED)
+(VAR u v x y z)
+(RULES
+  last(cons(x, y)) -> x | y == nil
+  last(cons(x, y)) -> z | y == cons(u, v), last(y) == z
+)
+(COMMENT Question: Can "infeasibility" be adapted to cover the resulting conditional critical pairs?)

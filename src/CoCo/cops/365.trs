@@ -1,0 +1,14 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  s(p(x)) -> x
+  p(s(x)) -> x
+  pos(0) -> false
+  pos(s(0)) -> true
+  pos(s(x)) -> true | pos(x) == true
+  pos(p(x)) -> false | pos(x) == false
+)
+(COMMENT
+  \cite{G14}, example 2
+  PhD Thesis, not yet published
+)

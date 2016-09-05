@@ -1,0 +1,7 @@
+(VAR x y z)
+(RULES
+  f(x,g(x),y) -> p(h(x),y)
+  f(x,y,z) -> f(x,g(x),z)
+  g(x) -> h(x)
+)
+(COMMENT from the collection of \cite{ATU2014})

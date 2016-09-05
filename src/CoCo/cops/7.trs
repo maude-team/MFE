@@ -1,0 +1,5 @@
+(VAR x)
+(RULES
+  f(f(x)) -> g(x)
+)
+(COMMENT Example 6.2.7 of \cite{BN98})

@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  pin(x) -> pout(g(x))
+  pin(x) -> pout(f(y)) | pin(x) == pout(g(y))
+)
+(COMMENT
+  \cite{O01b}, R_P of Example 5.1
+  doi: 10.1007/s002000100064
+)

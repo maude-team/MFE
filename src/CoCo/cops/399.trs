@@ -1,0 +1,14 @@
+(VAR x y z)
+(RULES
+app(x,y) -> app(y,x)
+app(app(x,y),z) -> app(x,app(y,z))
+app(x,app(y,z)) -> app(app(x,y),z)
+app(x,y) -> app(app(x,y),z)
+)
+(COMMENT
+Example 22 from
+Vincent van Oostrom
+Modularity of Confluence
+IJCAR 2008
+doi: 10.1007/978-3-540-71070-7_31
+)

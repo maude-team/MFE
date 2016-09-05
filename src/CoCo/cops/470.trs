@@ -1,0 +1,16 @@
+(FUN
+  P : o -> (o -> o) -> (o -> o) -> o
+  L : o -> o
+  R : o -> o
+)
+(VAR
+  Z : o
+  x : o
+  Z' : o -> o
+  Z'' : o -> o
+)
+(RULES
+  P (L Z) (\x. Z'(x)) (\x. Z''(x)) -> Z'(Z),
+  P (R Z) (\x. Z'(x)) (\x. Z''(x)) -> Z''(Z)
+)
+(COMMENT from \cite{KvOvR93})

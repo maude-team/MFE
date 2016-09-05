@@ -1,0 +1,6 @@
+(VAR x)
+(RULES
+  f(x,x) -> a
+  f(x,g(x)) -> b
+)
+(COMMENT Exercise 6.5{c} of \cite{BN98})

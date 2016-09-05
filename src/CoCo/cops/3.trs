@@ -1,0 +1,9 @@
+(VAR x y)
+(RULES
+  f(a(x), x) -> f(x,a(x))
+  f(b(x), x) -> f(x,b(x))
+  g(b(x),y) -> g(a(a(x)),y) 
+  g(c(x),y) -> y
+  a(x) -> b(x) 
+)
+(COMMENT Example 1 of cite{AYT09})

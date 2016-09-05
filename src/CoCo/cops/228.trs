@@ -1,0 +1,7 @@
+(VAR x)
+(RULES
+ f(x,x) -> f(g(x),g(x))
+ a(g(x),x) -> f(x,x)
+ b(x,g(x)) -> g(x)
+)
+(COMMENT from the collection of \cite{SAT2013})

@@ -1,0 +1,23 @@
+(FUN
+  f1 : o -> o
+  f2 : o -> o -> o
+  f3 : o -> o
+  a : o
+  g1 : (o -> o) -> o
+  hide : (o -> o) -> o
+  unhide : o -> o
+  g2 : (o -> o) -> o
+)
+(VAR
+  X : o
+  x : o
+  F : o -> o
+)
+(RULES
+  f1(X) -> f2(X, X),
+  f2(a, X) -> f3(X),
+  g1(\x. f3(F(x))) -> F(hide(\x. f3(F(x)))),
+  unhide(hide(\x. F(x))) -> g2(\x. F(x)),
+  g2(\x. f3(F(x))) -> g1(\x. f1(F(x)))
+)
+(COMMENT from \cite{Kop12}, p 50)

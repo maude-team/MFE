@@ -1,0 +1,12 @@
+(VAR x y z)
+(RULES
+  +(x,0)  -> x
+  +(x,s(y))  -> s(+(x,y))
+  +(0,y)  -> y
+  +(s(x),y)  -> s(+(x,y))
+  sum(0) -> 0
+  sum(s(x)) -> +(s(x),sum(x))
+  +(+(x,y),z) -> +(x,+(y,z))
+  +(x,y) -> + (y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

@@ -1,0 +1,21 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  a -> c
+  a -> d
+  b -> c
+  b -> d
+  c -> e
+  c -> l
+  d -> m
+  k -> l
+  k -> m
+  h(x, x) -> g(x, x, f(k))
+  g(d, x, x) -> A
+  A -> h(f(a), f(b))
+  f(x) -> x | x == e
+)
+(COMMENT
+  \cite{SG10}, example 3
+  doi: 10.1016/j.jlap.2009.08.001
+)

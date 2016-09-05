@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+ f(x,x) -> g(x)
+ g(h(x)) -> h(g(x))
+ a(x,y) -> a(h(x),y)
+)
+(COMMENT from the collection of \cite{SAT2013})

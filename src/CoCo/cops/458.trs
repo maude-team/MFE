@@ -1,0 +1,17 @@
+(FUN
+  app : o -> o -> o
+  abs : (o -> o) -> o
+  bot : o
+)
+(VAR
+  x : o
+  y : o
+  z : o -> o
+)
+(RULES
+  app (abs (\x. z x)) y -> z y,
+  abs (\x. app y x) -> y,
+  app bot x -> bot,
+  abs (\x. bot) -> bot
+)
+(COMMENT Example 25 from \cite{vO97}.)

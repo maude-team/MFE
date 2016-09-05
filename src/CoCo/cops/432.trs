@@ -1,0 +1,21 @@
+(FUN 
+  abs : (T -> T) -> T
+  app : T -> T -> T
+  p1 : T -> T
+  p2 : T -> T
+  pair : T -> T -> T
+)
+(VAR
+  x : T
+  x1 : T
+  x2 : T
+  Y : T
+  Z : T -> T
+)
+(RULES
+  app(abs(\x.Z x),Y) -> Z(Y),
+  p1(pair(x1,x2)) -> x1,
+  p2(pair(x1,x2)) -> x2,
+  pair(p1(x),p2(x)) -> x
+)
+(COMMENT from "http://www.cs.vu.nl/~femke/ps/examples.ps")

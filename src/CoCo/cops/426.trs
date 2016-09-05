@@ -1,0 +1,14 @@
+(FUN 
+  abs : (term -> term) -> term
+  app : term -> term -> term
+)
+(VAR
+  x : term
+  S : term
+  F : term -> term
+)
+(RULES
+  app(abs(\x.F x),S) -> F(S),
+  abs(\x.app(S,x)) -> S
+)
+(COMMENT untyped lambda calculus with "->_beta" and "->_eta")

@@ -1,0 +1,30 @@
+(FUN
+  0 : term
+  s : term -> term
+  succ : term
+  pred : term
+  tt : term
+  ff : term
+  iszero : term
+  if : term
+  Y : term
+  app : term -> term -> term
+  abs : (term -> term) -> term
+)
+(VAR
+  m : term
+  x : term
+  y : term
+  z : term -> term
+)
+(RULES
+  app succ m -> s m,
+  app pred (s m) -> m,
+  app iszero 0 -> tt,
+  app iszero (s m) -> ff,
+  app (app (app if tt) x) y -> x,
+  app (app (app if ff) x) y -> y,
+  app (abs (\x. z x)) y -> z y,
+  app Y x -> app x (app Y x)
+)
+(COMMENT Plotkin's PCF, adapted from Example 3.4.22 from \cite{vO94}.)

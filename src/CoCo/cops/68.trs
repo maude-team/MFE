@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  b(w(x)) -> w(w(w(b(x))))
+  w(b(x)) -> b(x)
+  b(b(x)) -> w(w(w(w(x))))
+  w(w(x)) -> w(x)
+)
+(COMMENT Exercise 4.2.2 of \cite{Ohl02})

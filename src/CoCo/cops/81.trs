@@ -1,0 +1,9 @@
+(VAR )
+(RULES
+  g(f(a)) -> f(g(f(a)))
+  g(f(a)) -> f(f(a))
+  f(f(a)) -> f(a)
+)
+(COMMENT Example 2 of \cite{Tiw02}
+         Example on p. 188 of \cite{DHLT90}
+)

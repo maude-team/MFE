@@ -1,0 +1,42 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod CoCoModule is
+  sorts S .
+  ops true false : -> S .
+  op not : S -> S .
+  var x : S .
+  ceq not(x) = false if x := true .
+  ceq not(x) = true if x := false .
+ endfm)
+ 
+(select tool CRC .)
+
+set print conceal off .
+set trace on .
+set trace select on .
+trace select confluenceCheck .
+
+(ccr .)
+
+fmod 'CoCoModule is
+  including 'TRUTH-VALUE .
+  sorts 'S .
+  none
+  (op 'false : nil -> 'S [none] .
+  op 'not : 'S -> 'S [none] .)
+  op 'true : nil -> 'S [none] .
+  none
+  ceq 'not['x:S] = 'false.S if 'x:S := 'true.S [none] .
+  ceq 'not['x:S] = 'true.S if 'x:S := 'false.S [none] .
+endfm
+
+fmod 'CoCoModule is
+  including 'TRUTH-VALUE .
+  sorts 'S .
+  none
+  none
+  none
+  ceq 'not['x:S] = 'false.S if 'x:S := 'true.S [none] .
+  ceq 'not['x:S] = 'true.S if 'x:S := 'false.S [none] .
+endfm

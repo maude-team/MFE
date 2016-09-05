@@ -1,0 +1,9 @@
+(VAR x y z)
+(RULES
+  +(0,y)  -> y
+  +(s(x),y) -> s(+(x,y))
+  dbl(x) -> +(x,x)
+  +(+(x,y),z) -> +(x,+(y,z))
+  +(x,y) -> + (y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

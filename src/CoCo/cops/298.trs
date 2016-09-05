@@ -1,0 +1,14 @@
+(CONDITIONTYPE JOIN)
+(VAR x y z)
+(RULES
+  F(x, y) -> x | x == z, z == y
+  F(x, y) -> y | x == z, z == y
+  b -> a
+  b -> c
+  c -> b
+  c -> d
+)
+(COMMENT
+  \cite{M93}, Example 3.23
+  doi: 10.1006/inco.1993.1027
+)

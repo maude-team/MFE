@@ -1,0 +1,14 @@
+(VAR x y)
+(RULES
+  f(u(O), u(y)) -> A
+  f(v(x), v(O)) -> B
+  O -> u(O)
+  O -> v(O)
+  u(x) -> x
+  v(x) -> x
+  f(x, y) -> f(x, u(y))
+  f(x, y) -> f(v(x), y)
+)
+(COMMENT
+  Example 4 from [F12-IWC]. not confluent.
+)

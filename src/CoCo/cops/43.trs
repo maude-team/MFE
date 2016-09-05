@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  F(x) -> A
+  F(x) -> G(F(x))
+  G(F(x)) -> F(H(x))
+  G(F(x)) -> B
+)
+(COMMENT from p.811 of \cite{Hue80})

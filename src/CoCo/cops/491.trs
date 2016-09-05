@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  f(g(x)) -> b | x == a
+  g(x) -> c | x == c
+)
+(COMMENT
+  IWC 2015, Infeasible Conditional Critical Pairs
+  motivating example
+)

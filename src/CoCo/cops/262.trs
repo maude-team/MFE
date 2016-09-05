@@ -1,0 +1,11 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z z')
+(RULES
+  plus(0,y) -> y
+  plus(s(x), y) -> plus(x, s(y))
+  f(x, y) -> z | plus(x, y) == plus(z, z')
+)
+(COMMENT
+  \cite{ALS94}, Example 4.1.a
+  doi: 10.1007/3-540-58216-9_40
+)

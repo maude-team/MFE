@@ -1,0 +1,10 @@
+(VAR )
+(RULES
+  b -> a
+  b -> c
+  c -> h(b)
+  c -> d
+  a -> h(a)
+  d -> h(d)
+)
+(COMMENT Example 3 of \cite{GL06})

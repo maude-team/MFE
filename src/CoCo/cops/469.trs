@@ -1,0 +1,19 @@
+(FUN
+  all : (term -> form) -> form
+  and : form -> form -> form
+  or : form -> form -> form
+)
+(VAR
+  P : form
+  Q : form
+  P' : term -> form
+  Q' : term -> form
+  x : term
+)
+(RULES
+  all (\x. P) -> P,
+  all (\x. and (P' x) (Q' x)) -> and (all P') (all Q'),
+  all (\x. or (P' x) Q) -> or (all P') Q,
+  all (\x. or P (Q' x)) -> or P (all Q')
+)
+(COMMENT from \cite{Nip91})

@@ -1,0 +1,13 @@
+(CONDITIONTYPE ORIENTED)
+(VAR v w y z xs xs' ys')
+(RULES
+  ssp(nil, 0) -> nil
+  ssp(cons(y, ys'), v) -> xs | ssp(ys', v) == xs
+  ssp(cons(y, ys'), v) -> cons(y, xs') | sub(v, y) == w, ssp(ys', w) == xs'
+  sub(z, 0) -> z
+  sub(s(v), s(w)) -> z | sub(v, w) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 9: transformed R_ssp
+  doi: 10.1016/j.tcs.2012.09.005
+)

@@ -1,0 +1,7 @@
+(VAR x)
+(RULES
+  I(x) -> I(J(x))
+  J(x) -> J(K(J(x)))
+  H(I(x)) -> K(J(x))
+  J(x) -> K(J(x))
+)

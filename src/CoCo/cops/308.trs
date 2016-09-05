@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  not(x) -> false | x == true
+  not(x) -> true | x == false
+)
+(COMMENT
+  Example in Section 5 of
+  Thomas Sternagel and Aart Middeldorp
+  Conditional Confluence (System Description)
+  RTATLCA 2014
+)

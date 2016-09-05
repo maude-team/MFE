@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+  or(x,T) -> T
+  or(x,F) -> x
+  or(x,y) -> or(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

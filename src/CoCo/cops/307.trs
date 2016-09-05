@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR W X Y Z)
+(RULES
+  plus(0, X) -> X
+  plus(s(X), Y) -> plus(X, s(Y))
+  fib(0) -> pair(s(0), 0)
+  fib(s(X)) -> pair(W, Y) | fib(X) == pair(Y, Z), plus(Y, Z) == W
+)
+(COMMENT
+  \cite{M97}, Example 4.2
+  http://www.w3.org/People/Massimo/papers/MIT-LCS-TM-405.pdf
+)

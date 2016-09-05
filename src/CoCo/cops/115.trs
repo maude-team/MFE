@@ -1,0 +1,46 @@
+(VAR)
+(RULES
+  a1 -> b1
+  a1 -> c1
+  b1 -> b2
+  c1 -> c2
+  a2 -> b2
+  a2 -> c2
+  b2 -> b3
+  c2 -> c3
+  a3 -> b3
+  a3 -> c3
+  b3 -> b4
+  c3 -> c4
+  a4 -> b4
+  a4 -> c4
+  b4 -> b5
+  c4 -> c5
+  a5 -> b5
+  a5 -> c5
+  b5 -> b6
+  c5 -> c6
+  a6 -> b6
+  a6 -> c6
+  b6 -> b7
+  c6 -> c7
+  a7 -> b7
+  a7 -> c7
+  b7 -> b8
+  c7 -> c8
+  a8 -> b8
+  a8 -> c8
+  b8 -> b9
+  c8 -> c9
+  a9 -> b9
+  a9 -> c9
+  b9 -> b10
+  c9 -> c10
+  a10 -> b11
+  b10 -> b11
+  c10 -> b11
+)
+(COMMENT
+Example 13 {R_10} from [HM11]:
+doi: http://dx.doi.org/10.1007/s10817-011-9238-x
+)

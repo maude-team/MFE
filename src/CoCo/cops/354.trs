@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  pos(s(0)) -> true
+  pos(0) -> false
+  pos(s(x)) -> true | pos(x) == true
+  pos(p(x)) -> false | pos(x) == false
+)
+(COMMENT
+  \cite{BN98}, 11.3
+  http://www21.in.tum.de/~nipkow/TRaAT/
+)

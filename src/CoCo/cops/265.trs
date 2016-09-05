@@ -1,0 +1,13 @@
+(CONDITIONTYPE JOIN)
+(VAR x y z)
+(RULES
+  App(App(App(S, x), y), z) -> App(App(x, z), App(y, z))
+  App(App(K, x), y) -> x
+  App(I, x) -> y
+  D(x, y) -> E | x == y
+)
+(COMMENT
+  typo: Corrected version is Cops #402
+  \cite{BK86}, Example 2.3.iii
+  doi: 10.1016/0022-0000(86)90033-4
+)

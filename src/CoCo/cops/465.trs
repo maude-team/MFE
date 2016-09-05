@@ -1,0 +1,20 @@
+(FUN
+  abs : (term -> term) -> term
+  app : term -> term -> term  
+)
+(VAR
+  x : term
+  y : term
+  S : term
+  U : term
+  T : term -> term 
+  M : term -> term -> term
+)
+(RULES
+  app (abs (\x. T x)) S -> T S,
+  app (abs (\y. (abs (\x. M y x)))) S -> abs (\x. (app (abs (\y. M y x)) S)),
+  app (app (abs (\x. T x)) S) U -> app (abs (\x. (app (T x) U))) S
+  
+)
+(COMMENT Untyped lambda-calculus with (terminating) Regnier's sigma reduction.
+  See Regnier, Une equivalence sur les lambda-termes, TCS 126(2), 1994)

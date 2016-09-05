@@ -1,0 +1,11 @@
+(VAR x y)
+(RULES
+  x -> f(x)
+  y -> g(y)
+)
+(COMMENT
+Example 2 from 
+Julian Nagele and Rene Thiemann 
+Certification of Confluence Proofs using CeTA 
+IWC 2014
+)

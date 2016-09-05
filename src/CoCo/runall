@@ -1,0 +1,5 @@
+for i in cops/*
+do
+	echo "cops/" $i
+	./run $i
+done

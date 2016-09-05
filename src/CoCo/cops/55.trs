@@ -1,0 +1,8 @@
+(VAR x y z)
+(RULES
+  Ap(Ap(Ap(S,x),y),z) -> Ap(Ap(x,z),Ap(y,z))
+  Ap(Ap(K,x),y) -> x
+  Ap(I,x) -> x
+  Dh(z,z) -> z
+)
+(COMMENT from p.246 of \cite{Klop80})

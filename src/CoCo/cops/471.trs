@@ -1,0 +1,16 @@
+(FUN
+  F : o -> o -> o -> o
+  C : o
+  g : (o -> o -> o) -> o
+)
+(VAR
+  x : o
+  y : o
+  Z : o -> o -> o
+)
+(RULES
+  g (\x y. F(x, y, Z(x, y))) -> C,
+  g (\x y. F(Z(x, y), x, y)) -> C,
+  g (\x y. F(y, Z(x, y), x)) -> C
+)
+(COMMENT from \cite{KvOvR93})

@@ -1,0 +1,12 @@
+(RULES
+  a -> b
+  a -> f(a)
+  b -> f(f(b))
+  f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(
+  f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(
+  f(b)
+  )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -> b
+)
+(COMMENT
+  R_65 as defined in Section 4, [F12-RTA]
+)

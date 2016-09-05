@@ -1,0 +1,5 @@
+(VAR x y)
+(RULES
+ +(x,y) -> +(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

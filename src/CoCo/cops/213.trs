@@ -1,0 +1,9 @@
+(RULES
+  a -> b
+  a -> f(a)
+  b -> f(f(b))
+  f(f(f(b))) -> b
+)
+(COMMENT
+  R' from Example 3.1 from [F12-RTA]
+)

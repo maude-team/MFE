@@ -1,0 +1,27 @@
+(VAR R T U V W)
+(RULES
+.(R,.(T,U)) -> .(.(R,T),U)
+.(R,id) -> R
+.(id,R) -> R
+and(id,id) -> id
+sub(id,id) -> id
+.(and(R,T),and(U,V)) -> and(.(R,U),.(T,V))
+.(sub(R,T),sub(U,V)) -> sub(.(U,R),.(T,V))
+.(and(R,T),w1) -> .(w1,R)
+.(and(R,T),w2) -> .(w2,T)
+.(R,c) -> .(c,and(R,R))
+.(c,w1) -> id
+.(c,w2) -> id
+.(R,i) -> .(i,sub(id,and(R,id)))
+.(and(.(i,sub(id,R)),T),e) -> .(and(id,T),R)
+.(.(W,and(R,T)),and(U,V)) -> .(W,and(.(R,U),.(T,V)))
+.(.(W,sub(R,T)),sub(U,V)) -> .(W,sub(.(U,R),.(T,V)))
+.(.(W,and(R,T)),w1) -> .(.(W,w1),R)
+.(.(W,and(R,T)),w2) -> .(.(W,w2),T)
+.(and(i,R),e) -> and(id,R)
+.(.(W,and(i,R)),e) -> .(W,and(id,R))
+.(.(W,and(.(i,sub(id,R)),T)),e) -> .(.(W,and(id,T)),R)
+)
+(COMMENT Rules of Fig. 3 and Fig. 4 of \cite{BK08}
+doi: http://dx.doi.org/10.1007/978-3-540-89439-1_34
+)

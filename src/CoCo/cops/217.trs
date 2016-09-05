@@ -1,0 +1,9 @@
+(VAR x)
+(RULES
+  f(x,x) -> a
+  c -> h(c,g(c))
+  h(g3(x), g1(g2(x)))-> f(x,h(x,g(x)))
+)
+(COMMENT R4 in Example 2 of \cite{GOO98})
+(COMMENT revision of cops 28.trs, which is commented 
+as Example 2 of \cite{GOO98} but incorrect.)

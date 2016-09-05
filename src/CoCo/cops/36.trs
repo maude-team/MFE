@@ -1,0 +1,7 @@
+(VAR x)
+(RULES
+  f(a) -> f(f(a))
+  a -> b
+  f(x) -> f(b)
+)
+(COMMENT Example 9 of \cite{Gra96caap})

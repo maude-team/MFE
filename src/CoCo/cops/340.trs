@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x' x'' x y' y y'')
+(RULES
+  f(x', x'') -> g(x) | x' == x, x'' == x
+  f(y', h(y'')) -> g(y) | y' == y, y'' == y
+)
+(COMMENT
+  \cite{TO94}, Example 2
+  doi: 10.1007/3-540-60381-6_19
+)

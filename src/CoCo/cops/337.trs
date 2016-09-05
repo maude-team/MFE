@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y ys)
+(RULES
+  lt(x,0) -> false
+  lt(0,s(y)) -> true
+  lt(s(x),s(y)) -> lt(x,y)
+  cons(x,cons(y,ys)) -> cons(y,cons(x,ys)) | lt(x,y) == true
+)
+(COMMENT
+  \cite{SR06}, Example on p. 27 (Bubble-sort)
+  doi: 10.1007/11805618_3
+)

@@ -1,0 +1,9 @@
+(VAR x)
+(RULES
+  f(f(f(f(x)))) -> f(f(f(g(x,f(x)))))
+  f(x) -> g(x,f(x))
+)
+(COMMENT
+The first rule is redundant; it can be simulated by the second rule.
+Confluent by feeble orthogonality (van Oostrom) or Okui's simultaneous critical pair criterion.
+)

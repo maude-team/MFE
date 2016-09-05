@@ -1,0 +1,11 @@
+(CONDITIONTYPE SEMI-EQUATIONAL)
+(VAR x y)
+(RULES
+  F(x) -> F(A) | x == B
+  or(x, y) -> x
+  or(x, y) -> y
+)
+(COMMENT
+  \cite{M93}, Example 4.32
+  doi: 10.1006/inco.1993.1027
+)

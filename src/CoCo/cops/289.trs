@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  App(App(App(S, x), y), z) -> App(App(x, z),App(y, z))
+  App(App(K, x), y) -> x
+  App(I, x) -> x
+  App(App(App(C, T), x), y) -> x
+  App(App(App(C, F), x), y) -> y
+  App(App(App(C, z), x), y) -> x | x == y
+  App(App(App(C, z), x), y) -> y   | x == y
+)
+(COMMENT
+  \cite{KV90}, CL-pc^L of Table 2.3
+  doi: 10.1007/3-540-54317-1_79
+)

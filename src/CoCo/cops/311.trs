@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  gcd(z, y) -> gcd(x, y) | iadd(z) == tp2(x, y)
+  gcd(y, z) -> gcd(x, y) | iadd(z) == tp2(x, y)
+  gcd(x, 0) -> x
+  gcd(0, x) -> x
+  iadd(y) -> tp2(0, y)
+  iadd(s(z)) -> tp2(s(x), y) | iadd(z) == tp2(x, y)
+  iadd(add(x, y)) -> tp2(x, y)
+)
+(COMMENT
+  \cite{N04}, System R_28, p. 138
+  http://www.sakabe.nuie.nagoya-u.ac.jp/~nishida/DB/pdf/nishida04phdthesis.pdf
+)

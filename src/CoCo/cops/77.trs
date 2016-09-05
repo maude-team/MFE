@@ -1,0 +1,17 @@
+(VAR x y z)
+(RULES
+   +(0,x) -> x
+   +(-(x),x) -> 0
+   +(+(x,y),z) -> +(x,+(y,z))
+   +(x,y) -> +(y,x)
+   -(0) -> 0
+   -(-(x)) -> x
+   -(+(x,y)) -> +(-(x),-(y))
+   *(1,x) -> x
+   *(x,+(y,z)) -> +(*(x,y),*(x,z))
+   *(*(x,y),z) -> *(x,*(y,z))
+   *(x,y) -> *(y,x)
+   *(x,0) -> 0
+   *(x,-(y)) -> -(*(x,y))
+)
+(COMMENT Theory of Commutative Ring with Unit from \cite{PS81})

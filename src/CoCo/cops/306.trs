@@ -1,0 +1,12 @@
+(CONDITIONTYPE JOIN)
+(VAR x)
+(RULES
+  A -> B
+  A -> C
+  B -> B
+  C -> C | B == C
+)
+(COMMENT
+  \cite{M93}, Example 6.1
+  doi: 10.1006/inco.1993.1027
+)

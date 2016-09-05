@@ -1,0 +1,5 @@
+MAYBE
+The specification has been proven non-terminating using AProVE
+The following critical pairs must be proved joinable: 
+
+   cp  CoCoModule3      x:S      =  f ( x:S , g ( y:S ) ) .      cp  CoCoModule6      F ( h ( x:S ) , x:S )      =  F ( x:S , g ( x:S ) ) .   

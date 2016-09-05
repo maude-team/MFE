@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR n r x xs y q)
+(RULES
+  filter(n,r,nil) -> pair(mo,nil)
+  filter(n,r,cons(x,xs)) -> pair(x,xs) | eq(div(x,n),pair(q,r)) == true
+  filter(n,r,cons(x,xs)) -> pair(y,cons(x,ys)) | filter(n,r,xs) == pair(y,ys), eq(div(x,n),pair(q,r)) == false
+)(COMMENT
+  \cite{SMI95}, p. 13
+  doi: 10.1007/3-540-59200-8_56
+)

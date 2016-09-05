@@ -1,0 +1,16 @@
+(CONDITIONTYPE SEMI-EQUATIONAL)
+(VAR x y)
+(RULES
+ s(p(x)) -> x
+ p(s(x)) -> x
+ lte(s(x), y) -> lte(x, p(y))
+ lte(p(x), y) -> lte(x, s(y))
+ lte(0, 0) -> T
+ lte(0, p(0)) -> F
+ lte(0, s(x)) -> T | lte(0, x) == T
+ lte(0, p(x)) -> F | lte(0, x) == F
+)
+(COMMENT
+  \cite{K84}, Example on page 188
+  doi: 10.1016/0304-3975(84)90087-2
+)

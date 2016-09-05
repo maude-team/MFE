@@ -20971,7 +20971,8 @@ mod FULL-MAUDE is
             db : initialDatabase,
             input : nilTermList, output : nil, 
             default : 'CONVERSION >,
-         ('\n '\t '\s '\s '\s '\s string2qidList(banner) '\n)] .
+         nil ---- ('\n '\t '\s '\s '\s '\s string2qidList(banner) '\n)
+         ] .
 
 *** When some text has been introduced in the loop, the first argument of the
 *** operator \verb~[_,_,_,]~ is different from \texttt{nil}, and we can use

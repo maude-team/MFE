@@ -1,0 +1,6 @@
+(VAR x)
+(RULES
+  W(B(x)) -> W(x)
+  B(I(x)) -> J(x)
+  W(I(x)) -> W(J(x))
+)

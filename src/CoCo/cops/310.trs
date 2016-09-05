@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  gcd(add(x, y), y) -> gcd(x, y)
+  gcd(y, add(x, y)) -> gcd(x, y)
+  gcd(x, 0) -> x
+  gcd(0, x) -> x
+  gcd(x, y) -> gcd(y, x) | leq(y, x) == false
+  add(0, y) -> y
+  add(s(x), y) -> s(add(x, y))
+)
+(COMMENT
+  \cite{N04}, System R_27, p. 138
+  http://www.sakabe.nuie.nagoya-u.ac.jp/~nishida/DB/pdf/nishida04phdthesis.pdf
+)

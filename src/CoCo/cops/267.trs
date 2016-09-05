@@ -1,0 +1,18 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  size(empty) -> 0
+  size(push(x, y)) -> s(size(x))
+  m -> s(s(s(s(0))))
+  pop(empty) -> empty
+  pop(push(x, y)) -> x | le(size(x), m) == true
+  top(empty) -> eentry
+  top(push(x, y)) -> y | le(size(x), m) == true
+  le(x, 0) -> false
+  le(0, s(x)) -> true
+  le(s(x), s(y)) -> le(x, y)
+)
+(COMMENT
+  \cite{BK86}, Example 2.3.i (BOUNDED-STACK)
+  doi: 10.1016/0022-0000(86)90033-4
+)

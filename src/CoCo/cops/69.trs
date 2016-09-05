@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+  F(x,y) -> c(A)
+  G(x)  -> x
+  h(x) -> c(x)
+)
+(COMMENT Example 4.4 of \cite{Ohl94caap})

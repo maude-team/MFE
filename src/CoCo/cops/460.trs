@@ -1,0 +1,11 @@
+(FUN
+  f : o -> (o -> o) -> o
+  a : o
+)
+(VAR
+  Z : o -> o
+)
+(RULES
+  f a Z -> f (Z a) Z
+)
+(COMMENT Example 4.1 of \cite{AvOS10})

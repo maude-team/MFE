@@ -1,0 +1,12 @@
+(CONDITIONTYPE JOIN)
+(VAR x y)
+(RULES
+  lte(0, 0) -> tt
+  lte(s(x), 0) -> ff
+  lte(s(x), s(y)) -> lte(x, y)
+  lte(x, s(y)) -> tt | lte(x, y) == tt
+)
+(COMMENT
+  \cite{DOS87}, Example on page 32
+  doi: 10.1007/3-540-19242-5_3
+)

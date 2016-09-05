@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  e(0) -> true
+  e(s(x)) -> true  | e(x) == false
+  e(s(x)) -> false | e(x) == true
+)
+(COMMENT
+  [Nishida, Yanagisawa, and Gmeiner, IWC 2014, Example 2]
+)

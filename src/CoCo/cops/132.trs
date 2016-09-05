@@ -1,0 +1,8 @@
+(VAR x y z)
+(RULES
+  -(+(x,y)) -> +(-(x),-(y))
+  -(-(x)) -> x
+  +(+(x,y),z) -> +(x,+(y,z))
+  +(x,y) -> +(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

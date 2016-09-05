@@ -1,0 +1,160 @@
+---- CoCo 2016
+
+fmod CoCo-BANNER is
+  pr STRING .
+  op coco-banner : -> String .
+  eq coco-banner = "Confluence Check for the CoCo - August 29th 2016" .
+endfm
+
+fmod CoCo-HELP is
+  pr META-LEVEL .
+  pr EXT-QID-LIST .
+
+  op coco-help : -> QidList .
+  eq coco-help =
+      string2qidList("Support for the TPDB syntax") '\n 
+      '\t '`( '\! 'cocoload '\o '. '`) '\n '\t '\t 'Loads 'the 'entered 'TPDB 'module 'into 'the 'database. '\n .
+
+endfm
+
+fmod CoCo-SIGN is
+  including FULL-MAUDE-SIGN .
+  sort @Goal@ .
+  op cocoload`. : -> @Command@ [ctor] .
+  op CoCo help . : -> @Command@ [ctor] .
+  
+  sort <decl> <id> <idlist> <listofrules>
+       <rule> <cond> <condlist> <term> <termlist> 
+       <conditiontype> <NeTokenList> .
+
+  subsorts <decl> < @Input@ .
+  subsort <id> < <idlist> .
+
+  subsort <rule> < <listofrules> .
+  subsort <cond> < <condlist> .
+  subsorts <id> < <term> < <termlist> .
+  
+  op VAR : -> <decl> .
+  op VAR_ : <idlist> -> <decl> [gather(&)] .
+  op RULES_ : <listofrules> -> <decl> [gather(&)] .
+  op CONDITIONTYPE_ : <conditiontype> -> <decl> [gather(&)] .
+  op COMMENT_ : <NeTokenList> -> <decl> [gather(&)] .
+
+  ops SEMI-EQUATIONAL JOIN ORIENTED : -> <conditiontype> .
+
+  op __ : <idlist> <idlist> -> <idlist> [assoc gather(e E)] .
+
+  op _->_ : <term> <term> -> <rule> [gather(e e) prec 45] . 
+  op _->_|_ : <term> <term> <condlist> -> <rule> [gather(e e e) prec 45] . ----- bug in MSCP
+  op __ : <listofrules> <listofrules> -> <listofrules> [assoc gather(e E) prec 50] .
+  
+  op _`,_ : <cond> <condlist> -> <condlist> [gather(e E) prec 40] .
+  op _==_ : <term> <term> -> <cond> [gather(e e) prec 37] .
+
+  op _`(`) : <id> -> <term> [gather(e) prec 30] .
+  op _`(_`) : <id> <termlist> -> <term> [gather(e &) prec 30] .
+  op _`,_ : <termlist> <termlist> -> <termlist> [assoc gather(e E)] .
+endfm
+
+fmod TUPLE-2{X :: TRIV, Y :: TRIV} is
+  sort Tuple{X, Y} .
+  op `(_`,_`) : X$Elt Y$Elt -> Tuple{X, Y} .
+  op p1_ : Tuple{X, Y} -> X$Elt .
+  op p2_ : Tuple{X, Y} -> Y$Elt .
+  var A : X$Elt .
+  var B : Y$Elt .
+  eq p1(A, B) = A .
+  eq p2(A, B) = B .
+endfm 
+
+view TermList from TRIV to META-LEVEL is
+  sort Elt to TermList .
+endv
+ 
+view OpDeclSet from TRIV to META-LEVEL is
+  sort Elt to OpDeclSet .
+endv
+ 
+view EqCondition from TRIV to META-LEVEL is
+  sort Elt to EqCondition .
+endv
+ 
+fmod CoCo-UNIT-PROCESSING is
+  pr UNIT-PROCESSING .
+  pr TUPLE-2{TermList, OpDeclSet} * (op p1_ to getTerm, op p2_ to getOpDecls) .
+  pr TUPLE-2{EqCondition, OpDeclSet} * (op p1_ to getCond, op p2_ to getOpDecls) .
+  
+  vars T T' T'' T''' T1 T2 T3 T4 T5 : Term .
+  var  TL : TermList .
+  var  DB : Database .
+  var  M : Module .
+  vars OPDS VDS : OpDeclSet .
+  vars F V S : Qid .
+  var  CT : ConditionType .
+  var  Vs : QidSet .
+  var  N : Nat .
+  
+  sort ConditionType .
+  ops JOIN ORIENTED : -> ConditionType . ---- SEMI-EQUATIONAL ?
+  
+  op procCocoVars : Term -> QidSet .
+  eq procCocoVars('__['token[T1], T2]) = downQid(T1) ; procCocoVars(T2) .
+  eq procCocoVars('token[T]) = downQid(T) .
+  
+  op procCocoRules : Term ConditionType QidSet Module -> Module .
+  eq procCocoRules('__['_->_[T, T'], T''], CT, Vs, M)
+    = procCocoRules(T'', CT, Vs, 
+        addEqs(eq getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs)) [none] ., 
+          addOps(getOpDecls(parseCocoTerm(T, Vs)) getOpDecls(parseCocoTerm(T', Vs)), M))) .
+  eq procCocoRules('_->_[T, T'], CT, Vs, M)
+    = addEqs(eq getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs)) [none] ., 
+        addOps(getOpDecls(parseCocoTerm(T, Vs)) getOpDecls(parseCocoTerm(T', Vs)), M)) .
+  eq procCocoRules('__['_->_|_[T, T', T''], T'''], CT, Vs, M)
+    = procCocoRules(T''', CT, Vs, 
+        addEqs(ceq getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs)) if getCond(parseCocoCond(T'', CT, Vs)) [none] ., 
+          addOps(getOpDecls(parseCocoTerm(T, Vs)) getOpDecls(parseCocoTerm(T', Vs)) getOpDecls(parseCocoCond(T'', CT, Vs)), M))) .
+  eq procCocoRules('_->_|_[T, T', T''], CT, Vs, M)
+    = addEqs(ceq getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs)) if getCond(parseCocoCond(T'', CT, Vs)) [none] ., 
+        addOps(getOpDecls(parseCocoTerm(T, Vs)) getOpDecls(parseCocoTerm(T', Vs)) getOpDecls(parseCocoCond(T'', CT, Vs)), M)) .
+
+  op size : TermList -> Nat .
+  eq size((T, TL)) = s size(TL) .
+  eq size(empty) = 0 .
+
+  op arity : Nat -> TypeList .
+  eq arity(0) = nil .
+  eq arity(s N) = 'S arity(N) .
+
+  op parseCocoTerm : Term QidSet -> Tuple{TermList, OpDeclSet} .
+  eq parseCocoTerm('_`(_`)['token[T], T'], Vs) 
+    = (downQid(T) [ getTerm(parseCocoTerm(T', Vs)) ], 
+       op downQid(T) : arity(size(getTerm(parseCocoTerm(T', Vs)))) -> 'S [none] . getOpDecls(parseCocoTerm(T', Vs))) .
+  eq parseCocoTerm('token[T], Vs) 
+    = if downQid(T) in Vs 
+      then (qid(string(downQid(T)) + ":S"), none) 
+      else (qid(string(downQid(T)) + ".S"), op downQid(T) : nil -> 'S [none] .)
+      fi .
+  eq parseCocoTerm('_`,_[T, T'], Vs) 
+    = ((getTerm(parseCocoTerm(T, Vs)), getTerm(parseCocoTerm(T', Vs))),
+       getOpDecls(parseCocoTerm(T, Vs)) getOpDecls(parseCocoTerm(T', Vs))) .
+  
+  op parseCocoCond : Term ConditionType QidSet -> Tuple{EqCondition, OpDeclSet} .
+  eq parseCocoCond('_`,_['_==_[T, T'], T''], CT, Vs)
+    = (if CT == JOIN
+       then getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs))
+       else ---- CT == ORIENTED
+            getTerm(parseCocoTerm(T', Vs)) := getTerm(parseCocoTerm(T, Vs))
+       fi  
+       /\ getCond(parseCocoCond(T'', CT, Vs)),
+       getOpDecls(parseCocoTerm(T, Vs)) 
+       getOpDecls(parseCocoTerm(T', Vs))
+       getOpDecls(parseCocoCond(T'', CT, Vs))) .
+  eq parseCocoCond('_==_[T, T'], CT, Vs)
+    = (if CT == JOIN
+       then getTerm(parseCocoTerm(T, Vs)) = getTerm(parseCocoTerm(T', Vs))
+       else ---- CT == ORIENTED
+            getTerm(parseCocoTerm(T', Vs)) := getTerm(parseCocoTerm(T, Vs))
+       fi,
+       getOpDecls(parseCocoTerm(T, Vs)) 
+       getOpDecls(parseCocoTerm(T', Vs))) .
+endfm

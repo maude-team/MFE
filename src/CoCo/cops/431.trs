@@ -1,0 +1,17 @@
+(FUN
+  0 : nat
+  s : nat -> nat
+  rec : (nat -> A -> A) -> A -> nat -> A
+)
+(VAR
+  x : nat
+  y : A
+  a : A
+  F : nat -> A -> A
+  n : nat
+)
+(RULES
+  rec (\x y. F x y) a 0 -> a,
+  rec (\x y. F x y) a (s n) ->  F n (rec (\x y. F x  y) a n)
+)
+(COMMENT from "http://www.cs.vu.nl/~femke/ps/examples.ps")

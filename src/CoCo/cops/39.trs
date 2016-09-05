@@ -1,0 +1,12 @@
+(VAR )
+(RULES
+  f(b) -> a
+  f(b) -> f(c)
+  f(c) -> f(b)
+  f(c) -> d
+  b -> e
+  c -> e'
+  f(e) -> a
+  f(e') -> d
+)
+(COMMENT Example 3.3.2 of \cite{Gra96thesis})

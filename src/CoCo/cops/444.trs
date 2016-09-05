@@ -1,0 +1,11 @@
+(FUN
+  mu : (o -> o) -> o
+)
+(VAR
+  x : o
+  z : o -> o
+)
+(RULES
+  mu (\x. z x) -> z (mu (\x. z x))
+)
+(COMMENT mu-recursion; from Section 11.2 of \cite{TeReSe})

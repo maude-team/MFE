@@ -1,0 +1,9 @@
+(VAR x)
+(RULES
+  p(x) -> q(x)
+  p(x) -> r(x)
+  q(x) -> s(p(x))
+  r(x) -> s(p(x))
+  s(x) -> f(p(x))
+)
+(COMMENT Example 3.3 of \cite{Toy88})

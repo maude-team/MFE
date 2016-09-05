@@ -1,0 +1,22 @@
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3o - June 18th,2014
+    Coherence Checker 3o - June 18th,2014
+    Maude Termination Tool 1.5j - August 11th 2014
+    Confluence Check for the CoCo - August 29th 2016
+
+rewrites: 98 in 4ms cpu (5ms real) (20139 rewrites/second)
+The CoCo has been set as current tool.
+
+rewrites: 48 in 3ms cpu (4ms real) (12257 rewrites/second)
+
+rewrites: 431 in 1ms cpu (1ms real) (379735 rewrites/second)
+
+rewrites: 24 in 0ms cpu (0ms real) (41522 rewrites/second)
+
+rewrites: 82181 in 71ms cpu (636ms real) (1144311 rewrites/second)
+
+Bye.

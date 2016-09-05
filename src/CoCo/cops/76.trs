@@ -1,0 +1,11 @@
+(VAR x y z)
+(RULES
+   +(0,x) -> x
+   +(-(x),x) -> 0
+   +(+(x,y),z) -> +(x,+(y,z))
+   +(x,y) -> +(y,x)
+   -(0) -> 0
+   -(-(x)) -> x
+   -(+(x,y)) -> +(-(x),-(y))
+)
+(COMMENT Commutative Group Theory from \cite{PS81})

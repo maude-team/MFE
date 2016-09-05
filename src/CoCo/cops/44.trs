@@ -1,0 +1,5 @@
+(VAR x)
+(RULES
+  H(H(x)) -> K(x)
+)
+(COMMENT from p.811 of \cite{Hue80})

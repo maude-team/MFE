@@ -1,0 +1,11 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  h(x) -> g(x) | f(x,y) == b
+)
+(COMMENT
+  Example 7 in
+  Thomas Sternagel and Aart Middeldorp
+  Conditional Confluence (System Description)
+  RTATLCA 2014
+)

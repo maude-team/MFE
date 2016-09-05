@@ -1,0 +1,25 @@
+(FUN 
+  not : F -> F
+  and : F -> F -> F
+  or : F -> F -> F
+  all : (T -> F) -> F
+  ex : (T -> F) -> F
+)
+(VAR
+  x : T
+  P : F
+  Q : T -> F
+)
+(RULES
+  and P (all (\x. Q x)) -> all (\x. and P (Q x)),
+  and (all (\x. Q x)) P -> all (\x. and (Q x) P),
+  or P (all (\x. Q x)) -> all (\x. or P (Q x)),
+  or (all (\x. Q x)) P -> all (\x. or (Q x) P),
+  and P (ex (\x. Q x)) -> ex (\x. and P (Q x)),
+  and (ex (\x. Q x)) P -> ex (\x. and (Q x) P),
+  or P (ex (\x. Q x)) -> ex (\x. or P (Q x)),
+  or (ex (\x. Q x)) P -> ex (\x. or (Q x) P),
+  not (all (\x. Q x)) -> ex (\x. not (Q x)),
+  not (ex (\x. Q x)) -> all (\x. not (Q x))
+)
+(COMMENT from \cite{Nip91})

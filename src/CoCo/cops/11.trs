@@ -1,0 +1,8 @@
+(VAR x y)
+(RULES
+  +(0,y) -> y
+  +(s(x),y) -> s(+(x,y))
+  +(x,0) -> x
+  +(x,s(y)) -> s(+(x,y))
+)
+(COMMENT Exercise 6.5{b} of \cite{BN98})

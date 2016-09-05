@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR v w x y z xs ys)
+(RULES
+  ssp(xs, v) -> ys | subL(ys, xs) == tt, sum(ys) == v
+  subL(nil, nil) -> tt
+  subL(xs, cons(y, ys)) -> z | subL(xs, ys) == z
+  sum(nil) -> 0
+  sum(cons(x, xs)) -> z | sum(xs) == w, add(w, x) == z
+  add(x, 0) -> x
+  add(x, s(y)) -> s(z) | add(x, y) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 9: E_ssp + R_lib
+  doi: 10.1016/j.tcs.2012.09.005
+)

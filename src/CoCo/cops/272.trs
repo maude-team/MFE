@@ -1,0 +1,18 @@
+(CONDITIONTYPE ORIENTED)
+(VAR m n l)
+(RULES
+  lte(0, n) -> true
+  lte(s(m), 0) -> false
+  lte(s(m), s(n)) -> lte(m, n)
+  insert(nil, m) -> cons(m, nil)
+  insert(cons(n, l), m) -> cons(m, cons(n, l)) | lte(m, n) == true
+  insert(cons(n, l), m) -> cons(n, insert(l, m)) | lte(m, n) == false
+  ordered(nil) -> true
+  ordered(cons(m, nil)) -> true
+  ordered(cons(m, cons(n, l))) -> ordered(cons(n, l)) | lte(m, n) == true
+  ordered(cons(m, cons(n, l))) -> false | lte(m, n) == false
+)
+(COMMENT
+  \cite{BL90}, 5. An Example (ordered lists of natural numbers)
+  doi: 10.1007/3-540-54317-1_91
+)

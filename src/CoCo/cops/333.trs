@@ -1,0 +1,12 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  f(x) -> g(x,y,z) | h(a,x) == i(y), h(a,y) == i(z)
+  h(a,a) -> i(b)
+  h(a,b) -> i(c)
+  h(b,b) -> i(d)
+)
+(COMMENT
+  \cite{SMI95}, Example 3.2, p. 4
+  doi: 10.1007/3-540-59200-8_56
+)

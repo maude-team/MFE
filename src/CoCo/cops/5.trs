@@ -1,0 +1,8 @@
+(VAR x y)
+(RULES
+  f(g(x,a,b)) -> x
+  p(a) -> c
+  g(f(h(c,d)),x,y) -> h(p(x),q(x))
+  q(b) -> d
+)
+(COMMENT Exercise 6.18 of \cite{BN98})

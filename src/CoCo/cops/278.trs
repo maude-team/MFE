@@ -1,0 +1,27 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x n h t m pid store)
+(RULES
+  fstsplit(0, x) -> nil
+  fstsplit(s(n), nil) -> nil
+  fstsplit(s(n), cons(h, t)) -> cons(h, fstsplit(n, t))
+  sndsplit(0, x) -> x
+  sndsplit(s(n), nil) -> nil
+  sndsplit(s(n), cons(h, t)) -> sndsplit(n, t)
+  empty(nil) -> true
+  empty(cons(h, t)) -> false
+  leq(0, m) -> true
+  leq(s(n), 0) -> false
+  leq(s(n), s(m)) -> leq(n, m)
+  length(nil) -> 0
+  length(cons(h, t)) -> s(length(t))
+  app(nil, x) -> x
+  app(cons(h, t), x) -> cons(h, app(t, x))
+  map_f(pid, nil) -> nil
+  map_f(pid, cons(h, t)) -> app(f(pid, h), map_f(pid, t))
+  process(store, m) -> process(app(map_f(self, nil), sndsplit(m, store)), m) | leq(m, length(store)) == true, empty(fstsplit(m, store)) == false
+  process(store, m) -> process(sndsplit(m, app(map_f(self, nil), store)), m) | leq(m, length(store)) == false, empty(fstsplit(m, app(map_f(self, nil), store))) == false
+)
+(COMMENT
+  \cite{GA01}, p. 42-43
+  doi: 10.1007/s002000100063
+)

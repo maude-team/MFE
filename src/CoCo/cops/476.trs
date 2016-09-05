@@ -1,0 +1,14 @@
+(FUN
+  f : a -> (a -> a) -> a
+  h : a -> (a -> a) -> a
+  i : a -> a
+)
+(VAR
+  X : a
+  x : a
+)
+(RULES
+  f(X, \x.x) -> h(X, \x.x),
+  h(f(X, \x.x), \x.x) -> f(i(X), \x.x)
+)
+(COMMENT Example 19 from \cite{SWS01})

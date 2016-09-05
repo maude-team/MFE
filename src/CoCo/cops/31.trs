@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+  f(g(x),h(x,y)) -> a
+  g(b) -> c
+  h(x,d) -> e
+)
+(COMMENT Example 3 of \cite{Gra96caap})

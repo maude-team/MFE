@@ -1,0 +1,13 @@
+(VAR x)
+(RULES
+a -> b
+a -> c
+x -> D
+)
+(COMMENT
+First example in Section 5.3 from
+Vincent van Oostrom
+Modularity of Confluence
+IJCAR 2008
+doi: 10.1007/978-3-540-71070-7_31
+)

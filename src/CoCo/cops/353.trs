@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR xs y' ws v ys' w ws x' xs' zs z ys y)
+(RULES
+  ssp'(xs, 0) -> nil
+  ssp'(cons(y', ws), v) -> cons(y', ys') | sub(v, y') == w, ssp'(ws, w) == ys'
+  ssp'(cons(x', xs'), v) -> cons(y', ys') | get(xs') == tp2(y', zs), sub(v, y') == w, ssp'(cons(x', zs), w) == ys'
+  sub(z, 0) -> z
+  sub(s(v), s(w)) -> z | sub(v, w) == z
+  get(cons(y, ys)) -> tp2(y, ys)
+  get(cons(x', xs')) -> tp2(y, cons(x', zs)) | get(xs') == tp2(y, zs)
+)
+(COMMENT
+  \cite{NSS12b}, Example 10: R'_ssp
+  doi: 10.1016/j.tcs.2012.09.005
+)

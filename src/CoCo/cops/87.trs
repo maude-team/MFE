@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  f(x) -> g(f(x))
+  h(x) -> p(h(x))
+  f(x) -> h(f(x))
+  g(x) -> p(p(h(x)))
+)
+(COMMENT Example 3.2 of cite{Toy88})

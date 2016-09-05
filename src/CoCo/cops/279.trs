@@ -1,0 +1,34 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x n h t m pid in_2 in_3 st_1 st_2 st_3)
+(RULES
+  fstsplit(0, x) -> nil
+  fstsplit(s(n), nil) -> nil
+  fstsplit(s(n), cons(h, t)) -> cons(h, fstsplit(n, t))
+  sndsplit(0, x) -> x
+  sndsplit(s(n), nil) -> nil
+  sndsplit(s(n), cons(h, t)) -> sndsplit(n, t)
+  empty(nil) -> true
+  empty(cons(h, t)) -> false
+  leq(0, m) -> true
+  leq(s(n), 0) -> false
+  leq(s(n), s(m)) -> leq(n, m)
+  length(nil) -> 0
+  length(cons(h, t)) -> s(length(t))
+  app(nil, x) -> x
+  app(cons(h, t), x) -> cons(h, app(t, x))
+  map_f(pid, nil) -> nil
+  map_f(pid, cons(h, t)) -> app(f(pid, h), map_f(pid, t))
+  head(cons(h, t)) -> h
+  tail(cons(h, t)) -> t
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(sndsplit(m, st_1), cons(fstsplit(m, st_1), in_2), st_2, in_3, st_3, m) | empty(fstsplit(m, st_1)) == false
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, in_2, sndsplit(m, st_2), cons(fstsplit(m, st_2), in_3), st_3, m) | leq(m, length(st_2)) == true, empty(fstsplit(m, st_2)) == false
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, tail(in_2), sndsplit(m, app(map_f(two, head(in_2)), st_2)), cons(fstsplit(m, app(map_f(two, head(in_2)), st_2)), in_3), st_3, m) | leq(m, length(st_2)) == false, empty(fstsplit(m, app(map_f(two, head(in_2)), st_2))) == false
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, tail(in_2), st_2, in_3, st_3, m) | empty(map_f(two, head(in_2))) == true
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, in_2, st_2, in_3, sndsplit(m, st_3), m) | leq(m, length(st_3)) == true, empty(fstsplit(m, st_3)) == false
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, in_2, st_2, tail(in_3), sndsplit(m, app(map_f(three, head(in_3)), st_3)), m) | leq(m, length(st_3)) == false, empty(fstsplit(m, app(map_f(three, head(in_3)), st_3))) == false
+  ring(st_1, in_2, st_2, in_3, st_3, m) -> ring(st_1, in_2, st_2, tail(in_3), st_3, m) | empty(map_f(three, head(in_3))) == true
+)
+(COMMENT
+  \cite{GA01}, p. 61
+  doi: 10.1007/s002000100063
+)

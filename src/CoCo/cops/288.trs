@@ -1,0 +1,13 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  pin(a) -> pout(b)
+  pin(b) -> pout(c)
+  tc(x) -> x
+  tc(x) -> y | pin(x) == pout(z), tc(z) == y
+)
+(COMMENT
+  TYPO: z should be a variable, corrected as Cops #371
+  \cite{GW92}, Example on p. 435
+  doi: 10.1007/3-540-56393-8_34
+)

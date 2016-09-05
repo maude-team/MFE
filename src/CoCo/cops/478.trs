@@ -1,0 +1,18 @@
+(FUN
+  g : o -> o
+  h : o -> o
+  i : o -> o
+  f : (o -> o) -> o
+  a : o
+)
+(VAR
+  F : o -> o
+  X : o
+  x : o
+)
+(RULES
+  f(\x. F(x)) -> F(a),
+  g(a) -> f(\x.i(x)),
+  i(X) -> h(g(X))
+)
+(COMMENT Example 2 from \cite{SK05})

@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+ a(x) -> c(x)
+ b(x) -> b(b(x))
+ f(x,x,y) -> f(a(x),x,b(y))
+)
+(COMMENT from the collection of \cite{SAT2013})

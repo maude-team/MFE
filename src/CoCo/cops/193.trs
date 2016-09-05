@@ -1,0 +1,12 @@
+(VAR x y z)
+(RULES
+  not(T) -> F
+  not(F) -> T
+  not(not(x)) -> x
+  exor(x,T) -> not(x)
+  exor(x,F) -> x
+  exor(not(x),y) -> not(exor(x,y))
+  exor(exor(x,y),z) -> exor(x,exor(y,z))
+  exor(x,y) -> exor(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

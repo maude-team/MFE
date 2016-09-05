@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR w x y z)
+(RULES
+  div(z, y) -> x | mul(x, y) == z, gt(y, 0) == tt
+  mul(x, 0) -> 0
+  mul(0, y) -> 0
+  mul(s(x), s(y)) -> s(z) | mul(x, s(y)) == w, add(w, y) == z
+  gt(0, y) -> ff
+  gt(s(x), 0) -> tt
+  gt(s(x), s(y)) -> z | gt(x, y) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 4: E_div + R_mul
+  doi: 10.1016/j.tcs.2012.09.005
+)

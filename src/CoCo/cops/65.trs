@@ -1,0 +1,10 @@
+(VAR x y)
+(RULES
+  h(f,a,a) -> h(g,a,a)
+  h(g,a,a) -> h(f,a,a)
+  a -> a'
+  h(x,a',y) -> h(x,y,y)
+  g -> f
+  f -> g
+)
+(COMMENT from Example 4 of \cite{OO04})

@@ -1,0 +1,6 @@
+(VAR )
+(RULES
+  f(f(a)) -> f(f(f(a)))
+  f(f(a)) -> f(a)
+)
+(COMMENT Example 1 of DOI:10.1007/s00200-004-0148-6)

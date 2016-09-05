@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  f(x, y) -> x | g(x) == z, g(y) == z
+  g(x) -> c | d == c
+)
+(COMMENT
+  \cite{NSS12}, R_4 of Example 3.4
+  doi: 10.2168/LMCS-8(3:4)2012
+)

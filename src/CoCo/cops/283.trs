@@ -1,0 +1,11 @@
+(CONDITIONTYPE JOIN)
+(VAR x y)
+(RULES
+  g(x) -> f(x) | g(x) == f(x)
+  f(a) -> g(a)
+  a -> b
+)
+(COMMENT
+  \cite{G94}, Example 2
+  doi: 10.1007/3-540-60381-6_10
+)

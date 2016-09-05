@@ -1,0 +1,9 @@
+(VAR )
+(RULES
+  f(a) -> f(g(b,b))
+  a -> g(c,c)
+  c -> d
+  d -> b
+  b -> d
+)
+(COMMENT Example 6 of \cite{Gra96caap})

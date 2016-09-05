@@ -1,0 +1,17 @@
+(CONDITIONTYPE ORIENTED)
+(VAR v x y z ws xs ys zs)
+(RULES
+  ssp'(xs, v) -> ys | subseteq_m(ys, xs) == tt, sum(ys) == v
+  subseteq_m(nil, ys) -> tt
+  subseteq_m(cons(x, xs), ys) -> z | del(x, ys) == some(ws), subseteq_m(xs, ws) == z
+  del(x, nil) -> none
+  del(x, cons(x, ys)) -> some(ys)
+  del(x, cons(y, ys)) -> some(cons(y, zs)) | del(x, ys) == some(zs)
+  sum(nil) -> 0
+  add(x, 0) -> x
+  add(x, s(y)) -> s(z) | add(x, y) == z
+)
+(COMMENT
+  \cite{NSS12b}, Example 10: E'_ssp + R'_lib
+  doi: 10.1016/j.tcs.2012.09.005
+)

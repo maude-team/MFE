@@ -1,0 +1,14 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x z)
+(RULES
+  s(a) -> c
+  s(b) -> c
+  c -> t(k)
+  c -> t(l)
+  f(x) -> z | s(x) == z
+  g(x, x) -> h(x, x)
+)
+(COMMENT
+  \cite{G14}, example 41
+  PhD Thesis, not yet published
+)

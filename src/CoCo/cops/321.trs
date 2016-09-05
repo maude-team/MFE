@@ -1,0 +1,20 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  f(x) -> x | x == e
+  g(d, x, y) -> A | y == x
+  h(x, y) -> g(x, y, f(k)) | y == x
+  a -> c
+  a -> d
+  b -> c
+  b -> d
+  c -> e
+  c -> l
+  k -> l
+  k -> m
+  d -> m
+)
+(COMMENT
+  \cite{NSS12}, R_6 of Example 4.1
+  doi: 10.2168/LMCS-8(3:4)2012
+)

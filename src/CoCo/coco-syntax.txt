@@ -1,0 +1,66 @@
+Termination Problem Data Base: format of input files
+C. Marché   A. Rubio   H. Zantema
+March 2, 2005
+
+1  Syntax of TRS input files
+
+1.1  grammar of input files
+
+
+spec	::=	(   decl ) spec | e
+decl	::=	VAR   idlist | THEORY   listofthdecl | RULES   listofrules
+ 	 	| STRATEGY   strategydecl | id   anylist
+anylist	::=	e | id   anylist | string   anylist
+ 	 	| (   anylist )   anylist | ,   anylist
+idlist	::=	e | id   idlist
+listofthdecl	::=	e | (   thdecl   )   listofthdecl
+thdecl	::=	id   idlist | EQUATIONS   eqlist
+eqlist	::=	e | equation   eqlist
+equation	::=	term   ==   term
+listofrules	::=	e | rule   listofrules
+rule	::=	term   ->   term | term   ->   term   |   condlist
+ 	 	| term   ->=   term | term   ->=   term   |   condlist
+condlist	::=	cond | cond   ,   condlist
+cond	::=	term   ->   term | term   -><-   term
+term	::=	id | id   (   ) | id   (   termlist   )
+termlist	::=	term | term   ,   termlist
+strategydecl	::=	INNERMOST | OUTERMOST | CONTEXTSENSITIVE   csstratlist
+csstratlist	::=	e | ( id   intlist )   csstratlist
+intlist	::=	e | int   intlist
+
+id are non-empty sequences of characters except space, '(', ')', '"' and ',' ; and excluding special sequences '->', '==', ->=, 
+'-><-', '|' and keywords CONTEXTSENSITIVE, EQUATIONS, INNERMOST, OUTERMOST, RULES, STRATEGY, THEORY and VAR. 
+
+string are sequences of any characters between double quotes
+
+int are non-empty sequences of digits
+
+1.2  Semantical conditions
+
+at least one VAR and one RULES sections are mandatory. If they are several, the union is taken and :
+a symbol declared in a VAR section must not have been used in previous declarations, and is assumed to denote a variable in 
+remaining declarations (in particular must not be applied to arguments) a symbol occuring in a RULES section which has not been 
+used before is assumed to denote a function symbol, and must be used afterwards always with the same arity.
+
+2  Syntax of SRS input files
+
+2.1  grammar of input files
+
+spec	::=	(   decl ) spec | e
+decl	::=	RULES   listofrules | STRATEGY   strategydecl | id   anylist
+anylist	::=	e | id   anylist | string   anylist | (   anylist )   anylist | ,   anylist
+listofrules	::=	e | rule   ,   listofrules
+rule	::=	word   ->   word | word   ->
+ 	 	| word   ->=   word | word   ->=
+word	::=	id | id   word
+strategydecl	::=	LEFTMOST | RIGHTMOST
+
+id are non-empty sequences of characters except space, '(', ')', '"' and ',' ; and excluding special sequences '->' and ->=, and 
+keywords LEFTMOST, RIGHTMOST, RULES, and STRATEGY.
+
+string are sequences of any characters between double quotes
+
+2.2  Semantical conditions
+
+at least one RULES section is mandatory. If they are several, the union is taken.
+This document was translated from LATEX by HEVEA.

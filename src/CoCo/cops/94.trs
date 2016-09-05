@@ -1,0 +1,11 @@
+(VAR x y)
+(RULES
+  F(D(x),y) -> F(D(x),G(G(y)))
+  F(x,E(y)) -> F(G(x),E(y))
+  G(x) -> x
+  H(I(x)) -> K(J(x))
+  J(x) -> K(J(x))
+  I(x) -> I(J(x))
+  J(x) -> J(K(J(x)))
+  S(x,T(x)) -> T(x)
+)

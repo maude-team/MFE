@@ -1,0 +1,9 @@
+(VAR x y)
+(RULES
+c -> f(c,d)
+c -> h(c,d)
+f(x,y) -> h(g(y),x)
+h(x,y) -> f(g(y),x)
+)
+(COMMENT Example 17 of \cite{Aoto2013})
+(COMMENT from the collection of \cite{Aoto2013})

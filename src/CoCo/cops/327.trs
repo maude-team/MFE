@@ -1,0 +1,19 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y)
+(RULES
+  lt(x,0) -> false
+  lt(0,s(x)) -> true
+  lt(s(x),s(y)) -> lt(x,y)
+  m(0,s(y)) -> 0
+  m(x,0) -> x
+  m(s(x),s(y)) -> m(x,y)
+  gcd(x,x) -> x
+  gcd(s(x),0) -> s(x)
+  gcd(0,s(y)) -> s(y)
+  gcd(s(x),s(y)) -> gcd(m(x,y),s(y)) | lt(y,x) == true
+  gcd(s(x),s(y)) -> gcd(s(x),m(y,x)) | lt(x,y) == true
+)
+(COMMENT
+  \cite{O02}, Example 7.1.5, p. 182
+  doi: 10.1007/978-1-4757-3661-8
+)

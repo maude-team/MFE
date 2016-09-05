@@ -1,0 +1,21 @@
+(FUN
+  neg : form -> form
+  and : form -> form -> form
+  or : form ->  form -> form
+  forall : (term -> form) -> form
+  exists : (term -> form) -> form
+)
+(VAR
+  z : form
+  z' : form
+  x : term
+  y : term -> form
+)
+(RULES
+  neg(neg(z)) -> z,
+  neg(and(z, z')) -> or(neg(z), neg(z')),
+  neg(or(z, z')) -> and(neg(z), neg(z')),
+  neg(forall(\x. y(x))) -> exists(\x. neg(y(x))),
+  neg(exists(\x. y(x))) -> forall(\x. neg(y(x)))
+)
+(COMMENT Example 4.9 from \cite{MN98})

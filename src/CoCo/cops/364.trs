@@ -1,0 +1,11 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  even(0) -> true
+  even(s(x)) -> true | odd(x) == true
+  odd(s(x)) -> true | even(x) == true
+)
+(COMMENT
+  \cite{NOF13}, example 2.2
+  http://www.iaeng.org/IJCS/issues_v40/issue_2/IJCS_40_2_08.pdf
+)

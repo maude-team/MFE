@@ -1,0 +1,15 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  odd(0) -> false
+  odd(s(x)) -> true | eq(even(x), true) == eq(T, T)
+  odd(s(x)) -> false | eq(even(x), false) == eq(T, T)
+  even(0) -> true
+  even(s(x)) -> true | eq(odd(x), true) == eq(T, T)
+  even(s(x)) -> false | eq(odd(x), false) == eq(T, T)
+  eq(x, x) -> eq(T, T)
+)
+(COMMENT
+  \cite{NSS12}, Norm(R_12) of Example 5.10
+  doi: 10.2168/LMCS-8(3:4)2012
+)

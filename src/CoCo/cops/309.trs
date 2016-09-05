@@ -1,0 +1,20 @@
+(CONDITIONTYPE ORIENTED)
+(VAR w x y z)
+(RULES
+  ihalf(0) -> tp1(0)
+  ihalf(s(y)) -> tp1(s(s(x))) | ihalf(y) == tp(x)
+  ihalf(half(x)) -> tp1(x)
+  iadd(y) -> tp2(0, y)
+  iadd(s(z)) -> tp2(s(x), y) | iadd(z) == tp2(x, y)
+  iadd(add(x, y)) -> tp2(x, y)
+  imul(0) -> tp2(0, y)
+  imul(0) -> tp2(x, 0)
+  imul(s(z)) -> tp2(s(x), s(y)) | iadd(z) == tp2(w,y), imul(w) == tp2(x, s(y))
+  imul(mul(x, y)) -> tp2(x, y)
+  imh(y) -> tp1(x) | imul(y) == tp2(x, z), ihalf(z) == tp1(s(x))
+  imh(mh(x)) -> tp1(x)
+)
+(COMMENT
+  \cite{N04}, System R_10, p. 57
+  http://www.sakabe.nuie.nagoya-u.ac.jp/~nishida/DB/pdf/nishida04phdthesis.pdf
+)

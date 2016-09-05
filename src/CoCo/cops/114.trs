@@ -1,0 +1,26 @@
+(VAR)
+(RULES
+  a1 -> b1
+  a1 -> c1
+  b1 -> b2
+  c1 -> c2
+  a2 -> b2
+  a2 -> c2
+  b2 -> b3
+  c2 -> c3
+  a3 -> b3
+  a3 -> c3
+  b3 -> b4
+  c3 -> c4
+  a4 -> b4
+  a4 -> c4
+  b4 -> b5
+  c4 -> c5
+  a5 -> b6
+  b5 -> b6
+  c5 -> b6
+)
+(COMMENT
+Example 13 {R_5} from [HM11]:
+doi: http://dx.doi.org/10.1007/s10817-011-9238-x
+)

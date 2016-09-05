@@ -146,13 +146,13 @@ set show advisories off .
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3n - December 17th 2012" .
+  eq crc-banner = "Church-Rosser Checker 3o - June 18th, 2014" .
 endfm
 
 fmod ChC-BANNER is
   pr STRING .
   op chc-banner : -> String .
-  eq chc-banner = "Coherence Checker 3n - December 17th 2012" .
+  eq chc-banner = "Coherence Checker 3o - June 18th, 2014" .
 endfm
 
 fmod CRC-HELP is

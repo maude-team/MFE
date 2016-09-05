@@ -1,0 +1,17 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y q r)
+(RULES
+  div(x, y) -> pair(0, y) | greater(y, x) == true
+  div(x, y) -> pair(s(q), r) | leq(y, x) == true, div(m(x, y), y) == pair(q, r)
+  m(x, 0) -> x
+  m(0, y) -> 0
+  m(s(x), s(y)) -> m(x, y)
+  greater(s(x), s(y)) -> greater(x, y)
+  greater(s(x), 0) -> true
+  leq(s(x), s(y)) -> leq(x, y)
+  leq(0, x) -> true
+)
+(COMMENT
+  \cite{SG10}, example 9
+  doi: 10.1016/j.jlap.2009.08.001
+)

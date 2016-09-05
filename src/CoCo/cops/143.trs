@@ -1,0 +1,7 @@
+(VAR x y z)
+(RULES
+  join(x,x) -> x
+  join(x,y) -> join(y,x)
+  join(join(x,y),z) -> join(x,join(y,z))
+)
+(COMMENT from the collection of \cite{AT2012})

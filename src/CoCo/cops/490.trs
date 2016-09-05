@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  f(x) -> x 
+  g(x) -> a | x == b
+)
+(COMMENT
+  doi: 10.4230/LIPIcs.RTA.2015.223
+  example 3
+)

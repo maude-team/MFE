@@ -1,0 +1,15 @@
+(VAR x y z)
+(RULES
+  not(T) -> F
+  not(F) -> T
+  or(x,T) -> T
+  or(x,F) -> x
+  or(x,y) -> or(y,x)
+  or(or(x,y),z) -> or(x,or(y,z))
+  and(x,T) -> x
+  and(x,F) -> F
+  and(x,y) -> and(y,x)
+  and(and(x,y),z) -> and(x,and(y,z))
+  imply(x,y) -> or(not(x),y)
+)
+(COMMENT from the collection of \cite{AT2012})

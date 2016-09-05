@@ -1,0 +1,15 @@
+(FUN
+  f : o -> o -> o
+  a : o
+  b : o
+  c : o
+)
+(VAR
+  x : o
+)
+(RULES
+  f(a, x) -> f(b, x),
+  a -> b,
+  b -> c
+)
+(COMMENT Example 11.6.33 from \cite{TeReSe})

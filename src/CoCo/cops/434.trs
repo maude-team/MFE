@@ -1,0 +1,23 @@
+(FUN
+  nil : natlist
+  cons : nat -> natlist -> natlist
+  plus : nat -> nat -> nat
+  foldl : (nat -> nat -> nat) -> nat -> natlist -> nat
+  sum : natlist -> nat
+  0 : nat
+)
+(VAR
+  x : nat
+  y : nat
+  n : nat 
+  F : nat -> nat -> nat
+  h : nat
+  t : natlist
+  l : natlist
+)
+(RULES
+  foldl(\x y. F x y, n, nil) -> n,
+  foldl(\x y. F x y, n, cons h t) -> foldl(\x y. F x y, F n h, t),
+  sum l -> foldl(\x y. plus x y, 0, l)
+)
+(COMMENT from "http://www.cs.vu.nl/~femke/ps/examples.ps")

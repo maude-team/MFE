@@ -1,0 +1,13 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  up(x) -> x
+  down(x) -> x
+  up(x) -> up(s(x))
+  down(s(x)) -> down(x)
+  between(x, y, z) -> true | up(x) == y, down(z) == y
+)
+(COMMENT
+  \cite{G14}, example 38
+  PhD Thesis, not yet published
+)

@@ -1,0 +1,8 @@
+(VAR x y)
+(RULES
+f(x,x) -> plus(plus(x,x),x)
+plus(x,y) -> plus(y,x)
+)
+(COMMENT Example 8 from [KH12]
+doi: http://dx.doi.org/10.1007/978-3-642-28717-6_21
+)

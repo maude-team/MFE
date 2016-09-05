@@ -1,0 +1,14 @@
+(FUN 
+  sub : (term -> term) -> term -> term
+)
+(VAR
+  x : term
+  y : term
+  X0 : term
+  Y : term -> term
+  X2 : term -> term -> term
+)
+(RULES
+  sub (\x.sub (\y.X2 y x) (Y x)) X0 -> sub (\y.sub (\x.X2 y x) X0) (sub (\x.Y x) X0)
+)
+(COMMENT self-distributivity of explicit substitution; combinable/to be combined with HRS for lambda x.)

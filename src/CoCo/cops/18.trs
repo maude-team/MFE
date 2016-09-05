@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+  f(x) -> g(a)
+  g(x)  -> x
+  h(x,x) -> 0
+  a -> 1
+)
+(COMMENT from p.209 of \cite{Der97})

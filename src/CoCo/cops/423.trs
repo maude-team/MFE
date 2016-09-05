@@ -1,0 +1,11 @@
+(VAR x y)
+(RULES
+  g(f(f(h(x))),y) -> g(g(f(h(x)),f(f(h(x)))),y)
+  f(x) -> g(x,f(x))
+  h(x) -> g(f(x),x)
+  g(x,y) -> h(g(f(x),f(y)))
+)
+(COMMENT
+The first rule is redundant; it can be simulated by the second rule.
+Confluent by feeble orthogonality (van Oostrom) or Okui's simultaneous critical pair criterion.
+)

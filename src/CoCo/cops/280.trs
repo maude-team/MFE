@@ -1,0 +1,11 @@
+(CONDITIONTYPE JOIN)
+(VAR x y)
+(RULES
+  a -> a | x == b, x == c
+  G(x, y) -> x
+  G(x, y) -> y
+)
+(COMMENT
+  \cite{G92}, Example 2
+  doi: 10.1007/3-540-56393-8_9
+)

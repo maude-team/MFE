@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y xs ys)
+(RULES
+  isnoc(cons(y, nil)) -> tp2(nil, y)
+  isnoc(cons(x, ys)) -> tp2(cons(x, xs), y) | isnoc(ys) == tp2(xs, y)
+)
+(COMMENT
+  \cite{NSS12}, R_20 of Example 6.7
+  doi: 10.2168/LMCS-8(3:4)2012
+)

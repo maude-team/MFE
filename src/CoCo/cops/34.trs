@@ -1,0 +1,10 @@
+(VAR )
+(RULES
+  f(a,b) -> c
+  a -> a'
+  b -> b'
+  c -> f(a',b)
+  c -> f(a,b')
+  c -> f(a,b)
+)
+(COMMENT Example 7 of \cite{Gra96caap})

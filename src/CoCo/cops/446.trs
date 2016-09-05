@@ -1,0 +1,15 @@
+(FUN
+  f : (o -> o) -> o
+  a : o
+  g : o -> o
+  h : o -> o -> o
+)
+(VAR
+  x : o
+  z : o -> o
+)
+(RULES
+  f(\x. z(x)) -> z(z(a)),
+  g(x) -> h(x,x)
+)
+(COMMENT From Section 11.5.1 of \cite{TeReSe})

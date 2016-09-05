@@ -1,0 +1,28 @@
+(FUN 
+  min : R -> R
+  add : R -> R -> R
+  mul : R -> R -> R
+  D : (R -> R) -> R -> R
+  sin : R -> R
+  cos : R -> R
+  0 : R
+  1 : R
+)
+(VAR
+  x : R
+  C : R
+  z : R
+  F : R -> R
+  G : R -> R
+)
+(RULES
+  D (\x. C) z -> 0,
+  D (\x. x) z -> 1,
+  D (\x. min (F x)) z -> min (D (\x. F x) z),
+  D (\x. add (F x) (G x)) z -> add (D (\x. (F x)) z) (D (\x. (G x)) z),
+  D (\x. mul (F x) (G x)) z ->
+    add (mul (D (\x. (F x)) z) (G z)) (mul (F z) (D (\x. (G x)) z)),
+  D (\x. sin (F x)) z -> mul (cos z) (D (\x. (F x)) z),
+  D (\x. cos (F x)) z -> mul (min (sin z)) (D (\x. (F x)) z)
+)
+(COMMENT from "http://www.cs.vu.nl/~femke/ps/examples.ps")

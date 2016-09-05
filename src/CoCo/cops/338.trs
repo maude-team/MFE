@@ -1,0 +1,12 @@
+(CONDITIONTYPE SEMI-EQUATIONAL)
+(VAR x y z)
+(RULES
+  App(App(App(S, x), y), z) -> App(App(x, z),App(y, z))
+  App(App(K, x), y) -> x
+  App(I, x) -> x
+  App(App(D,x),y) -> E | x == y 
+)
+(COMMENT
+  \cite{TeReSe}, CL-e* of Example 4.11.4
+  http://www.cs.vu.nl/~terese/
+)

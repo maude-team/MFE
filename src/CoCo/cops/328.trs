@@ -1,0 +1,26 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y n r xs r' n')
+(RULES
+  eq(0,0) -> true
+  eq(s(x),0) -> false
+  eq(0,s(y)) -> false
+  eq(s(x),s(y)) -> eq(x,y)
+  lte(0,y) -> true
+  lte(s(x),0) -> false
+  lte(s(x),s(y)) -> lte(x,y)
+  m(0,s(y)) -> 0
+  m(x,0) -> x
+  m(s(x),s(y)) -> m(x,y)
+  mod(0,y) -> 0
+  mod(s(x),0) -> 0
+  mod(s(x),s(y)) -> mod(m(x,y),s(y)) | lte(y,x) == true
+  mod(s(x),s(y)) -> s(x) | lte(y,x) == false
+  filter(n,r,nil) -> nil
+  filter(n,r,cons(x,xs)) -> cons(x,filter(n,r,xs)) | mod(x,n) == r', eq(r,r') == true
+  filter(n,r,cons(x,xs)) -> filter(n,r,xs) | mod(x,n) == n', eq(r,r') == false
+)
+(COMMENT
+  typo: Corrected version is Cop #493
+  \cite{O02}, Example 7.4.9, p. 235
+  doi: 10.1007/978-1-4757-3661-8
+)

@@ -1,0 +1,34 @@
+(FUN
+  0 : nat
+  s : nat -> nat
+  nil : natlist
+  cons : nat -> natlist -> natlist
+  max : nat -> nat -> nat
+  min : nat -> nat -> nat
+  insert : nat -> natlist -> (nat -> nat -> nat) -> (nat -> nat -> nat) -> natlist
+  sort : natlist -> (nat -> nat -> nat) -> (nat -> nat -> nat) -> natlist
+  asort : natlist -> natlist
+  dsort : natlist -> natlist
+)
+(VAR
+  n : nat
+  m : nat  
+  h : nat
+  t : natlist
+  l : natlist
+  F : nat -> nat -> nat
+  G : nat -> nat -> nat
+  x : nat
+  y : nat
+)
+(RULES
+  insert(n, nil, \x y. F(x, y), \x y. G(x, y)) -> cons(n, nil),
+  insert(n, cons(h,t), \x y. F(x, y), \x y. G(x, y)) ->
+    cons(F(n, h), insert(G(n, h), t, \x y. F(x, y), \x y. G(x, y))),
+  sort(nil, \x y. F(x, y), \x y. G(x, y)) -> nil,
+  sort(cons(h, t), \x y. F(x, y), \x y. G(x, y)) ->
+    insert(h, sort(t, \x y. F(x, y), \x y. G(x, y)), \x y. F(x, y), \x y. G(x, y)),
+  asort(l) -> sort(l, \x y. min(x, y), \x y. max(x, y)),
+  dsort(l) -> sort(l, \x y. max(x, y), \x y. min(x, y))
+)
+(COMMENT Example 1 of \cite{JR98})

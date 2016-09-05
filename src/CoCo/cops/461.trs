@@ -1,0 +1,14 @@
+(FUN
+  f : o -> o -> o
+  s : o -> o
+  a : o
+  b : o
+)
+(VAR
+  x : o
+)
+(RULES
+  f x x -> a,
+  f x (s x) -> b
+)
+(COMMENT Part 1 of Example 4.2 of \cite{AvOS10})

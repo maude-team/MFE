@@ -1,0 +1,8 @@
+(VAR x)
+(RULES
+f(x,x) -> s(s(x))
+infty -> s(infty)
+)
+(COMMENT Example 9 from [KH12]
+doi: http://dx.doi.org/10.1007/978-3-642-28717-6_21
+)

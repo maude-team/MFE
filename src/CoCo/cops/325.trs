@@ -1,0 +1,21 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  f(x) -> x | x == e, x == e'
+  g(d, x, x) -> A
+  h(x, x) -> g(x, x, f(k))
+  c -> e'
+  a -> c
+  a -> d
+  b -> c
+  b -> d
+  c -> e
+  c -> l
+  k -> l
+  k -> m
+  d -> m  
+)
+(COMMENT
+  \cite{NSS12}, R'_3 of Example 5.22
+  doi: 10.2168/LMCS-8(3:4)2012
+)

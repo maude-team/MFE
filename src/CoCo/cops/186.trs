@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+  +(x,0)  -> x
+  +(s(x),y)  -> s(+(x,y))
+  +(x,y) -> + (y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

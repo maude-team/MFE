@@ -1,0 +1,7 @@
+(VAR x y)
+(RULES
+  max(x,0)  -> x
+  max(s(x),s(y)) -> s(max(x,y))
+  max(x,y) -> max(y,x)
+)
+(COMMENT from the collection of \cite{AT2012})

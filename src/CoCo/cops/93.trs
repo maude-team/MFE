@@ -1,0 +1,6 @@
+(VAR x y)
+(RULES
+  F(H(x),y) -> G(H(x))
+  H(I(x)) -> I(x)
+  F(I(x),y) -> G(I(x))
+)

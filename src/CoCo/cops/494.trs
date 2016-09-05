@@ -1,0 +1,10 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x)
+(RULES
+  f(a,x) -> a
+  f(b,x) -> b
+  g(a,x) -> c | f(x,a) == a
+  g(x,a) -> d | f(x,b) == b
+  c -> c
+)
+(COMMENT Example 16 from 10.4230/LIPIcs.FSCD.2016.29)

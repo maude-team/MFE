@@ -1,0 +1,22 @@
+(FUN 
+  abs : (term -> term) -> term
+  app : term -> term -> term
+  sub : (term -> term) -> term -> term
+)
+(VAR
+  x : term
+  y : term
+  X0 : term
+  X : term -> term
+  X' : term -> term
+  X2 : term -> term -> term
+  Y : term
+)
+(RULES
+  app (abs (\y.X y)) Y -> sub (\y.X y) Y,
+  sub (\y.X0) Y -> X0,
+  sub (\y.y) Y -> Y,
+  sub (\y.abs (\x.X2 x y)) Y -> abs (\x.sub (\y.X2 x y) Y),
+  sub (\y.app (X y) (X' y)) Y -> app (sub (\y.X y) Y) (sub (\y.X' y) Y)
+)
+(COMMENT Bloo and Rose's lambda calculus with explicit substitutions lambda x.)

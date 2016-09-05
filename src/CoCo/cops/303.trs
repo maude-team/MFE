@@ -1,0 +1,12 @@
+(CONDITIONTYPE SEMI-EQUATIONAL)
+(VAR x)
+(RULES
+  F(x) -> F(x) | x == C
+  F(C) -> D
+  g(x) -> a
+  g(x) -> x
+)
+(COMMENT
+  \cite{M93}, Example 5.11
+  doi: 10.1006/inco.1993.1027
+)

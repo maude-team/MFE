@@ -1,0 +1,14 @@
+(CONDITIONTYPE ORIENTED)
+(VAR x y z)
+(RULES
+  lte(x, z) -> true | lte(x, y) == true, lte(y, z) == true
+  lte(x, x) -> true
+  max(x, y) -> y | lte(x, y) == true
+  max(x, y) -> x | lte(x, y) == false
+  lte(x, max(x, y)) -> true
+  lte(y, max(x, y)) -> true
+)
+(COMMENT
+  \cite{G91}, Example on page 77
+  doi: 10.1016/S0747-7171(08)80132-0
+)
