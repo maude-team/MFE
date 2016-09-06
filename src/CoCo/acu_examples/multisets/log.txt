@@ -1,0 +1,450 @@
+MTT -> AProVE: 
+( VAR M N S X X@@@ )  ( THEORY   ( AC @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ )   ( AC @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ )  )   ( RULES   @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( 0 ,  N ) -> N   @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( M ,  s@underscore@-@osb@Mset@csb@ ( N ) ) -> s@underscore@-@osb@Mset@csb@ ( @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( N ,  M ) )   @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@-@osb@Mset@csb@ ( 0 ,  N ,  X@@@ ) -> @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( N ,  X@@@ )   @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@-@osb@Mset@csb@ ( M ,  X@@@ ,  s@underscore@-@osb@Mset@csb@ ( N ) ) -> @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  s@underscore@-@osb@Mset@csb@ ( @underscore@+@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( N ,  M ) ) )   @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  size-@osb@Mset@csb@ ( N ) ) -> @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  s@underscore@-@osb@Mset@csb@ ( size-@osb@Mset@csb@ ( empty-mset ) ) )   @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  size-@osb@Mset@csb@ ( empty-mset ) ) -> @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( 0 ,  X@@@ )   @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  size-@osb@Mset@csb@ ( @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( N ,  S ) ) ) -> @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( X@@@ ,  s@underscore@-@osb@Mset@csb@ ( size-@osb@Mset@csb@ ( S ) ) )   @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( empty-mset ,  X ) -> X   size-@osb@Mset@csb@ ( N ) -> s@underscore@-@osb@Mset@csb@ ( size-@osb@Mset@csb@ ( empty-mset ) )   size-@osb@Mset@csb@ ( empty-mset ) -> 0   size-@osb@Mset@csb@ ( @underscore@@underscore@-@osb@Mset@csb@-@osb@Mset@csb@ ( N ,  S ) ) -> s@underscore@-@osb@Mset@csb@ ( size-@osb@Mset@csb@ ( S ) )  )  
+
+AProVE -> MTT: 
+MAYBE
+Term Rewriting System R:
+
+   [N, M, X@@@, S, X]
+   AC [__-`[Mset`]-`[Mset`], _+_-`[Mset`]-`[Mset`]]
+   _+_-`[Mset`]-`[Mset`](0, N) -> N
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+   _+_-`[Mset`]-`[Mset`]-`[Mset`](0, N, X@@@) -> _+_-`[Mset`]-`[Mset`](N, X@@@)
+   _+_-`[Mset`]-`[Mset`]-`[Mset`](M, X@@@, s_-`[Mset`](N)) -> _+_-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](empty-mset)) -> __-`[Mset`]-`[Mset`](0, X@@@)
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](__-`[Mset`]-`[Mset`](N, S))) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](S)))
+   __-`[Mset`]-`[Mset`](empty-mset, X) -> X
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   size-`[Mset`](empty-mset) -> 0
+   size-`[Mset`](__-`[Mset`]-`[Mset`](N, S)) -> s_-`[Mset`](size-`[Mset`](S))
+
+Termination of R to be shown.
+
+
+
+
+
+   R     ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   _+_-`[Mset`]-`[Mset`]-`[Mset`](0, N, X@@@) -> _+_-`[Mset`]-`[Mset`](N, X@@@)
+   _+_-`[Mset`]-`[Mset`]-`[Mset`](M, X@@@, s_-`[Mset`](N)) -> _+_-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)))
+
+where the Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = x_1
+POL(size-`[Mset`](x_1)) = x_1
+POL(_+_-`[Mset`]-`[Mset`]-`[Mset`](x_1, x_2, x_3)) = 1 + x_1 + x_2 + x_3
+POL(__-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(empty-mset) = 0
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(0) = 0
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   _+_-`[Mset`]-`[Mset`](0, N) -> N
+
+where the Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = x_1
+POL(size-`[Mset`](x_1)) = x_1
+POL(__-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(empty-mset) = 0
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = 1 + x_1 + x_2
+POL(0) = 0
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](empty-mset)) -> __-`[Mset`]-`[Mset`](0, X@@@)
+   size-`[Mset`](empty-mset) -> 0
+
+where the Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = x_1
+POL(size-`[Mset`](x_1)) = 1 + x_1
+POL(__-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(empty-mset) = 0
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(0) = 0
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->TRS4
+                 ->Removing Redundant Rules
+
+
+
+Removing the following rules from R which fullfill a polynomial ordering: 
+
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](__-`[Mset`]-`[Mset`](N, S))) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](S)))
+   __-`[Mset`]-`[Mset`](empty-mset, X) -> X
+   size-`[Mset`](__-`[Mset`]-`[Mset`](N, S)) -> s_-`[Mset`](size-`[Mset`](S))
+
+where the Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = x_1
+POL(size-`[Mset`](x_1)) = x_1
+POL(__-`[Mset`]-`[Mset`](x_1, x_2)) = 1 + x_1 + x_2
+POL(empty-mset) = 0
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+was used. 
+
+
+
+Not all Rules of R can be deleted, so we still have to regard a part of R.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->TRS5
+                 ->Dependency Pair Analysis
+
+
+
+R contains the following Dependency Pairs: 
+
+
+   SIZE-@OSB@MSET@CSB@(N) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> _+_-`[Mset`]-`[Mset`](N, M)
+   _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)), ext)
+   _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](N, M)
+
+Furthermore, R contains three SCCs.
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 1
+                 ->Instantiation Transformation
+
+
+Dependency Pair:
+SIZE-@OSB@MSET@CSB@(N) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+On this DP problem, an Instantiation SCC transformation can be performed.
+
+As a result of transforming the rule 
+
+   SIZE-@OSB@MSET@CSB@(N) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+one new Dependency Pair
+is created:
+
+
+   SIZE-@OSB@MSET@CSB@(empty-mset) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+
+The transformation is resulting in one new DP problem:
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 7
+                 ->Remaining Obligation(s)
+
+
+
+
+The following remains to be proven:
+Dependency Pair:
+SIZE-@OSB@MSET@CSB@(empty-mset) -> SIZE-@OSB@MSET@CSB@(empty-mset)
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 2
+                 ->Polynomial Ordering
+
+
+Dependency Pair:
+__-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+
+
+Additionally, the following usable rules w.r.t. the implicit AFS can be oriented: 
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+
+Oriented Equations: 
+
+   __-`[Mset`]-`[Mset`](x, __-`[Mset`]-`[Mset`](y, z)) == __-`[Mset`]-`[Mset`](__-`[Mset`]-`[Mset`](x, y), z)
+   __-`[Mset`]-`[Mset`](x, y) == __-`[Mset`]-`[Mset`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(size-`[Mset`](x_1)) = 1
+POL(s_-`[Mset`](x_1)) = 0
+POL(__-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+POL(empty-mset) = 0
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 4
+                 ->Dependency Graph
+
+
+Dependency Pair:
+
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 3
+                 ->Polynomial Ordering
+
+
+Dependency Pairs:
+_+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](N, M)
+_+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)), ext)
+_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> _+_-`[Mset`]-`[Mset`](N, M)
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+The following dependency pairs can be strictly oriented:
+
+
+   _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](N, M)
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> _+_-`[Mset`]-`[Mset`](N, M)
+
+
+Additionally, the following usable rule w.r.t. the implicit AFS can be oriented: 
+
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+Oriented Equations: 
+
+   _+_-`[Mset`]-`[Mset`](x, _+_-`[Mset`]-`[Mset`](y, z)) == _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](x, y), z)
+   _+_-`[Mset`]-`[Mset`](x, y) == _+_-`[Mset`]-`[Mset`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = 1 + x_1
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = x_1 + x_2
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 5
+                 ->Polynomial Ordering
+
+
+Dependency Pair:
+_+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)), ext)
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)), ext) -> _+_-`[Mset`]-`[Mset`](s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M)), ext)
+
+
+Additionally, the following usable rule w.r.t. the implicit AFS can be oriented: 
+
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+Oriented Equations: 
+
+   _+_-`[Mset`]-`[Mset`](x, _+_-`[Mset`]-`[Mset`](y, z)) == _+_-`[Mset`]-`[Mset`](_+_-`[Mset`]-`[Mset`](x, y), z)
+   _+_-`[Mset`]-`[Mset`](x, y) == _+_-`[Mset`]-`[Mset`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(s_-`[Mset`](x_1)) = 0
+POL(_+_-`[Mset`]-`[Mset`](x_1, x_2)) = 1 + x_1 + x_2
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->RRRPolo
+
+       ->TRS2
+         ->RRRPolo
+
+           ->TRS3
+             ->RRRPolo
+             ...
+
+               ->DP Problem 6
+                 ->Dependency Graph
+
+
+Dependency Pair:
+
+Rules:
+
+   size-`[Mset`](N) -> s_-`[Mset`](size-`[Mset`](empty-mset))
+   __-`[Mset`]-`[Mset`](X@@@, size-`[Mset`](N)) -> __-`[Mset`]-`[Mset`](X@@@, s_-`[Mset`](size-`[Mset`](empty-mset)))
+   _+_-`[Mset`]-`[Mset`](M, s_-`[Mset`](N)) -> s_-`[Mset`](_+_-`[Mset`]-`[Mset`](N, M))
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+Termination of R could not be shown.
+
+Duration: 
+0:00 minutes
+
+
+

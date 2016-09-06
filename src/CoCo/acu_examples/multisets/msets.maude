@@ -1,0 +1,41 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod BASIC-NAT is
+   sort Nat .
+   op 0 : -> Nat [ctor] .
+   op s_ : Nat -> Nat [ctor] .
+
+   op _+_ : Nat Nat -> Nat [comm assoc] .
+
+   vars N M : Nat .
+   eq 0 + N = N .
+   eq s(N) + M = s(N + M) .
+
+endfm)
+
+(fmod BASIC-NAT-MSET is
+  protecting BASIC-NAT .
+
+  sort Mset .
+  subsorts Nat < Mset .
+  op empty-mset : -> Mset [ctor] .
+  op __ : Mset Mset -> Mset [ctor assoc comm id: empty-mset] .
+
+  op size : Mset -> Nat .
+  op mult : Nat Mset -> Nat .
+  op _in_ : Nat Mset -> Bool .
+
+  vars N N' : Nat .
+  var  S : Mset .
+
+  eq size(empty-mset) = 0 .
+  eq size(N S) = s size(S) .
+endfm)
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct BASIC-NAT-MSET .)
+
+(select tool CRC .)
+(check Church-Rosser BASIC-NAT-MSET .)

@@ -1,0 +1,1271 @@
+MTT -> AProVE: 
+( VAR M'' M' M N S' S X X@@@ )  ( THEORY   ( AC @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ )   ( AC @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ )   ( C @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ )  )   ( RULES   @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M ) -> M   @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M ,  X@@@ ) -> @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  X@@@ )   @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb--ccb ,  M ) -> true   @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) ,  M' ) -> U11 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  M' ) ,  false ) )   @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) ,  M' ) -> U21 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  M' ) ,  true ) ,  M' ,  M )   @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ,  M' ) -> U31 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' ) ,  false ) )   @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ,  M' ) -> U41 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' ) ,  true ) )   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M' ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) ) -> U51 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M' ) ) ,  false ) )   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' ) -> U61 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M' ) ) ) ,  false ) )   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M ) -> true   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) -> U71 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) ,  false ) )   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M' ,  S ) ) -> @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M' ,  S )   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb--ccb ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) -> false   @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M' ) ) -> @underscore@equiv@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  ocb--ccb ) -> false   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M'' ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' ) ) ) ) -> true   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M' ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) ) -> true   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) -> true   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' ) ) ) -> true   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( N ,  S' ) ) -> U81 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  S' ) ,  true ) )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( N ,  S' ) ) -> U91 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  S' ) ,  false ) ,  N ,  S )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb--ccb ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( N ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) ) ) -> @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb--ccb ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( N ) )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb--ccb ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ) ) -> false   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) ,  M' ) -> U101 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  M' ) ,  false ) )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( @underscore@-comma-@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  S ) ,  M' ) -> U111 ( equal-@osb@Bool@csb@-@osb@Bool@csb@ ( @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  M' ) ,  true ) ,  M' ,  M )   @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( ocb-@underscore@-ccb-@osb@Magma@csb@ ( M ) ,  ocb-@underscore@-ccb-@osb@Magma@csb@ ( M' ) ) -> @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' )   U101 ( tt ) -> false   U11 ( tt ) -> false   U111 ( tt ,  M' ,  M ) -> @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' )   U21 ( tt ,  M' ,  M ) -> @underscore@<=@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( M ,  M' )   U31 ( tt ) -> false   U41 ( tt ) -> true   U51 ( tt ) -> false   U61 ( tt ) -> false   U71 ( tt ) -> false   U81 ( tt ) -> true   U91 ( tt ,  N ,  S ) -> @underscore@in@underscore@-@osb@Magma@csb@-@osb@Magma@csb@ ( S ,  N )   equal-@osb@Bool@csb@-@osb@Bool@csb@ ( X ,  X ) -> tt  )  
+
+AProVE -> MTT: 
+YES
+Term Rewriting System R:
+
+   [M, X@@@, S, M', M'', N, S', X]
+   AC [_-comma-_-`[Magma`]-`[Magma`]]
+   C [_equiv_-`[Magma`]-`[Magma`]]
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   U11(tt) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U31(tt) -> false
+   U41(tt) -> true
+   U51(tt) -> false
+   U61(tt) -> false
+   U71(tt) -> false
+   U81(tt) -> true
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+
+Termination of R to be shown.
+
+
+
+
+
+   R     ->Dependency Pair Analysis
+
+
+
+R contains the following Dependency Pairs: 
+
+
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11'(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_<=_-`[Magma`]-`[Magma`](S, M'), false)
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), M') -> U31'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](M, M'), false)
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21'(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_<=_-`[Magma`]-`[Magma`](S, M'), true)
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), M') -> U41'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](M, M'), true)
+   _-comma-_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M), ext) -> _-comma-_-`[Magma`]-`[Magma`](M, ext)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, M'), true)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, M'), false)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, S'), false)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, S'), true)
+   U111'(tt, M', M) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false)
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M')))
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false)
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, ocb-_-ccb-`[Magma`](M'))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> EQUAL-@OSB@BOOL@CSB@-@OSB@BOOL@CSB@(_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, ocb-_-ccb-`[Magma`](M))
+   U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+   U21'(tt, M', M) -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+   @UNDERSCORE@-COMMA-@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+
+Furthermore, R contains five SCCs.
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polynomial Ordering
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pair:
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](N))
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb--ccb, ocb-_-ccb-`[Magma`](N))
+
+
+There are no usable rules w.r.t. to the implicit AFS that need to be oriented.
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(ocb--ccb) = 0
+POL(@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(x_1, x_2)) = 1 + x_2
+POL(ocb-_-ccb-`[Magma`](x_1)) = x_1
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+
+           ->DP Problem 6
+             ->Dependency Graph
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pair:
+
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polynomial Ordering
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pairs:
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+U111'(tt, M', M) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+
+
+Additionally, the following usable rules w.r.t. the implicit AFS can be oriented: 
+
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U81(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(ocb--ccb) = 0
+POL(equal-`[Bool`]-`[Bool`](x_1, x_2)) = 0
+POL(_in_-`[Magma`]-`[Magma`](x_1, x_2)) = 0
+POL(false) = 0
+POL(U91(x_1, x_2, x_3)) = 0
+POL(U111'(x_1, x_2, x_3)) = x_3
+POL(U81(x_1)) = 0
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = x_1 + x_2
+POL(U91'(x_1, x_2, x_3)) = x_3
+POL(U111(x_1, x_2, x_3)) = 0
+POL(U101(x_1)) = 0
+POL(true) = 0
+POL(@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(x_1, x_2)) = x_1
+POL(ocb-_-ccb-`[Magma`](x_1)) = 1 + x_1
+POL(tt) = 0
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+
+           ->DP Problem 7
+             ->Polynomial Ordering
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pairs:
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+U111'(tt, M', M) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pairs can be strictly oriented:
+
+
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+
+
+Additionally, the following usable rules w.r.t. the implicit AFS can be oriented: 
+
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U81(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(ocb--ccb) = 0
+POL(equal-`[Bool`]-`[Bool`](x_1, x_2)) = 0
+POL(_in_-`[Magma`]-`[Magma`](x_1, x_2)) = 0
+POL(false) = 0
+POL(U91(x_1, x_2, x_3)) = 0
+POL(U111'(x_1, x_2, x_3)) = x_3
+POL(U81(x_1)) = 0
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1 + x_2
+POL(U91'(x_1, x_2, x_3)) = x_3
+POL(U111(x_1, x_2, x_3)) = 0
+POL(U101(x_1)) = 0
+POL(true) = 0
+POL(@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(x_1, x_2)) = x_1
+POL(ocb-_-ccb-`[Magma`](x_1)) = 0
+POL(tt) = 0
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+
+           ->DP Problem 7
+             ->Polo
+             ...
+
+               ->DP Problem 11
+                 ->Dependency Graph
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pairs:
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+U111'(tt, M', M) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+Using the Dependency Graph the DP problem was split into 1 DP problems.
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+
+           ->DP Problem 7
+             ->Polo
+             ...
+
+               ->DP Problem 13
+                 ->Polynomial Ordering
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pairs:
+U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pairs can be strictly oriented:
+
+
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91'(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, S')
+
+
+Additionally, the following usable rules w.r.t. the implicit AFS can be oriented: 
+
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U81(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(ocb--ccb) = 0
+POL(equal-`[Bool`]-`[Bool`](x_1, x_2)) = 0
+POL(_in_-`[Magma`]-`[Magma`](x_1, x_2)) = 0
+POL(false) = 0
+POL(U91(x_1, x_2, x_3)) = 0
+POL(U81(x_1)) = 0
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1 + x_2
+POL(U91'(x_1, x_2, x_3)) = x_2
+POL(U111(x_1, x_2, x_3)) = 0
+POL(U101(x_1)) = 0
+POL(true) = 0
+POL(@UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(x_1, x_2)) = x_2
+POL(ocb-_-ccb-`[Magma`](x_1)) = 0
+POL(tt) = 0
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+
+           ->DP Problem 7
+             ->Polo
+             ...
+
+               ->DP Problem 14
+                 ->Dependency Graph
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pair:
+U91'(tt, N, S) -> @UNDERSCORE@IN@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, N)
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polynomial Ordering
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pairs:
+U21'(tt, M', M) -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+@UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21'(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+@UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pairs can be strictly oriented:
+
+
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21'(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(S, M')
+
+
+Additionally, the following usable rules w.r.t. the implicit AFS can be oriented: 
+
+   U31(tt) -> false
+   U41(tt) -> true
+   U11(tt) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U81(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(ocb--ccb) = 0
+POL(equal-`[Bool`]-`[Bool`](x_1, x_2)) = 0
+POL(_in_-`[Magma`]-`[Magma`](x_1, x_2)) = 0
+POL(false) = 0
+POL(U91(x_1, x_2, x_3)) = 0
+POL(U81(x_1)) = 0
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1 + x_2
+POL(U31(x_1)) = 0
+POL(U41(x_1)) = 0
+POL(U11(x_1)) = 0
+POL(U111(x_1, x_2, x_3)) = 0
+POL(U21(x_1, x_2, x_3)) = 0
+POL(U101(x_1)) = 0
+POL(_<=_-`[Magma`]-`[Magma`](x_1, x_2)) = 0
+POL(@UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(x_1, x_2)) = x_1
+POL(U21'(x_1, x_2, x_3)) = x_3
+POL(true) = 0
+POL(ocb-_-ccb-`[Magma`](x_1)) = 0
+POL(tt) = 0
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+
+           ->DP Problem 8
+             ->Dependency Graph
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pair:
+U21'(tt, M', M) -> @UNDERSCORE@<=@UNDERSCORE@-@OSB@MAGMA@CSB@-@OSB@MAGMA@CSB@(M, M')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polynomial Ordering
+       ->DP Problem 5
+         ->Polo
+
+
+Dependency Pair:
+_-comma-_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M), ext) -> _-comma-_-`[Magma`]-`[Magma`](M, ext)
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   _-comma-_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M), ext) -> _-comma-_-`[Magma`]-`[Magma`](M, ext)
+
+
+Additionally, the following usable rule w.r.t. the implicit AFS can be oriented: 
+
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+
+Oriented Equations: 
+
+   _-comma-_-`[Magma`]-`[Magma`](x, _-comma-_-`[Magma`]-`[Magma`](y, z)) == _-comma-_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](x, y), z)
+   _-comma-_-`[Magma`]-`[Magma`](x, y) == _-comma-_-`[Magma`]-`[Magma`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1 + x_2
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polynomial Ordering
+
+
+Dependency Pairs:
+_equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+_equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+
+
+There are no usable rules w.r.t. to the implicit AFS that need to be oriented.
+
+
+Oriented Equation: 
+
+   _equiv_-`[Magma`]-`[Magma`](x, y) == _equiv_-`[Magma`]-`[Magma`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(_equiv_-`[Magma`]-`[Magma`](x_1, x_2)) = x_1 + x_2
+POL(ocb-_-ccb-`[Magma`](x_1)) = x_1
+POL(_-comma-_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+           ->DP Problem 10
+             ->Polynomial Ordering
+
+
+Dependency Pair:
+_equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+The following dependency pair can be strictly oriented:
+
+
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+
+
+There are no usable rules w.r.t. to the implicit AFS that need to be oriented.
+
+
+Oriented Equation: 
+
+   _equiv_-`[Magma`]-`[Magma`](x, y) == _equiv_-`[Magma`]-`[Magma`](y, x)
+
+
+Used ordering: Polynomial ordering with Polynomial interpretation:
+POL(_equiv_-`[Magma`]-`[Magma`](x_1, x_2)) = 1 + x_1 + x_2
+POL(ocb-_-ccb-`[Magma`](x_1)) = 1 + x_1
+
+ resulting in one new DP problem.
+
+
+
+
+   R     ->DPs
+
+       ->DP Problem 1
+         ->Polo
+       ->DP Problem 2
+         ->Polo
+       ->DP Problem 3
+         ->Polo
+       ->DP Problem 4
+         ->Polo
+       ->DP Problem 5
+         ->Polo
+
+           ->DP Problem 10
+             ->Polo
+             ...
+
+               ->DP Problem 12
+                 ->Dependency Graph
+
+
+Dependency Pair:
+
+Rules:
+
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U11(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U31(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), false))
+   _<=_-`[Magma`]-`[Magma`](ocb--ccb, M) -> true
+   _<=_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U21(equal-`[Bool`]-`[Bool`](_<=_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _<=_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), M') -> U41(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](M, M'), true))
+   _-comma-_-`[Magma`]-`[Magma`](M, M) -> M
+   U11(tt) -> false
+   equal-`[Bool`]-`[Bool`](X, X) -> tt
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U111(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), true), M', M)
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M'', ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M')))) -> true
+   _in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _in_-`[Magma`]-`[Magma`](M, M')
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](N, ocb-_-ccb-`[Magma`](M)))) -> _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](N))
+   _in_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M))) -> false
+   _in_-`[Magma`]-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, S), M') -> U101(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, M'), false))
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U91(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), false), N, S)
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](_-comma-_-`[Magma`]-`[Magma`](M, M'))) -> true
+   _in_-`[Magma`]-`[Magma`](M, _-comma-_-`[Magma`]-`[Magma`](M', ocb-_-ccb-`[Magma`](M))) -> true
+   _in_-`[Magma`]-`[Magma`](M, ocb-_-ccb-`[Magma`](M)) -> true
+   _in_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](N, S')) -> U81(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, S'), true))
+   _in_-`[Magma`]-`[Magma`](M, ocb--ccb) -> false
+   U111(tt, M', M) -> _in_-`[Magma`]-`[Magma`](M, M')
+   U101(tt) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb--ccb, ocb-_-ccb-`[Magma`](M)) -> false
+   _equiv_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](M')) -> _equiv_-`[Magma`]-`[Magma`](M, M')
+   _equiv_-`[Magma`]-`[Magma`](M, M') -> U61(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](ocb-_-ccb-`[Magma`](M), ocb-_-ccb-`[Magma`](ocb-_-ccb-`[Magma`](M'))), false))
+   _equiv_-`[Magma`]-`[Magma`](M, M) -> true
+   _equiv_-`[Magma`]-`[Magma`](M', _-comma-_-`[Magma`]-`[Magma`](M, S)) -> U51(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M')), false))
+   _equiv_-`[Magma`]-`[Magma`](S, _-comma-_-`[Magma`]-`[Magma`](M', S)) -> _equiv_-`[Magma`]-`[Magma`](M', S)
+   _equiv_-`[Magma`]-`[Magma`](M, S) -> U71(equal-`[Bool`]-`[Bool`](_in_-`[Magma`]-`[Magma`](S, ocb-_-ccb-`[Magma`](M)), false))
+   U71(tt) -> false
+   U61(tt) -> false
+   U51(tt) -> false
+   U31(tt) -> false
+   U91(tt, N, S) -> _in_-`[Magma`]-`[Magma`](S, N)
+   U21(tt, M', M) -> _<=_-`[Magma`]-`[Magma`](M, M')
+   U41(tt) -> true
+   _-comma-_-`[Magma`]-`[Magma`]-`[Magma`](M, M, X@@@) -> _-comma-_-`[Magma`]-`[Magma`](M, X@@@)
+   U81(tt) -> true
+
+
+
+
+Using the Dependency Graph resulted in no new DP problems.
+
+Termination of R successfully shown.
+
+Duration: 
+0:00 minutes
+
+
+

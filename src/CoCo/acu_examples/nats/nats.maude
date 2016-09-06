@@ -1,0 +1,23 @@
+---- Nats example
+
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod MYNAT is
+   sort MyNat .
+   op 0 : -> MyNat [ctor] .
+   op s : MyNat -> MyNat [ctor] .
+
+   op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+
+   vars N M : MyNat .
+   eq 0 + N = N .
+   eq s(N) + M = s(N + M) .
+
+endfm)
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct MYNAT .)
+(select tool CRC .)
+(ccr MYNAT .)

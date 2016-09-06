@@ -1,0 +1,22 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod MBOOL is
+   op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+   op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+   op not_ : Bool -> Bool [prec 53] .
+   vars A B C : Bool .
+   eq true and A = A .
+   eq false and A = false .
+   eq not true = false .
+   eq not false = true .
+   eq not not A = A .
+   eq A or B = not (not A and not B) .
+ endfm)
+
+ (select tool MTT .)
+ (select external tool aprove .)
+ (ct MBOOL .)
+
+ (select tool CRC .)
+ (check Church-Rosser MBOOL .)

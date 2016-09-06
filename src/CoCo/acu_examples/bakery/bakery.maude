@@ -1,0 +1,36 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod 2BAK-SYNTAX is
+  pr BOOL-OPS .
+  sort Nat .
+  op 0 : -> Nat [ctor] .
+  op s_ : Nat -> Nat [ctor] .
+  op _<=_ : Nat Nat -> Bool .
+  op _<_ : Nat Nat -> Bool .
+  sorts Mode State .
+  ops sleep wait crit : -> Mode [ctor] .
+  op <_`,_`,_`,_> : Mode Nat Mode Nat -> State [ctor] .
+  vars M N : Nat .
+  eq 0 <= N = true .
+  eq s M <= 0 = false .
+  eq s M <= s N = M <= N .
+  eq M < N = not( N <= M ) .
+endfm)
+
+(mod 2BAK is
+  protecting 2BAK-SYNTAX .
+  vars M N : Nat . vars X Y : Mode .
+  rl [p1_s] : < sleep, M, Y, N > => < wait, s N, Y, N > .
+ crl [p1_w] : < wait, M, Y, N >  => < crit, M, Y, N > if M <= N = true .
+  rl [p1_c] : < crit, M, Y, N >  => < sleep, 0, Y, N > .
+  rl [p2_s] : < X, M, sleep, N > => < X, M, wait, s M > .
+ crl [p2_w] : < X, M, wait, N >  => < X, M, crit, N > if N < M = true .
+  rl [p2_c] : < X, M, crit, N >  => < X, M, sleep, 0 > .
+endm)
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct 2BAK .)
+(select tool CRC .)
+(ccr 2BAK .)
