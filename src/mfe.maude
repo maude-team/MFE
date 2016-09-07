@@ -3460,15 +3460,27 @@ mod MFE-CoCo is
     (to O from O' : ('COMMENT_[T]))
     => < O : X@CoCoBroker | Atts > .
         
- crl [CoCo-load] :
-    < O : X@Controller | db : DB, Atts > 
+ crl [CoCo-check-TPDB] :
+    < O : X@Controller | Atts > 
     < O' : X@CoCoBroker | module : M, Atts' > 
-    (to O' from O'' : ('cocoload`..@Command@))
-    => < O : X@Controller | db : DB, Atts > 
-       < O' : X@CoCoBroker | module : M', Atts' > 
-    if DB' := evalModule(M, none, DB) 
-    /\ M' := getFlatModule('CoCoModule, DB') 
-    /\ TERMINATING := substr(terminationCheck(M, C;A;B(no-sorts), false, false, "aprove"), 0, 3)
+    (to O' from O'' : ('coco`check`tpdb`..@Command@))
+    => < O : X@Controller | Atts > 
+       < O' : X@CoCoBroker | module : M, Atts' > 
+    if TERMINATING := substr(terminationCheck(M, C;A;B(no-sorts), false, false, "aprove"), 0, 3)
+    /\ if TERMINATING == "YES"
+       then cocoCRCResultTerminating($processCRCcheck(M)) 
+       else cocoCRCResultNonTerminating($processCRCcheckCoCo(M)) 
+       fi : String .
+
+ crl [CoCo-check-Maude] :
+    < O : X@Controller | db : DB, default : MN, Atts > 
+    < O' : X@CoCoBroker | Atts' > 
+    (to O' from O'' : ('coco`check`maude`..@Command@))
+    => < O : X@Controller | db : DB, default : MN, Atts > 
+       < O' : X@CoCoBroker | Atts' > 
+    if < DB' ; ME > := evalModExp(MN, DB)
+    /\ M := getFlatModule(ME, DB')
+    /\ TERMINATING := substr(terminationCheck(eraseRls(M), C;A;B(no-sorts), false, false, "aprove"), 0, 3)
     /\ if TERMINATING == "YES"
        then cocoCRCResultTerminating($processCRCcheck(M)) 
        else cocoCRCResultNonTerminating($processCRCcheckCoCo(M)) 
@@ -3488,7 +3500,7 @@ mod MFE-CoCo is
                 writeToFile("coco.txt", "All critical pairs have been joined. \n", false) +
                 writeToFile("coco.txt", "The specification is locally-confluent. \n", false) +
                 writeToFile("coco.txt", "The specification is terminating `, and therefore confluent. \n", false) 
-           else writeToFile("coco.txt", "NO", true) + 
+           else writeToFile("coco.txt", "MAYBE", true) + 
                 writeToFile("coco.txt", "The specification has been proven terminating using AProVE", false) + 
                 writeToFile("coco.txt", "The following critical pairs must be proved joinable: \n", false) +
                 writeToFile("coco.txt", qidList2string(eMetaPrettyPrint(M, '=, pendingCPs(CPS), false)), false) 

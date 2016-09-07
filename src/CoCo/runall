@@ -1,5 +1,11 @@
 for i in cops/*
 do
 	echo "cops/" $i
-	./run $i
+	./runtpdb $i
+done
+
+for i in maude/*
+do
+	echo "maude/" $i
+	./runmaude $i
 done

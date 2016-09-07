@@ -1,6 +1,0 @@
-- HF-SETS: OK.
-- 4: It's not terminating, but confluent.
-- NATS: OK.
-- bakery: OK.
-- NAT-LISTS: OK.
-- BOOL: OK.

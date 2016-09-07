@@ -1,0 +1,37 @@
+  load mbool.fm
+  
+ (fmod MNAT is
+    pr MBOOL .
+    sorts Nat NzNat Zero .
+    subsorts Zero NzNat < Nat .
+    op 0 : -> Zero .
+    op s_ : Nat -> NzNat .
+    op p_ : NzNat -> Nat .
+    op _+_ : Nat Nat -> Nat [comm assoc] .
+    op _*_ : Nat Nat -> Nat .
+    op _*_ : NzNat NzNat -> NzNat .
+    ops _>_ : Nat Nat -> Bool .
+    op d : Nat Nat -> Nat [comm] .
+    op quot : Nat NzNat -> Nat .
+    op gcd : NzNat NzNat -> NzNat [comm] .
+    vars N M : Nat . 
+    vars N' M' : NzNat .
+    eq  [nat01] : p s N = N .
+    eq  [nat02] : N + 0 = N .
+    eq  [nat03] : (s N) + (s M) = s s (N + M) .
+    eq  [nat04] : N * 0 = 0 .
+    eq  [nat05] : 0 * N = 0 .
+    eq  [nat06] : (s N) * (s M) = s (N + (M + (N * M))) .
+    eq  [nat07] : 0 > M = false .
+    eq  [nat08] : N' > 0 = true .
+    eq  [nat09] : s N > s M = N > M .
+    eq  [nat10] : d(0, N) = N .
+    eq  [nat11] : d(s N, s M) = d(N, M) .
+---(
+    ceq [nat12] : quot(N, M') = s quot(d(N, M'), M') if N > M' = true .
+    eq  [nat13] : quot(M', M') = s 0 .
+    ceq [nat14] : quot(N, M') = 0 if M' > N = true .
+    eq  [nat15] : gcd(N', N') = N' .
+    ceq [nat16] : gcd(N', M') = gcd(d(N', M'), M') if N' > M' = true .
+---)
+  endfm)

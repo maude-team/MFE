@@ -1,1 +1,3 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
 (select tool CoCo .)

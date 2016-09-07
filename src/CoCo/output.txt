@@ -1,3 +1,10 @@
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension 
+	    Copyright 1997-2014 SRI International
+		   Tue Sep  6 19:00:35 2016
 
 	    Full Maude 2.7 March 10th 2015
 
@@ -6,17 +13,23 @@ The Maude Formal Environment 1.0b
     Church-Rosser Checker 3o - June 18th,2014
     Coherence Checker 3o - June 18th,2014
     Maude Termination Tool 1.5j - August 11th 2014
-    Confluence Check for the CoCo - August 29th 2016
+    Confluence Check for the CoCo - August 2016
 
-rewrites: 98 in 4ms cpu (5ms real) (20139 rewrites/second)
+rewrites: 48 in 3ms cpu (4ms real) (13718 rewrites/second)
+set include BOOL off
+
+rewrites: 42 in 0ms cpu (0ms real) (42000000 rewrites/second)
+set include TRUTH-VALUE on
+
+rewrites: 94 in 0ms cpu (0ms real) (160683 rewrites/second)
 The CoCo has been set as current tool.
 
-rewrites: 48 in 3ms cpu (4ms real) (12257 rewrites/second)
+rewrites: 963 in 1ms cpu (1ms real) (588271 rewrites/second)
+Introduced module BASIC-NAT
 
-rewrites: 431 in 1ms cpu (1ms real) (379735 rewrites/second)
+rewrites: 1085 in 2ms cpu (2ms real) (503480 rewrites/second)
+Introduced module BASIC-NAT-MSET
 
-rewrites: 24 in 0ms cpu (0ms real) (41522 rewrites/second)
-
-rewrites: 82181 in 71ms cpu (636ms real) (1144311 rewrites/second)
+rewrites: 1230606 in 1154ms cpu (1975ms real) (1065747 rewrites/second)
 
 Bye.

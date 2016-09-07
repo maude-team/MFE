@@ -1,0 +1,8 @@
+(fmod 4 is
+  sort S .
+  op true : -> S .
+  op or : S S -> S .
+  vars x y : S .
+  eq or(true,true) = true .
+  eq or(x,y) = or(y,x) .
+endfm)

@@ -1,0 +1,2 @@
+~/Maude/maude-2.7-hooks-darwin/maude++ -no-advise ../mfe.maude coco-pre.maude $1 coco-post-maude.maude > output.txt 2> stderr.txt
+cat coco.txt

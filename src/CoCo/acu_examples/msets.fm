@@ -1,6 +1,3 @@
-(set include BOOL off .)
-(set include TRUTH-VALUE on .)
-
 (fmod BASIC-NAT is
    sort Nat .
    op 0 : -> Nat [ctor] .
@@ -32,10 +29,3 @@ endfm)
   eq size(empty-mset) = 0 .
   eq size(N S) = s size(S) .
 endfm)
-
-(select tool MTT .)
-(select external tool aprove .)
-(ct BASIC-NAT-MSET .)
-
-(select tool CRC .)
-(check Church-Rosser BASIC-NAT-MSET .)

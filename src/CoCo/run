@@ -1,5 +1,0 @@
-
-### ~/Maude/Alpha110b/maude.darwin64 -interactive -no-banner coco.maude $1 check-command.maude
-
-~/Maude/maude-2.7-hooks-darwin/maude++ -interactive -no-banner ../mfe.maude coco-pre.maude $1 coco-post.maude > output.txt
-cat coco.txt

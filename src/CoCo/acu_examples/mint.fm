@@ -1,0 +1,36 @@
+  load mnat.fm
+
+ (fmod MINT is
+    protecting MNAT-3 .
+    sorts Int NzInt .
+    subsort Nat < Int .
+    subsorts NzNat < NzInt < Int .
+    op -_ : Int -> Int .
+    op -_ : NzInt -> NzInt .
+    op _+_ : Int Int -> Int [assoc comm] .
+    op _*_ : Int Int -> Int .
+    op _*_ : NzInt NzInt -> NzInt .
+    op quot : Int NzInt -> Int .
+    op gcd : NzInt NzInt -> NzNat [comm] .
+    vars I J : Int . 
+    vars I' J' : NzInt .
+    vars N' M' : NzNat .
+    eq  [int01] : - - I = I .
+    eq  [int02] : - 0 = 0 .
+    eq  [int03] : I + 0 = I .
+    eq  [int04] : M' + (- M') = 0 .
+    ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
+    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .         
+    eq  [int07] : (- I) + (- J) = - (I + J) .
+    eq  [int08] : I * 0 = 0 .
+    eq  [int09] : 0 * I = 0 .
+    eq  [int10] : I * (- J) = - (I * J) .
+    eq  [int11] : (- J) * I = - (I * J) .
+---(
+    eq  [int12] : quot(0, I') = 0 .
+    eq  [int13] : quot(- I', J') = - quot(I', J') .
+    eq  [int14] : quot(I', - J') = - quot(I', J') .
+    eq  [int15] : gcd(- I', J') = gcd(I', J') .
+---)
+  endfm)
+ 

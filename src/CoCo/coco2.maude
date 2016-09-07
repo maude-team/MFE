@@ -3,7 +3,7 @@
 fmod CoCo-BANNER is
   pr STRING .
   op coco-banner : -> String .
-  eq coco-banner = "Confluence Check for the CoCo - August 29th 2016" .
+  eq coco-banner = "Confluence Check for the CoCo - August 2016" .
 endfm
 
 fmod CoCo-HELP is
@@ -13,14 +13,16 @@ fmod CoCo-HELP is
   op coco-help : -> QidList .
   eq coco-help =
       string2qidList("Support for the TPDB syntax") '\n 
-      '\t '`( '\! 'cocoload '\o '. '`) '\n '\t '\t 'Loads 'the 'entered 'TPDB 'module 'into 'the 'database. '\n .
+      '\t '`( '\! 'coco`check`tpdb '\o '. '`) '\n '\t '\t 'Checks 'the 'entered 'TPDB 'module '. '\n
+      '\t '`( '\! 'coco`check`maude '\o '. '`) '\n '\t '\t 'Checks 'the 'entered 'Maude 'module '. '\n .
 
 endfm
 
 fmod CoCo-SIGN is
   including FULL-MAUDE-SIGN .
   sort @Goal@ .
-  op cocoload`. : -> @Command@ [ctor] .
+  op coco`check`tpdb`. : -> @Command@ [ctor] .
+  op coco`check`maude`. : -> @Command@ [ctor] .
   op CoCo help . : -> @Command@ [ctor] .
   
   sort <decl> <id> <idlist> <listofrules>

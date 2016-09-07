@@ -1,0 +1,48 @@
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(empty-mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
+Advisory: <automatic>: collapse at top of X@@@:[Mset] size(N:Nat S:Mset) may
+    cause it to match more than you expect.
