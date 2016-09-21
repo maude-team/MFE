@@ -33,6 +33,9 @@ mfeApp.config(['$routeProvider', function($routeProvider) {
     })
     .when('/tools', {
       templateUrl: 'views/tools.html'
+    })
+    .when('/howtouse', {
+      templateUrl: 'views/howtouse.html'
     });
 }]);
 
@@ -66,5 +69,4 @@ mfeApp.controller('maudeSyntaxController', ['$scope', '$sce', function($scope, $
 
         return $sce.trustAsHtml(res);
     };
-
 }]);
