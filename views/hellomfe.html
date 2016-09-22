@@ -1,50 +1,93 @@
 <div class="row full-page" ng-controller="maudeSyntaxController">
     <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
         <h2>Hello MFE!</h2>
-        <p> If MFE is now
-            <a href="/installation">running</a> in your favourite platform, it is the moment to have fun with a pretty
-            small example. As it has been pointed out in the <a href="/installation">installation</a> section, some tools
-            can be left out either because your platform or because you do not need them.
+        <p> Once the MFE is installed in your favourite platform, it is time to start using it with a very
+            simple example. As it has been pointed out in the <a href="/installation">installation</a> section,
+            although all the tools come with the MFE, you only need to worry about those you are interested in.
 
-            Tools programmed completely in Maude are CRC, ChC and ITP, so then we started with these.
+            Let us start with the CRC, ChC and ITP tools. Since they are completely implemented in Maude, can
+            be executed on its official version, and do not require any additional back-end tool.
         </p>
-        <p>Let's run Maude & MFE with the following command:</p>
+        <p> Let us assume that you have unzipped the MFE.zip file in your home directory.
+            If you have done it somewhere else, please, change the paths below.
+        </p>
+        <p> Let us use the following command to execute Maude and load the MFE:
+        </p>
         <pre>
-$ <i>maude</i> ~/MFE/src/mfe.maude</pre>
-        <h4>Let's begin with the Church-Rosser Checker...</h4>
+        $ <i>maude</i> ~/MFE/src/mfe.maude
+        </pre>
         <p> If the Maude banner and the info of every tool has been shown, Maude has been correctly started.
             So let's suppose that we have a small snippet of code:</p>
-            <pre class="maude"
-                ng-bind-html="processCode(
+
+        <h1><p> ------------------ SHOW THE MAUDE+FM+MFE header here -----------------</p></h1>
+
+        The first thing you need to keep in mind is that the MFE is built on Full Maude,
+        and that all commands entered to the MFE must go between parentheses. Modules
+        may be entered either with or without them, but you must be familiar with the way to
+        do it.
+        If you are not familiar with the use of Full Maude, perhaps you should give a
+        quick read to Sections <a href="http://maude.lcc.uma.es/manual271/maude-manualch15.html#x80-23800015.1">5.1</a>
+        and <a href="http://maude.lcc.uma.es/manual271/maude-manualch15.html#x80-23900015.2">5.2</a> of the
+        Maude manual to have a basic idea of how using Maude modules into Full Maude, or what happen if you
+        enter a command without parentheses to Full Maude. If you don't want to read it yet, don't worry, just
+        make sure that all modules and commands you enter go between parentheses.
+
+        Any of the tools in the environment can be used on any module loaded either in Maude
+        or in Full Maude. To simplify things, and following our own advice, we will use parentheses
+        everywhere.
+
+        Let us consider the following specification of the natural numbers with constructors <code>0</code>
+        and <code>s</code> and commutative operations <code>_+_</code> and <code>_*_</code>.
+
+        <pre class="maude"
+            ng-bind-html="processCode(
 '(set include BOOL off .)
 
 (fmod MYNAT is
-   sort MyNat .
-   op 0 : -> MyNat [ctor] .
-   op s : MyNat -> MyNat [ctor] .
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
 
-   op _+_ : MyNat MyNat -> MyNat [comm] .
-   op _*_ : MyNat MyNat -> MyNat [comm] .
+op _+_ : MyNat MyNat -> MyNat [comm] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
 
-   vars N M : MyNat .
-   eq 0 + N = N .
-   eq s(N) + M = s(N + M) .
+vars N M : MyNat .
+eq 0 + N = N .
+eq s(N) + M = s(N + M) .
 
-   eq 0 * N = 0 .
-   eq s(N) * M = M + (N * M) .
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
 endfm)')">
 </pre>
+
+Note that both Maude and Full Maude automatically includes in every module the <i>predefined</i>
+<code>BOOL</code> module. Since built-ins cannot be handled by the CRC and most of the other
+tools in the MFE, we use the <code>set include BOOL off</code> command before entering the module.
+If you need the booleans, the usual things to do is including <code>TRUTH-VALUE</code>, where
+the sort <code>Bool</code> and constants <code>true</code> and <code>false</code> are defined,
+but avoiding built-in operations such as <code>_==_</code> and <code>_=/=_</code>.
+
+        <h4>Let us begin with the Church-Rosser Checker.</h4>
         <p>
-            Note that in the above snippet there are two odd things: (i) Maude automatically includes in every module
-            the <i>built-in</i> <code>BOOL</code> module, and built-ins are not supported by CRC; and (ii) each module,
-            or command is enclosed in parenthesis because MFE is developed using Full Maude.
-
-            Running the following commands, the CRC is selected and the tool is launched for the above
-            module <code>MYNAT</code>.
+            To simplify the interaction with the different tools, we select the tool we are
+            interested in and enter commands for it. If we want to deal with pending proof
+            obligations in other tools we just need to select it. We can move from one tool
+            to another, and MFE will keep the state of the interaction with each of the tools
+            for us. Check the commands on the <a href="/installation">howtouse</a> section
+            for getting the current state of the tools or asking for a list of available commands.
         </p>
-
+        <p>
+            To select the CRC we type the following command.
+        </p>
         <pre>
 Maude> (select tool CRC .)
+-------------------------ADD AOUTPUT HERE----------------------------
+        </pre>
+        <p>
+        To run the Church-Rosser check on the above module <code>MYNAT</code>,
+        we may enter the following command.
+        </p>
+        <pre>
 Maude> (ccr MYNAT .)
 
 Church-Rosser check for MYNAT
@@ -52,14 +95,34 @@ Church-Rosser check for MYNAT
   cp</span> MYNAT4
     s(N:MyNat +(#2:MyNat +(N:MyNat * #2:MyNat)))
     = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat))).
-	The module is sort-decreasing.</pre>
+	The module is sort-decreasing.
+       </pre>
 
-        <p>
-            How to figure out how to solve or prove critical pairs is not a short story so we recommend to the interested
-            reader to take a look to <!-- todo: publications -->
-            In this case we can see that the second equation for the multiplication is to general, and if we change it for
-            <code class="maude maude-inline" ng-bind-html="processCode('eq s(N) * s(M) = s(M) + (N * s(M)) .')"></code>
-            the test succeeds.
+       <p>
+       First, note that most commands are available in an abbreviated form.
+       Check the help of the tool for a list of available commands and their
+       short versions.
+       </p>
+       <p>
+       The tool gives as result the critical pairs that could not join, if any,
+       and the a set of membership obligations for sort-decreasingness. In this case,
+       one critical pair is given, and since no memberships are given the tool
+       says the module is sort-decreasing.
+       For a detailed description of the use of the CRC tool and guidelines on how to
+       interpret the proof obligations returned, we recommend to the interested
+       reader to take a look to at the
+       <a href="http://www.sciencedirect.com/science/article/pii/S1567832611001147">JLAMP
+       paper by Duran and Meseguer</a>.
+       </p>
+       <p>
+       In this case we can see that the second equation for the multiplication is too
+       general, and if we change it for
+       <code class="maude maude-inline" ng-bind-html="processCode('eq s(N) * s(M) = s(M) + (N * s(M)) .')"></code>
+       the test succeeds.
+       Note that the critical pair might also be due to <code>_+_</code> not being
+       associative. We could try to modify the specification and see what happens.
+       Notice that the specification may be ground Church-Rosser already,
+       and that it does not require any modification.
         </p>
 
 
