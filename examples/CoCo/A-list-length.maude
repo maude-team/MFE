@@ -1,30 +1,33 @@
 ---- by Meseguer
 
-fmod NAT-ACU is
-    sorts Nat NzNat .
-    subsorts NzNat < Nat .
-    op 0 : -> Nat [ctor] .
-    op 1 : -> NzNat [ctor] .
-    op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0] .
-    op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
-endfm
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
 
-fmod NAT-LIST-ACU is 
-  protecting NAT-ACU .
-  sort NeList List .
-  subsort Nat < NeList < List .
-  op __ : NeList NeList -> NeList [ctor assoc] .
-  op nil : -> List [ctor] .
+(fmod NAT-ACU is
+   sorts Nat NzNat .
+   subsorts NzNat < Nat .
+   op 0 : -> Nat [ctor] .
+   op 1 : -> NzNat [ctor] .
+   op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0] .
+   op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
+ endfm)
 
-  vars l l' : List .  var n : Nat .
+(fmod NAT-LIST-ACU is 
+   protecting NAT-ACU .
+   sort NeList List .
+   subsort Nat < NeList < List .
+   op __ : NeList NeList -> NeList [ctor assoc] .
+   op nil : -> List [ctor] .
 
-  op |_| : List -> Nat .
-  eq | nil | = 0 .
-  eq | n | = 1 .
-  eq | l l' | = | l | + | l' | .
-endfm
+   vars l l' : List .  var n : Nat .
+ 
+   op |_| : List -> Nat .
+   eq | nil | = 0 .
+   eq | n | = 1 .
+   eq | l l' | = | l | + | l' | .
+ endfm)
 
-select MFE .
+---- select MFE .
 
 (select tool CRC .)
 

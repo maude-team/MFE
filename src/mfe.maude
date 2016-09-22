@@ -126,7 +126,7 @@ endm
 load FM/full-maude27d.maude
 load GLOT/glot.maude
 load ITP/itp.maude
-load CRChC/crchc3o.maude
+load CRChC/crchc3p.maude
 load MTT/mtt.maude
 load SCC/scc.maude
 load EqE/eqe.maude
@@ -3404,7 +3404,7 @@ loop init .
 
 set show loop stats on .
 set show loop timing on .
-set show advisories on .
+set show advisories off .
 
 -----trace exclude CRChC .
 
