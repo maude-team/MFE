@@ -1,0 +1,26 @@
+.maude .keyword {
+  color: #800000;
+  font-weight: bold;
+}
+.maude .keyword2 {
+  color: #978000;
+  font-weight: bold;
+}
+.maude .keyword3 {
+  color: #006d97;
+  font-weight: lighter;
+}
+.maude .keyword4 {
+  color: #900055;
+  font-weight: bold;
+}
+.maude-info {
+  color: #006d97;
+  font-weight: lighter;
+}
+.maude-inline {
+  font-size: 75%;
+}
+h4 {
+  padding-top: 20px;
+}

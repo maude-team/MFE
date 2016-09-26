@@ -1,0 +1,55 @@
+.full-page {
+  padding-top: 60px;
+}
+.center {
+  text-align: center;
+}
+.btn-outline {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 18px 24px;
+  font-size: 100%;
+  font-weight: 500;
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.1s ease-in-out;
+  text-transform: none;
+}
+.btn-normal {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 5px 20px;
+  font-size: 100%;
+  font-weight: 500;
+  color: #212121;
+  background-color: #dedede;
+  border-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.1s ease-in-out;
+  text-transform: none;
+}
+.btn-outline:hover,
+.btn-outline:active {
+  color: #2196F3;
+  background-color: #fff;
+  border-color: #fff;
+}
+li,
+p {
+  font-size: 130%;
+}
+.badge {
+  font-size: 150%;
+}
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+  50% {
+    opacity: 0.0;
+  }
+}
+footer {
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
