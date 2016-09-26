@@ -59,16 +59,16 @@
     </p>
     <h4>Required files</h4>
     <p>
-      The Maude Formal Environment can be used both on the official distribution of 
+      The Maude Formal Environment can be used both on the official distribution of
       <a href="maude.cs.uiuc.edu" target="_blank">Maude</a>
-      or on the 
-      <a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Maude++</a> extended version. 
-      The termination tool and sufficient completion 
-      tool require internal hooks not available in the official distribution, and therefore these tools will not 
+      or on the
+      <a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">Maude++</a> extended version.
+      The termination tool and sufficient completion
+      tool require internal hooks not available in the official distribution, and therefore these tools will not
       be available inside the MFE if the official version of Maude is used. The rest of the tools will work normally on both versions of Maude.
     </p>
-      
-    
+
+
     <p>
       The following files, available from the Downloads section, are required to install the MFE:
     </p>
@@ -77,37 +77,40 @@
       <li><a href="https://github.com/maude-team/maude/releases/tag/v2.7.1-ext-hooks" target="_blank">maude++</a> (only if the MTT and SCC tools are to be used)</li>
     </ul>
     <p>
-      The Maude Termination Tool requires the installation of external backend termination tools that follow 
+      The Maude Termination Tool requires the installation of external backend termination tools that follow
       the rules of the termination competition (the AProVE tool, in its 1.2 pre-release version is available <a href="assets/AProVE.zip">here</a>).
     </p>
-    
+
     <h4>Installation</h4>
 
     <p>Uncompress the required files to the directories of choice.</p>
-    
+
     <h4>Termination Back-ends</h4>
-    
+
     <p>
-      Automatic termination checks by the MTT will require back-end tools, like <i>CiME</i>, <i>AProVE</i>, <i>MuTerm</i>, etc. 
-      If there are not back-end tools configured properly, then a advisory message will be displayed by the MFE whenever a check 
+      Automatic termination checks by the MTT will require back-end tools, like <i>CiME</i>, <i>AProVE</i>, <i>MuTerm</i>, etc.
+      If there are not back-end tools configured properly, then a advisory message will be displayed by the MFE whenever a check
       of termination is requested. In principle, any tool that adheres to the specification for participants into the annual termination competition.
     </p>
     <p>
       The interaction with the different termination tools is carried out following ideas already in the MTT.
     </p>
-    
+
     <h4>Configuration of Back-end Tools</h4>
     <p>
       The information of the available back-end tools is read from the file <code>mfe.config</code>
 
-      The MFE searches for this file in maude++'s executable directory and then in the directory 
+      The MFE searches for this file in maude++'s executable directory and then in the directory
       referenced by the shell variable MAUDE_LIB. Such a configuration file must contain one text line per tool, and with the following syntax:
     </p>
-      <pre>< name with which you will refer to the tool inside MFE > < path of the batch of the tool > < extension of the files to load ></pre>
+      <pre>< name-with-which-you-will-refer-to-the-tool-inside-MFE > < path-of-the-batch-of-the-tool > < extension-of-the-files-to-load ></pre>
     <p>
-      For instance, the <code>mfe.config</code> file could look like this: 
+      For instance, the <code>mfe.config</code> file could look like this:
     </p>
-    <pre>aprove /usr/local/share/runme .trs ttc /usr/local/share/runmepar</pre>
+    <pre>
+      aprove /usr/local/share/runme .trs
+      ttc /usr/local/share/runmepar
+    </pre>
     <p>
       The third parameter in each text line is optional. See the <code>mfe.config</code> file included in <code>maude++.tar.gz</code> for more details.
     </p>
