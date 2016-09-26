@@ -57,6 +57,8 @@ set show advisories off .
 ----
 ---- main changes and bugs fixed since last release:
 ---- 
+---- - August 30th, 2016: Updated to use unification modulo associativity available in 
+----   Maude Alpha 110b (Maude 2.7.1).
 ---- - November 26th, 2012: Bug fixed in the nonOverlapping check. Reported by Fan Yang.  
 ---- - July 10th, 2011: rewrites in conditions are now supported. Bug reported by 
 ----   Musab Alturki.  
@@ -146,13 +148,13 @@ set show advisories off .
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3n - December 17th 2012" .
+  eq crc-banner = "Church-Rosser Checker 3p - August 30th 2016" .
 endfm
 
 fmod ChC-BANNER is
   pr STRING .
   op chc-banner : -> String .
-  eq chc-banner = "Coherence Checker 3n - December 17th 2012" .
+  eq chc-banner = "Coherence Checker 3p - August 30th 2016" .
 endfm
 
 fmod CRC-HELP is
@@ -1190,7 +1192,7 @@ fmod CONFLUENCE-CHECK is
   op confluenceCheck : Module ~> CritPairSet .
   op cpsError : QidList -> [CritPairSet] .
 
-  eq confluenceCheck(unitError(QIL)) = cpsError(QIL) . ---- error message gets lost
+  eq confluenceCheck(unitError(QIL)) = cpsError(QIL) .
   eq confluenceCheck(M)
     = crcContextJoinableAndUnfeasibleCPs(M, 
         maximalCPSet(

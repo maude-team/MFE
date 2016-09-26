@@ -2837,7 +2837,7 @@ fmod PROC-TPDB is
       else nil
       fi
       '\n
-    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), all))), PP, CONDITIONS) .
+    if M' := proc(filterMaude(removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(removeCtors(M))), all))), PP, CONDITIONS) .
   eq $procTPDB(unitError(QIL), PP, CONDITIONS, CONTEXT) = QIL .
   eq $procTPDB(M, PP, CONDITIONS, CONTEXT) 
     = 'error: 'possibly 'a 'non-supported 'feature 'in 'the 'module 

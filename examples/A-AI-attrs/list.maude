@@ -5,16 +5,16 @@ set include TRUTH-VALUE on .
   fmod MBOOL is
     vars B B' : Bool .
     op not_ : Bool -> Bool .
-----    eq not true = false .
-----    eq not false = true .
+    eq not true = false .
+    eq not false = true .
     
     op _==_ : Bool Bool -> Bool [comm prec 15] .
-----    eq true == false = false .
-----    eq B == B = true .
+    eq true == false = false .
+    eq B == B = true .
     
     op if_then_else_fi : Bool Bool Bool -> Bool [strat (1 0 2 3 0)] .
-----    eq if true then B else B' fi = B .
-----    eq if false then B else B' fi = B' .
+    eq if true then B else B' fi = B .
+    eq if false then B else B' fi = B' .
   endfm
   
   fmod MNAT is
@@ -28,14 +28,20 @@ set include TRUTH-VALUE on .
 
     vars N N' : Nat .
 
+    op _<_ : Nat Nat -> Bool .
+    eq 0 < s N = true .
+    eq s N < 0 = false .
+    eq N < N = false .
+    eq s N < s N' = N < N' .
+
     op _==_ : Nat Nat -> Bool [comm prec 15] .
-----    eq 0 == s N = false .
-----    eq N == N = true .
-----    eq s N == s N' = N == N' .
+    eq 0 == s N = false .
+    eq N == N = true .
+    eq s N == s N' = N == N' .
     
     op if_then_else_fi : Bool Nat Nat -> Nat [strat (1 0 2 3 0)] .
-----    eq if true then N else N' fi = N .
-----    eq if false then N else N' fi = N' .
+    eq if true then N else N' fi = N .
+    eq if false then N else N' fi = N' .
   endfm
 
   fth MTRIV is 
@@ -56,47 +62,58 @@ fmod MLIST{X :: MTRIV} is
 
   vars E E' : X$Elt .
   vars A L : List{X} .
-  var  C : Nat .
+  vars C N : Nat .
 
   op append : List{X} List{X} -> List{X} .
   op append : NeList{X} List{X} -> NeList{X} .
   op append : List{X} NeList{X} -> NeList{X} .
-----  eq [MLIST-01] : append(A, L) = A L .
+  eq [MLIST-01] : append(A, L) = A L .
 
   op head : NeList{X} -> X$Elt .
-----  eq [MLIST-02] : head(E L) = E .
+  eq [MLIST-02] : head(E L) = E .
 
   op tail : NeList{X} -> List{X} .
-----  eq [MLIST-03] : tail(E L) = L .
+  eq [MLIST-03] : tail(E L) = L .
 
   op last : NeList{X} -> X$Elt .
-----  eq [MLIST-04] : last(L E) = E .
+  eq [MLIST-04] : last(L E) = E .
 
   op front : NeList{X} -> List{X} .
-----  eq [MLIST-05] : front(L E) = L .
+  eq [MLIST-05] : front(L E) = L .
 
   op occurs : X$Elt List{X} -> Bool .
-----  eq [MLIST-06] : occurs(E, nil) = false .
-----  eq [MLIST-07] : occurs(E, E L) = true .
----- ceq [MLIST-08] : occurs(E, E' L) = occurs(E, L) if not E == E' .
+  eq [MLIST-06] : occurs(E, nil) = false .
+  eq [MLIST-07] : occurs(E, E L) = true .
+ ceq [MLIST-08] : occurs(E, E' L) = occurs(E, L) if not E == E' .
 
   op reverse : List{X} -> List{X} .
   op reverse : NeList{X} -> NeList{X} .
-----  eq [MLIST-09] : reverse(L) = $reverse(L, nil) .
+  eq [MLIST-09] : reverse(L) = $reverse(L, nil) .
 
   op $reverse : List{X} List{X} -> List{X} .
   op $reverse : NeList{X} List{X} -> NeList{X} .
   op $reverse : List{X} NeList{X} -> NeList{X} .
   eq [MLIST-10] : $reverse(nil, A) = A .
-----  eq [MLIST-11] : $reverse(E L, A) = $reverse(L, E A).
+  eq [MLIST-11] : $reverse(E L, A) = $reverse(L, E A).
 
   op size : List{X} -> Nat .
   op size : NeList{X} -> NzNat .
-----  eq [MLIST-12] : size(L) = $size(L, 0) .
+  eq [MLIST-12] : size(L) = $size(L, 0) .
 
   op $size : List{X} Nat -> Nat .
-----  eq [MLIST-13] : $size(nil, C) = C .
-----  eq [MLIST-14] : $size(E L, C) = $size(L, s C) .
+  eq [MLIST-13] : $size(nil, C) = C .
+  eq [MLIST-14] : $size(E L, C) = $size(L, s C) .
+  
+  op take_from_ : Nat List{X} -> List{X} .
+  op throw_from_ : Nat List{X} -> List{X} .
+    
+  eq take 0 from L = nil .
+  eq take N from nil = nil .
+  eq take s N from (E L) = E take N from L .
+    
+  eq throw 0 from L = L .
+  eq throw N from nil = nil .
+  eq throw s N from (E L) = throw N from L .
 endfm
 
 view mNat from MTRIV to MNAT is
@@ -114,7 +131,7 @@ loop init .
  (set include BOOL-OPS off .)
  (set include TRUTH-VALUE on .)
  (select tool CRC .)
-set trace on .
+set trace off .
 set trace select on .
 set print conceal off .
 trace select ---- crcContextJoinableAndUnfeasibleCPs 
@@ -127,4 +144,3 @@ trace select ---- crcContextJoinableAndUnfeasibleCPs
              metaNarrowSearch
              .
  (ccr MNAT-MLIST .)
- 

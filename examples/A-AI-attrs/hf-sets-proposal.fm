@@ -228,3 +228,21 @@ All critical pairs have been joined.
 The specification is locally-confluent.
 The specification is sort-decreasing.
 ---)
+
+(show all critical pairs .)
+
+(submit .)
+(select tool MTT .)
+(select external tool aprove .)
+
+set trace off .
+set print conceal on .
+print reveal fmod_is_sorts_.____endfm 
+             mod_is_sorts_._____endm
+             .
+set trace select on .
+trace select terminationCheck 
+             .
+
+(ct .)
+

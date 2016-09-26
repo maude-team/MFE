@@ -123,8 +123,9 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude27d.maude
+load FM/full-maude27e.maude
 load GLOT/glot.maude
+set show advisories off .
 load ITP/itp.maude
 load CRChC/crchc3p.maude
 load MTT/mtt.maude
@@ -3378,9 +3379,10 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
           init-itp(TOOLS)
           init-scc(TOOLS)
           init-mtt(TOOLS)
-          init-eqe(TOOLS)
-          init-ertp(TOOLS)
-          init-glot(TOOLS),
+          ---- init-eqe(TOOLS)
+          ---- init-ertp(TOOLS)
+          ---- init-glot(TOOLS)
+          ,
          nil ] .
 endm
 
@@ -3404,7 +3406,7 @@ loop init .
 
 set show loop stats on .
 set show loop timing on .
-set show advisories off .
+set show advisories on .
 
 -----trace exclude CRChC .
 

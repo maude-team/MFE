@@ -1,3 +1,4 @@
+---(
 		     \||||||||||||||||||/
 		   --- Welcome to Maude ---
 		     /||||||||||||||||||\
@@ -14,28 +15,53 @@ The Maude Formal Environment 1.0b
     Church-Rosser Checker 3p - August 30th 2016
     Coherence Checker 3p - August 30th 2016
     Maude Termination Tool 1.5j - August 11th 2014
+---)
 
-rewrites: 48 in 3ms cpu (4ms real) (13647 rewrites/second)
+(set include BOOL off .)
+---(
 set include BOOL off
+---)
 
-rewrites: 42 in 0ms cpu (0ms real) (21000000 rewrites/second)
+(set include TRUTH-VALUE on .)
+---(
 set include TRUTH-VALUE on
+---)
 
-rewrites: 1232 in 2ms cpu (2ms real) (589473 rewrites/second)
+(fmod MYNAT is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
+
+vars N M : MyNat .
+eq 0 + N = N .
+eq s(N) + M = s(N + M) .
+
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
+endfm)
+---(
 Introduced module MYNAT
+---)
 
-rewrites: 76 in 0ms cpu (0ms real) (38000000 rewrites/second)
+(select tool CRC .)
+---(
 The CRC has been set as current tool.
+---)
 
-rewrites: 58565 in 40ms cpu (41ms real) (1456297 rewrites/second)
+(check Church-Rosser .)
+---(
 Church-Rosser check for MYNAT
 The following critical pairs must be proved joinable:
   cp MYNAT5
     s(N:MyNat +(#2:MyNat +(N:MyNat * #2:MyNat)))
     = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat))).
 	The module is sort-decreasing.
+---)
 
-rewrites: 5607 in 14ms cpu (15ms real) (386823 rewrites/second)
+(submit .)
 The goal for critical pair MYNAT5 has been submitted to ITP.
 The termination goal for the functional part of MYNAT has been submitted to MTT.
 Warning: A proof of the termination of functional part of module MYNAT has not been found.
@@ -48,37 +74,64 @@ A{#2:MyNat ; N:MyNat}
   = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat)))
 
 +++++++++++++++++++++++++++++++++
+---)
 
-rewrites: 76 in 2ms cpu (4ms real) (26601 rewrites/second)
+(select tool MTT .)
+---(
 The MTT has been set as current tool.
+---)
 
-rewrites: 39 in 2ms cpu (3ms real) (13109 rewrites/second)
+(select external tool aprove .)
+---(
 aprove is now the current external tool.
+---)
 
-rewrites: 4717 in 7ms cpu (375ms real) (607704 rewrites/second)
+(ct .)
+---(
 The MTT proof for MYNAT has been reset.
 Success: The module MYNAT is terminating.
+---)
 
-rewrites: 929 in 5ms cpu (5ms real) (164657 rewrites/second)
+(fmod MYNAT is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
+
+vars N M : MyNat .
+eq 0 + N = N .
+eq s(N) + M = s(N + M) .
+
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
+endfm)
+---(
 Advisory: Module MYNAT redefined.
 Introduced module MYNAT
+---)
 
-rewrites: 66 in 0ms cpu (0ms real) (84507 rewrites/second)
+(select tool CRC .)
+---(
 The CRC has been set as current tool.
+---)
 
-rewrites: 836337 in 523ms cpu (528ms real) (1597694 rewrites/second)
+(check Church-Rosser .)
+---(
 The CRC for MYNAT has been reset.
 Church-Rosser check for MYNAT
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
+---)
 
-rewrites: 7924 in 20ms cpu (401ms real) (385352 rewrites/second)
+(submit .)
+---(
 The termination goal for the functional part of MYNAT has been submitted to MTT.
 The MTT proof for MYNAT has been reset.
 Success: The functional part of module MYNAT is terminating.
 The functional part of module MYNAT has been checked terminating.
 Success: The module is therefore Church-Rosser.
 Success: The module MYNAT is Church-Rosser.
-
-Bye.
+---)
