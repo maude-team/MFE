@@ -2,8 +2,9 @@
   <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12">
     <h2>How to use?</h2>
     <p>
-      Assuming that <code>maude</code> is <i>Maude++</i>'s executable and that 
-      <code>mfe.maude</code> is <i>MFE</i>'s main Maude file, both in your path, the MFE can be executed with the following command:
+      Assuming that <code>maude</code> is <i>Maude++</i>'s executable and that
+      <code>mfe.maude</code> is <i>MFE</i>'s main Maude file, both in your path,
+      the MFE can be executed with the following command:
     </p>
     <pre>
 $ maude mfe.maude
@@ -11,44 +12,132 @@ $ maude mfe.maude
 		   --- Welcome to <span style="color: red;">M</span><span style="color: #00FFFF;">a</span><span style="color: #0000FF;">u</span><span style="color: #FF00FF;">d</span><span style="color: #FFD700">e</span> ---
 		     /||||||||||||||||||\
 	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
-	     With termination checker extension 
+	     With termination checker extension
 	    Copyright 1997-2014 SRI International
 		   Thu Sep 15 19:25:18 2016
-Maude> <span class="blink_me">_</span></pre>
-    
+       Full Maude 2.7e September 22th 2016
+
+  The Maude Formal Environment 1.0b
+     Inductive Theorem Prover - July 20th 2010
+     Sufficient Completeness Checker 2a - August 2010
+     Church-Rosser Checker 3p - August 30th 2016
+     Coherence Checker 3p - August 30th 2016
+     Maude Termination Tool 1.5j - August 11th 2014
+Maude> <span class="blink_me">_</span>
+    </pre>
+
+<p>
+    Below, we provide information on the different commands available in MFE.
+    Notice that to keep the interaction of each of the tools as close to the one with its
+    stand-alone version, we must select each tool before using it.
+    The interaction with some of the tools is illustrated in the <a ref="hellomfe.html">Hello MFE! Section</a>.
+    Further information on individual tools is available through their respective
+    web sites. References are available in the <a href="tools.html">Tools Section</a>.
+  </p>
+
     <h3 style="padding-top: 50px;">MFE Commands</h3>
     <p>
-      The MFE extends Full Maude, and therefore all the functionality of Full Maude including 
-      its commands and facilities for loading modules, theories, and views, etc., is available in the MFE.
+      The MFE extends Full Maude, and therefore all the functionality of Full
+      Maude including its commands and facilities for loading modules, theories,
+      and views, etc., is available in the MFE.
+      Additionally, MFE provides a number of commands to interact with the
+      environment and select the avaiable tools, plus access to the commands
+      provided by each individual tool.
     </p>
     <p>
       The MFE also provides the following commands:
     </p>
     <ul>
-      <li><code>(select tool <i>&lt;tool-name&gt;</i> .)</code> sets the tool <i>&lt;tool-name&gt;</i> as active tool.</li>
+      <li><code>(select tool <i>&lt;tool-name&gt;</i> .)</code> sets the tool
+          <i>&lt;tool-name&gt;</i> as active tool.</li>
       <li><code>(MFE help .)</code> shows information on the commands available in the MFE.</li>
       <li><code>(show global state .)</code> shows the state of the environment.</li>
     </ul>
     <p>
-      If the input (between parentheses) cannot be parsed cannot be parsed by the MFE, then it is submitted to the currently active tool.
-      In this way, the interaction with each tool in the environment remains almost as it was before the integration.
+      If the input (between parentheses) cannot be parsed by the MFE, then it is
+      submitted to the currently active tool. In this way, the interaction with each
+      tool in the environment remains almost as it was before the integration.
 
-      The user is referred to the help command or the tool documentation for further information on the tools already available in the MFE.
+      The user is referred to the <code>help</code> command or the tool documentation
+      for further information on the tools already available in the MFE.
     </p>
-    
+
     <h3 style="padding-top: 20px;">Generic Tool Commands</h3>
     <p>
-      We suggest the implementation of the following commands upon the integration of a new tool in the MFE, in addition to the tool's own list of commands:
+      All tools in the environment provides, in addition to the tool's own list of commands,
+      the following commands:
     </p>
     <ul>
       <li><code>(<i>&lt;tool-name&gt;</i> help .)</code> shows information on the commands available in the tool.</li>
       <li><code>(show state .)</code> shows the state of the tool.</li>
     </ul>
-    <p>
-      For instance, these commands are available for all tools currently available in the MFE.
-    </p>
 
     <h3 style="padding-top: 20px;">Specific Tool Commands</h3>
+
+    <h4>CRC</h4>
+    <p>Commands available in the CRC:</p>
+
+    <ul>
+      <li><code>(CRC help .)</code> shows the commands available for the CRC.</li>
+      <li><code>(ccr .)/(check Church-Rosser .)</code> checks the Church-Rosser property of the current module.</li>
+      <li><code>(ccr <i>&lt;mod-name&gt;</i> .)/(check Church-Rosser <i>&lt;mod-name&gt;</i> .)</code> checks the Church-Rosser property of the specified module.</li>
+      <li><code>(show cps .)/(show critical pairs .)</code> shows the critical pairs for the last check Church-Rosser command.</li>
+      <li><code>(show all cps .)/(show all critical pairs .)</code> shows the status of all critical pairs for the last check Church-Rosser command.</li>
+      <li><code>(show mas .)/(show membership assertions .)</code> shows the membership assertions of the last check Church-Rosser command.</li>
+      <li><code>(show all mas .)/(show all membership assertions .)</code> shows the status of all membership assertions of the last check Church-Rosser command.</li>
+      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> sets the specified module as the current module of the CRC.</li>
+    </ul>
+
+
+    <h4>ChC</h4>
+    <p>Commands available in the ChC:</p>
+
+    <ul>
+      <li><code>(ChC help .)</code> shows the commands available for the ChC.</li>
+      <li><code>(cch .)/(check coherence .)</code> checks the coherence property of the default module.</li>
+      <li><code>(cch <i>&lt;mod-name&gt;</i> .)/(check coherence <i>&lt;mod-name&gt;</i> .)</code> checks the coherence property of the specified module.</li>
+      <li><code>(cgch .)(check ground coherence .)</code> checks the ground coherence property of the current module.</li>
+      <li><code>(cgch <i>&lt;mod-name&gt;</i> .)/(check ground coherence <i>&lt;mod-name&gt;</i> .)</code> checks the ground coherence property of the specified module.</li>
+      <li><code>(show cps .)/(show critical pairs .)</code> shows the critical pairs of the last check coherence or ground coherence command after rewritten.</li>
+      <li><code>(show all cps .)/(show all critical pairs .)</code> shows the critical pairs of the last check coherence or ground coherence command before rewritten.</li>
+      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> sets the specified module as the current module of the ChC.</li>
+    </ul>
+
+    <h4>MTT</h4>
+    <p>Commands available in the MTT:</p>
+
+    <ul>
+      <li><code>(MTT help .)</code> shows the commands available for the MTT.</li>
+      <li><code>(ct .)/(check termination .)</code> checks the termination of the current module.</li>
+      <li><code>(ct <i>&lt;mod-name&gt;</i> .)/(check termination <i>&lt;mod-name&gt;</i> .)</code> checks the termination of the specified module.</li>
+      <li><code>(ctf .)/(check termination functional part .)</code> checks the termination of the functional part of the current module.</li>
+      <li><code>(ctf <i>&lt;mod-name&gt;</i> .)/(check termination functional part <i>&lt;mod-name&gt;</i> .)</code> checks the termination of the functional part of the specified module.</li>
+      <li><code>(show state .)</code> shows the state of the MTT.</li>
+      <li><code>(show proof .)</code> shows the termination proof for the last check termination command.</li>
+      <li><code>(select proof <i>&lt;module&gt;</i> .)</code> sets the specified module as the current module of the MTT.</li>
+      <li><code>(select external tool <i>&lt;tool&gt;</i> .)</code> sets the specified external tool as the current backend tool of the
+        MTT (the specified <i>&lt;tool&gt;</i> must be one of the tools in your mfe.config file).
+      </li>
+      <li><code>(show transformation graph .)</code> shows the transformations available as a graph (use semicolons to enter paths, e.g., C;A;B, OS;T;B;O-L, ...).</li>
+      <li><code>(show current path .)</code> shows the current checking path.</li>
+      <li><code>(select path <i>&lt;path&gt;</i> .)</code> sets the path to be used in termination checks (use the show-transformation-graph
+        command for the available transformations). By default, the path for termination checks is C;U;B.
+      </li>
+      <li><code>(trust .)</code> assumes that the current module has been proved terminating.</li>
+    </ul>
+
+    <h4>SCC</h4>
+    <p>
+      Commands available in the SCC tool, for <i>&lt;mod-name&gt;</i> denoting the name of an equational theory <i>(Sigma, E U A)</i>:
+    </p>
+    <ul>
+      <li><code>(SCC help .)</code> shows the commands available for the SCC.</li>
+      <li><code>(scc <i>&lt;mod-name&gt;</i> .)</code> checks the sufficient completeness and the freeness of constructors of the specified module.</li>
+      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> selects the module with the given name.</li>
+      <li><code>(submit .)</code> submits the sort-decreasingness assertion to the CRC and the termination assertion to the MTT for the selected module.</li>
+      <li><code>(trust .)</code> trusts the selected module to be suffiently complete and to have free equational constructors.</li>
+    </ul>
+
     <h4>ITP</h4>
     <p>
       Commands available in the ITP:
@@ -65,30 +154,30 @@ Maude> <span class="blink_me">_</span></pre>
       <li><code>(cnj .)</code> splits a conjunction into two subgoals.</li>
       <li><code>(cns .)</code> performs universal quantifier elimination.</li>
       <li><code>(cov on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction by assuming the module has no equational attributes in the operators</li>
-      <li><code>(cov* on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction and then the auto strategy by assuming the module has no 
+      <li><code>(cov* on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction and then the auto strategy by assuming the module has no
         equational attributes in the operators.
       </li>
-      <li><code>(cov-split on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover set induction with split patterns 
+      <li><code>(cov-split on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover set induction with split patterns
         by assuming the module has no equational attributes in the operators.
       </li>
-      <li><code>(cov-split* on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover set induction with split patterns 
+      <li><code>(cov-split* on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover set induction with split patterns
         and then the auto strategy by assuming the module has no equational attributes in the operators.
       </li>
       <li><code>(cov using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction with alternative constructors by a
         ssuming the module has no equational attributes in the operators.
       </li>
-      <li><code>(cov* using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction with alternative constructors 
+      <li><code>(cov* using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> .)</code> applies cover set induction with alternative constructors
         and then the auto strategy by assuming the module has no equational attributes in the operators.
       </li>
-      <li><code>(cov-split using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover 
+      <li><code>(cov-split using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover
         set induction with alternative constructors and split patterns by assuming the module has no equational attributes in the operators.
       </li>
-      <li><code>(cov-split* using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover 
+      <li><code>(cov-split* using <i>&lt;names&gt;</i> on <i>&lt;pattern&gt;</i> split <i>&lt;split-patterns&gt;</i> .)</code> applies cover
         set induction with alternative constructors and split patterns and then the auto command by assuming the module has no equational attributes in the operators.
       </li>
-      <li><code>(ctor-def <i>&lt;name&gt;</i> : 
-        A{<i>&lt;x&gt;</i>:<i>&lt;s&gt;</i>} (E{<i>&lt;y1&gt;</i>} <i>&lt;t1&gt;</i>=<i>&lt;x&gt;</i> 
-        & <i>&lt;cond1&gt;</i>)...(E{<i>&lt;yn&gt;</i>} <i>&lt;tn&gt;</i>=<i>&lt;x&gt;</i> & <i>&lt;condn&gt;</i>) .)</code> 
+      <li><code>(ctor-def <i>&lt;name&gt;</i> :
+        A{<i>&lt;x&gt;</i>:<i>&lt;s&gt;</i>} (E{<i>&lt;y1&gt;</i>} <i>&lt;t1&gt;</i>=<i>&lt;x&gt;</i>
+        & <i>&lt;cond1&gt;</i>)...(E{<i>&lt;yn&gt;</i>} <i>&lt;tn&gt;</i>=<i>&lt;x&gt;</i> & <i>&lt;condn&gt;</i>) .)</code>
         adds an alternative constructor declaration.
       </li>
       <li><code>(ctor-term-split <i>&lt;var&gt;</i> .)</code> performs constructor splitting.</li>
@@ -97,10 +186,10 @@ Maude> <span class="blink_me">_</span></pre>
       <li><code>(e-inst with <i>&lt;sub&gt;</i> .)</code> performs existential instantiation.</li>
       <li><code>(enable <i>&lt;rule-name&gt;</i> .)</code> enables an equation for rewriting.</li>
       <li><code>(equiv-propagate .)</code> propagates facts implied by transitivity of an equivalence relation.</li>
-      <li><code>(eq-split on <i>&lt;pattern&gt;</i> .)</code> instantiates universally quantified variables to better match the 
+      <li><code>(eq-split on <i>&lt;pattern&gt;</i> .)</code> instantiates universally quantified variables to better match the
         left hand side of the equations.
       </li>
-      <li><code>(eq-split* on <i>&lt;pattern&gt;</i> .)</code> instantiates universally quantified variables to better match 
+      <li><code>(eq-split* on <i>&lt;pattern&gt;</i> .)</code> instantiates universally quantified variables to better match
         the left hand side of the equations and then the auto strategy.
       </li>
       <li><code>(goal <i>&lt;label&gt;</i> : <i>&lt;mod-name&gt;</i> |- <i>&lt;formula&gt;</i> .)</code> introduces a goal.</li>
@@ -124,70 +213,6 @@ Maude> <span class="blink_me">_</span></pre>
       <li><code>(sel-proof <i>&lt;proof-id&gt;</i> .)</code> selects a proof.</li>
       <li><code>(ITP show state .)</code> shows the state of the ITP.</li>
       <li><code>(ITP trust <i>&lt;goal-name&gt;</i> .)</code> trusts a goal.</li>
-    </ul>
-    
-    <h4>SCC</h4>
-    <p>
-      Commands available in the SCC tool, for <i>&lt;mod-name&gt;</i> denoting the name of an equational theory <i>(Sigma, E U A)</i>:
-    </p>
-    <ul>
-      <li><code>(SCC help .)</code> shows the commands available for the SCC.</li>
-      <li><code>(scc <i>&lt;mod-name&gt;</i> .)</code> checks the sufficient completeness and the freeness of constructors of the specified module.</li>
-      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> selects the module with the given name.</li>
-      <li><code>(submit .)</code> submits the sort-decreasingness assertion to the CRC and the termination assertion to the MTT for the selected module.</li>
-      <li><code>(trust .)</code> trusts the selected module to be suffiently complete and to have free equational constructors.</li>
-    </ul>
-    
-    <h4>CRC</h4>
-    <p>Commands available in the CRC:</p>
-    
-    <ul>
-      <li><code>(CRC help .)</code> shows the commands available for the CRC.</li>
-      <li><code>(ccr .)/(check Church-Rosser .)</code> checks the Church-Rosser property of the current module.</li>
-      <li><code>(ccr <i>&lt;mod-name&gt;</i> .)/(check Church-Rosser <i>&lt;mod-name&gt;</i> .)</code> checks the Church-Rosser property of the specified module.</li>
-      <li><code>(show cps .)/(show critical pairs .)</code> shows the critical pairs for the last check Church-Rosser command.</li>
-      <li><code>(show all cps .)/(show all critical pairs .)</code> shows the status of all critical pairs for the last check Church-Rosser command.</li>
-      <li><code>(show mas .)/(show membership assertions .)</code> shows the membership assertions of the last check Church-Rosser command.</li>
-      <li><code>(show all mas .)/(show all membership assertions .)</code> shows the status of all membership assertions of the last check Church-Rosser command.</li>
-      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> sets the specified module as the current module of the CRC.</li>
-    </ul>
-    
-    
-    <h4>ChC</h4>
-    <p>Commands available in the ChC:</p>
-    
-    <ul>
-      <li><code>(ChC help .)</code> shows the commands available for the ChC.</li>
-      <li><code>(cch .)/(check coherence .)</code> checks the coherence property of the default module.</li>
-      <li><code>(cch <i>&lt;mod-name&gt;</i> .)/(check coherence <i>&lt;mod-name&gt;</i> .)</code> checks the coherence property of the specified module.</li>
-      <li><code>(cgch .)(check ground coherence .)</code> checks the ground coherence property of the current module.</li>
-      <li><code>(cgch <i>&lt;mod-name&gt;</i> .)/(check ground coherence <i>&lt;mod-name&gt;</i> .)</code> checks the ground coherence property of the specified module.</li>
-      <li><code>(show cps .)/(show critical pairs .)</code> shows the critical pairs of the last check coherence or ground coherence command after rewritten.</li>
-      <li><code>(show all cps .)/(show all critical pairs .)</code> shows the critical pairs of the last check coherence or ground coherence command before rewritten.</li>
-      <li><code>(select <i>&lt;mod-name&gt;</i> .)</code> sets the specified module as the current module of the ChC.</li>
-    </ul>
-    
-    <h4>MTT</h4>
-    <p>Commands available in the MTT:</p>
-    
-    <ul>
-      <li><code>(MTT help .)</code> shows the commands available for the MTT.</li>
-      <li><code>(ct .)/(check termination .)</code> checks the termination of the current module.</li>
-      <li><code>(ct <i>&lt;mod-name&gt;</i> .)/(check termination <i>&lt;mod-name&gt;</i> .)</code> checks the termination of the specified module.</li>
-      <li><code>(ctf .)/(check termination functional part .)</code> checks the termination of the functional part of the current module.</li>
-      <li><code>(ctf <i>&lt;mod-name&gt;</i> .)/(check termination functional part <i>&lt;mod-name&gt;</i> .)</code> checks the termination of the functional part of the specified module.</li>
-      <li><code>(show state .)</code> shows the state of the MTT.</li>
-      <li><code>(show proof .)</code> shows the termination proof for the last check termination command.</li>
-      <li><code>(select proof <i>&lt;module&gt;</i> .)</code> sets the specified module as the current module of the MTT.</li>
-      <li><code>(select external tool <i>&lt;tool&gt;</i> .)</code> sets the specified external tool as the current backend tool of the 
-        MTT (the specified <i>&lt;tool&gt;</i> must be one of the tools in your mfe.config file).
-      </li>
-      <li><code>(show transformation graph .)</code> shows the transformations available as a graph (use semicolons to enter paths, e.g., C;A;B, OS;T;B;O-L, ...).</li>
-      <li><code>(show current path .)</code> shows the current checking path.</li>
-      <li><code>(select path <i>&lt;path&gt;</i> .)</code> sets the path to be used in termination checks (use the show-transformation-graph 
-        command for the available transformations). By default, the path for termination checks is C;U;B.
-      </li>
-      <li><code>(trust .)</code> assumes that the current module has been proved terminating.</li>
     </ul>
 
   </div> <!-- /col-lg-10 -->
