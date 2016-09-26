@@ -5,21 +5,41 @@
             simple example. As it has been pointed out in the <a href="/installation">installation</a> section,
             although all the tools come with the MFE, you only need to worry about those you are interested in.
 
-            Let us start with the CRC, ChC and ITP tools. Since they are completely implemented in Maude, can
-            be executed on its official version, and do not require any additional back-end tool.
+            In this section we illlustrate the use of the CRC and MTT tools.
+            The CRC is completely implemented in Maude, and therefore can
+            be executed on its official distribution.
+            However, the MTT requires the version of Maude extended with hooks
+            and appropriate back-end tool for the termination proofs.
+            Please, follow the instruction in the <a href="installation">installation</a> section.
+            You can still try the example below, appropriate messages will be provided
+            when the termination proofs are attempted.
         </p>
-        <p> Let us assume that you have unzipped the MFE.zip file in your home directory.
+        <p> We assume that MFE.zip file was unzipped in your home directory.
             If you have done it somewhere else, please, change the paths below.
         </p>
         <p> Let us use the following command to execute Maude and load the MFE:
         </p>
         <pre>
         $ <i>maude</i> ~/MFE/src/mfe.maude
+        \||||||||||||||||||/
+      --- Welcome to Maude ---
+        /||||||||||||||||||\
+    Maude-mfe-hooks 2.7.1 built: Aug 31 2016 12:24:20
+      With termination checker extension
+     Copyright 1997-2016 SRI International
+      Mon Sep 26 12:00:14 2016
+
+     Full Maude 2.7e September 22th 2016
+
+The Maude Formal Environment 1.0b
+   Inductive Theorem Prover - July 20th 2010
+   Sufficient Completeness Checker 2a - August 2010
+   Church-Rosser Checker 3p - August 30th 2016
+   Coherence Checker 3p - August 30th 2016
+   Maude Termination Tool 1.5j - August 11th 2014
         </pre>
         <p> If the Maude banner and the info of every tool has been shown, Maude has been correctly started.
-            So let's suppose that we have a small snippet of code:</p>
-
-        <h1><p> ------------------ SHOW THE MAUDE+FM+MFE header here -----------------</p></h1>
+        </p>
 
         The first thing you need to keep in mind is that the MFE is built on Full Maude,
         and that all commands entered to the MFE must go between parentheses. Modules
@@ -28,7 +48,7 @@
         If you are not familiar with the use of Full Maude, perhaps you should give a
         quick read to Sections <a href="http://maude.lcc.uma.es/manual271/maude-manualch15.html#x80-23800015.1">5.1</a>
         and <a href="http://maude.lcc.uma.es/manual271/maude-manualch15.html#x80-23900015.2">5.2</a> of the
-        Maude manual to have a basic idea of how using Maude modules into Full Maude, or what happen if you
+        Maude manual to have a basic idea of how using Maude modules into Full Maude, or what happens if you
         enter a command without parentheses to Full Maude. If you don't want to read it yet, don't worry, just
         make sure that all modules and commands you enter go between parentheses.
 
@@ -41,47 +61,76 @@
 
         <pre class="maude"
             ng-bind-html="processCode(
-'(set include BOOL off .)
+'Maude> (set include BOOL off .)
+set include BOOL off
 
-(fmod MYNAT is
-sort MyNat .
-op 0 : -> MyNat [ctor] .
-op s : MyNat -> MyNat [ctor] .
+Maude> (set include TRUTH-VALUE on .)
+set include TRUTH-VALUE on
 
-op _+_ : MyNat MyNat -> MyNat [comm] .
-op _*_ : MyNat MyNat -> MyNat [comm] .
+Maude> (fmod MYNAT is
+          sort MyNat .
+          op 0 : -> MyNat [ctor] .
+          op s : MyNat -> MyNat [ctor] .
 
-vars N M : MyNat .
-eq 0 + N = N .
-eq s(N) + M = s(N + M) .
+          op _+_ : MyNat MyNat -> MyNat [comm] .
+          op _*_ : MyNat MyNat -> MyNat [comm] .
 
-eq 0 * N = 0 .
-eq s(N) * M = M + (N * M) .
-endfm)')">
+          vars N M : MyNat .
+          eq 0 + N = N .
+          eq s(N) + M = s(N + M) .
+
+          eq 0 * N = 0 .
+          eq s(N) * M = M + (N * M) .
+        endfm)')">
 </pre>
 
-Note that both Maude and Full Maude automatically includes in every module the <i>predefined</i>
+<p>
+Note that both Maude and Full Maude automatically include in every module the <i>predefined</i>
 <code>BOOL</code> module. Since built-ins cannot be handled by the CRC and most of the other
 tools in the MFE, we use the <code>set include BOOL off</code> command before entering the module.
 If you need the booleans, the usual things to do is including <code>TRUTH-VALUE</code>, where
 the sort <code>Bool</code> and constants <code>true</code> and <code>false</code> are defined,
 but avoiding built-in operations such as <code>_==_</code> and <code>_=/=_</code>.
+<p>
 
-        <h4>Let us begin with the Church-Rosser Checker.</h4>
-        <p>
-            To simplify the interaction with the different tools, we select the tool we are
-            interested in and enter commands for it. If we want to deal with pending proof
-            obligations in other tools we just need to select it. We can move from one tool
-            to another, and MFE will keep the state of the interaction with each of the tools
-            for us. Check the commands on the <a href="/installation">howtouse</a> section
-            for getting the current state of the tools or asking for a list of available commands.
-        </p>
+  <p>
+      To simplify the interaction with the different tools, we select the tool we are
+      interested in and enter commands for it. If we want to deal with pending proof
+      obligations in other tools we just need to select it. We can move from one tool
+      to another, and MFE will keep the state of the interaction with each of the tools
+      for us. Check the commands on the <a href="/installation">howtouse</a> section
+      for getting the current state of the tools or asking for a list of available commands.
+  </p>
+
+  <h4>MTT set up.</h4>
+  <p>
+  We will complete a proof of the Church-Rosser property of the above specification.
+  To get it, we will use the CRC tool for checking local confluence and sort-decreasingness,
+  and the MTT for the termination proof.
+  Since tools can submit proof obligations to corresponding tools in the environment,
+  we can carry on our proof in the CRC.
+  However, since the MTT will be internally used, we need to set it up, and
+  specifically, indicate which is the external tool to be used (the name given in the mfe.config file).
+  </p>
+
+  <p>
+  We can do this just by selecting the MTT tool and the external tool for it.
+  </p>
+  <pre>
+Maude> (select tool MTT .)
+The MTT has been set as current tool.
+
+Maude> (select external tool aprove .)
+aprove is now the current external tool.
+  </pre>
+
+        <h4>Check of the Church-Rosser property with the CRC.</h4>
         <p>
             To select the CRC we type the following command.
         </p>
         <pre>
 Maude> (select tool CRC .)
--------------------------ADD AOUTPUT HERE----------------------------
+The CRC has been set as current tool.
         </pre>
         <p>
         To run the Church-Rosser check on the above module <code>MYNAT</code>,
@@ -100,6 +149,7 @@ Church-Rosser check for MYNAT
 
        <p>
        First, note that most commands are available in an abbreviated form.
+       In this case we could have used either <code>ccr</code> or <code>check Church-Rosser</code>.
        Check the help of the tool for a list of available commands and their
        short versions.
        </p>
@@ -112,7 +162,7 @@ Church-Rosser check for MYNAT
        interpret the proof obligations returned, we recommend to the interested
        reader to take a look to at the
        <a href="http://www.sciencedirect.com/science/article/pii/S1567832611001147">JLAMP
-       paper by Duran and Meseguer</a>.
+       paper by Durán and Meseguer</a>.
        </p>
        <p>
        In this case we can see that the second equation for the multiplication is too
@@ -124,6 +174,62 @@ Church-Rosser check for MYNAT
        Notice that the specification may be ground Church-Rosser already,
        and that it does not require any modification.
         </p>
+
+<pre>
+Maude> (fmod MYNAT is
+          sort MyNat .
+          op 0 : -> MyNat [ctor] .
+          op s : MyNat -> MyNat [ctor] .
+
+          op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+          op _*_ : MyNat MyNat -> MyNat [comm] .
+
+          vars N M : MyNat .
+          eq 0 + N = N .
+          eq s(N) + M = s(N + M) .
+
+          eq 0 * N = 0 .
+          eq s(N) * M = M + (N * M) .
+        endfm)
+Advisory: Module MYNAT redefined.
+Introduced module MYNAT
+</pre>
+
+<p>
+We can now request a new check.
+</p>
+
+<pre>
+Maude> (check Church-Rosser .)
+The CRC for MYNAT has been reset.
+Church-Rosser check for MYNAT
+  All critical pairs have been joined.
+  The specification is locally-confluent.
+  The module is sort-decreasing.
+</pre>
+
+<p>
+Since there are no unjoinable critical pairs, the tool can conclude that the
+specification is locally confluent.
+We can now attempt completing the proof by submitting the pending proof obligation.
+By using the <code>submit</code> command, the CRC will request the termination
+proof to the MTT.
+</p>
+
+<pre>
+Maude> (submit .)
+The termination goal for the functional part of MYNAT has been submitted to MTT.
+Success: The functional part of module MYNAT is terminating.
+The functional part of module MYNAT has been checked terminating.
+Success: The module is therefore Church-Rosser.
+Success: The module MYNAT is Church-Rosser.
+</pre>
+
+<p>
+Since the MTT was able to check the termination of the <code>MNAT</code> module,
+the proof of the confluence, and therefore the of Church-Rosser property, is
+completed.
+</p>
 
 
     </div> <!--col-->
