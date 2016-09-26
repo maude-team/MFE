@@ -36,6 +36,9 @@ mfeApp.config(['$routeProvider', function($routeProvider) {
     })
     .when('/howtouse', {
       templateUrl: 'views/howtouse.html'
+    })
+    .when('/maude', {
+      templateUrl: 'views/maude.html'
     });
 }]);
 
