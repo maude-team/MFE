@@ -1,0 +1,11 @@
+ load mbool.maude
+   
+ select MFE .
+ loop init .
+ (set include BOOL off .)
+  
+ (select tool CRC .)
+ (ccr MBOOL .)
+ q
+ 
+ 

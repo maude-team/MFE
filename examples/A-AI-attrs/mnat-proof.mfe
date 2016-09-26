@@ -1,0 +1,11 @@
+ load mnat.maude
+   
+ select MFE .
+ loop init .
+ (set include BOOL off .)
+  
+ (select tool CRC .)
+ (ccr MNAT .)
+ q
+ 
+ 

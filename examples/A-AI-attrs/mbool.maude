@@ -1,0 +1,23 @@
+  set include BOOL off .
+
+  fmod MBOOL is
+    pr TRUTH-VALUE .
+    op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+    op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+    op not_ : Bool -> Bool [prec 53] .
+    vars A B C : Bool .
+    eq true and A = A .
+    eq false and A = false .
+    eq not true = false .
+    eq not false = true .
+    eq not not A = A .
+    eq A or B = not (not A and not B) .
+
+    op _==_ : Bool Bool -> Bool [comm prec 15] .
+    eq true == false = false .
+    eq A == A = true .
+    
+    op if_theA_else_fi : Bool Bool Bool -> Bool [strat (1 0 2 3 0)] .
+    eq if true theA A else B fi = A .
+    eq if false theA A else B fi = B .
+  endfm

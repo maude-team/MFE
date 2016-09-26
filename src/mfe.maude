@@ -3406,7 +3406,7 @@ loop init .
 
 set show loop stats on .
 set show loop timing on .
-set show advisories on .
+set show advisories off .
 
 -----trace exclude CRChC .
 

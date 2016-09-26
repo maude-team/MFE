@@ -1,4 +1,4 @@
-  load list.maude
+  load mlist.maude
 
   fth TAOSET is
     protecting TRUTH-VALUE .
@@ -55,9 +55,9 @@
     eq mergesort(nil) = nil .
     eq mergesort(N) = N .
     ceq mergesort(L) 
-      = merge(mergesort(take (size(L) quo 2) from L),
-              mergesort(throw (size(L) quo 2) from L))
-      if length(L) > 1 .
+      = merge(mergesort(take (size(L) quot 2) from L),
+              mergesort(throw (size(L) quot 2) from L))
+      if 1 < size(L) .
 
     eq merge(L, nil) = L .
     ceq merge(N L, M L') = N merge(L, M L') if N <= M .
@@ -68,7 +68,7 @@
 
     eq quicksort(nil) = nil .
     eq quicksort(N L) 
-      = quicksort(leq-elems(L, N)) (N : quicksort(gr-elems(L, N))) .
+      = quicksort(leq-elems(L, N)) (N quicksort(gr-elems(L, N))) .
 
     eq leq-elems(nil, M) = nil .
     ceq leq-elems(N L, M) = N leq-elems(L, M) if N <= M .
@@ -82,57 +82,10 @@
     sort Elt to Nat .
   endv
 
-  fmod SORTED-MLIST-TEST is
-    protecting SORTED-MLIST{NatAsToset} .
+  fmod MNAT-EXT-MLIST is
+    protecting EXT-MLIST{NatAsToset} .
   endfm
 
   red insertion-sort(5  4  3  2  1  0) .
   red mergesort(5  3  1  0  2  4) .
   red quicksort(0  1  2  5  4  3) .
-eof
-select MFE .
-loop init .
-
- (set include BOOL off .)
- (set include BOOL-OPS off .)
- (set include TRUTH-VALUE on .)
- (select tool CRC .)
-set trace off .
-set trace select on .
-set print conceal off .
-trace select ---- crcContextJoinableAndUnfeasibleCPs 
-             ---- maximalCPSet 
-             ---- delete 
-             ---- simplify 
-             ---- crcCritPairs
-             ---- confluenceCheck
-             ---- prepNarrowingSols
-             metaNarrowSearch
-             .
- (ccr MNAT-MLIST .)
-  ---- from the book All About Maude
-  ---- by the Maude team
-
-
-***(
-  load view-natastoset.maude
-
-  fmod SORTED-LIST-TEST is
-    protecting SORTED-LIST{NatAsToset} .
-  endfm
-
-Maude> red insertion-sort(5 : 4 : 3 : 2 : 1 : 0 : nil) .
-reduce in SORTED-LIST-TEST : insertion-sort(5 : 4 : 3 : 2 : 1 : 0 : nil) .
-rewrites: 120 in 0ms cpu (0ms real) (~ rewrites/second)
-result NeSortedList{NatAsToset}: 0 : 1 : 2 : 3 : 4 : 5 : nil
-
-Maude> red mergesort(5 : 3 : 1 : 0 : 2 : 4 : nil) .
-reduce in SORTED-LIST-TEST : mergesort(5 : 3 : 1 : 0 : 2 : 4 : nil) .
-rewrites: 159 in 0ms cpu (0ms real) (~ rewrites/second)
-result NeSortedList{NatAsToset}: 0 : 1 : 2 : 3 : 4 : 5 : nil
-
-Maude> red quicksort(0 : 1 : 2 : 5 : 4 : 3 : nil) .
-reduce in SORTED-LIST-TEST : quicksort(0 : 1 : 2 : 5 : 4 : 3 : nil) .
-rewrites: 175 in 0ms cpu (0ms real) (~ rewrites/second)
-result NeSortedList{NatAsToset}: 0 : 1 : 2 : 3 : 4 : 5 : nil
-)

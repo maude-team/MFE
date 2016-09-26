@@ -1,0 +1,49 @@
+  set include BOOL off .
+
+  fmod MNAT is
+    sorts Nat NzNat Zero .
+    subsorts Zero NzNat < Nat .
+    op 0 : -> Zero .
+    op s_ : Nat -> NzNat .
+    op p_ : NzNat -> Nat .
+    op _+_ : Nat Nat -> Nat [comm assoc] .
+    op _*_ : Nat Nat -> Nat .
+    op _*_ : NzNat NzNat -> NzNat .
+    ops _<_ _<=_ : Nat Nat -> Bool .
+    op d : Nat Nat -> Nat [comm] .
+    op quot : Nat NzNat -> Nat .
+    vars N M : Nat . 
+    vars N' M' : NzNat .
+    eq  [nat01] : p s N = N .
+    eq  [nat02] : N + 0 = N .
+    eq  [nat03] : N + (s M) = s (N + M) .
+    eq  [nat04] : N * 0 = 0 .
+    eq  [nat05] : 0 * N = 0 .
+    eq  [nat06] : (s N) * (s M) = s (N + (M + (N * M))) .
+    eq  [nat07] : 0 < N' = true .
+    eq  [nat08] : N < 0 = false .
+    eq  [nat09] : N < N = false .
+    eq  [nat10] : N <= M = N < M or N == M .
+    eq  [nat11] : s N < s M = N < M .
+    eq  [nat12] : d(0, N) = N .
+    eq  [nat13] : d(s N, s M) = d(N, M) .
+    ceq [nat14] : quot(N, M') = s quot(d(N, M'), M') if M' < N  = true .
+    eq  [nat15] : quot(M', M') = s 0 .
+    ceq [nat16] : quot(N, M') = 0 if N < M' = true .
+
+    op _==_ : Nat Nat -> Bool [comm prec 15] .
+    eq 0 == s N = false .
+    eq N == N = true .
+    eq s N == s N' = N == N' .
+    
+    op if_then_else_fi : Bool Nat Nat -> Nat [strat (1 0 2 3 0)] .
+    eq if true then N else N' fi = N .
+    eq if false then N else N' fi = N' .
+
+    ops 1 2 3 4 5 : -> Nat .
+    eq 1 = s 0 .
+    eq 2 = s 1 .
+    eq 3 = s 2 .
+    eq 4 = s 3 .
+    eq 5 = s 4 .
+  endfm

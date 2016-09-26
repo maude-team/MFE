@@ -1,0 +1,55 @@
+
+set include BOOL off .
+
+fmod LATTICE is
+  sort Lat .
+  ops 0 1 : -> Lat .                       *** bottom and top
+  op _\/_ : Lat Lat -> Lat [assoc comm] .  *** sup
+  op _/\_ : Lat Lat -> Lat [assoc comm] .  *** inf
+  op c :  Lat -> Lat .                     *** complement
+
+  vars X Y Z : Lat .
+
+  *** idempotency
+  eq X \/ X = X .
+  eq X /\ X = X .
+  *** extensions
+  eq Y \/ X \/ X = Y \/ X .
+  eq Y /\ X /\ X = Y /\ X .
+
+  *** identities
+  eq X \/ 0 = X .
+  eq X /\ 1 = X .
+  
+  *** simple absorption (follows from identities and absorption)
+  eq 1 \/ X = 1 .
+  eq 0 /\ X = 0 .
+
+  *** absorption
+  eq X /\ (X \/ Y) = X .
+  eq X \/ (X /\ Y) = X .
+  *** extensions
+  eq Z /\ X /\ (X \/ Y) = Z /\ X .
+  eq Z \/ X \/ (X /\ Y) = Z \/ X .
+
+  *** modular lattice axiom
+  ceq Z /\ (X \/ Y) = X \/ (Y /\ Z) if (X /\ Z) = X .
+
+  *** complement axioms
+  eq X \/ c(X) = 1 .
+  eq X /\ c(X) = 0 .
+  *** extensions
+  eq Z \/ X \/ c(X) = 1 .
+  eq Z /\ X /\ c(X) = 0 .
+  ***
+  eq c(0) = 1 .
+  eq c(1) = 0 .
+  ***
+  eq c(X /\ Y) \/ X = 1 .
+  eq c(X \/ Y) /\ X = 0 .
+  *** extensions
+  eq c(X /\ Y) \/ X \/ Z = 1 .
+  eq c(X \/ Y) /\ X /\ Z = 0 .  
+endfm
+
+
