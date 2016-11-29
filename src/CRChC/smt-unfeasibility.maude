@@ -1,0 +1,115 @@
+load smt.maude
+
+fmod SMT-UNFEASIBILITY is
+  pr META-LEVEL .
+
+  var  V : Variable .
+  var  C : Constant .
+  var  M : Module .
+  vars T T' : Term .
+  var  Cd : Condition .
+  var  S : Sort .
+
+op non-valid : -> [Term] .
+
+op smtUnfeasible : Module Condition -> Bool .
+eq smtUnfeasible(M, Cd)
+  = smtCond(M, Cd) =/= non-valid
+    and-then
+    not metaCheck(['REAL-INTEGER], smtCond(M, Cd)) .
+
+op smtCond : Module Condition ~> Term .
+eq smtCond(M, T = T' /\ Cd)
+  = if leastSort(M, T) == 'Bool
+       and-then (smtBool(M, T) =/= non-valid
+                 and-then
+                 smtBool(M, T') =/= non-valid)
+    then '_and_['_===_[smtBool(M, T), smtBool(M, T')], smtCond(M, Cd)]
+    else if (sortLeq(M, leastSort(M, T), 'Nat) == true
+             or-else
+             sortLeq(M, leastSort(M, T), 'Int)) == true
+            and-then (smtInt(M, T) =/= non-valid
+                      and-then
+                      smtInt(M, T') =/= non-valid)
+         then '_and_['_===_[smtInt(M, T), smtInt(M, T')], smtCond(M, Cd)]
+         else if sortLeq(M, leastSort(M, T), '`[Real`]) == true
+                 and-then (smtReal(M, T) =/= non-valid
+                           and-then
+                           smtReal(M, T') =/= non-valid)
+              then '_and_['_===_[smtReal(M, T), smtReal(M, T')], smtCond(M, Cd)]
+              else non-valid
+              fi
+         fi
+    fi .
+eq smtCond(M, T => T' /\ Cd) = smtCond(M, T = T' /\ Cd) .
+eq smtCond(M, T := T' /\ Cd) = smtCond(M, T = T' /\ Cd) .
+eq smtCond(M, T : S /\ Cd) = non-valid .
+eq smtCond(M, nil) = 'true.Boolean .
+
+op smtBool : Module Term -> Term .
+eq smtBool(M, 'true.Bool) = 'true.Boolean .
+eq smtBool(M, 'false.Bool) = 'false.Boolean .
+eq smtBool(M, V) = qid(string(getName(V)) + ":Boolean") .
+eq smtBool(M, 'not_[T]) = 'not_[smtBool(M, T)] .
+eq smtBool(M, '_and_[T, T']) = '_and_[smtBool(M, T), smtBool(M, T')] .
+eq smtBool(M, '_xor_[T, T']) = '_xor_[smtBool(M, T), smtBool(M, T')] .
+eq smtBool(M, '_or_[T, T']) = '_or_[smtBool(M, T), smtBool(M, T')] .
+eq smtBool(M, '_implies_[T, T']) = '_implies_[smtBool(M, T), smtBool(M, T')] .
+eq smtBool(M, '_>_[T, T'])
+  = if sortLeq(M, leastSort(M, T), 'Nat) == true
+       or-else
+       sortLeq(M, leastSort(M, T), 'Int) == true
+    then '_>_[smtInt(M, T), smtInt(M, T')]
+    else if sortLeq(M, leastSort(M, T), 'Float) == true
+         then '_>_[smtReal(M, T), smtReal(M, T')]
+         else non-valid
+         fi
+    fi .
+eq smtBool(M, '_>=_[T, T'])
+  = if sortLeq(M, leastSort(M, T), 'Nat) == true
+       or-else
+       sortLeq(M, leastSort(M, T), 'Int) == true
+    then '_>=_[smtInt(M, T), smtInt(M, T')]
+    else if sortLeq(M, leastSort(M, T), 'Float) == true
+         then '_>=_[smtReal(M, T), smtReal(M, T')]
+         else non-valid
+         fi
+    fi .
+eq smtBool(M, '_<_[T, T'])
+  = if sortLeq(M, leastSort(M, T), 'Nat) == true
+       or-else
+       sortLeq(M, leastSort(M, T), 'Int) == true
+    then '_<_[smtInt(M, T), smtInt(M, T')]
+    else if sortLeq(M, leastSort(M, T), 'Float) == true
+         then '_<_[smtReal(M, T), smtReal(M, T')]
+         else non-valid
+         fi
+    fi .
+eq smtBool(M, '_<=_[T, T'])
+  = if sortLeq(M, leastSort(M, T), 'Nat) == true
+       or-else
+       sortLeq(M, leastSort(M, T), 'Int) == true
+    then '_<=_[smtInt(M, T), smtInt(M, T')]
+    else if sortLeq(M, leastSort(M, T), 'Float) == true
+         then '_<=_[smtReal(M, T), smtReal(M, T')]
+         else non-valid
+         fi
+    fi .
+
+op smtInt : Module Term -> Term .
+eq smtInt(M, C) = qid(string(getName(C)) + ".Integer") .
+eq smtInt(M, V) = qid(string(getName(V)) + ":Integer") .
+eq smtInt(M, '-_[T]) = '-_[smtInt(M, T)] .
+eq smtInt(M, '_+_[T, T']) = '_+_[smtInt(M, T), smtInt(M, T')] .
+eq smtInt(M, '_*_[T, T']) = '_*_[smtInt(M, T), smtInt(M, T')] .
+eq smtInt(M, '_-_[T, T']) = '_-_[smtInt(M, T), smtInt(M, T')] .
+eq smtInt(M, '_div_[T, T']) = '_div_[smtInt(M, T), smtInt(M, T')] .
+eq smtInt(M, '_mod_[T, T']) = '_mod_[smtInt(M, T), smtInt(M, T')] .
+
+op smtReal : Module Term -> Term .
+endfm
+
+----red upTerm(N:Nat > M:Nat and M:Nat > N:Nat) .
+----set trace on .
+----red smtCond(['NAT], upTerm(N:Nat > M:Nat and M:Nat > N:Nat) = 'true.Bool) .
+----red smtUnfeasible(['NAT], upTerm(N:Nat > M:Nat and M:Nat > N:Nat) = 'true.Bool) .

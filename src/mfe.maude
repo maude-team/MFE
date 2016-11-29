@@ -127,7 +127,7 @@ load FM/full-maude27e.maude
 load GLOT/glot.maude
 set show advisories off .
 load ITP/itp.maude
-load CRChC/crchc3p.maude
+load CRChC/crchc3q.maude
 load MTT/mtt.maude
 load SCC/scc.maude
 load EqE/eqe.maude

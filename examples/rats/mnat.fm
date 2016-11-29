@@ -34,7 +34,16 @@
     ceq [nat16] : gcd(N', M') =  gcd(d(N', M'), M') if N' > M' = true .
   endfm)
 
+ (select tool CRC .)
+ set trace on .
+ trace include FULL-MAUDE CRChC MFE .
+ set trace select on . 
+ trace select smtUnfeasible 
+              ----crcContextJoinableAndUnfeasibleCPs
+              .
+ set print conceal off .
  (check Church-Rosser .)
+ 
 eof
 ---(
 crchc3f: rewrites: 4385595 in 8984ms cpu (9375ms real) (488129 rewrites/second)
