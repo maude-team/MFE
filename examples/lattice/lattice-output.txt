@@ -1,0 +1,360 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7.1-hooks-darwin/maude src/mfe.maude examples/lattice/lattice-proof.maude 
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude-mfe-hooks 2.7.1 built: Aug 31 2016 12:24:20
+	     With termination checker extension 
+	    Copyright 1997-2016 SRI International
+		   Mon Sep 26 22:40:34 2016
+
+	    Full Maude 2.7e September 22th 2016
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+rewrites: 3236 in 3ms cpu (4ms real) (948973 rewrites/second)
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+rewrites: 48 in 4ms cpu (6ms real) (10391 rewrites/second)
+set include BOOL off
+
+rewrites: 76 in 0ms cpu (1ms real) (19000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 341145030 in 16175360ms cpu (17469661ms real) (21090 rewrites/second)
+Church-Rosser check for LATTICE
+The following critical pairs must be proved joinable:
+  cp LATTICE11646
+    0 /\ #3:[Lat]
+    = X:Lat /\ #5:Lat /\ #3:[Lat]/\ c(#5:Lat /\ X:Lat \/ Y:Lat).
+  cp LATTICE11696
+    0
+    = X:Lat /\ #1:Lat /\ #6:Lat /\ c(#6:Lat /\ X:Lat \/ Y:Lat).
+  cp LATTICE20461
+    0 /\ #3:[Lat]
+    = X:Lat /\ #6:Lat /\ #3:[Lat]/\ c(#4:Lat \/ #6:Lat /\ X:Lat \/ Y:Lat).
+  cp LATTICE20509
+    0
+    = X:Lat /\ #1:Lat /\ #7:Lat /\ c(#4:Lat \/ #7:Lat /\ X:Lat \/ Y:Lat).
+  cp LATTICE28830
+    #4:Lat \/ Y:Lat /\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat
+    = #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat .
+  cp LATTICE28834
+    c(Y:Lat \/ #4:Lat)/\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat
+    = 0 .
+  cp LATTICE28838
+    X@@@:[Lat]/\ #4:Lat \/ Y:Lat /\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat
+    = X@@@:[Lat]/\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat .
+  cp LATTICE28843
+    X@@@:[Lat]/\ c(Y:Lat \/ #4:Lat)/\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE28847
+    Z:Lat /\ c(Y:Lat \/ #4:Lat)/\ #4:Lat \/ #2:Lat /\ Y:Lat \/ #4:Lat
+    = 0 .
+  cp LATTICE33827
+    #5:Lat \/ #7:Lat \/ Y:Lat /\ #5:Lat \/ #7:Lat \/ #3:Lat /\ Y:Lat \/ #5:Lat
+    = #5:Lat \/ #7:Lat \/ #3:Lat /\ Y:Lat \/ #5:Lat .
+  cp LATTICE33837
+    c(Y:Lat \/ #5:Lat)/\ #5:Lat \/ Y:Lat /\ #3:Lat
+    = 0 .
+  cp LATTICE33839
+    c(#1:Lat \/ #5:Lat \/ #6:Lat)/\ #5:Lat \/ #1:Lat /\ #3:Lat
+    = 0 .
+  cp LATTICE33841
+    c(#5:Lat \/ #6:Lat \/ #7:Lat)/\ #5:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat
+    = 0 .
+  cp LATTICE33843
+    c(Y:Lat \/ #5:Lat \/ #7:Lat)/\ #5:Lat \/ #7:Lat \/ #3:Lat /\ Y:Lat \/
+    #5:Lat
+    = 0 .
+  cp LATTICE33845
+    c(#5:Lat \/ #6:Lat \/ #7:Lat \/ #8:Lat)/\ #5:Lat \/ #7:Lat \/ #3:Lat /\
+    #5:Lat \/ #6:Lat
+    = 0 .
+  cp LATTICE33859
+    X@@@:[Lat]/\ #5:Lat \/ #7:Lat \/ Y:Lat /\ #5:Lat \/ #7:Lat \/ #3:Lat /\
+    Y:Lat \/ #5:Lat
+    = X@@@:[Lat]/\ #5:Lat \/ #7:Lat \/ #3:Lat /\ Y:Lat \/ #5:Lat .
+  cp LATTICE33870
+    X@@@:[Lat]/\ c(Y:Lat \/ #5:Lat)/\ #5:Lat \/ Y:Lat /\ #3:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE33872
+    X@@@:[Lat]/\ c(#1:Lat \/ #5:Lat \/ #6:Lat)/\ #5:Lat \/ #1:Lat /\ #3:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE33874
+    X@@@:[Lat]/\ c(#5:Lat \/ #6:Lat \/ #7:Lat)/\ #5:Lat \/ #3:Lat /\ #5:Lat \/
+    #6:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE33876
+    X@@@:[Lat]/\ c(Y:Lat \/ #5:Lat \/ #7:Lat)/\ #5:Lat \/ #7:Lat \/ #3:Lat /\
+    Y:Lat \/ #5:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE33878
+    X@@@:[Lat]/\ c(#5:Lat \/ #6:Lat \/ #7:Lat \/ #8:Lat)/\ #5:Lat \/ #7:Lat \/
+    #3:Lat /\ #5:Lat \/ #6:Lat
+    = 0 /\ X@@@:[Lat].
+  cp LATTICE33886
+    Z:Lat /\ c(Y:Lat \/ #5:Lat)/\ #5:Lat \/ Y:Lat /\ #3:Lat
+    = 0 .
+  cp LATTICE33888
+    Z:Lat /\ c(#1:Lat \/ #5:Lat \/ #6:Lat)/\ #5:Lat \/ #1:Lat /\ #3:Lat
+    = 0 .
+  cp LATTICE33890
+    Z:Lat /\ c(#5:Lat \/ #6:Lat \/ #7:Lat)/\ #5:Lat \/ #3:Lat /\ #5:Lat \/
+    #6:Lat
+    = 0 .
+  cp LATTICE33892
+    Z:Lat /\ c(Y:Lat \/ #5:Lat \/ #7:Lat)/\ #5:Lat \/ #7:Lat \/ #3:Lat /\ Y:Lat
+    \/ #5:Lat
+    = 0 .
+  cp LATTICE33894
+    Z:Lat /\ c(#5:Lat \/ #6:Lat \/ #7:Lat \/ #8:Lat)/\ #5:Lat \/ #7:Lat \/
+    #3:Lat /\ #5:Lat \/ #6:Lat
+    = 0 .
+  cp LATTICE34074
+    #1:Lat \/ #5:Lat \/ Y:Lat /\ #5:Lat \/ #1:Lat /\ #3:Lat
+    = #1:Lat \/ #5:Lat .
+  cp LATTICE34080
+    #5:Lat \/ #6:Lat
+    = #5:Lat \/ #6:Lat \/ #3:Lat /\ #5:Lat \/ Y:Lat /\ #5:Lat \/ #6:Lat .
+  cp LATTICE34099
+    #1:Lat \/ #5:Lat \/ #6:[Lat]\/ Y:Lat /\ #5:Lat \/ #1:Lat /\ #3:Lat
+    = #1:Lat \/ #5:Lat \/ #6:[Lat].
+  cp LATTICE34104
+    #5:Lat \/ #6:Lat \/ #7:Lat
+    = #5:Lat \/ #6:Lat \/ #7:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat \/ Y:Lat /\
+    #5:Lat \/ #7:Lat .
+  cp LATTICE34106
+    #5:Lat \/ #6:Lat \/ #7:[Lat]
+    = #5:Lat \/ #6:Lat \/ #7:[Lat]\/ #3:Lat /\ #5:Lat \/ Y:Lat /\ #5:Lat \/
+    #6:Lat .
+  cp LATTICE34114
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:[Lat]
+    = #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:[Lat]\/ #3:Lat /\ #5:Lat \/ #6:Lat \/
+    Y:Lat /\ #5:Lat \/ #7:Lat .
+  cp LATTICE34120
+    #1:Lat \/ #5:Lat \/ c(#5:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 .
+  cp LATTICE34124
+    #5:Lat \/ #6:Lat \/ c(#5:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE34132
+    #1:Lat \/ #5:Lat \/ #6:[Lat]\/ c(#5:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 \/ #6:[Lat].
+  cp LATTICE34136
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ c(#5:Lat \/ #7:Lat \/ #3:Lat /\ #5:Lat \/
+    #6:Lat)
+    = 1 .
+  cp LATTICE34138
+    #5:Lat \/ #6:Lat \/ #7:[Lat]\/ c(#5:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 \/ #7:[Lat].
+  cp LATTICE34145
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:[Lat]\/ c(#5:Lat \/ #7:Lat \/ #3:Lat /\
+    #5:Lat \/ #6:Lat)
+    = 1 \/ #8:[Lat].
+  cp LATTICE34150
+    #1:Lat \/ #5:Lat \/ c(Y:Lat /\ #5:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 .
+  cp LATTICE34154
+    #5:Lat \/ #6:Lat \/ c(Y:Lat /\ #5:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE34162
+    #1:Lat \/ #5:Lat \/ #6:[Lat]\/ c(Y:Lat /\ #5:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 \/ #6:[Lat].
+  cp LATTICE34166
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ c(Y:Lat /\ #5:Lat \/ #7:Lat \/ #3:Lat /\
+    #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE34168
+    #5:Lat \/ #6:Lat \/ #7:[Lat]\/ c(Y:Lat /\ #5:Lat \/ #3:Lat /\ #5:Lat \/
+    #6:Lat)
+    = 1 \/ #7:[Lat].
+  cp LATTICE34175
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:[Lat]\/ c(Y:Lat /\ #5:Lat \/ #7:Lat \/
+    #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 \/ #8:[Lat].
+  cp LATTICE34192
+    #1:Lat \/ #5:Lat \/ #6:Lat \/ c(#6:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 .
+  cp LATTICE34196
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ c(#6:Lat \/ #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE34205
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:Lat \/ c(#6:Lat \/ #8:Lat \/ #3:Lat /\
+    #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE34222
+    #1:Lat \/ #5:Lat \/ #6:Lat \/ c(Y:Lat /\ #6:Lat \/ #1:Lat /\ #3:Lat)
+    = 1 .
+  cp LATTICE34226
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ c(Y:Lat /\ #6:Lat \/ #3:Lat /\ #5:Lat \/
+    #6:Lat)
+    = 1 .
+  cp LATTICE34235
+    #5:Lat \/ #6:Lat \/ #7:Lat \/ #8:Lat \/ c(Y:Lat /\ #6:Lat \/ #8:Lat \/
+    #3:Lat /\ #5:Lat \/ #6:Lat)
+    = 1 .
+  cp LATTICE5691
+    #1:Lat /\(Y:Lat /\ #5:Lat)\/ #5:Lat /\ #1:Lat \/ #3:Lat
+    = #1:Lat /\ #5:Lat .
+  cp LATTICE5716
+    #1:Lat /\ #6:[Lat]/\(Y:Lat /\ #5:Lat)\/ #5:Lat /\ #1:Lat \/ #3:Lat
+    = #1:Lat /\ #5:Lat /\ #6:[Lat].
+  cp LATTICE5721
+    #5:Lat /\ #6:Lat /\ #7:Lat
+    = #7:Lat /\(#6:Lat /\(Y:Lat /\ #5:Lat)\/ #5:Lat /\ #7:Lat)\/ #3:Lat /\
+    #5:Lat /\ #6:Lat .
+  cp LATTICE5731
+    #5:Lat /\ #6:Lat /\ #7:Lat /\ #8:[Lat]
+    = #7:Lat /\ #8:[Lat]/\(#6:Lat /\(Y:Lat /\ #5:Lat)\/ #5:Lat /\ #7:Lat)\/
+    #3:Lat /\ #5:Lat /\ #6:Lat .
+  cp LATTICE5737
+    #1:Lat /\ #5:Lat /\ c(#5:Lat /\ #1:Lat \/ #3:Lat)
+    = 0 .
+  cp LATTICE5767
+    #1:Lat /\ #5:Lat /\ c(Y:Lat \/ #5:Lat /\ #1:Lat \/ #3:Lat)
+    = 0 .
+  cp LATTICE6199
+    (Y:Lat /\ #5:Lat)\/ #5:Lat /\ Y:Lat \/ #3:Lat
+    = #5:Lat /\ Y:Lat \/ #3:Lat .
+  cp LATTICE6201
+    (#5:Lat /\ #1:Lat \/ #3:Lat)\/ #1:Lat /\ #5:Lat /\ #6:Lat
+    = #5:Lat /\ #1:Lat \/ #3:Lat .
+  cp LATTICE6215
+    c(Y:Lat /\ #5:Lat)\/ #5:Lat /\ Y:Lat \/ #3:Lat
+    = 1 .
+  cp LATTICE6217
+    c(#1:Lat /\ #5:Lat /\ #6:Lat)\/ #5:Lat /\ #1:Lat \/ #3:Lat
+    = 1 .
+  cp LATTICE6231
+    X@@@:[Lat]\/(Y:Lat /\ #5:Lat)\/ #5:Lat /\ Y:Lat \/ #3:Lat
+    = X@@@:[Lat]\/ #5:Lat /\ Y:Lat \/ #3:Lat .
+  cp LATTICE6233
+    X@@@:[Lat]\/(#5:Lat /\ #1:Lat \/ #3:Lat)\/ #1:Lat /\ #5:Lat /\ #6:Lat
+    = X@@@:[Lat]\/ #5:Lat /\ #1:Lat \/ #3:Lat .
+  cp LATTICE6248
+    X@@@:[Lat]\/ c(Y:Lat /\ #5:Lat)\/ #5:Lat /\ Y:Lat \/ #3:Lat
+    = 1 \/ X@@@:[Lat].
+  cp LATTICE6250
+    X@@@:[Lat]\/ c(#1:Lat /\ #5:Lat /\ #6:Lat)\/ #5:Lat /\ #1:Lat \/ #3:Lat
+    = 1 \/ X@@@:[Lat].
+  cp LATTICE6264
+    Z:Lat \/ c(Y:Lat /\ #5:Lat)\/ #5:Lat /\ Y:Lat \/ #3:Lat
+    = 1 .
+  cp LATTICE6266
+    Z:Lat \/ c(#1:Lat /\ #5:Lat /\ #6:Lat)\/ #5:Lat /\ #1:Lat \/ #3:Lat
+    = 1 .
+  ccp LATTICE1564
+    0 /\ X@@@:[Lat]
+    = X:Lat /\ X@@@:[Lat]
+    if 0 /\ X:Lat = X:Lat .
+  ccp LATTICE18559
+    0 /\ X@@@:[Lat]
+    = X:Lat /\ X@@@:[Lat]
+    if X:Lat /\ #1:Lat /\ c(X:Lat \/ Y:Lat)= X:Lat .
+  ccp LATTICE18560
+    0 /\ X@@@:[Lat]
+    = X:Lat /\ X@@@:[Lat]
+    if X:Lat /\ #2:Lat /\ c(#2:Lat)= X:Lat .
+  ccp LATTICE28516
+    Z:Lat
+    = 1
+    if 1 /\ Z:Lat = 1 .
+  ccp LATTICE28517
+    Z:Lat
+    = Z:Lat \/ X:Lat
+    if Z:Lat /\ X:Lat = X:Lat .
+  ccp LATTICE28519
+    Z:Lat
+    = 1
+    if Z:Lat /\ 1 \/ #3:Lat = 1 \/ #3:Lat .
+  ccp LATTICE28520
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if 1 /\ Z:Lat = 1 .
+  ccp LATTICE28521
+    Z:Lat /\ X@@@:[Lat]
+    = X@@@:[Lat]/\ Z:Lat \/ X:Lat
+    if Z:Lat /\ X:Lat = X:Lat .
+  ccp LATTICE28523
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if Z:Lat /\ 1 \/ #3:Lat = 1 \/ #3:Lat .
+  ccp LATTICE35390
+    Z:Lat
+    = 1
+    if Z:Lat /\ #1:Lat \/ c(#1:Lat)= #1:Lat \/ c(#1:Lat).
+  ccp LATTICE35396
+    Z:Lat
+    = 1
+    if Z:Lat /\ #1:Lat \/ #5:Lat \/ c(#1:Lat)= #1:Lat \/ #5:Lat \/ c(#1:Lat).
+  ccp LATTICE35406
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if Z:Lat /\ #1:Lat \/ c(#1:Lat)= #1:Lat \/ c(#1:Lat).
+  ccp LATTICE35412
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if Z:Lat /\ #1:Lat \/ #5:Lat \/ c(#1:Lat)= #1:Lat \/ #5:Lat \/ c(#1:Lat).
+  ccp LATTICE36307
+    Z:Lat
+    = 1
+    if Z:Lat /\ #1:Lat \/ c(#1:Lat /\ #3:Lat)= #1:Lat \/ c(#1:Lat /\ #3:Lat).
+  ccp LATTICE36313
+    Z:Lat
+    = 1
+    if Z:Lat /\ #1:Lat \/ #5:Lat \/ c(#1:Lat /\ #3:Lat)= #1:Lat \/ #5:Lat \/ c(
+    #1:Lat /\ #3:Lat).
+  ccp LATTICE36323
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if Z:Lat /\ #1:Lat \/ c(#1:Lat /\ #3:Lat)= #1:Lat \/ c(#1:Lat /\ #3:Lat).
+  ccp LATTICE36329
+    Z:Lat /\ X@@@:[Lat]
+    = 1 /\ X@@@:[Lat]
+    if Z:Lat /\ #1:Lat \/ #5:Lat \/ c(#1:Lat /\ #3:Lat)= #1:Lat \/ #5:Lat \/ c(
+    #1:Lat /\ #3:Lat).
+  ccp LATTICE58114
+    #2:Lat
+    = 0
+    if 0 /\ #2:Lat = #2:Lat .
+  ccp LATTICE58129
+    #2:Lat
+    = 0
+    if #2:Lat /\ c(#3:Lat \/ #2:Lat)= #2:Lat .
+  ccp LATTICE58156
+    #2:Lat
+    = 0
+    if #5:Lat /\ #2:Lat /\ c(#3:Lat \/ #2:Lat)= #2:Lat .
+  ccp LATTICE58157
+    #2:Lat
+    = 0
+    if X:Lat /\ #2:Lat /\ c(X:Lat)= #2:Lat .
+  ccp LATTICE58192
+    X:Lat \/ #2:Lat \/ X@@@:[Lat]
+    = X:Lat \/ X@@@:[Lat]
+    if X:Lat /\ #2:Lat = #2:Lat .
+  ccp LATTICE58227
+    X:Lat \/ Z:Lat /\ Y:Lat /\ #6:Lat
+    = #6:Lat /\ X:Lat \/ Z:Lat /\ Y:Lat
+    if Z:Lat /\ X:Lat = X:Lat /\ Z:Lat /\ X:Lat /\ #6:Lat = X:Lat .
+  ccp LATTICE58506
+    #3:Lat /\ X@@@:[Lat]
+    = 0 /\ X@@@:[Lat]
+    if #3:Lat /\ c(#3:Lat \/ #4:Lat)= #3:Lat .
+  ccp LATTICE59168
+    #7:Lat /\ X:Lat \/ Y:Lat /\ #1:Lat
+    = X:Lat \/ Y:Lat /\ #1:Lat /\ #7:Lat
+    if X:Lat /\ #1:Lat /\ #7:Lat = X:Lat /\ X:Lat /\ #1:Lat = X:Lat .
+	The module is sort-decreasing.
+
+Maude> 

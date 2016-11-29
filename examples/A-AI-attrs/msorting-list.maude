@@ -55,8 +55,8 @@
     eq mergesort(nil) = nil .
     eq mergesort(N) = N .
     ceq mergesort(L) 
-      = merge(mergesort(take (size(L) quot 2) from L),
-              mergesort(throw (size(L) quot 2) from L))
+      = merge(mergesort(take quot(size(L), 2) from L),
+              mergesort(throw quot(size(L), 2) from L))
       if 1 < size(L) .
 
     eq merge(L, nil) = L .

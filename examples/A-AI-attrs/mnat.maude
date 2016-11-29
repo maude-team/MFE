@@ -40,7 +40,7 @@
     eq if true then N else N' fi = N .
     eq if false then N else N' fi = N' .
 
-    ops 1 2 3 4 5 : -> Nat .
+    ops 1 2 3 4 5 : -> NzNat .
     eq 1 = s 0 .
     eq 2 = s 1 .
     eq 3 = s 2 .

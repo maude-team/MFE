@@ -1,0 +1,104 @@
+ (set include BOOL off .)
+ (set include TRUTH-VALUE on .)
+
+ (fmod MBOOL is
+    op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+    op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+    op not_ : Bool -> Bool [prec 53] .
+    vars A B C : Bool .
+    eq [MBOOL01] : true and A = A .
+    eq [MBOOL02] : false and A = false .
+    eq [MBOOL03] : not true = false .
+    eq [MBOOL04] : not false = true .
+    eq [MBOOL05] : not not A = A .
+    eq [MBOOL06] : A or B = not (not A and not B) .
+  endfm)
+  
+ (fmod NAT is
+    pr MBOOL .
+    sorts Nat NzNat Zero .
+    subsorts Zero NzNat < Nat .
+    op 0 : -> Zero .
+    op s_ : Nat -> NzNat .
+    ops _>_ _>=_ : Nat Nat -> Bool [prec 37] .
+    op _==_ : Nat Nat -> Bool [comm prec 37] .
+    op sd : Nat Nat -> Nat [comm] .
+    vars N M : Nat . 
+    vars N' M' : NzNat .
+    eq [NAT01] : 0 > M = false .
+    eq [NAT02] : N' > 0 = true .
+    eq [NAT03] : s N > s M = N > M .
+    eq [NAT04] : N > N = false .
+    eq [NAT05] : N >= M = not M > N .
+----    eq [NAT05] : N >= M = N > M or N == M .
+    eq [NAT06] : N == M = N >= M and M >= N .
+----    eq [NAT06] : 0 == 0 = true .
+----    eq [NAT06] : 0 == s N = false .
+----    eq [NAT06] : s N == 0 = false .
+----    eq [NAT06] : s N == s M  = N == M .
+    eq [NAT07] : sd(0, N) = N .
+    eq [NAT08] : sd(s N, s M) = sd(N, M) .
+----   ceq [NAT08] : sd(s N, M) = s sd(N, M) if N >= M .  
+  endfm)
+
+ (fth NAT* is
+    protecting NAT .
+    op k : -> NzNat .
+  endfth)
+
+ (fmod NAT/{N :: NAT*} is
+    pr MBOOL .
+    sort Nat/{N} .
+    op `[_`] : Nat -> Nat/{N} [ctor] .
+    op _==_ : Nat/{N} Nat/{N} -> Bool .
+    vars N N1 N2 : Nat .
+   ceq [NAT/01]: [N] = [sd(N, k)] if N >= k .
+   ceq [NAT/02]: [N1] == [N2] = N1 == N2 if k > N1 /\ k > N2 .
+  endfm)
+  
+ (omod DINING-PHILS{P :: NAT*} is
+    protecting NAT/{P} .
+    subsort Nat/{P} < Oid .
+    sort Status .
+    ops thinking hungry eating : -> Status .
+
+    op _can`use_ : Nat/{P} Nat/{P} -> Bool .
+    eq [DP01]: [I] can use [J] = [I] == [J] or [s I] == [J] . 
+
+    class Philosopher | state : Status, sticks : Nat, lunches : Nat .
+    
+    msg chopstick : Nat/{P} -> Msg .
+
+    vars I J N M K : Nat .
+    var  B : Oid .
+ 
+    rl [get-hungry] :
+      < [I] : Philosopher | state : thinking, sticks : N >
+      => < [I] : Philosopher | state : hungry, sticks : N > .
+    crl [grab-stick] :
+      < [I] : Philosopher | state : hungry, sticks : N >
+      chopstick([J])
+      => < [I] : Philosopher | state : hungry, sticks : s N >
+      if [I] can use [J] .
+    rl [eat] :
+      < [I] : Philosopher | state : hungry, sticks : s s 0 >
+      => < [I] : Philosopher | state : eating, sticks : s s 0 > .
+    rl [stop-eating] :
+      < [I] : Philosopher | state : eating, sticks : s s 0 >
+      => < [I] : Philosopher | state : thinking, sticks : 0 >
+         chopstick([I])
+         chopstick([s I]) .
+ 
+    op initState : Nat -> Configuration .
+ 
+    eq [DP02]: initState(0) = none .
+    eq [DP0]: initState(s N)
+      = chopstick([N])
+        < [N] : Philosopher | state : thinking, sticks : 0 >
+        initState(N) .
+  endom)
+
+ (view 5 from NAT* to NAT is
+    op k to term s s s s s 0 .
+  endv)
+

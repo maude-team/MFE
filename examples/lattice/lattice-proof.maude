@@ -1,4 +1,4 @@
-  load msorting-list.maude
+  load lattice.maude
 
   select MFE .
   loop init .
@@ -7,5 +7,5 @@
  
  (select tool CRC .)
  
- (ccr MNAT-EXT-MLIST .)
+ (ccr LATTICE .)
  

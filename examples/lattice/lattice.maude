@@ -4,52 +4,51 @@ set include BOOL off .
 fmod LATTICE is
   sort Lat .
   ops 0 1 : -> Lat .                       *** bottom and top
-  op _\/_ : Lat Lat -> Lat [assoc comm] .  *** sup
-  op _/\_ : Lat Lat -> Lat [assoc comm] .  *** inf
+  op _\/_ : Lat Lat -> Lat [assoc comm prec 55] .  *** sup
+  op _/\_ : Lat Lat -> Lat [assoc comm prec 59] .  *** inf
   op c :  Lat -> Lat .                     *** complement
 
   vars X Y Z : Lat .
 
   *** idempotency
-  eq X \/ X = X .
-  eq X /\ X = X .
+  eq [LAT-01] : X \/ X = X .
+  eq [LAT-02] : X /\ X = X .
   *** extensions
-  eq Y \/ X \/ X = Y \/ X .
-  eq Y /\ X /\ X = Y /\ X .
+  eq [LAT-03] : Y \/ X \/ X = Y \/ X .
+  eq [LAT-04] : Y /\ X /\ X = Y /\ X .
 
   *** identities
-  eq X \/ 0 = X .
-  eq X /\ 1 = X .
+  eq [LAT-05] : X \/ 0 = X .
+  eq [LAT-06] : X /\ 1 = X .
   
   *** simple absorption (follows from identities and absorption)
-  eq 1 \/ X = 1 .
-  eq 0 /\ X = 0 .
-
+  eq [LAT-07] : 1 \/ X = 1 .
+  eq [LAT-08] : 0 /\ X = 0 .
   *** absorption
-  eq X /\ (X \/ Y) = X .
-  eq X \/ (X /\ Y) = X .
+  eq [LAT-09] : X /\ (X \/ Y) = X .
+  eq [LAT-10] : X \/ (X /\ Y) = X .
   *** extensions
-  eq Z /\ X /\ (X \/ Y) = Z /\ X .
-  eq Z \/ X \/ (X /\ Y) = Z \/ X .
+  eq [LAT-11] : Z /\ X /\ (X \/ Y) = Z /\ X .
+  eq [LAT-12] : Z \/ X \/ (X /\ Y) = Z \/ X .
 
   *** modular lattice axiom
-  ceq Z /\ (X \/ Y) = X \/ (Y /\ Z) if (X /\ Z) = X .
+ ceq [LAT-13] : Z /\ (X \/ Y) = X \/ (Y /\ Z) if (X /\ Z) = X .
 
   *** complement axioms
-  eq X \/ c(X) = 1 .
-  eq X /\ c(X) = 0 .
+  eq [LAT-14] : X \/ c(X) = 1 .
+  eq [LAT-15] : X /\ c(X) = 0 .
   *** extensions
-  eq Z \/ X \/ c(X) = 1 .
-  eq Z /\ X /\ c(X) = 0 .
+  eq [LAT-16] : Z \/ X \/ c(X) = 1 .
+  eq [LAT-17] : Z /\ X /\ c(X) = 0 .
   ***
-  eq c(0) = 1 .
-  eq c(1) = 0 .
+  eq [LAT-18] : c(0) = 1 .
+  eq [LAT-19] : c(1) = 0 .
   ***
-  eq c(X /\ Y) \/ X = 1 .
-  eq c(X \/ Y) /\ X = 0 .
+  eq [LAT-20] : c(X /\ Y) \/ X = 1 .
+  eq [LAT-21] : c(X \/ Y) /\ X = 0 .
   *** extensions
-  eq c(X /\ Y) \/ X \/ Z = 1 .
-  eq c(X \/ Y) /\ X /\ Z = 0 .  
+  eq [LAT-22] : c(X /\ Y) \/ X \/ Z = 1 .
+  eq [LAT-23] : c(X \/ Y) /\ X /\ Z = 0 .
 endfm
 
 

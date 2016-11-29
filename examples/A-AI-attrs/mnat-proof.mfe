@@ -5,7 +5,13 @@
  (set include BOOL off .)
   
  (select tool CRC .)
+ 
+ set trace off .
+ set print conceal off .
+ set trace select on .
+ trace select confluenceCheck
+              .
  (ccr MNAT .)
- q
+ ---- q
  
- 
+ red in MFE : pendingCPs(confluenceCheck(upModule('MNAT, true))) .
