@@ -1,0 +1,7 @@
+Changes on the maa.maude file (compare maa.maude and maa0.maude)
+- Built-ins cannot be used. There is already an Xbool, but there are uses of _==_. I've transformed expressions like
+  eqNat (N:Nat, zero) == Xtrue = true
+  into
+  eqNat (N:Nat, zero) = Xtrue
+
+  
