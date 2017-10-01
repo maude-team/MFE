@@ -11,9 +11,9 @@ The project's documentation is maintained in the [Wiki section](https://github.c
  * [Tools] for a list of tools available in MFE's latest release.
  * [Maude++] for a brief explanation on how the Maude system has been extended with new operators to handle calls to the CETA library and termination back-ends.
 
-[Installation]: https://github.com/maude-team/MFE/wiki/Installation
-[Use]:          https://github.com/maude-team/MFE/wiki/Use
-[Tools]:        https://github.com/maude-team/MFE/wiki/Tools
+[Installation]: https://github.com/maude-team/MFE/wiki/How-to-install-the-tool
+[Use]:          https://github.com/maude-team/MFE/wiki/How-to-use-the-tool
+[Tools]:        https://github.com/maude-team/MFE/wiki/Tools-available
 [Maude++]:      https://github.com/maude-team/maude/releases
 
 ## Papers on the MFE
