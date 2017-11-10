@@ -1,0 +1,91 @@
+----
+---- THE CRC WORKS ON THE OFFICIAL DISTRIBUTION
+----
+
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7/maude examples/garavel-marsso/check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude 2.7 built: Mar  3 2014 18:07:27
+	    Copyright 1997-2014 SRI International
+		   Fri Mar 31 14:19:48 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (159329 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 1398818546 in 4174939ms cpu (4279560ms real) (335051 rewrites/second)
+Church-Rosser check for MAA
+The following critical pairs must be proved joinable:
+  ccp MAA683
+    O:Octet
+    = xorOctet(O:Octet,O-prime:Octet)
+    if needAdjust(O:Octet)= Xtrue /\ needAdjust(O:Octet)= Xtrue .
+  ccp MAA687
+    x0
+    = x1
+    if needAdjust(O:Octet)= Xtrue /\ needAdjust(O:Octet)= Xtrue .
+  ccp MAA691
+    consMessage(W:Block,makeMessage(N:Nat,dropCarryBlockSum(addBlockSum(W:Block,
+    W-prime:Block)),W-prime:Block))
+    = unitMessage(W:Block)
+    if eqNat(N:Nat,zero)= Xtrue /\ eqNat(N:Nat,zero)= Xtrue .
+	The module is sort-decreasing.
+
+rewrites: 76 in 37ms cpu (72ms real) (2002 rewrites/second)
+The MTT has been set as current tool.
+
+rewrites: 39 in 16ms cpu (21ms real) (2338 rewrites/second)
+aprove is now the current external tool.
+
+rewrites: 1487 in 37ms cpu (51ms real) (39417 rewrites/second)
+Warning: The Maude Termination Tool is not fully available. Please use the trust command to
+    assume that the MAA module is terminating.
+
+Maude> q
+
+----
+---- THE TERMINATION CHECK, USING THE HOOK, ENDS ABRUPTLY
+----
+
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/garavel-marsso/check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Fri Mar 31 12:36:55 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The MTT has been set as current tool.
+
+rewrites: 39 in 4ms cpu (4ms real) (8535 rewrites/second)
+aprove is now the current external tool.
+
+MacBook-Pro-de-Paco:MFE duran$

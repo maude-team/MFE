@@ -1,5 +1,5 @@
 ---- May 19th, 2016
----- - op none : -> NatSet renamed as noneNS, due to conflict with none of new 
+---- - op none : -> NatSet renamed as noneNS, due to conflict with none of new
 ----   sort Parent (introduced in Alpha 109)
 
 fmod CC-BANNER is
@@ -48,8 +48,8 @@ fmod CC-HELP is
   pr META-LEVEL .
 
   op cc-help : -> QidList .
-  eq cc-help = 'Commands 'available 'from 'the 
-     '\n '\n '\t '\s '\s '\s '\s 'Maude 'Sufficient 'and 'Canonical 'Completeness 'Checker. 
+  eq cc-help = 'Commands 'available 'from 'the
+     '\n '\n '\t '\s '\s '\s '\s 'Maude 'Sufficient 'and 'Canonical 'Completeness 'Checker.
      '\n '\n
      'Let '\! '<module> '\o 'denote 'the 'name 'of 'a 'rewrite 'theory ' '`( 'Sigma '`, ' 'E 'u 'A '`, ' 'mu '`, ' 'R '`, ' 'phi '`) ':
      '\n '\n '\s '\s '`( '\! 'ccc '\o '<module> '. '`)
@@ -57,12 +57,12 @@ fmod CC-HELP is
      '\n '\n '\s '\s '`( '\! 'scc '\o '<module> '. '`)
      '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'sufficient 'completeness 'of ' '`( 'Sigma '`, ' 'E 'u 'A '`)
      '\n '\n '\s '\s '`( '\! 'scc-df '\o '<module> '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'sufficient 'completeness 'and 'deadlock 'freeness 
+     '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'sufficient 'completeness 'and 'deadlock 'freeness
      '\n '\s '\s '\s '\s '\s '\s  'of ' '`( 'Sigma '`, ' 'E 'u 'A '`, ' 'R '`)
      '\n '\n '\s '\s '`( '\! 'mu-scc '\o '<module> '. '`)
      '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'mu-sufficient 'completeness 'of ' '`( 'Sigma '`, ' 'E 'u 'A '`, ' 'mu '`)
      '\n '\n '\s '\s '`( '\! 'mu-scc-phi-df '\o '<module> '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'mu-sufficient 'completeness 'and 'phi-deadlock 'freeness 
+     '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'mu-sufficient 'completeness 'and 'phi-deadlock 'freeness
      '\n '\s '\s '\s '\s '\s '\s  'of ' '`( 'Sigma '`, ' 'E 'u 'A '`, ' 'mu '`, ' 'R '`, ' 'phi '`)
      '\n '\n '\s '\s '`( '\! 'free '\o '<module> '. '`)
      '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'E-freeness 'of 'the 'constructors 'of ' '`( 'Sigma '`, ' 'E 'u 'A '`)
@@ -79,8 +79,8 @@ fmod CC-HELP is
 .
 
   op mfe-cc-help : -> QidList .
-  eq mfe-cc-help = 'Commands 'available 'from 'the 
-     '\n '\n '\t '\s '\s '\s '\s 'Maude 'Sufficient 'and 'Canonical 'Completeness 'Checker. 
+  eq mfe-cc-help = 'Commands 'available 'from 'the
+     '\n '\n '\t '\s '\s '\s '\s 'Maude 'Sufficient 'and 'Canonical 'Completeness 'Checker.
      '\n '\n
      'Let '<module> 'denote 'the 'name 'of 'an 'equational 'theory ' '`( 'Sigma '`, ' 'E 'u 'A '`) ':
      '\n '\n '\s '\s '`(  'scc '\o '<module> '. '`)
@@ -265,13 +265,13 @@ fmod META-BASICS is
   --- natlist-in-range(N, N') returns the list N ; ... ; N' - 1
   op natlist-in-range : Nat Nat -> NatList .
   eq natlist-in-range(N, N')
-   = if N < N' == true 
+   = if N < N' == true
        then N natlist-in-range(s N, N')
        else nil
      fi .
 
   op list-diff : NatList NatList NatList -> NatList .
-  eq list-diff(N NL, NL', NL'') 
+  eq list-diff(N NL, NL', NL'')
    = list-diff(NL, NL', NL'' if occurs(N, NL') then nil else N fi) .
   eq list-diff(nil, NL', NL'') = NL'' [owise] .
 
@@ -415,8 +415,8 @@ fmod META-BASICS is
   --- Converts frozen declarations into equivalent strategy declarations
   op frozen-to-strat : OpDeclSet -> OpDeclSet .
   eq frozen-to-strat(Ops (op Q : TpL -> Tp [AS frozen(NeNL)].))
-   = frozen-to-strat(Ops (op Q : TpL -> Tp [AS 
-       strat(list-diff(natlist-in-range(1, s size(TpL)), NeNL, nil) 0)].)) . 
+   = frozen-to-strat(Ops (op Q : TpL -> Tp [AS
+       strat(list-diff(natlist-in-range(1, s size(TpL)), NeNL, nil) 0)].)) .
   eq frozen-to-strat(Ops) = Ops [owise] .
 
   --- Converts rules into equations
@@ -432,11 +432,11 @@ fmod META-BASICS is
   --- replacing E-construtors
   op mod-to-fmod : Module -> Module .
   eq mod-to-fmod(fmod H is ImL sorts SS . SSDS Ops Mbs Eqs endfm)
-   = fmod H is ImL sorts SS . SSDS 
+   = fmod H is ImL sorts SS . SSDS
      frozen-to-strat(drop-strat(rctor-to-ctor(drop-ctor(Ops))))
      Mbs Eqs endfm .
   eq mod-to-fmod(mod H is ImL sorts SS . SSDS Ops Mbs Eqs Rls endm)
-   = fmod H is ImL sorts SS . SSDS 
+   = fmod H is ImL sorts SS . SSDS
      frozen-to-strat(drop-strat(rctor-to-ctor(drop-ctor(Ops))))
      Mbs rls-to-eqs(Rls, Eqs) endfm .
 
@@ -891,7 +891,7 @@ fmod SCC-COMMON is
   --- Returns states associated to each sort in module.
   op sca-per-sort-states : Module SortSet ~> ConstantSet .
   eq sca-per-sort-states(M, S ; SS)
-   = sca-ctor-state(M, S) ; sca-def-state(M, S) 
+   = sca-ctor-state(M, S) ; sca-def-state(M, S)
    ; sca-per-sort-states(M, SS) .
   eq sca-per-sort-states(M, none) = none .
 
@@ -948,7 +948,7 @@ fmod SCC-COMMON is
 
   --- Returns rules for each equation.
   op sca-eq-rules : Module TermStateMap TermStateMapMode EquationSet
-          -> RuleSet . 
+          -> RuleSet .
   eq sca-eq-rules(M, TSM, Mode, Eq Eqs)
    = term-rule(TSM, lhs(Eq), sca-red-state(get-kind(M, lhs(Eq))), Mode)
      sca-eq-rules(M, TSM, Mode, Eqs) .
@@ -1115,8 +1115,8 @@ fmod SCC-DF is
 
   --- Messages for the scc-df command
   op scc-df-init-msg : Qid -> QidList .
-  eq scc-df-init-msg(Q) 
-   = 'Checking 'sufficient 'completeness 'and 'deadlock 'freeness 'of 
+  eq scc-df-init-msg(Q)
+   = 'Checking 'sufficient 'completeness 'and 'deadlock 'freeness 'of
      '\c Q '\o '... '\n .
 
   op scc-df-scan-E-result : Module SCCResult Bool Bool -> QidList .
@@ -1151,7 +1151,7 @@ fmod SCC-DF is
          'weakly-normalizing '`, ' 'ground 'sort-decreasing '`, ' 'and 'ground 'coherent.)
        else warning-font('Maybe:)
          'No 'counterexamples 'were 'found 'when 'deadlock 'freeness.
-         'However '`, ' '\c getName(M) '\o 'may 'still 'not 'be 'deadlock-free 
+         'However '`, ' '\c getName(M) '\o 'may 'still 'not 'be 'deadlock-free
          'outside 'rctor-terms.\n
      fi .
   eq scc-df-scan-R-result(M, counterexample(T, S), isSound?, isCompl?)
@@ -1213,7 +1213,7 @@ fmod MU-SCC is
        pta-rule(identifier(Op),
                 get-kinds(M, inputs(Op)),
                 getKind(M, output(Op)),
-                mu-sca-type-state-list(M, inputs(Op), none),
+                mu-sca-type-state-list(M, inputs(Op), noneNS),
                 sca-def-state(M, output(Op)))
        if is-ctor?(Op) then
          pta-rule(identifier(Op),
@@ -1284,7 +1284,7 @@ fmod MU-SCC-PHI-DF is
   var S        : Sort .
   var T        : Term .
 
-  --- Checks the mu-sufficient completeness and phi-deadlock freeness 
+  --- Checks the mu-sufficient completeness and phi-deadlock freeness
   --- of a module.
   --- The module is assumed to be flattened already because otherwise
   --- getting all the declarations is quite complex due to the module
@@ -1294,8 +1294,8 @@ fmod MU-SCC-PHI-DF is
 
   --- Messages for the mu-scc-phi-df command
   op mu-scc-phi-df-init-msg : Qid -> QidList .
-  eq mu-scc-phi-df-init-msg(Q) 
-   = 'Checking 'mu-sufficient 'completeness 'and 'phi-deadlock 'freeness 'of 
+  eq mu-scc-phi-df-init-msg(Q)
+   = 'Checking 'mu-sufficient 'completeness 'and 'phi-deadlock 'freeness 'of
      '\c Q '\o '... '\n .
 
   op mu-scc-phi-df-scan-E-result : Module SCCResult Bool Bool -> QidList .
@@ -1332,7 +1332,7 @@ fmod MU-SCC-PHI-DF is
        else warning-font('Maybe:)
          'No 'counterexamples 'were 'found 'when 'checking 'phi 'deadlock
          'freeness. ' 'However '`, ' '\c getName(M) '\o 'may 'still 'not 'be
-         'phi-deadlock-free 'outside 'rctor-terms.\n 
+         'phi-deadlock-free 'outside 'rctor-terms.\n
      fi .
   eq mu-scc-phi-df-scan-R-result(M, counterexample(T, S), isSound?, isCompl?)
    = if isCompl? == true
@@ -1416,7 +1416,7 @@ fmod CCC is
   eq cca-accept-eqs(M, none) = none .
 
   op $cca-accept-eqs : Module Kind SortSet -> EquationSet .
-  eq $cca-accept-eqs(M, K, S ; SS) 
+  eq $cca-accept-eqs(M, K, S ; SS)
    = (eq 'accept['_;_[cca-type-state(M, S),
                       red-state(K),
                       '!_[mu-red-state(K)],
@@ -1553,7 +1553,7 @@ fmod FREE is
   pr CC-CONFIG .
 
   sort CFCResult .
-  
+
   var isCompl?  : Bool .
   var isSound?  : Bool .
   var C C'      : Constant .
@@ -1614,7 +1614,7 @@ fmod FREE is
   eq cfa-ctor-state(M, S)
    = qid("c" + string(S) + "." + state-name(getKind(M, S))) .
   eq cfa-ctor-state(M, K) = kind-state(getKind(M, K)) .
- 
+
   --- Returns the rules generated by subsort declarations in the
   --- specification.
   op cfa-subsort-rules : Module SubsortDeclSet ~> RuleSet .
@@ -1718,7 +1718,7 @@ fmod FREE is
   --- Returns states associated to each sort in module.
   op cfa-per-sort-states : Module SortSet ~> ConstantSet .
   eq cfa-per-sort-states(M, S ; SS)
-   = cfa-ctor-state(M, S) ; cfa-def-state(M, S) 
+   = cfa-ctor-state(M, S) ; cfa-def-state(M, S)
    ; cfa-per-sort-states(M, SS) .
   eq cfa-per-sort-states(M, none) = none .
 
@@ -1736,7 +1736,7 @@ fmod FREE is
 
   --- Returns rules for each equation.
   op cfa-eq-rules : Module TermStateMap TermStateMapMode EquationSet
-          -> RuleSet . 
+          -> RuleSet .
   eq cfa-eq-rules(M, TSM, Mode, Eq Eqs)
    = term-rule(TSM, lhs(Eq), cfa-red-state(get-kind(M, lhs(Eq))), Mode)
      cfa-eq-rules(M, TSM, Mode, Eqs) .
@@ -1789,8 +1789,8 @@ fmod FREE is
 
   --- Messages for the scc-df command
   op free-init-msg : Qid -> QidList .
-  eq free-init-msg(Q) 
-   = 'Checking 'equational 'freeness 'of 'the 'equational 'constructors 
+  eq free-init-msg(Q)
+   = 'Checking 'equational 'freeness 'of 'the 'equational 'constructors
      'of '\c Q '\o '... '\n .
 
   op free-scan-E-result : Module CFCResult Bool Bool -> QidList .
@@ -1798,11 +1798,11 @@ fmod FREE is
    = if isSound? == true
        then success('The 'equational 'subtheory 'of '\c getName(M) '\o 'has
          'equational 'free 'constructors 'under 'the 'assumption 'that 'it 'is
-         'sufficiently 'complete '`, ' 'ground 'weakly-normalizing '`, ' 'ground 
+         'sufficiently 'complete '`, ' 'ground 'weakly-normalizing '`, ' 'ground
          'confluent '`, ' 'and 'ground 'sort-decreasing.)
        else warning-font('Maybe:)
          'No 'counterexamples 'were 'found 'when 'checking 'equational 'freeness
-         'of 'equational 'constructors. ' 'However '`, ' '\c getName(M) '\o 'may 
+         'of 'equational 'constructors. ' 'However '`, ' '\c getName(M) '\o 'may
          'still 'not 'have 'equational 'free 'constructors.\n
      fi .
   eq free-scan-E-result(M, cfc-counterexample(T,S), isSound?, isCompl?)
@@ -1846,7 +1846,7 @@ fmod FREE-TERMINAL is
 
   --- Messages for the scc-df command
   op free-terminal-init-msg : Qid -> QidList .
-  eq free-terminal-init-msg(Q) 
+  eq free-terminal-init-msg(Q)
    = 'Checking 'freeness 'of 'constructors 'of '\c Q '\o '... '\n .
 
   op free-terminal-scan-E-result : Module CFCResult Bool Bool -> QidList .
@@ -1860,9 +1860,9 @@ fmod FREE-TERMINAL is
   op free-terminal-scan-R-result : Module CFCResult Bool Bool -> QidList .
   eq free-terminal-scan-R-result(M, free, isSound?, isCompl?)
    = if isSound? == true
-       then success('\c getName(M) '\o 'has 'terminal 'constructors 'under 'the 
+       then success('\c getName(M) '\o 'has 'terminal 'constructors 'under 'the
          'assumption 'that 'it 'is 'deadlock-free 'outside 'rctor-terms '`,
-         ' 'ground 'weakly-normalizing '`, ' 'ground 'sort-decreasing '`, 
+         ' 'ground 'weakly-normalizing '`, ' 'ground 'sort-decreasing '`,
          ' 'and 'ground 'coherent.)
        else warning-font('Maybe:)
          'No 'counterexamples 'were 'found 'when 'checking 'terminal 'constructors.
@@ -1928,7 +1928,7 @@ fmod SCC-CHECKER is
        then warning('Equational 'constructor 'subsignature 'for Q ': TpL '-> Tp
          'is 'incorrect.)
        else nil
-     fi 
+     fi
      check-ctors(Ops) .
   eq check-ctors(Ops) = nil [owise] .
 
@@ -1937,9 +1937,9 @@ fmod SCC-CHECKER is
   op check-strat-frozen : OpDeclSet ~> QidList .
   eq check-strat-frozen(none) = nil .
   eq check-strat-frozen((op Q : TpL -> Tp [AS].) Ops)
-   = if (getFrozenSet(AS) ; getStratSet(AS) == none) or-else
-        ((getFrozenSet(AS) =/= none and getStratSet(AS) =/= none) and-then
-         $diff(nats-in-range(0, s size(TpL)), getFrozenSet(AS), none) == getStratSet(AS))
+   = if (getFrozenSet(AS) ; getStratSet(AS) == noneNS) or-else
+        ((getFrozenSet(AS) =/= noneNS and getStratSet(AS) =/= noneNS) and-then
+         $diff(nats-in-range(0, s size(TpL)), getFrozenSet(AS), noneNS) == getStratSet(AS))
        then nil
        else warning('Strategy 'and 'frozenness 'declarations 'for Q ': TpL '-> Tp
        'are 'incompatible.)
@@ -2036,7 +2036,7 @@ fmod SCC-CHECKER is
 
   op scc-df-check-module : Module -> QidList .
   eq scc-df-check-module(M)
-   = if getImports(M) == nil 
+   = if getImports(M) == nil
        then nil
        else warning('The 'module 'has 'not 'been 'flattened.)
      fi
@@ -2064,7 +2064,7 @@ fmod SCC-CHECKER is
 
   op free-terminal-check-module : Module -> QidList .
   eq free-terminal-check-module(M)
-   = if getImports(M) == nil 
+   = if getImports(M) == nil
        then nil
        else warning('The 'module 'has 'not 'been 'flattened.)
      fi
@@ -2198,7 +2198,7 @@ mod CC-LOOP is
    = if sound-analysis?(M) then
        '\! '\g 'Success: '\o '\c getName(M) '\o 'is 'mu-sufficiently
        'complete 'under 'the 'assumption 'that 'it 'is
-       'ground 'mu-weakly 'normalizing '`, ' 'ground 'mu-confluent '`, 
+       'ground 'mu-weakly 'normalizing '`, ' 'ground 'mu-confluent '`,
        ' 'and 'ground 'mu-sort-decreasing.
      else
        warning-font('Maybe:)
@@ -2245,27 +2245,27 @@ mod CC-LOOP is
 
   op scc-df-scan-result : ModulePair SCCResultPair -> QidList .
   eq scc-df-scan-result(pair(M, M'), SRP)
-   = scc-df-scan-E-result(M, getFirst(SRP), sound-analysis?(M), 
+   = scc-df-scan-E-result(M, getFirst(SRP), sound-analysis?(M),
        complete-analysis?(M))
-     scc-df-scan-R-result(M', getSecond(SRP), sound-analysis?(M'), 
+     scc-df-scan-R-result(M', getSecond(SRP), sound-analysis?(M'),
        complete-analysis?(M')) .
 
   op mu-scc-phi-df-scan-result : ModulePair SCCResultPair -> QidList .
   eq mu-scc-phi-df-scan-result(pair(M, M'), SRP)
-   = mu-scc-phi-df-scan-E-result(M, getFirst(SRP), sound-analysis?(M), 
+   = mu-scc-phi-df-scan-E-result(M, getFirst(SRP), sound-analysis?(M),
        complete-analysis?(M))
-     mu-scc-phi-df-scan-R-result(M', getSecond(SRP), sound-analysis?(M'), 
+     mu-scc-phi-df-scan-R-result(M', getSecond(SRP), sound-analysis?(M'),
        complete-analysis?(M')) .
 
   op free-scan-result : Module CFCResult -> QidList .
-  eq free-scan-result(M, CR) = free-scan-E-result(M, CR, sound-analysis?(M), 
+  eq free-scan-result(M, CR) = free-scan-E-result(M, CR, sound-analysis?(M),
        complete-analysis?(M)) .
 
   op free-terminal-scan-result : ModulePair CFCResultPair -> QidList .
   eq free-terminal-scan-result(pair(M, M'), pair(CR, CR'))
-   = free-terminal-scan-E-result(M, CR, sound-analysis?(M), 
+   = free-terminal-scan-E-result(M, CR, sound-analysis?(M),
        complete-analysis?(M))
-     free-terminal-scan-R-result(M', CR', sound-analysis?(M'), 
+     free-terminal-scan-R-result(M', CR', sound-analysis?(M'),
        complete-analysis?(M')) .
 
   op ccc-scan-result : Module CCCResult -> QidList .
@@ -2307,7 +2307,7 @@ mod CC-LOOP is
      else
        scc-df-check-module(M)
        scc-df-scan-result(pair(M, M'), scc-df(pair(M, M')))
-     fi fi fi 
+     fi fi fi
    if M  := upModule(Q, true)
    /\ M' := mod-to-fmod(M) .
 
@@ -2322,7 +2322,7 @@ mod CC-LOOP is
      else
        mu-scc-phi-df-check-module(M)
        mu-scc-phi-df-scan-result(pair(M, M'), mu-scc-phi-df(pair(M, M')))
-     fi fi fi 
+     fi fi fi
    if M  := upModule(Q, true)
    /\ M' := mod-to-fmod(M) .
 
@@ -2337,7 +2337,7 @@ mod CC-LOOP is
      else
        free-check-module(M)
        free-scan-result(M, free(M))
-     fi fi fi 
+     fi fi fi
    if M  := upModule(Q, true) .
 
  ceq exec(free-terminal module(Q) .)
@@ -2351,7 +2351,7 @@ mod CC-LOOP is
      else
        free-terminal-check-module(M)
        free-terminal-scan-result(pair(M, M'), free-terminal(pair(M, M')))
-     fi fi fi 
+     fi fi fi
    if M  := upModule(Q, true)
    /\ M' := mod-to-fmod(M) .
 
@@ -2454,7 +2454,7 @@ mod CC is
   pr DATABASE-HANDLING .
   pr CC-HELP .
   pr SET{Oid} .
-  pr 5TUPLE{Module,SCCResult,CFCResult,Bool,Bool} * 
+  pr 5TUPLE{Module,SCCResult,CFCResult,Bool,Bool} *
                (op error to scc-error,
                 op lhs to scc-lhs,
                 op module to scc-module,

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#java=$HOME/jdk1.5.0_02/bin/java
+
+#java -jar wst2005.jar -u cli -t 60 -m wst -p html $1
+
+java -jar /Users/duran/workspaceMaude/MFE/external-tools/aprove.jar -u cli -t $2 -p plain -m wst $1
+#java -jar /Users/duran/workspaceMaude/MFE/external-tools/aprove.jar -u cli -p plain -m wst $1
