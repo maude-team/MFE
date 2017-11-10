@@ -1261,7 +1261,7 @@ fmod MAA is
   eq [596]: reverseMessage (unitMessage (W:Block)) = unitMessage (W:Block) .
   eq [597]: reverseMessage (consMessage (W:Block, M:Message)) = appendMessage (reverseMessage (M:Message), W:Block) .
  ceq [598]: makeMessage (succ (N:Nat), W:Block, W-prime:Block) = unitMessage (W:Block) if eqNat (N:Nat, zero) = Xtrue .
- ceq [599]: makeMessage (succ (N:Nat), W:Block, W-prime:Block) = consMessage (W:Block, makeMessage (N:Nat, ADD (W:Block, W-prime:Block), W-prime:Block)) if eqNat (N:Nat, zero) = Xtrue .
+ ceq [599]: makeMessage (succ (N:Nat), W:Block, W-prime:Block) = consMessage (W:Block, makeMessage (N:Nat, ADD (W:Block, W-prime:Block), W-prime:Block)) if eqNat (N:Nat, zero) = Xfalse .
   eq [600]: ADD (W:Block, W-prime:Block) = addBlock (W:Block, W-prime:Block) .
   eq [601]: AND (W:Block, W-prime:Block) = andBlock (W:Block, W-prime:Block) .
   eq [602]: MUL (W:Block, W-prime:Block) = mulBlock (W:Block, W-prime:Block) .
@@ -1275,9 +1275,9 @@ fmod MAA is
   eq [610]: FIX2 (W:Block) = AND (OR (W:Block, x00804021), x7DFEFBFF) .
   eq [611]: needAdjust (O:Octet) = orBool (eqOctet (O:Octet, x00), eqOctet (O:Octet, xFF)) .
  ceq [612]: adjustCode (O:Octet) = x1 if needAdjust (O:Octet) = Xtrue .
- ceq [613]: adjustCode (O:Octet) = x0 if needAdjust (O:Octet) = Xtrue .
+ ceq [613]: adjustCode (O:Octet) = x0 if needAdjust (O:Octet) = Xfalse .
  ceq [614]: adjust (O:Octet, O-prime:Octet) = xorOctet (O:Octet, O-prime:Octet) if needAdjust (O:Octet) = Xtrue .
- ceq [615]: adjust (O:Octet, O-prime:Octet) = O:Octet if needAdjust (O:Octet) = Xtrue .
+ ceq [615]: adjust (O:Octet, O-prime:Octet) = O:Octet if needAdjust (O:Octet) = Xfalse .
   eq [616]: PAT (buildBlock (O1:Octet, O2:Octet, O3:Octet, O4:Octet), buildBlock (O-prime1:Octet, O-prime2:Octet, O-prime3:Octet, O-prime4:Octet)) = buildOctet (adjustCode (O1:Octet), adjustCode (O2:Octet), adjustCode (O3:Octet), adjustCode (O4:Octet), adjustCode (O-prime1:Octet), adjustCode (O-prime2:Octet), adjustCode (O-prime3:Octet), adjustCode (O-prime4:Octet)) .
   eq [617]: BYT (buildBlock (O1:Octet, O2:Octet, O3:Octet, O4:Octet), buildBlock (O-prime1:Octet, O-prime2:Octet, O-prime3:Octet, O-prime4:Octet)) = BYT-prime (O1:Octet, O2:Octet, O3:Octet, O4:Octet, O-prime1:Octet, O-prime2:Octet, O-prime3:Octet, O-prime4:Octet, PAT (buildBlock (O1:Octet, O2:Octet, O3:Octet, O4:Octet), buildBlock (O-prime1:Octet, O-prime2:Octet, O-prime3:Octet, O-prime4:Octet))) .
   eq [618]: BYT-prime (O1:Octet, O2:Octet, O3:Octet, O4:Octet, O-prime1:Octet, O-prime2:Octet, O-prime3:Octet, O-prime4:Octet, Opat:Octet) = buildPair (buildBlock (adjust (O1:Octet, rightOctet7 (Opat:Octet)), adjust (O2:Octet, rightOctet6 (Opat:Octet)), adjust (O3:Octet, rightOctet5 (Opat:Octet)), adjust (O4:Octet, rightOctet4 (Opat:Octet))), buildBlock (adjust (O-prime1:Octet, rightOctet3 (Opat:Octet)), adjust (O-prime2:Octet, rightOctet2 (Opat:Octet)), adjust (O-prime3:Octet, rightOctet1 (Opat:Octet)), adjust (O-prime4:Octet, Opat:Octet))) .

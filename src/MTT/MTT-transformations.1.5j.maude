@@ -2822,6 +2822,7 @@ fmod PROC-TPDB is
   var  QIL : QidList .
   var  Cond : Condition .
 
+---(
  ceq $procTPDB(M, PP, CONDITIONS, CONTEXT)
     = if ((vars(getRls(M'))) =/= none)
       then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
@@ -2844,6 +2845,38 @@ fmod PROC-TPDB is
       fi
       '\n
     if M' := proc(filterMaude(removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(removeCtors(M))), all))), PP, CONDITIONS) .
+---)
+  op $procTPDBAux : Module Path Bool Bool -> QidList .
+  op $procTPDBAux2 : Module Path Bool Bool -> QidList .
+  op $procTPDBAux3 : Module Path Bool Bool -> QidList .
+
+  eq $procTPDB(M, PP, CONDITIONS, CONTEXT)
+    = $procTPDBAux(axCohComplete(removeNonExecs(removeCtors(M))), PP, CONDITIONS, CONTEXT) .
+  eq $procTPDBAux(M, PP, CONDITIONS, CONTEXT)
+    = $procTPDBAux2(filterMaude(removeLonelyAssocs(removeIds(M, all))), PP, CONDITIONS, CONTEXT) .
+  eq $procTPDBAux2(M, PP, CONDITIONS, CONTEXT)
+    = $procTPDBAux3(proc(M, PP, CONDITIONS), PP, CONDITIONS, CONTEXT) .
+  eq $procTPDBAux3(M', PP, CONDITIONS, CONTEXT)
+   = if ((vars(getRls(M'))) =/= none)
+     then '`( 'VAR varsTPDB(vars(getRls(M'))) '`)
+     else nil
+     fi
+     '\n
+     if (theoriesTPDB(getOps(M')) =/= nil)
+     then '`( 'THEORY '\n theoriesTPDB(getOps(M')) '`)
+     else nil
+     fi
+     '\n
+     if (CONTEXT and strategiesTPDB(getOps(M')) =/= nil)
+     then '`( 'STRATEGY 'CONTEXTSENSITIVE '\n strategiesTPDB(getOps(M')) '`)
+     else nil
+     fi
+     '\n
+     if ((getRls(M')) =/= none)
+     then '`( 'RULES '\n rulesTPDB(getRls(M')) '`)
+     else nil
+     fi
+     '\n .
   eq $procTPDB(unitError(QIL), PP, CONDITIONS, CONTEXT) = QIL .
   eq $procTPDB(M, PP, CONDITIONS, CONTEXT)
     = 'error: 'possibly 'a 'non-supported 'feature 'in 'the 'module
