@@ -19,65 +19,8 @@ mod NAT-ACU is
   rl _*_(N?:Nat, N':NzNat, _+_(M':NzNat, K':NzNat))
     => #_#_#(_+_(_*_(N?:Nat, N':NzNat, M':NzNat),
                  _*_(N?:Nat, N':NzNat, K':NzNat)),
-             nil)
-    [narrowing] .
+             nil) .
 endm
-
-set trace on .
-vu-narrow
-  #_#_#_#(_>_(N:Nat, _+_(N:Nat, M:Nat)),
-         ff,
-         nil)
-=>1
-#V:[Truth] .
-eof
----(
-Solution 1
-rewrites: 1 in 1ms cpu (1ms real) (747 rewrites/second)
-state: # (@1:NzNat * @2:Nat * @3:NzNat + @4:NzNat) > # (@1:NzNat * @3:NzNat * @2:Nat) + @1:NzNat * @4:NzNat * @2:Nat # nil
-    # # ff # nil #
-accumulated substitution:
-N:Nat --> @1:NzNat * @2:Nat * @3:NzNat + @4:NzNat
-M:Nat --> 0
-variant unifier:
-#V:[Truth] --> # (%1:NzNat * %3:Nat * %2:NzNat + %4:NzNat)
-                 >
-                 #
-                 (%1:NzNat * %2:NzNat * %3:Nat) + %1:NzNat * %4:NzNat * %3:Nat
-                 #
-                 nil
-                 #
-               #
-               ff
-               #
-               nil
-               #
-@1:NzNat --> %1:NzNat
-@2:Nat --> %3:Nat
-@3:NzNat --> %4:NzNat
-@4:NzNat --> %2:NzNat
-
-Solution 2
-rewrites: 2 in 1ms cpu (2ms real) (1129 rewrites/second)
-state: # 0 > # (@1:NzNat * @3:NzNat * @2:Nat) + @1:NzNat * @4:NzNat * @2:Nat # nil # # ff # nil #
-accumulated substitution:
-N:Nat --> 0
-M:Nat --> @1:NzNat * @2:Nat * @3:NzNat + @4:NzNat
-variant unifier:
-#V:[Truth] --> # 0 > # (%1:NzNat * %2:NzNat * %3:Nat) + %1:NzNat * %4:NzNat * %3:Nat # nil # # ff # nil #
-@1:NzNat --> %1:NzNat
-@3:NzNat --> %4:NzNat
-@2:Nat --> %3:Nat
-@4:NzNat --> %2:NzNat
-
-No more solutions.
-)
-red in META-LEVEL : metaNarrowingSearch(upModule('NAT-ACU,true),
-'#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],
-         'ff.Truth,
-         'nil.#ConditionList],
-'#V:`[Truth`],
-'+, 1, 'none, 0) .
 
 red in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU,true),
 '#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],
@@ -89,3 +32,43 @@ none,
 1,
 unbounded,
 unbounded) .
+
+---(
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ src/mfe.maude temp/narrowing-possible-bug5.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Tue Nov 28 15:05:19 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+==========================================
+reduce in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU, true), '#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],'ff.Truth,
+    'nil.#ConditionList], '#V:`[Truth`], none, '+, 1, unbounded, unbounded) .
+rewrites: 5216 in 4ms cpu (5ms real) (1145618 rewrites/second)
+result ResultTripleSet: {'#_#_#_#['_>_['0.Zero,'0.Zero],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['0.Zero,'0.Zero],'ff.Truth,'nil.#ConditionList] ;
+	'M:Nat <- '0.Zero ;
+	'N:Nat <- '0.Zero} |
+{'#_#_#_#['_>_['0.Zero,'M:Nat],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['0.Zero,'M:Nat],'ff.Truth,'nil.#ConditionList] ;
+	'N:Nat <- '0.Zero} |
+{'#_#_#_#['_>_['N:Nat,'N:Nat],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['N:Nat,'N:Nat],'ff.Truth,'nil.#ConditionList] ;
+	'M:Nat <- '0.Zero}
+Maude>
+)

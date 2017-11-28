@@ -1,5 +1,5 @@
 ----                                          The Maude Formal Environment 1.0c
-----                               To be run on Maude 2.7 (alpha 110a + FM27d)
+----                                                   To be run on Maude 2.7.1
 ----                                                   authors: Francisco Duran
 ----                                                               Camilo Rocha
 
@@ -123,11 +123,11 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude27f.maude
+load FM/full-maude27e.maude
 load GLOT/glot.maude
 set show advisories off .
 load ITP/itp.maude
-load CRChC/crchc3q.maude
+load CRChC/crchc3p.maude
 load MTT/mtt.maude
 load SCC/scc.maude
 load EqE/eqe.maude
