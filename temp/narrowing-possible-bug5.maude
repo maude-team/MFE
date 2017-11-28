@@ -19,7 +19,8 @@ mod NAT-ACU is
   rl _*_(N?:Nat, N':NzNat, _+_(M':NzNat, K':NzNat))
     => #_#_#(_+_(_*_(N?:Nat, N':NzNat, M':NzNat),
                  _*_(N?:Nat, N':NzNat, K':NzNat)),
-             nil) .
+             nil)
+    [narrowing] .
 endm
 
 red in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU,true),
