@@ -1353,6 +1353,7 @@ fmod MAA is
   eq MACnext (K:Key, W:Block, unitSegment (M:Message)) = MAA (K:Key, consMessage (W:Block, M:Message)) .
   eq MACnext (K:Key, W:Block, consSegment (M:Message, S:SegmentedMessage)) = MACnext (K:Key, MAA (K:Key, consMessage (W:Block, M:Message)), S:SegmentedMessage) .
 endfm
+eof
 reduce eqBlock (MUL1 (x0000000F, x0000000E), x000000D2) .
 reduce eqBlock (MUL1 (xFFFFFFF0, x0000000E), xFFFFFF2D) .
 reduce eqBlock (MUL1 (xFFFFFFF0, xFFFFFFF1), x000000D2) .

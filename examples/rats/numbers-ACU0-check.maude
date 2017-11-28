@@ -1,0 +1,10 @@
+(select tool CRC .)
+set trace on .
+set trace select on .
+trace select ---- metaNarrowingSearch
+             ---- metaNarrowSearch
+             ---- prepNarrowingSols
+             crcCritPairs
+             .
+set print conceal off .
+(ccr NAT-ACU .)

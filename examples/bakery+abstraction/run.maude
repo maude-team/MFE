@@ -1,0 +1,38 @@
+(select BAKERY .)
+---(select tool MTT .)
+---(select external tool aprove .)
+---(ct BAKERY .)
+---(select tool CRC .)
+---(ccr BAKERY .)
+---(submit .)
+---(select tool SCC .)
+---(scc BAKERY .)
+---(submit .)
+(select tool ChC .)
+print reveal mod_is_sorts_._____endm
+             .
+set trace on .
+set trace select on .
+trace select ---- chcRemoveContextJoinableAndUnfeasibleCPs
+             ---- maximalCPSet
+             ---- rewriteCPs
+             ---- delete
+             chcSimplify
+             prepNarrowingSols
+             metaNarrowSearch
+             ---- chcCritPairs
+             .
+(cch BAKERY .)
+---(submit .)
+(show all critical pairs .)
+
+
+{'#_#_#_#[
+  '<_`,_`,_`,_>['sleep.NcMode, 'X:Nat, 'Q:Mode, '0.Zero],
+  '<_`,_`,_`,_>['wait.NcMode, '1.NzNat, 'Q:Mode, '0.Zero],
+  'nil.#ConditionList],
+  'BState,
+	'#V:`[BState`] <- '#_#_#_#['<_`,_`,_`,_>['sleep.NcMode, 'X:Nat, 'Q:Mode, '0.Zero],
+                             '<_`,_`,_`,_>['wait.NcMode, '1.NzNat, 'Q:Mode, '0.Zero],
+                             'nil.#ConditionList] ;
+	'Y:Nat <- '0.Zero}

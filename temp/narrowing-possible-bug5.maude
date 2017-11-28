@@ -1,0 +1,91 @@
+set include BOOL off .
+
+mod NAT-ACU is
+  sorts #Condition #ConditionList Nat NzNat Truth Zero .
+  subsort NzNat < Nat .
+  subsort Zero < Nat .
+  op #_#_# : Nat #ConditionList -> Nat .
+  op #_#_#_# : Truth Truth #ConditionList -> Truth [frozen(2 3)] .
+  op 0 : -> Zero [ctor] .
+  op 1 : -> NzNat [ctor] .
+  op _*_ : Nat Nat -> Nat [assoc comm] .
+  op _*_ : NzNat NzNat -> NzNat [assoc comm] .
+  op _+_ : Nat Nat -> Nat [assoc comm ctor id: 0] .
+  op _+_ : NzNat NzNat -> NzNat [assoc comm ctor id: 0] .
+  op _>_ : Nat Nat -> Truth .
+  op ff : -> Truth [ctor] .
+  op nil : -> #ConditionList .
+  op tt : -> Truth [ctor] .
+  rl _*_(N?:Nat, N':NzNat, _+_(M':NzNat, K':NzNat))
+    => #_#_#(_+_(_*_(N?:Nat, N':NzNat, M':NzNat),
+                 _*_(N?:Nat, N':NzNat, K':NzNat)),
+             nil)
+    [narrowing] .
+endm
+
+set trace on .
+vu-narrow
+  #_#_#_#(_>_(N:Nat, _+_(N:Nat, M:Nat)),
+         ff,
+         nil)
+=>1
+#V:[Truth] .
+eof
+---(
+Solution 1
+rewrites: 1 in 1ms cpu (1ms real) (747 rewrites/second)
+state: # (@1:NzNat * @2:Nat * @3:NzNat + @4:NzNat) > # (@1:NzNat * @3:NzNat * @2:Nat) + @1:NzNat * @4:NzNat * @2:Nat # nil
+    # # ff # nil #
+accumulated substitution:
+N:Nat --> @1:NzNat * @2:Nat * @3:NzNat + @4:NzNat
+M:Nat --> 0
+variant unifier:
+#V:[Truth] --> # (%1:NzNat * %3:Nat * %2:NzNat + %4:NzNat)
+                 >
+                 #
+                 (%1:NzNat * %2:NzNat * %3:Nat) + %1:NzNat * %4:NzNat * %3:Nat
+                 #
+                 nil
+                 #
+               #
+               ff
+               #
+               nil
+               #
+@1:NzNat --> %1:NzNat
+@2:Nat --> %3:Nat
+@3:NzNat --> %4:NzNat
+@4:NzNat --> %2:NzNat
+
+Solution 2
+rewrites: 2 in 1ms cpu (2ms real) (1129 rewrites/second)
+state: # 0 > # (@1:NzNat * @3:NzNat * @2:Nat) + @1:NzNat * @4:NzNat * @2:Nat # nil # # ff # nil #
+accumulated substitution:
+N:Nat --> 0
+M:Nat --> @1:NzNat * @2:Nat * @3:NzNat + @4:NzNat
+variant unifier:
+#V:[Truth] --> # 0 > # (%1:NzNat * %2:NzNat * %3:Nat) + %1:NzNat * %4:NzNat * %3:Nat # nil # # ff # nil #
+@1:NzNat --> %1:NzNat
+@3:NzNat --> %4:NzNat
+@2:Nat --> %3:Nat
+@4:NzNat --> %2:NzNat
+
+No more solutions.
+)
+red in META-LEVEL : metaNarrowingSearch(upModule('NAT-ACU,true),
+'#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],
+         'ff.Truth,
+         'nil.#ConditionList],
+'#V:`[Truth`],
+'+, 1, 'none, 0) .
+
+red in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU,true),
+'#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],
+         'ff.Truth,
+         'nil.#ConditionList],
+'#V:`[Truth`],
+none,
+'+,
+1,
+unbounded,
+unbounded) .

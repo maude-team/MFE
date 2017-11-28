@@ -1,0 +1,157 @@
+op prepNarrowingSols : Module Qid Qid QidSet ResultTripleSet Nat -> Tuple{CritPairSet, Nat} .
+eq prepNarrowingSols(M, L, L', VS, {'#_#_#_#[T, T', T''], Tp, Sb} | RTS, N)
+  = (ccp(name(getName(M), N), L, L', getCPTerm(substitute(M, T, Sb), VS), getCPTerm(T', VS),
+         makeCond(T'') /\ makeCond(getCPCond(substitute(M, T, Sb), VS)), pending)
+     getCPs(prepNarrowingSols(M, L, L', VS, RTS, s N)),
+     getIndex(prepNarrowingSols(M, L, L', VS, RTS, s N))) .
+eq prepNarrowingSols(M, L, L', VS, empty, N) = (none, N) .
+
+
+
+= metaNarrowSearch(M, T, qid("X:" + string(leastSort(M, T))), none, '+, 1, 1, unbounded) == empty .
+
+red in META-LEVEL : metaNarrowingSearch(
+mod 'BAKERY is
+ nil
+ sorts '#Condition ; '#ConditionList ; 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ; 'NzNat ; 'Zero .
+ subsort 'NcMode < 'Mode .
+ subsort 'NzNat < 'Nat .
+ subsort 'Zero < 'Nat .
+ op '#_#_# : 'Bool '#ConditionList -> 'Bool [none] .
+ op '#_#_#_# : 'BState 'BState '#ConditionList -> 'BState [frozen(2 3)] .
+ op '0 : nil -> 'Zero [ctor] .
+ op '1 : nil -> 'NzNat [ctor] .
+ op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+ op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'NzNat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+ op '_>_ : 'Nat 'Nat -> 'Bool [none] .
+ op 'crit : nil -> 'Mode [ctor] .
+ op 'ff : nil -> 'Bool [ctor] .
+ op 'nil : nil -> '#ConditionList [none] .
+ op 'sleep : nil -> 'NcMode [ctor] .
+ op 'tt : nil -> 'Bool [ctor] .
+ op 'wait : nil -> 'NcMode [ctor] .
+ none
+ none
+ rl '_>_['_+_['n:Nat,'n':NzNat],'n:Nat] => '#_#_#['tt.Bool,'nil.#ConditionList] [none] .
+endm,
+'_>_['n3:Nat,'n3':Nat],
+'X:Bool, '+, unbounded, 'none, 0) .
+
+
+op metaNarrowingSearch : Module Term Term Qid Bound Qid Nat -> NarrowingSearchResult?
+[special (
+   id-hook MetaLevelOpSymbol	(metaNarrowingSearch)
+         op-hook shareWith		(metaReduce : Module Term ~> ResultPair))] .
+
+({_,_,_,_,_,_} : Term Type Substitution Qid Substitution Qid ~> NarrowingSearchResult)
+   op-hook narrowingSearchPathResultSymbol
+
+op metaNarrowSearch : Module Term Term SubstitutionCond
+                    TypeOfRelation Bound Bound Bound
+                    -> ResultTripleSet .
+op metaNarrowSearch : Module Term Term SubstitutionCond
+                     TypeOfRelation Bound Bound Bound
+                     -> ResultTripleSet .
+var QQ : TypeOfRelation .
+
+eq metaNarrowSearch(M, T, T, Sb, QQ, unbounded, unbounded, unbounded)
+  = metaNarrowSearch(M, T, T, Sb, QQ, unbounded, unbounded, unbounded, 0) .
+
+eq metaNarrowSearch(M, T, T, Sb, QQ, unbounded, unbounded, unbounded, N)
+  = if metaNarrowingSearch(M, T, T, [QQ], unbounded, 'none, N) == failure
+    then none
+    else narrowingSearchResult2ResultTriple(metaNarrowingSearch(M, T, T, [QQ], unbounded, 'none, N)) ;
+         metaNarrowSearch(M, T, T, Sb, QQ, unbounded, unbounded, unbounded, N)
+    fi .
+
+op narrowingSearchResult2ResultTriple : NarrowingSearchResult -> ResultTriple .
+eq narrowingSearchResult2ResultTriple({T,Ty,Sb,Q,Sb',Q'}) = {T, Ty, Sb} .
+
+
+
+    ({_,_,_,_,_,_} : Term Type Substitution Qid Substitution Qid ~> NarrowingSearchResult)
+        op-hook narrowingSearchPathResultSymbol
+
+
+op _<<`(_`,_`)_ : ResultContext
+                  Module TypeOfNarrowing
+                  UnificationTripleSet -> ResultContextSet .
+
+red in META-LEVEL :
+metaNarrowingSearch(
+mod 'BAKERY is
+ nil
+ sorts '#Condition ; '#ConditionList ; 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ; 'NzNat ; 'Zero .
+ subsort 'NcMode < 'Mode .
+ subsort 'NzNat < 'Nat .
+ subsort 'Zero < 'Nat .
+ op '#_#_# : 'Bool '#ConditionList -> 'Bool [none] .
+ op '#_#_#_# : 'BState 'BState '#ConditionList -> 'BState [frozen(2 3)] .
+ op '0 : nil -> 'Zero [ctor] .
+ op '1 : nil -> 'NzNat [ctor] .
+ op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+ op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_+_ : 'NzNat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+ op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+ op '_>_ : 'Nat 'Nat -> 'Bool [none] .
+ op 'crit : nil -> 'Mode [ctor] .
+ op 'ff : nil -> 'Bool [ctor] .
+ op 'nil : nil -> '#ConditionList [none] .
+ op 'sleep : nil -> 'NcMode [ctor] .
+ op 'tt : nil -> 'Bool [ctor] .
+ op 'wait : nil -> 'NcMode [ctor] .
+ none
+ none
+ rl '_>_['_+_['n:Nat,'n':NzNat],'n:Nat] => '#_#_#['tt.Bool,'nil.#ConditionList] [none] .
+endm,
+'#_#_#_#['<_`,_`,_`,_>['sleep.NcMode, 'X:Nat, 'Q:Mode, 'Y:Nat],
+        '<_`,_`,_`,_>['wait.NcMode, '_+_['1.NzNat, 'Y:Nat], 'Q:Mode, 'Y:Nat],
+        'nil.#ConditionList],
+'#V:`[BState`],
+'*,
+unbounded,
+'none,
+0) .
+
+red metaNarrowSearch(mod 'BAKERY is
+  nil
+  sorts '#Condition ; '#ConditionList ; 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ; 'NzNat ; 'Zero .
+  subsort 'NcMode < 'Mode .
+  subsort 'NzNat < 'Nat .
+  subsort 'Zero < 'Nat .
+  op '#_#_# : 'Bool '#ConditionList -> 'Bool [none] .
+  op '#_#_#_# : 'BState 'BState '#ConditionList -> 'BState [frozen(2 3)] .
+  op '0 : nil -> 'Zero [ctor] .
+  op '1 : nil -> 'NzNat [ctor] .
+  op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+  op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Zero)] .
+  op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+  op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+  op '_+_ : 'NzNat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+  op '_/\_ : '#Condition '#ConditionList -> '#ConditionList [none] .
+  op '_>_ : 'Nat 'Nat -> 'Bool [none] .
+  op 'crit : nil -> 'Mode [ctor] .
+  op 'ff : nil -> 'Bool [ctor] .
+  op 'nil : nil -> '#ConditionList [none] .
+  op 'sleep : nil -> 'NcMode [ctor] .
+  op 'tt : nil -> 'Bool [ctor] .
+  op 'wait : nil -> 'NcMode [ctor] .
+  none
+  none
+  rl '_>_['_+_['n:Nat,'n':NzNat],'n:Nat] => '#_#_#['tt.Bool,'nil.#ConditionList] [none] .
+endm,
+'#_#_#_#['<_`,_`,_`,_>['sleep.NcMode, 'X:Nat, 'Q:Mode, 'Y:Nat],
+         '<_`,_`,_`,_>['wait.NcMode, '_+_['1.NzNat, 'Y:Nat], 'Q:Mode, 'Y:Nat],
+         'nil.#ConditionList],
+'#V:`[BState`],
+none,
+'+,
+1,
+unbounded,
+unbounded) .

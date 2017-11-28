@@ -1,0 +1,158 @@
+---(
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude-mfe-hooks 2.7.1 built: Aug 31 2016 12:24:20
+	     With termination checker extension
+	    Copyright 1997-2016 SRI International
+		   Mon Sep 26 12:00:14 2016
+
+	    Full Maude 2.7e September 22th 2016
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+---)
+
+(set include BOOL off .)
+---(
+set include BOOL off
+---)
+
+(set include TRUTH-VALUE on .)
+---(
+set include TRUTH-VALUE on
+---)
+
+(fmod MYNAT is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
+
+vars N M : MyNat .
+----eq [nat1] : 0 + N = N .
+----eq [nat2] : s(N) + M = s(N + M) .
+
+----eq [nat3] : 0 * N = 0 .
+eq [nat4] : s(N) * M = M + (N * M) .
+endfm)
+---(
+Introduced module MYNAT
+---)
+
+(select tool CRC .)
+---(
+The CRC has been set as current tool.
+---)
+
+set trace off .
+set trace select on .
+trace select prepNarrowingSols
+             ----getLabel
+             ----getCts
+             metaNarrowSearch
+             metaNarrowingSearch
+             ----confluenceCheck
+             ----crcContextJoinableAndUnfeasibleCPs
+             ----maximalCPSet
+             ----simplify
+             delete
+             ----crcCritPairs
+             .
+set print conceal off .
+print conceal mod_is_sorts_._____endm
+              fmod_is_sorts_.____endfm
+              .
+(check Church-Rosser .)
+---(
+Church-Rosser check for MYNAT
+The following critical pairs must be proved joinable:
+  cp MYNAT5
+    s(N:MyNat +(#2:MyNat +(N:MyNat * #2:MyNat)))
+    = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat))).
+	The module is sort-decreasing.
+---)
+
+quit
+eof
+
+(submit .)
+The goal for critical pair MYNAT5 has been submitted to ITP.
+The termination goal for the functional part of MYNAT has been submitted to MTT.
+Warning: A proof of the termination of functional part of module MYNAT has not been found.
+
+=================================
+label-sel: MYNAT5#0@0
+=================================
+A{#2:MyNat ; N:MyNat}
+ s(N:MyNat +(#2:MyNat +(N:MyNat * #2:MyNat)))
+  = s(#2:MyNat +(N:MyNat +(N:MyNat * #2:MyNat)))
+
++++++++++++++++++++++++++++++++++
+---)
+
+(select tool MTT .)
+---(
+The MTT has been set as current tool.
+---)
+
+(select external tool aprove .)
+---(
+aprove is now the current external tool.
+---)
+
+(ct .)
+---(
+The MTT proof for MYNAT has been reset.
+Success: The module MYNAT is terminating.
+---)
+
+(fmod MYNAT is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
+
+vars N M : MyNat .
+eq 0 + N = N .
+eq s(N) + M = s(N + M) .
+
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
+endfm)
+---(
+Advisory: Module MYNAT redefined.
+Introduced module MYNAT
+---)
+
+(select tool CRC .)
+---(
+The CRC has been set as current tool.
+---)
+
+(check Church-Rosser .)
+---(
+The CRC for MYNAT has been reset.
+Church-Rosser check for MYNAT
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The module is sort-decreasing.
+---)
+
+(submit .)
+---(
+The termination goal for the functional part of MYNAT has been submitted to MTT.
+The MTT proof for MYNAT has been reset.
+Success: The functional part of module MYNAT is terminating.
+The functional part of module MYNAT has been checked terminating.
+Success: The module is therefore Church-Rosser.
+Success: The module MYNAT is Church-Rosser.
+---)

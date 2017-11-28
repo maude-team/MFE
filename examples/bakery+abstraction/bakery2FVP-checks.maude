@@ -1,0 +1,204 @@
+set include BOOL off .
+
+fmod NAT> is
+  sorts Zero NzNat Nat Bool .
+  subsorts Zero NzNat < Nat .
+  op tt : -> Bool [ctor] .  *** true
+  op ff : -> Bool [ctor] .  *** false
+  op 0 : -> Zero [ctor] .
+  op 1 : -> NzNat [ctor] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
+  op _+_ : NzNat Nat -> NzNat [ctor assoc comm id: 0] .
+  op _+_ : Nat NzNat -> NzNat [ctor assoc comm id: 0] .
+  op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0] .
+  op _>_ : Nat Nat -> Bool .
+
+  vars n m : Nat .  vars n' m' : NzNat .
+
+  eq [nat1] : n + n' > n = tt [variant] .
+----  eq [nat2] : n > n + m = ff  [variant] .
+endfm
+
+mod BAKERY is
+  protecting NAT> .
+
+  sorts Mode NcMode BState .
+  subsort NcMode < Mode .
+
+  op sleep : -> NcMode [ctor] .
+  ops wait : -> NcMode [ctor] .
+  op crit : -> Mode [ctor] .
+  op <_,_,_,_> : Mode Nat Mode Nat -> BState [ctor] .
+
+  vars P Q : Mode .
+  vars X Y : Nat .
+
+  rl [p1_sleep] : < sleep, X, Q, Y > => < wait, Y + 1, Q, Y > .
+---(
+  rl [p1_wait] : < wait, X, Q, 0 > => < crit, X, Q, 0 > .
+  crl [p1_wait] : < wait, X, Q, Y > => < crit, X, Q, Y > if  X > Y = ff .
+  rl [p1_crit] : < crit, X, Q, Y > => < sleep, 0, Q, Y > .
+
+  rl [p2_sleep] : < P, X, sleep, Y > => < P, X, wait, X + 1  > .
+  rl [p2_wait] : < P, 0, wait, Y > => < P, 0, crit, Y > .
+  crl [p2_wait] : < P, X, wait, Y > => < P, X, crit, Y > if X > Y = tt .
+  rl [p2_crit] : < P, X, crit, Y > => < P, X, sleep, 0 > .
+---)
+endm
+
+***(Desired initial states and invariant:
+   vars X0 X Y X' Y' : Nat .
+
+Set of initial states:  < sleep, X0, sleep, X0 > .
+
+  vars P Q : Mode .    vars P' Q' : NcMode .  vars
+
+Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
+)
+
+---(
+--- Commands runs
+load mfe/mfe.maude
+(select BAKERY .)
+(select tool MTT .)
+(select external tool aprove .)
+(ct BAKERY .)
+(select tool CRC .)
+(ccr BAKERY .)
+(submit .)
+(select tool SCC .)
+(scc BAKERY .)
+(submit .)
+(select tool ChC .)
+(cch BAKERY .)
+(submit .)
+(show all critical pairs .)
+---)
+---(
+--- Commands run and output
+                     \||||||||||||||||||/
+                   --- Welcome to Maude ---
+                     /||||||||||||||||||\
+            Maude 2.7++ built: Sep  9 2014 14:55:11
+            With additional hooks
+            Copyright 1997-2014 SRI International
+                   Thu Nov  9 14:18:05 2017
+Bad terminal type: "screen". Will assume vt100.
+Maude> load bakery2FVP.maude
+Maude> load mfe
+mfe/        mfe.config
+Maude> load mfe/mfe.maude
+
+            Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+    Equality Enrichments 0.999 - July 2nd 2012
+    Equational Resolution Theorem Prover 0 - July 7th 2012
+    General Logics - based Operational Termination 0.0 - July 8th 2014
+
+Maude> (select BAKERY .)
+rewrites: 133 in 0ms cpu (5ms real) (~ rewrites/second)
+The BAKERY has been set as current module.
+
+Maude> (select tool MTT .)
+rewrites: 76 in 0ms cpu (0ms real) (~ rewrites/second)
+The MTT has been set as current tool.
+
+Maude> (select external tool aprove .)
+rewrites: 39 in 0ms cpu (6ms real) (~ rewrites/second)
+aprove is now the current external tool.
+
+Maude> (ct BAKERY .)
+rewrites: 10223 in 0ms cpu (1186ms real) (~ rewrites/second)
+Success: The module BAKERY is terminating.
+
+Maude> (select tool CRC .)
+rewrites: 76 in 0ms cpu (6ms real) (~ rewrites/second)
+The CRC has been set as current tool.
+
+Maude> (ccr BAKERY .)
+rewrites: 21837 in 0ms cpu (22ms real) (~ rewrites/second)
+Church-Rosser check for BAKERY
+        All critical pairs have been joined.
+        The specification is locally-confluent.
+        The module is sort-decreasing.
+
+Maude> (submit .)
+rewrites: 93 in 0ms cpu (7ms real) (~ rewrites/second)
+The termination goal for the functional part of BAKERY has been submitted to MTT.
+The functional part of module BAKERY has been checked terminating.
+Success: The module is therefore Church-Rosser.
+Success: The module BAKERY is Church-Rosser.
+
+Maude>
+> (select tool SCC .)
+rewrites: 76 in 0ms cpu (1ms real) (~ rewrites/second)
+The SCC has been set as current tool.
+
+Maude> (scc BAKERY .)
+rewrites: 63594 in 0ms cpu (23ms real) (~ rewrites/second)
+Sufficient completeness check for BAKERY
+        Completeness counter-examples: 1 > 1 with sort Bool
+        Freeness counter-examples: none were found
+        Analysis: it is not complete and it is sound
+        Ground weak termination: not proved
+        Ground sort-decreasingness: not proved
+
+Maude> (submit .)
+rewrites: 127 in 0ms cpu (7ms real) (~ rewrites/second)
+The sort-decreasingness goal for BAKERY has been submitted to CRC.
+The termination goal for the functional part of BAKERY has been submitted to MTT.
+Church-Rosser check for BAKERY
+        The module is sort-decreasing.
+Warning: The term 1 > 1 was found to be a counterexample; since the analysis is incomplete, it may not be a real counterexample.
+
+Maude> (select tool ChC .)
+rewrites: 76 in 0ms cpu (1ms real) (~ rewrites/second)
+The ChC has been set as current tool.
+
+Maude> (cch BAKERY .)
+rewrites: 129581 in 0ms cpu (53ms real) (~ rewrites/second)
+Coherence checking of BAKERY
+        All critical pairs have been rewritten and no rewrite with rules can happen at non-overlapping positions of equations left-hand sides.
+        The sufficient-completeness, termination and Church-Rosser properties must still be checked.
+
+Maude> (submit .)
+rewrites: 240 in 0ms cpu (8ms real) (~ rewrites/second)
+The Church-Rosser goal for BAKERY has been submitted to CRC.
+The Sufficient-Completeness goal for BAKERY has been submitted to SCC.
+The termination goal for the functional part of BAKERY has been submitted to MTT.
+Sufficient completeness check for BAKERY
+        Completeness counter-examples: 1 > 1 with sort Bool
+        Freeness counter-examples: none were found
+        Analysis: it is not complete and it is sound
+        Ground weak termination: proved
+        Ground sort-decreasingness: proved
+Church-Rosser check for BAKERY
+        All critical pairs have been joined.
+        The specification is locally-confluent.
+        The specification is terminating, and therefore confluent.
+        The module is sort-decreasing.
+        Success: The module is therefore Church-Rosser.
+The functional part of module BAKERY has been checked terminating.
+The module BAKERY has been checked Church-Rosser.
+Success: The module BAKERY is coherent.
+
+Maude> (show all critical pairs .)
+rewrites: 80 in 0ms cpu (1ms real) (~ rewrites/second)
+The following critical pairs cannot be joined:
+  cp BAKERY0
+ joined
+    < P:Mode,0,sleep,Y:Nat >
+    => < P:Mode,0,wait,1 > .
+  cp BAKERY1
+ joined
+    < sleep,X:Nat,Q:Mode,0 >
+    => < wait,1,Q:Mode,0 > .
+
+Maude>
+---)
