@@ -1,0 +1,26 @@
+(select tool CRC .)
+set trace off .
+set trace select on .
+trace select ---- metaNarrowingSearch
+             ---- metaNarrowSearch
+             ---- prepNarrowingSols
+             ---- crcCritPairs
+             delete
+             .
+set print conceal off .
+---- (ccr NAT-FVP .)
+---- (ccr NAT-ACU .)
+---- (ccr INT-FVP .)
+---- (ccr INT-ACU .)
+(ccr RAT-ACU .)
+
+eof
+
+The following critical pairs must be proved joinable:
+  cp NAT-ACU1 for nat-acu08 and nat-acu08
+    (N':NzNat * #2:NzNat)+ N':NzNat * K':NzNat + #7:Nat
+    =(N':NzNat * K':NzNat)+ N':NzNat * #2:NzNat + #7:Nat .
+  cp NAT-ACU129 for nat-acu08 and nat-acu08
+    X@@@:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #9:NzNat + #11:Nat
+    = X@@@:[Nat]*(N':NzNat * #9:NzNat)+ N':NzNat * #10:NzNat + #11:Nat .
+	The module is sort-decreasing.

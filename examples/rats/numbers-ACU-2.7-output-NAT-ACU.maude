@@ -1,0 +1,30 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/rats/numbers-ACU-2.7.maude src/mfe.maude examples/rats/numbers-ACU-2.7-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Thu Nov 30 09:41:53 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 65792143 in 58312ms cpu (60203ms real) (1128270 rewrites/second)
+Church-Rosser check for NAT-ACU
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The module is sort-decreasing.

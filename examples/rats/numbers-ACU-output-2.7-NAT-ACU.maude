@@ -1,0 +1,114 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/rats/numbers-ACU.maude src/mfe.maude examples/rats/numbers-ACU-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Tue Nov 28 17:45:45 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 154416295 in 359740ms cpu (366865ms real) (429244 rewrites/second)
+Church-Rosser check for NAT-ACU
+The following critical pairs must be proved joinable:
+  cp NAT-ACU1392
+    N?:[Nat]*(M':NzNat * #3:NzNat * #7:NzNat)+(M':NzNat * #4:NzNat * #7:NzNat)+(K':NzNat * #3:NzNat * #7:NzNat)+ K':NzNat *
+    #4:NzNat * #7:NzNat
+    = #7:NzNat *(N?:[Nat]*(M':NzNat * #3:NzNat)+ M':NzNat * #4:NzNat)+ N?:[Nat]*(K':NzNat * #3:NzNat)+ K':NzNat * #4:NzNat
+    .
+  cp NAT-ACU1393
+    N?:[Nat]*(N':NzNat * K':NzNat * #7:NzNat)+(N':NzNat * #3:NzNat * #7:NzNat)+ N':NzNat * #7:NzNat * #10:NzNat
+    = #7:NzNat *(N?:[Nat]*(N':NzNat * #3:NzNat)+ N':NzNat * #10:NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU1395
+    N?:[Nat]*(N':NzNat * M':NzNat * #3:NzNat)+(N':NzNat * M':NzNat * #4:NzNat)+(N':NzNat * K':NzNat * #3:NzNat)+ N':NzNat *
+    K':NzNat * #4:NzNat
+    =(#3:NzNat + #4:NzNat)*(N?:[Nat]* N':NzNat * M':NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU1398
+    N?:[Nat]*(N':NzNat * #7:NzNat * #9:NzNat)+(N':NzNat * #7:NzNat * #10:NzNat)+(N':NzNat * #7:NzNat * #11:NzNat)+ N':NzNat
+    * #7:NzNat * #12:NzNat
+    = #7:NzNat *(N?:[Nat]*(N':NzNat * #9:NzNat)+ N':NzNat * #10:NzNat)+ N?:[Nat]*(N':NzNat * #11:NzNat)+ N':NzNat *
+    #12:NzNat .
+  cp NAT-ACU1777
+    #2:[Nat]*(#1:[Nat]* #4:NzNat)+ #1:[Nat]* #5:NzNat
+    = #1:[Nat]* #2:[Nat]* #4:NzNat + #5:NzNat .
+  cp NAT-ACU1932
+    #2:[Nat]*(#1:[Nat]*(M':NzNat * #4:NzNat)+ K':NzNat * #4:NzNat)+ #1:[Nat]*(M':NzNat * #5:NzNat)+ K':NzNat * #5:NzNat
+    =(#1:[Nat]* #2:[Nat]*(M':NzNat * #4:NzNat)+ M':NzNat * #5:NzNat)+ #1:[Nat]* #2:[Nat]*(K':NzNat * #4:NzNat)+ K':NzNat *
+    #5:NzNat .
+  cp NAT-ACU1933
+    #2:[Nat]*(#1:[Nat]*(N':NzNat * K':NzNat)+ N':NzNat * #11:NzNat)+ #1:[Nat]* N':NzNat * #4:NzNat
+    =(#1:[Nat]* #2:[Nat]*(N':NzNat * #4:NzNat)+ N':NzNat * #11:NzNat)+ #1:[Nat]* #2:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU1937
+    #2:[Nat]*(#1:[Nat]* N':NzNat * M':NzNat)+ #1:[Nat]* N':NzNat * K':NzNat
+    =(#1:[Nat]* #2:[Nat]* N':NzNat * M':NzNat)+ #1:[Nat]* #2:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU1939
+    #2:[Nat]*(#1:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #12:NzNat)+ #1:[Nat]*(N':NzNat * #11:NzNat)+ N':NzNat * #13:NzNat
+    =(#1:[Nat]* #2:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #11:NzNat)+ #1:[Nat]* #2:[Nat]*(N':NzNat * #12:NzNat)+ N':NzNat
+    * #13:NzNat .
+  cp NAT-ACU2033
+    #8:NzNat *(N?:[Nat]*(K':NzNat * #3:NzNat)+ #3:NzNat * #11:NzNat)+ N?:[Nat]* #3:NzNat * #4:NzNat
+    =(N?:[Nat]*(#3:NzNat * #4:NzNat * #8:NzNat)+ #3:NzNat * #8:NzNat * #11:NzNat)+ N?:[Nat]* K':NzNat * #3:NzNat * #8:NzNat
+    .
+  cp NAT-ACU2037
+    #8:NzNat *(N?:[Nat]*(#3:NzNat * #10:NzNat)+ #3:NzNat * #12:NzNat)+ N?:[Nat]*(#3:NzNat * #11:NzNat)+ #3:NzNat *
+    #13:NzNat
+    =(N?:[Nat]*(#3:NzNat * #8:NzNat * #10:NzNat)+ #3:NzNat * #8:NzNat * #11:NzNat)+ N?:[Nat]*(#3:NzNat * #8:NzNat *
+    #12:NzNat)+ #3:NzNat * #8:NzNat * #13:NzNat .
+  cp NAT-ACU2038
+    #8:NzNat *(N?:[Nat]*(M':NzNat * #4:NzNat)+ K':NzNat * #4:NzNat)+ N?:[Nat]*(M':NzNat * #5:NzNat)+ K':NzNat * #5:NzNat
+    =(N?:[Nat]*(M':NzNat * #4:NzNat * #8:NzNat)+ M':NzNat * #5:NzNat * #8:NzNat)+ N?:[Nat]*(K':NzNat * #4:NzNat *
+    #8:NzNat)+ K':NzNat * #5:NzNat * #8:NzNat .
+  cp NAT-ACU2790
+    #2:[Nat]*(#1:[Nat]*(N':NzNat * M':NzNat * #4:NzNat)+ N':NzNat * K':NzNat * #4:NzNat)+ #1:[Nat]*(N':NzNat * M':NzNat *
+    #5:NzNat)+ N':NzNat * K':NzNat * #5:NzNat
+    =(#4:NzNat + #5:NzNat)*(#1:[Nat]* #2:[Nat]* N':NzNat * M':NzNat)+ #1:[Nat]* #2:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU3834
+    N':NzNat *(N?:[Nat]*(M':NzNat * #4:NzNat)+ K':NzNat * #4:NzNat)+ N?:[Nat]*(M':NzNat * #5:NzNat)+ K':NzNat * #5:NzNat
+    =(#4:NzNat + #5:NzNat)*(N?:[Nat]* N':NzNat * M':NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU3926
+    N?:[Nat]*(X@@@:[Nat]*(M':NzNat * #4:NzNat)+ K':NzNat * #4:NzNat)+ X@@@:[Nat]*(M':NzNat * #5:NzNat)+ K':NzNat * #5:NzNat
+    = X@@@:[Nat]*(N?:[Nat]*(M':NzNat * #4:NzNat)+ M':NzNat * #5:NzNat)+ N?:[Nat]*(K':NzNat * #4:NzNat)+ K':NzNat * #5:NzNat
+    .
+  cp NAT-ACU3927
+    N?:[Nat]*(X@@@:[Nat]*(N':NzNat * K':NzNat)+ N':NzNat * #11:NzNat)+ X@@@:[Nat]* N':NzNat * #4:NzNat
+    = X@@@:[Nat]*(N?:[Nat]*(N':NzNat * #4:NzNat)+ N':NzNat * #11:NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU3931
+    N?:[Nat]*(X@@@:[Nat]* N':NzNat * M':NzNat)+ X@@@:[Nat]* N':NzNat * K':NzNat
+    = X@@@:[Nat]*(N?:[Nat]* N':NzNat * M':NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU3933
+    N?:[Nat]*(X@@@:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #12:NzNat)+ X@@@:[Nat]*(N':NzNat * #11:NzNat)+ N':NzNat *
+    #13:NzNat
+    = X@@@:[Nat]*(N?:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #11:NzNat)+ N?:[Nat]*(N':NzNat * #12:NzNat)+ N':NzNat *
+    #13:NzNat .
+  cp NAT-ACU4118
+    (M':NzNat + K':NzNat)*(N?:[Nat]* #8:[Nat]* #3:NzNat * #4:NzNat)+ N?:[Nat]* #8:[Nat]* #3:NzNat * #5:NzNat
+    = #8:[Nat]* #3:NzNat *(N?:[Nat]*(M':NzNat * #4:NzNat)+ M':NzNat * #5:NzNat)+ N?:[Nat]*(K':NzNat * #4:NzNat)+ K':NzNat *
+    #5:NzNat .
+  cp NAT-ACU483
+    (#1:[Nat]* #3:NzNat)+ #1:[Nat]* #4:NzNat
+    = #1:[Nat]* #3:NzNat + #4:NzNat .
+  cp NAT-ACU528
+    (N?:[Nat]*(M':NzNat * #3:NzNat)+ K':NzNat * #3:NzNat)+ N?:[Nat]*(M':NzNat * #4:NzNat)+ K':NzNat * #4:NzNat
+    =(N?:[Nat]*(M':NzNat * #3:NzNat)+ M':NzNat * #4:NzNat)+ N?:[Nat]*(K':NzNat * #3:NzNat)+ K':NzNat * #4:NzNat .
+  cp NAT-ACU529
+    (N?:[Nat]*(N':NzNat * K':NzNat)+ N':NzNat * #9:NzNat)+ N?:[Nat]* N':NzNat * #3:NzNat
+    =(N?:[Nat]*(N':NzNat * #3:NzNat)+ N':NzNat * #9:NzNat)+ N?:[Nat]* N':NzNat * K':NzNat .
+  cp NAT-ACU535
+    (N?:[Nat]*(N':NzNat * #8:NzNat)+ N':NzNat * #10:NzNat)+ N?:[Nat]*(N':NzNat * #9:NzNat)+ N':NzNat * #11:NzNat
+    =(N?:[Nat]*(N':NzNat * #8:NzNat)+ N':NzNat * #9:NzNat)+ N?:[Nat]*(N':NzNat * #10:NzNat)+ N':NzNat * #11:NzNat .
+	The module is sort-decreasing.

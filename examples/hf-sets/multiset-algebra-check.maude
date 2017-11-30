@@ -1,0 +1,11 @@
+(select tool CRC .)
+set trace off .
+set trace select off .
+trace select ---- metaNarrowingSearch
+             ---- metaNarrowSearch
+             ---- prepNarrowingSols
+             ---- crcCritPairs
+             delete
+             .
+set print conceal off .
+(ccr MULTISET-ALGEBRA .)

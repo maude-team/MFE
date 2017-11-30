@@ -1,0 +1,89 @@
+set include BOOL off .
+set include BOOL-OPS on .
+
+fmod MULTISET-ALGEBRA is
+  ---- protecting NAT .
+  sort Nat .
+  op 0 : -> Nat .
+  op s : Nat -> Nat .
+  op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
+  vars N M : Nat .
+  eq N ~ N = true .
+  eq 0 ~ s(N) = false .
+  eq s(N) ~ s(M) = N ~ M .
+  ---- protecting NAT .
+
+  ---- TRUTH
+  op if_then_else_fi : Bool Mult Mult -> Mult [strat (1 0 2 3 0)].
+  eq if true then U else V fi = U .
+  eq if false then U else V fi = V .
+  ---- TRUTH
+
+  sort Mult .
+  subsort Nat < Mult .
+  op mt : -> Mult [ctor] .                              *** empty multiset
+  op _,_ : Mult Mult -> Mult [ctor assoc comm id: mt] . *** multiset union
+  op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
+  op _\_  : Mult Mult -> Mult .           *** multiset difference
+  op _C=_ : Mult Mult -> Bool .           *** multiset containment
+  op _in_ : Nat Mult -> Bool .            *** multiset membership
+  op _/\_ : Mult Mult -> Mult .           *** multiset intersection
+  op rem : Nat Mult -> Mult .             *** removes N everywhere in U
+  op |_| : Mult -> Nat .                  *** cardinality with repetitions
+  op [_] : Mult -> Nat .                  *** number of distinct elements
+
+   vars U V W : Mult .
+
+  eq mt \ U = mt .
+  eq U \ mt = U .
+  eq (M,U) \ N = if N ~ M then U else M,(U \ N) fi .
+  eq U \ (N,M,V) = ((U \ N) \ M) \ V .
+
+  eq U C= (U,V) = true .
+  eq N C= mt = false .
+  eq N C= (M,V) = (N ~ M) or (N C= V) .
+  eq (N,M,U) C= V = (N C= V) and (M,U) C= (V \ N) .
+
+  eq N in U = N C= U .
+
+  eq U ~ V = (U C= V) and (V C= U) .
+
+  eq mt /\ V = mt .
+  eq (N,U) /\ V = if (N in V) then N,(U /\ (V \ N)) else U /\ V fi .
+
+  eq rem(N,mt) = mt .
+  eq rem(N,(M,U)) = if (N ~ M) then rem(N,U) else M,(rem(N,U)) fi .
+
+  eq | mt | = 0 .
+  eq | N,U | = s(| U |) .
+
+  eq [ mt ] = 0 .
+  eq [ N,U ] = s([ rem(N,U) ]) .
+endfm
+
+eof
+
+red 5 ~ 12 .                  *** should be false
+red 15 ~ 15 .                 *** should be true
+
+red (3,3,4,4,4,2,2,9) \ (3,3,3,4,2,7) .  *** should be 2,4,4,9
+
+red (3,3,4,4,4,2,2,9) C= (3,3,3,4,2,7) .  *** should be false
+
+red (3,3,4,4,2,2,9) C= (3,3,3,4,4,2,2,2,7,9) .  *** should be true
+
+red 3 in (3,3,4,4,7) .                      *** should be true
+
+red 9 in (3,3,4,4,7) .                      *** should be false
+
+red (3,3,4,4,4,2,2,7) ~ (3,3,3,4,2,7) .  *** should be false
+
+red (3,3,3,4,2,2,7) ~ (3,3,3,4,2,2,7) .  *** should be true
+
+red (3,3,3,4,4,4,2,2,7,9) /\ (3,3,3,3,4,4,2,7,7) . *** should be 2,3,3,3,4,4,7
+
+red rem(2,(3,3,2,2,2,4,4,4)) .  *** should be 3,3,4,4,4
+
+red | 3,3,4,4,4,2,2,9 | .       *** should be 8
+
+red [ 3,3,4,4,4,2,2,9 ] .       *** should be 4

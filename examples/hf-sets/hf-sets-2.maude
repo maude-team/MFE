@@ -1,0 +1,99 @@
+set include BOOL off .
+load hf-sets.maude
+
+fmod HF-SETS-2 is
+  protecting HF-SETS .
+
+  vars S T : Set .
+
+  eq [23]: augment(augment(S,T),T) = augment(S,T) .
+
+endfm
+
+
+***(
+Church-Rosser checking of HF-SETS
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for 01 and 18
+    P({#2:Magma})U augment(P({#2:Magma}),S:Set)
+    = P({#2:Magma})U augment(P({#2:Magma}),S:Set)U augment(augment(P({
+    #2:Magma}),S:Set),S:Set).
+  cp for 18 and 18
+    P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),#1:Set)U
+    augment(augment(P({#6:Magma}),S:Set),#1:Set)
+    = P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),
+    #1:Set)U augment(augment(P({#6:Magma}),#1:Set),S:Set).
+The specification is sort-decreasing.
+
+The first critical pair can be eliminated adding the equation:
+
+    eq [23]: augment(augment(S,T),T) = augment(S,T) .
+
+But the second critical pair is essentially impossible to eliminate.
+
+However, I claim that the specification is ground confluent.  This can be shown by
+proving the following two inductive joinability goals
+(where I describe then with the notation t | t'):
+
+     augment(augment(S,T),T) | augment(S,T)
+
+     augment(augment(S,S'),T) |  augment(augment(S,T),S')
+
+using the following two inference rules (where I assume _|_ is a commutative operator)
+
+
+        t | t'                     t | t'             C[t'] | C'[t']
+ ------------------             ----------------------------------------
+   C[t] | C[t']                             C[t] | C'[t']
+
+
+
+)
+
+
+
+***(
+Church-Rosser checking of HF-SETS
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for 01 and 18
+    P({#2:Magma})U augment(P({#2:Magma}),S:Set)
+    = P({#2:Magma})U augment(P({#2:Magma}),S:Set)U augment(augment(P({
+    #2:Magma}),S:Set),S:Set).
+  cp for 18 and 18
+    P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),#1:Set)U
+    augment(augment(P({#6:Magma}),S:Set),#1:Set)
+    = P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),
+    #1:Set)U augment(augment(P({#6:Magma}),#1:Set),S:Set).
+The specification is sort-decreasing.
+
+The first critical pair can be eliminated adding the equation:
+
+    eq [23]: augment(augment(S,T),T) = augment(S,T) .
+
+But the second critical pair is essentially impossible to eliminate.
+
+However, I claim that the specification is ground confluent.  This can be shown by
+proving the following two inductive joinability goals
+(where I describe then with the notation t | t'):
+
+     augment(augment(S,T),T) | augment(S,T)
+
+     augment(augment(S,S'),T) |  augment(augment(S,T),S')
+
+using the following two inference rules (where I assume _|_ is a commutative operator)
+
+
+        t | t'                     t | t'             C[t'] | C'[t']
+ ------------------             ----------------------------------------
+   C[t] | C[t']                             C[t] | C'[t']
+
+
+    op _&_ : Set Set -> Set .       *** intersection
+    eq  [14]: {} & S = {} .
+    ceq [15]: {S} & S' = {S} if S in S' = true .
+    ceq [16]: {S} & S' = {} if S in S' = false .
+    ceq [17]: {S,M} & S' = {S} U ({M} & S') if S in S' = true .
+    ceq [18]: {S,M} & S' = {M} & S' if S in S' = false .
+)
