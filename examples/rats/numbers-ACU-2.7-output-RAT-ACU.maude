@@ -1,0 +1,190 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/rats/numbers-ACU-2.7.maude src/mfe.maude examples/rats/numbers-ACU-2.7-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Thu Nov 30 09:52:01 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 132755284 in 282169ms cpu (291911ms real) (470479 rewrites/second)
+Church-Rosser check for RAT-ACU
+The following critical pairs must be proved joinable:
+  ccp RAT-ACU25704
+    X@@@:[Rat]+(quot(#2:NzInt,gcd(1,#2:NzInt))/ quot(1,gcd(1,#2:NzInt)))
+    = X@@@:[Rat]+ #2:NzInt
+    if gcd(1,#2:NzInt)> 1 = tt .
+
+The following proof obligations must be checked for sort-decreasingness:
+
+  ma RAT-ACU334
+    X@@@@PosRat:PosRat +(| I':NzInt | / N':NzNat) : PosRat .
+
+  ma RAT-ACU336
+    X@@@@Rat:Rat +(-(I':NzInt)/ N':NzNat) : Rat .
+
+  ma RAT-ACU340
+    X@@@@Rat:Rat +(max(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat) : Rat .
+
+  ma RAT-ACU349
+    X@@@@Rat:Rat +(max(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat) : Rat .
+
+  ma RAT-ACU358
+    X@@@@Rat:Rat +(min(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat) : Rat .
+
+  ma RAT-ACU367
+    X@@@@Rat:Rat +(min(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat) : Rat .
+
+  ma RAT-ACU376
+    X@@@@Rat:Rat +(| I':NzInt | / N':NzNat) : Rat .
+
+  cma RAT-ACU420
+    X@@@@Int:Int +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU421
+    X@@@@Int:Int +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU422
+    X@@@@Int:Int +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU423
+    X@@@@Nat:Nat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU424
+    X@@@@Nat:Nat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU425
+    X@@@@Nat:Nat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU426
+    X@@@@NzInt:NzInt +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU427
+    X@@@@NzInt:NzInt +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU428
+    X@@@@NzInt:NzInt +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU429
+    X@@@@NzNat:NzNat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU430
+    X@@@@NzNat:NzNat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU431
+    X@@@@NzNat:NzNat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU432
+    X@@@@NzNeg:NzNeg +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU433
+    X@@@@NzNeg:NzNeg +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU434
+    X@@@@NzNeg:NzNeg +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU435
+    X@@@@NzPosRat:NzPosRat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU436
+    X@@@@NzPosRat:NzPosRat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,
+    M':NzNat))) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU437
+    X@@@@NzPosRat:NzPosRat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,
+    M':NzNat))) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU438
+    X@@@@NzRat:NzRat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU439
+    X@@@@NzRat:NzRat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU440
+    X@@@@NzRat:NzRat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU441
+    X@@@@PosRat:PosRat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU442
+    X@@@@PosRat:PosRat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU443
+    X@@@@PosRat:PosRat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) :
+    Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU444
+    X@@@@Rat:Rat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU445
+    X@@@@Rat:Rat +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU446
+    X@@@@Rat:Rat +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU447
+    X@@@@Zero:Zero +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU448
+    X@@@@Zero:Zero +(quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat))) :
+    PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = tt .
+
+  cma RAT-ACU449
+    X@@@@Zero:Zero +(quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat))) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
+
+Maude>

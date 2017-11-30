@@ -1,0 +1,94 @@
+ set include BOOL off .
+
+  fmod HF-SETS is  
+    protecting BOOL-OPS .
+    sorts Magma Set Prop .
+    subsort Set < Magma .
+    op _,_ : Magma Magma -> Magma [ctor assoc comm] .
+    op {_} : Magma -> Set [ctor] .
+    op {} : -> Set [ctor] .
+    op _|_ : Magma Magma -> Prop [comm] .
+
+    vars M M' : Magma .              vars S S' T : Set .   
+
+    eq [01]: M, M, M' = M, M' .        
+    eq [02]: M, M = M .
+
+    op _in_ : Magma Set -> Bool .   *** set membership for several elements
+    eq [03]: M in {} = false .
+    eq [04]: S in {S'} = S ~ S' .
+    eq [05]: S in {S',M} = (S ~ S') or (S in {M}) .
+    eq [06]: S, M in {M'} = (S in {M'}) and (M in {M'}) .
+
+    op _~_ : Set Set -> Bool .      *** set equality
+    eq [07]: S ~ S' = (S <= S') and (S' <= S) . 
+
+    op _<=_ : Set Set -> Bool .     *** set containment
+    eq [09]: {} <= S = true . 
+    eq [10]: {M} <= S = M in S .
+
+    op _U_ : Set Set -> Set [assoc comm] .   *** union
+    eq [11]: S U {} = S .
+    eq [12]: {M} U {M'} = {M,M'} .
+    eq [13]: S U {M} U {M'} = S U {M,M'} .
+    eq [14]: S U S = S .                    *** unnecessary
+    eq [15]: T U S U S = T U S .            *** unnecessary
+
+    op P : Set -> Set .          *** powerset
+    eq [16]: P({}) = {{}} .
+    eq [17]: P({S}) = {{},{S}} .
+    eq [18]: P({S,M}) = P({M}) U augment(P({M}),S) .
+
+    op augment : Set Set -> Set .
+    eq [19]: augment({},T) = {} .
+    eq [20]: augment({S},T) = {{T} U S} .
+    eq [21]: augment({M,M'},T) = augment({M},T) U augment({M'},T) .
+    eq [22]: augment(S U S',T) = augment(S,T) U augment(S',T) . *** unnecessary
+  endfm
+
+
+***(
+Church-Rosser checking of HF-SETS
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for 01 and 18
+    P({#2:Magma})U augment(P({#2:Magma}),S:Set)
+    = P({#2:Magma})U augment(P({#2:Magma}),S:Set)U augment(augment(P({
+    #2:Magma}),S:Set),S:Set).
+  cp for 18 and 18
+    P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),#1:Set)U
+    augment(augment(P({#6:Magma}),S:Set),#1:Set)
+    = P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),
+    #1:Set)U augment(augment(P({#6:Magma}),#1:Set),S:Set).
+The specification is sort-decreasing.
+
+The first critical pair can be eliminated adding the equation:
+
+    eq [23]: augment(augment(S,T),T) = augment(S,T) .
+
+But the second critical pair is essentially impossible to eliminate.
+
+However, I claim that the specification is ground confluent.  This can be shown by 
+proving the following two inductive joinability goals 
+(where I describe then with the notation t | t'):
+
+     augment(augment(S,T),T) | augment(S,T)
+
+     augment(augment(S,S'),T) |  augment(augment(S,T),S') 
+
+using the following two inference rules (where I assume _|_ is a commutative operator)
+
+ 
+        t | t'                     t | t'             C[t'] | C'[t']
+ ------------------             ----------------------------------------
+   C[t] | C[t']                             C[t] | C'[t']
+
+
+
+)
+
+red  augment(augment({},S'),T) |  augment(augment({},T),S') .
+
+red  augment(augment({S},S'),T) |  augment(augment({S},T),S') .
+
+red  augment(augment({S,M},S'),T) |  augment(augment({S,M},T),S') .
