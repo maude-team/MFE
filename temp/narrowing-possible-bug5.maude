@@ -19,8 +19,57 @@ mod NAT-ACU is
   rl _*_(N?:Nat, N':NzNat, _+_(M':NzNat, K':NzNat))
     => #_#_#(_+_(_*_(N?:Nat, N':NzNat, M':NzNat),
                  _*_(N?:Nat, N':NzNat, K':NzNat)),
-             nil) .
+             nil)
+    [narrowing] .
 endm
 
-red in MFE : metaNarrowSearch(upModule('NAT-ACU, true), '#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],'ff.Truth,
+red in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU,true),
+'#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],
+         'ff.Truth,
+         'nil.#ConditionList],
+'#V:`[Truth`],
+none,
+'+,
+1,
+unbounded,
+unbounded) .
+
+---(
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ src/mfe.maude temp/narrowing-possible-bug5.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Tue Nov 28 15:05:19 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3p - August 30th 2016
+    Coherence Checker 3p - August 30th 2016
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+==========================================
+reduce in FULL-MAUDE : metaNarrowSearch(upModule('NAT-ACU, true), '#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],'ff.Truth,
     'nil.#ConditionList], '#V:`[Truth`], none, '+, 1, unbounded, unbounded) .
+rewrites: 5216 in 4ms cpu (5ms real) (1145618 rewrites/second)
+result ResultTripleSet: {'#_#_#_#['_>_['0.Zero,'0.Zero],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['0.Zero,'0.Zero],'ff.Truth,'nil.#ConditionList] ;
+	'M:Nat <- '0.Zero ;
+	'N:Nat <- '0.Zero} |
+{'#_#_#_#['_>_['0.Zero,'M:Nat],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['0.Zero,'M:Nat],'ff.Truth,'nil.#ConditionList] ;
+	'N:Nat <- '0.Zero} |
+{'#_#_#_#['_>_['N:Nat,'N:Nat],'ff.Truth,'nil.#ConditionList],'Truth,
+	'#V:`[Truth`] <- '#_#_#_#['_>_['N:Nat,'N:Nat],'ff.Truth,'nil.#ConditionList] ;
+	'M:Nat <- '0.Zero}
+Maude>
+)
