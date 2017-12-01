@@ -1,18 +1,18 @@
 (select tool CRC .)
-set trace on .
-set trace select off .
-trace select ---- metaNarrowingSearch
-             ---- metaNarrowSearch
+set trace off .
+set trace select on .
+trace select metaNarrowingSearch
+             metaNarrowSearch
              ---- prepNarrowingSols
              ---- crcCritPairs
-             delete
+             ---- delete
              .
-set print conceal on .
+set print conceal off .
 print conceal fmod_is_sorts_____endfm
               mod_is_sorts______endm
               .
-set trace condition off .
-set trace whole off .
-set trace substitution off .
+set trace condition on .
+set trace whole on .
+set trace substitution on .
 
 (ccr SET-ALGEBRA .)

@@ -1,5 +1,5 @@
 ----                                                        file: crchc3o.maude
-----                      To be run on Maude 2.7 (alpha 103) and Full Maude 27c
+----                                         To be run on Maude 2.7 (alpha 103)
 ----                                                    author: Francisco Duran
 ----                        last modified by Francisco Duran on June 18th, 2014
 ----
@@ -527,14 +527,12 @@ fmod CRITICAL-PAIR-SET is
   op delete : CritPairSet -> CritPairSet .
 
   eq delete(cp(Id, L, L', T, T', pending) CPS)
-    = ----if getTerm(metaReduce(M, '_==_[T, T'])) == 'true.Bool
-      if T == T'
+    = if T == T'
       then cp(Id, L, L', T, T', joined) delete(CPS)
       else cp(Id, L, L', T, T', pending) delete(CPS)
       fi .
   eq delete(ccp(Id, L, L', T, T', Cd, pending) CPS)
-    = ----if getTerm(metaReduce(M, '_==_[T, T'])) == 'true.Bool
-      if T == T'
+    = if T == T'
       then ccp(Id, L, L', T, T', Cd, joined) delete(CPS)
       else ccp(Id, L, L', T, T', Cd, pending) delete(CPS)
       fi .

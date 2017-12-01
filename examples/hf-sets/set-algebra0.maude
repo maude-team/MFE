@@ -26,13 +26,12 @@ fmod SET-ALGEBRA is
   op _C=_ : Set Set -> Bool .             *** set containment
   op _in_ : Nat Set -> Bool .             *** set membership
   op _~_  : Set Set -> Bool [comm] .      *** equality predicate on sets
-  op _\_  : Set Set -> Set .              *** set difference
-  op _/\_ : Set Set -> Set .              *** set intersection
-  op |_| : Set -> Nat .                   *** set cardinality
 
   vars U V W : Set .
 
   eq [set06]: N,N = N .
+
+  eq [set12]: N in U = N C= U .
 
   eq [set07]: U C= (U,V) = true .
   eq [set08]: N C= mt = false .
@@ -41,16 +40,24 @@ fmod SET-ALGEBRA is
   eq [set10]: N C= (M, K, V) =  N ~ M or (N C= K, V) .
   eq [set11]: (N,M,U) C= V = N C= V and (M,U) C= V .
 
-  eq [set12]: N in U = N C= U .
+  ---- eq U ~ V = (U C= V) and (V C= U) .
+  eq [set17]: mt ~ U = U C= mt .
+  eq [set18]: N, K, U ~ V = ((N, K, U) C= V) and (V C= (N, K, U)) .
+endfm
+
+fmod SET-ALGEBRA-2 is
+  pr SET-ALGEBRA .
+  op _\_  : Set Set -> Set .              *** set difference
+  op _/\_ : Set Set -> Set .              *** set intersection
+  op |_| : Set -> Nat .                   *** set cardinality
+
+  vars U V W : Set .
+  vars N M K : Nat .
 
   eq [set13]: mt \ U = mt .
   eq [set14]: U \ mt = U .
   eq [set15]: (M,U) \ N = if N ~ M then (U \ N) else M,(U \ N) fi .
   eq [set16]: U \ (N,M,V) = ((U \ N) \ M) \ V .
-
-  ---- eq U ~ V = (U C= V) and (V C= U) .
-  eq [set17]: mt ~ U = U C= mt .
-  eq [set18]: N, K, U ~ V = ((N, K, U) C= V) and (V C= (N, K, U)) .
 
   eq [set19]: mt /\ V = mt .
   eq [set20]: (N,U) /\ V = if (N in V) then N,(U /\ V) else U /\ V fi .

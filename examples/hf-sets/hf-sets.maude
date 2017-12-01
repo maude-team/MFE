@@ -44,8 +44,6 @@
     eq [21]: augment({M,M'},T) = augment({M},T) U augment({M'},T) .
     eq [22]: augment(S U S',T) = augment(S,T) U augment(S',T) . *** unnecessary
 
-    eq [23]: augment(augment(S,T),T) = augment(S,T) .
-
     op _&_ : Set Set -> Set .       *** intersection
     eq  [24]: {} & S = {} .
     ceq [25]: {S} & S' = {S} if S in S' = true .

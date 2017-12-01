@@ -65,7 +65,7 @@ fmod NAT-ACU is
   eq [nat-acu02]: quot(M', M') = 1 .
   eq [nat-acu03]: quot(M, N' + M) = 0 .
   eq [nat-acu04]: gcd(N', N') = N' .
-  eq [nat-acu05]: gcd(N' + M', M') =  gcd(N', M') .
+  eq [nat-acu05]: gcd(N' + M', M') = gcd(N', M') .
   eq [nat-acu06]: N? * 0 = 0 .
   eq [nat-acu07]: N? * 1 = N? .
   eq [nat-acu08]: N' * (M' + K') = (N' * M') + (N' * K') .
@@ -155,31 +155,31 @@ fmod RAT-ACU is
   vars I' J' : NzInt .   vars R S : Rat .    var R? : [Rat] .
   vars R' S' : NzRat .   vars N' M' K' : NzNat .
 
-  ceq J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
+  ceq [rat01]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
      if gcd(J',M') > 1 = tt .                           *** canonical form of fraction
-  eq R' / 1 = R' .
-  eq I' / -(N') = -(I') / N' .
-  eq I' / (J' / M') = (I' * M') / J' .
-  eq (I' / N') / J' = I' / (N' * J') .
-  eq (I' / N') / (J' / M') = (I' * M') / (N' * J') .
+  eq [rat02]: R' / 1 = R' .
+  eq [rat03]: I' / -(N') = -(I') / N' .
+  eq [rat04]: I' / (J' / M') = (I' * M') / J' .
+  eq [rat05]: (I' / N') / J' = I' / (N' * J') .
+  eq [rat06]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
   ---- eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
   ---- eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
-  eq -(I' / N') = -(I') / N' .
-  eq (I' / N') * 0 = 0 .
+  eq [rat07]: -(I' / N') = -(I') / N' .
+  eq [rat08]: (I' / N') * 0 = 0 .
   ---- eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
-  eq (I' / N') * J' = (I' * J') / N' .
+  eq [rat09]: (I' / N') * J' = (I' * J') / N' .
   ---- eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
-  eq (I' / N') * (J' / M') = (I' * J') / (N' * M') .
+  eq [rat10]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
   ---- eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
-  eq | I' / N' | = | I' | / N' .
-  eq max(I' / N',J') = max(I',(J' * N')) / N' .
-  eq max(I' / N',J' / M') = max((I' * M'),(J' * N')) / (N' * M') .
-  eq min(I' / N',J') = min(I',(J' * N')) / N' .
-  eq min(I' / N',J' / M') = min((I' * M'),(J' * N')) / (N' * M') .
-  eq (I' / N') ~ J' = I' ~ (J' * N') .
-  eq (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
-  eq I' > (J' / M') = (I' * M') > J' .
-  eq (I' / N') > J' = I' > (J' * N') .
-  eq (I' / N') > J' = I' > (J' * N') .
-  eq (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+  eq [rat11]: | I' / N' | = | I' | / N' .
+  eq [rat12]: max(I' / N',J') = max(I',(J' * N')) / N' .
+  eq [rat13]: max(I' / N',J' / M') = max((I' * M'),(J' * N')) / (N' * M') .
+  eq [rat14]: min(I' / N',J') = min(I',(J' * N')) / N' .
+  eq [rat15]: min(I' / N',J' / M') = min((I' * M'),(J' * N')) / (N' * M') .
+  eq [rat16]: (I' / N') ~ J' = I' ~ (J' * N') .
+  eq [rat17]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
+  eq [rat18]: I' > (J' / M') = (I' * M') > J' .
+  eq [rat19]: (I' / N') > J' = I' > (J' * N') .
+  eq [rat20]: (I' / N') > J' = I' > (J' * N') .
+  eq [rat21]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
 endfm
