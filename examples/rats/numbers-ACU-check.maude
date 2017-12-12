@@ -1,33 +1,13 @@
 (select tool CRC .)
-set trace off .
-set trace select on .
-trace select ----prepNarrowingSols
-             ----getLabel
-             ----getCts
-             ----metaNarrowSearch
-             ----confluenceCheck
-             ----crcContextJoinableAndUnfeasibleCPs
-             ----maximalCPSet
-             ----delete
-             ----simplify
-             ----delete
-             ----crcCritPairs
-             metaNarrowingSearch
-             .
-set print conceal off .
-print conceal mod_is_sorts_._____endm
-              fmod_is_sorts_.____endfm
-              .
 ---(ccr BOOL-FVP .)
 ---(show all critical pairs .)
-
 ---(ccr NAT-FVP .)
 ---(show all critical pairs .)
 ---(ccr INT-FVP .)
 ---(show all critical pairs .)
 (ccr NAT-ACU .)
 ---(show all critical pairs .)
----(ccr INT-ACU .)
+(ccr INT-ACU .)
 ---(show all critical pairs .)
----(ccr RAT-ACU .)
+(ccr RAT-ACU .)
 ---(show all critical pairs .)
