@@ -1,0 +1,31 @@
+eduroamprvnat-172-16-59-243:MFE duran$ ~/Maude/Alpha115/maude-Yices2.darwin64 examples/rats/numbers-ACU-2.8.maude src/mfe.maude examples/rats/numbers-ACU-2.8-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha115 built: Aug 11 2017 19:57:09
+	    Copyright 1997-2017 SRI International
+		   Thu Nov 30 23:02:10 2017
+
+	    Full Maude 2.7f November 20th 2017
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3q - November 20th 2017
+    Coherence Checker 3q - November 20th 2017
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 378775 in 1957ms cpu (2227ms real) (193456 rewrites/second)
+Church-Rosser check for NAT-ACU
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The module is sort-decreasing.
+
+Maude>

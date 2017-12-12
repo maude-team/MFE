@@ -5531,7 +5531,7 @@ fmod META-NARROWING-SEARCH is
   op metaNarrowSearch : Module Term Term SubstitutionCond
                         TypeOfRelation Bound Bound Bound
                         -> ResultTripleSet .
----- TEMPORARY BRIDGE TO THE BUILT-IN ANRROWING
+---- TEMPORARY BRIDGE TO THE BUILT-IN NARROWING
 ---(
   eq metaNarrowSearch(M,T,T',SCond,QQ,BN,B,Sol)
    = if (BN == unbounded and-then Sol =/= unbounded)

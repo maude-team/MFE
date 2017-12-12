@@ -7,16 +7,16 @@ fmod SET-ALGEBRA is
   op 0 : -> Nat .
   op s : Nat -> Nat .
   op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
-  vars N M : Nat .
-  eq N ~ N = true .
-  eq 0 ~ s(N) = false .
-  eq s(N) ~ s(M) = N ~ M .
+  vars N M K : Nat .
+  eq [set00]: N ~ N = true .
+  eq [set01]: 0 ~ s(N) = false .
+  eq [set02]: s(N) ~ s(M) = N ~ M .
   ---- protecting NAT .
 
   ---- BOOL ops
   op if_then_else_fi : Bool Set Set -> Set [strat (1 0 2 3 0)].
-  eq if true then U else V fi = U .
-  eq if false then U else V fi = V .
+  eq [set04]: if true then U else V fi = U .
+  eq [set05]: if false then U else V fi = V .
   ---- BOOL ops
 
   sort Set .
@@ -32,27 +32,31 @@ fmod SET-ALGEBRA is
 
   vars U V W : Set .
 
-  eq N,N = N .
+  eq [set06]: N,N = N .
 
-  eq U C= (U,V) = true .
-  eq N C= mt = false .
-  eq N C= (M,V) =  N ~ M or (N C= V) .
-  eq (N,M,U) C= V = N C= V and (M,U) C= V .
+  eq [set07]: U C= (U,V) = true .
+  eq [set08]: N C= mt = false .
+  ----eq N C= (M,V) =  N ~ M or (N C= V) .
+  eq [set09]: N C= M = N ~ M .
+  eq [set10]: N C= (M, K, V) =  N ~ M or (N C= K, V) .
+  eq [set11]: (N,M,U) C= V = N C= V and (M,U) C= V .
 
-  eq N in U = N C= U .
+  eq [set12]: N in U = N C= U .
 
-  eq mt \ U = mt .
-  eq U \ mt = U .
-  eq (M,U) \ N = if N ~ M then (U \ N) else M,(U \ N) fi .
-  eq U \ (N,M,V) = ((U \ N) \ M) \ V .
+  eq [set13]: mt \ U = mt .
+  eq [set14]: U \ mt = U .
+  eq [set15]: (M,U) \ N = if N ~ M then (U \ N) else M,(U \ N) fi .
+  eq [set16]: U \ (N,M,V) = ((U \ N) \ M) \ V .
 
-  eq U ~ V = (U C= V) and (V C= U) .
+  ---- eq U ~ V = (U C= V) and (V C= U) .
+  eq [set17]: mt ~ U = U C= mt .
+  eq [set18]: N, K, U ~ V = ((N, K, U) C= V) and (V C= (N, K, U)) .
 
-  eq mt /\ V = mt .
-  eq (N,U) /\ V = if (N in V) then N,(U /\ V) else U /\ V fi .
+  eq [set19]: mt /\ V = mt .
+  eq [set20]: (N,U) /\ V = if (N in V) then N,(U /\ V) else U /\ V fi .
 
-  eq | mt | = 0 .
-  eq | N,U | = s(| (U \ N) |) .
+  eq [set21]: | mt | = 0 .
+  eq [set22]: | N,U | = s(| (U \ N) |) .
 endfm
 
 eof
