@@ -1,0 +1,36 @@
+ load mnat2.maude
+   
+ select MFE .
+ loop init .
+ (set include BOOL off .)
+ (set include TRUTH-VALUE on .)
+  
+ (select tool CRC .)
+ (ccr MNAT .)
+ q
+ 
+ ---(
+Church-Rosser check for MNAT
+The following critical pairs must be proved joinable:
+  ccp MNAT1879 for nat17 and nat17
+    gcd(N':NzNat,d(N':NzNat,M':NzNat))
+    = gcd(M':NzNat,d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ M':NzNat > N':NzNat = true .
+  ccp MNAT1887 for nat15 and nat13
+    0
+    = s quot(d(N:Nat,M':NzNat),M':NzNat)
+    if N:Nat > M':NzNat = true /\ M':NzNat > N:Nat = true .
+  ccp MNAT1893 for nat13 and nat15
+    s quot(d(N:Nat,M':NzNat),M':NzNat)
+    = 0
+    if M':NzNat > N:Nat = true /\ N:Nat > M':NzNat = true .
+
+The following proof obligations must be checked for sort-decreasingness:
+
+  cma MNAT0 for equation nat17
+    gcd(M':NzNat,d(N':NzNat,M':NzNat)) : NzNat
+    if N':NzNat > M':NzNat = true .
+ 
+The conditions of all 3 conditional critical pairs are unsatisfiable, and the mb can be proven using the ITP. 
+---)
+ 

@@ -1,0 +1,407 @@
+  load mnat.fm
+
+ (fmod MINT is
+    protecting MNAT-3 .
+    sorts Int NzInt .
+    subsort Nat < Int .
+    subsorts NzNat < NzInt < Int .
+    op -_ : Int -> Int .
+    op -_ : NzInt -> NzInt .
+    op _+_ : Int Int -> Int [assoc comm] .
+    op _*_ : Int Int -> Int .
+    op _*_ : NzInt NzInt -> NzInt .
+    op quot : Int NzInt -> Int .
+    op gcd : NzInt NzInt -> NzNat [comm] .
+    vars I J : Int . 
+    vars I' J' : NzInt .
+    vars N' M' : NzNat .
+    eq  [int01] : - - I = I .
+    eq  [int02] : - 0 = 0 .
+    eq  [int03] : I + 0 = I .
+    eq  [int04] : M' + (- M') = 0 .
+    ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
+    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .         
+    eq  [int07] : (- I) + (- J) = - (I + J) .
+    eq  [int08] : I * 0 = 0 .
+    eq  [int09] : 0 * I = 0 .
+    eq  [int10] : I * (- J) = - (I * J) .
+    eq  [int11] : (- J) * I = - (I * J) .
+    eq  [int12] : quot(0, I') = 0 .
+    eq  [int13] : quot(- I', J') = - quot(I', J') .
+    eq  [int14] : quot(I', - J') = - quot(I', J') .
+    eq  [int15] : gcd(- I', J') = gcd(I', J') .
+  endfm)
+ 
+---- (check Church-Rosser .)
+
+---(
+rewrites: 5817013 in 20356ms cpu (21626ms real) (285754 rewrites/second)
+
+Church-Rosser checking of MINT
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for int01 and int07
+    #1:Int + - I:Int
+    = -(I:Int + - #1:Int).
+  cp for int01 and int07
+    #1:Int + X@@@:[Int]+ - I:Int
+    = X@@@:[Int]+ -(I:Int + - #1:Int).
+  cp for int01 and int11
+    #1:Int * I:Int
+    = I:Int * #1:Int .
+  cp for int04 and int07
+    - I:Int
+    = #1:NzNat + -(I:Int + #1:NzNat).
+  cp for int04 and int07
+    #5:[Int]+ - I:Int
+    = #1:NzNat + #5:[Int]+ -(I:Int + #1:NzNat).
+  cp for int04 and nat03-1
+    M:Nat
+    = - s N:Nat + s(N:Nat + M:Nat).
+  cp for int04 and nat03-1
+    #6:[Int]+ s N:Nat
+    = #6:[Int]+ - #1:NzNat + s(N:Nat + #1:NzNat).
+  cp for int04 and nat03-1
+    M:Nat + #6:[Int]
+    = #6:[Int]+ - s N:Nat + s(N:Nat + M:Nat).
+  cp for int04 and nat03-1
+    s N:Nat
+    = - #1:NzNat + s(N:Nat + #1:NzNat).
+  ccp for int04 and int05
+    M':NzNat
+    = N':NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    - N':NzNat
+    = -(M':NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    #6:[Int]+ - N':NzNat
+    = #6:[Int]+ -(M':NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    M':NzNat + #6:[Int]
+    = N':NzNat + #6:[Int]+ - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int06
+    M':NzNat
+    = N':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    - N':NzNat
+    = - M':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    #6:[Int]+ - N':NzNat
+    = #6:[Int]+ - M':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    M':NzNat + #6:[Int]
+    = N':NzNat + #6:[Int]+ d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int05 and int05
+    -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = -(#3:NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int05
+    #8:[Int]+ -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = #8:[Int]+ -(#3:NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int05
+    M':NzNat + - d(N':NzNat,#1:NzNat)
+    = #1:NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true /\ N':NzNat > #1:NzNat = true .
+  ccp for int05 and int05
+    M':NzNat + #8:[Int]+ - d(N':NzNat,#1:NzNat)
+    = #1:NzNat + #8:[Int]+ - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true /\ N':NzNat > #1:NzNat = true .
+  ccp for int05 and int06
+    -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    - d(N':NzNat,M':NzNat)
+    = d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ N':NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    #8:[Int]+ -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = #8:[Int]+ - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    X@@@:[Int]+ - d(N':NzNat,M':NzNat)
+    = X@@@:[Int]+ d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ N':NzNat > M':NzNat = true .
+  ccp for int05 and int07
+    -(I:Int + d(#3:NzNat,#1:NzNat))
+    = #1:NzNat + -(I:Int + #3:NzNat)
+    if #3:NzNat > #1:NzNat = true .
+  ccp for int05 and int07
+    #7:[Int]+ -(I:Int + d(#3:NzNat,#1:NzNat))
+    = #1:NzNat + #7:[Int]+ -(I:Int + #3:NzNat)
+    if #3:NzNat > #1:NzNat = true .
+  ccp for int05 and nat03-1
+    M:Nat + - d(#3:NzNat,s N:Nat)
+    = - #3:NzNat + s(N:Nat + M:Nat)
+    if #3:NzNat > s N:Nat = true .
+  ccp for int05 and nat03-1
+    - d(#3:NzNat,#1:NzNat)+ s N:Nat
+    = - #3:NzNat + s(N:Nat + #1:NzNat)
+    if #3:NzNat > #1:NzNat = true .
+  ccp for int06 and int06
+    M':NzNat + d(N':NzNat,#1:NzNat)
+    = #1:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #1:NzNat > N':NzNat = true .
+  ccp for int06 and int06
+    - N':NzNat + d(M':NzNat,#3:NzNat)
+    = - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ M':NzNat > #3:NzNat = true .
+  ccp for int06 and int06
+    #8:[Int]+ - N':NzNat + d(M':NzNat,#3:NzNat)
+    = #8:[Int]+ - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ M':NzNat > #3:NzNat = true .
+  ccp for int06 and int06
+    M':NzNat + #8:[Int]+ d(N':NzNat,#1:NzNat)
+    = #1:NzNat + #8:[Int]+ d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #1:NzNat > N':NzNat = true .
+  ccp for int06 and int07
+    - I:Int + d(#3:NzNat,#1:NzNat)
+    = #1:NzNat + -(I:Int + #3:NzNat)
+    if #1:NzNat > #3:NzNat = true .
+  ccp for int06 and int07
+    #7:[Int]+ - I:Int + d(#3:NzNat,#1:NzNat)
+    = #1:NzNat + #7:[Int]+ -(I:Int + #3:NzNat)
+    if #1:NzNat > #3:NzNat = true .
+  ccp for int06 and nat03-1
+    #8:[Int]+ s(N:Nat + d(#3:NzNat,#1:NzNat))
+    = #8:[Int]+ - #3:NzNat + s(N:Nat + #1:NzNat)
+    if #1:NzNat > #3:NzNat = true .
+  ccp for int06 and nat03-1
+    M:Nat + d(#3:NzNat,s N:Nat)
+    = - #3:NzNat + s(N:Nat + M:Nat)
+    if s N:Nat > #3:NzNat = true .
+  ccp for int06 and nat03-1
+    s(N:Nat + d(#3:NzNat,#1:NzNat))
+    = - #3:NzNat + s(N:Nat + #1:NzNat)
+    if #1:NzNat > #3:NzNat = true .
+  ccp for nat12 and nat14
+    s quot(d(N:Nat,M':NzNat),M':NzNat)
+    = 0
+    if M':NzNat > N:Nat = true /\ N:Nat > M':NzNat = true .
+  ccp for nat14 and nat12
+    0
+    = s quot(d(N:Nat,M':NzNat),M':NzNat)
+    if N:Nat > M':NzNat = true /\ M':NzNat > N:Nat = true .
+  ccp for nat16 and nat16
+    gcd(N':NzNat,d(N':NzNat,M':NzNat))
+    = gcd(M':NzNat,d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ M':NzNat > N':NzNat = true .
+There are non-sort-decreasing equations.
+The following proof obligations must be checked:
+  cmb gcd(M':NzNat,d(N':NzNat,M':NzNat)): NzNat
+    if N':NzNat > M':NzNat = true .
+---)
+
+ (fmod MINT-2 is
+    protecting MNAT-4 .
+    sorts Int NzInt .
+    subsort Nat < Int .
+    subsorts NzNat < NzInt < Int .
+    op -_ : Int -> Int .
+    op -_ : NzInt -> NzInt .
+    op _+_ : Int Int -> Int [assoc comm id: 0] .
+    op _*_ : Int Int -> Int [assoc comm] .
+    op _*_ : NzInt NzInt -> NzInt [assoc comm] .
+    op quot : Int NzInt -> Int .
+    op gcd : NzInt NzInt -> NzNat [comm] .
+    vars I J : Int . 
+    vars I' J' : NzInt .
+    vars N' M' : NzNat .
+    eq  [int01] : - - I = I .
+    eq  [int02] : - 0 = 0 .
+    ----eq  [int03] : I + 0 = I .
+    eq  [int04] : M' + (- M') = 0 .
+    ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
+    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .         
+    eq  [int07] : (- I) + (- J) = - (I + J) .
+    eq  [int08] : I * 0 = 0 .
+    ----eq  [int09] : 0 * I = 0 .
+    eq  [int10] : I * (- J) = - (I * J) .
+    ----eq  [int11] : (- J) * I = - (I * J) .
+    eq  [int12] : quot(0, I') = 0 .
+    eq  [int13] : quot(- I', J') = - quot(I', J') .
+    eq  [int14] : quot(I', - J') = - quot(I', J') .
+    eq  [int15] : gcd(- I', J') = gcd(I', J') .
+  endfm)
+
+---(
+set trace on .
+set trace select on .
+trace select ---- acuCohComplete
+             ---- crcCritPairs 
+             removeIds
+             getVariants 
+             .
+---)
+
+---- (check Church-Rosser .)
+
+---(
+rewrites: 5960197 in 21648ms cpu (23025ms real) (275315 rewrites/second)
+
+Church-Rosser checking of MINT-2
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for int01 and int07
+    #1:Int + - I:Int
+    = -(I:Int + - #1:Int).
+  cp for int01 and int07
+    #1:Int + X@@@:[Int]+ - I:Int
+    = X@@@:[Int]+ -(I:Int + - #1:Int).
+  cp for int04 and int07
+    - I:Int
+    = #2:NzNat + -(I:Int + #2:NzNat).
+  cp for int04 and int07
+    #5:[Int]+ - I:Int
+    = #5:[Int]+ #2:NzNat + -(I:Int + #2:NzNat).
+  cp for int04 and nat03-1
+    #6:[Int]+ s M:Nat
+    = #6:[Int]+ - s N:Nat + s s(N:Nat + M:Nat).
+  cp for int04 and nat03-1
+    s M:Nat
+    = - s N:Nat + s s(N:Nat + M:Nat).
+  cp for nat03-1 and nat03-1
+    #8:[Int]+ s s(M:Nat + s(N:Nat + #2:Nat))
+    = #8:[Int]+ s s(#2:Nat + s(N:Nat + M:Nat)).
+  cp for nat03-1 and nat03-1
+    s s(M:Nat + s(N:Nat + #2:Nat))
+    = s s(#2:Nat + s(N:Nat + M:Nat)).
+  cp for nat06 and nat06
+    #8:[Int]* s(N:Nat + M:Nat + #2:Nat +(N:Nat * #2:Nat)+ M:Nat * N:Nat + #2:Nat + N:Nat *
+    #2:Nat)
+    = #8:[Int]* s(N:Nat + M:Nat + #2:Nat +(N:Nat * M:Nat)+ #2:Nat * N:Nat + M:Nat + N:Nat *
+    M:Nat).
+  cp for nat06 and nat06
+    s(N:Nat + M:Nat + #2:Nat +(N:Nat * #2:Nat)+ M:Nat * N:Nat + #2:Nat + N:Nat * #2:Nat)
+    = s(N:Nat + M:Nat + #2:Nat +(N:Nat * M:Nat)+ #2:Nat * N:Nat + M:Nat + N:Nat * M:Nat).
+  ccp for int04 and int05
+    M':NzNat
+    = N':NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    - N':NzNat
+    = -(M':NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    #6:[Int]+ M':NzNat
+    = #6:[Int]+ N':NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int05
+    #6:[Int]+ - N':NzNat
+    = #6:[Int]+ -(M':NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true .
+  ccp for int04 and int06
+    M':NzNat
+    = N':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    - N':NzNat
+    = - M':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    #6:[Int]+ M':NzNat
+    = #6:[Int]+ N':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int04 and int06
+    #6:[Int]+ - N':NzNat
+    = #6:[Int]+ - M':NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true .
+  ccp for int05 and int05
+    -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = -(#3:NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int05
+    #8:[Int]+ -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = #8:[Int]+ -(#3:NzNat + d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int05
+    M':NzNat + - d(N':NzNat,#2:NzNat)
+    = #2:NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true /\ N':NzNat > #2:NzNat = true .
+  ccp for int05 and int05
+    #8:[Int]+ M':NzNat + - d(N':NzNat,#2:NzNat)
+    = #8:[Int]+ #2:NzNat + - d(N':NzNat,M':NzNat)
+    if N':NzNat > M':NzNat = true /\ N':NzNat > #2:NzNat = true .
+  ccp for int05 and int06
+    -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    - d(N':NzNat,M':NzNat)
+    = d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ N':NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    #8:[Int]+ -(N':NzNat + d(M':NzNat,#3:NzNat))
+    = #8:[Int]+ - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #3:NzNat > M':NzNat = true .
+  ccp for int05 and int06
+    X@@@:[Int]+ - d(N':NzNat,M':NzNat)
+    = X@@@:[Int]+ d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ N':NzNat > M':NzNat = true .
+  ccp for int05 and int07
+    -(I:Int + d(#2:NzNat,#3:NzNat))
+    = #2:NzNat + -(I:Int + #3:NzNat)
+    if #3:NzNat > #2:NzNat = true .
+  ccp for int05 and int07
+    #7:[Int]+ -(I:Int + d(#2:NzNat,#3:NzNat))
+    = #7:[Int]+ #2:NzNat + -(I:Int + #3:NzNat)
+    if #3:NzNat > #2:NzNat = true .
+  ccp for int05 and nat03-1
+    - d(#3:NzNat,s M:Nat)+ s N:Nat
+    = - #3:NzNat + s s(N:Nat + M:Nat)
+    if #3:NzNat > s M:Nat = true .
+  ccp for int06 and int06
+    M':NzNat + d(N':NzNat,#2:NzNat)
+    = #2:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #2:NzNat > N':NzNat = true .
+  ccp for int06 and int06
+    - N':NzNat + d(M':NzNat,#3:NzNat)
+    = - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ M':NzNat > #3:NzNat = true .
+  ccp for int06 and int06
+    #8:[Int]+ M':NzNat + d(N':NzNat,#2:NzNat)
+    = #8:[Int]+ #2:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ #2:NzNat > N':NzNat = true .
+  ccp for int06 and int06
+    #8:[Int]+ - N':NzNat + d(M':NzNat,#3:NzNat)
+    = #8:[Int]+ - #3:NzNat + d(N':NzNat,M':NzNat)
+    if M':NzNat > N':NzNat = true /\ M':NzNat > #3:NzNat = true .
+  ccp for int06 and int07
+    - I:Int + d(#2:NzNat,#3:NzNat)
+    = #2:NzNat + -(I:Int + #3:NzNat)
+    if #2:NzNat > #3:NzNat = true .
+  ccp for int06 and int07
+    #7:[Int]+ - I:Int + d(#2:NzNat,#3:NzNat)
+    = #7:[Int]+ #2:NzNat + -(I:Int + #3:NzNat)
+    if #2:NzNat > #3:NzNat = true .
+  ccp for int06 and nat03-1
+    s M:Nat + d(#3:NzNat,s N:Nat)
+    = - #3:NzNat + s s(N:Nat + M:Nat)
+    if s N:Nat > #3:NzNat = true .
+  ccp for nat12 and nat14
+    s quot(d(N:Nat,M':NzNat),M':NzNat)
+    = 0
+    if M':NzNat > N:Nat = true /\ N:Nat > M':NzNat = true .
+  ccp for nat14 and nat12
+    0
+    = s quot(d(N:Nat,M':NzNat),M':NzNat)
+    if N:Nat > M':NzNat = true /\ M':NzNat > N:Nat = true .
+  ccp for nat16 and nat16
+    gcd(N':NzNat,d(N':NzNat,M':NzNat))
+    = gcd(M':NzNat,d(N':NzNat,M':NzNat))
+    if N':NzNat > M':NzNat = true /\ M':NzNat > N':NzNat = true .
+There are non-sort-decreasing equations.
+The following proof obligations must be checked:
+  cmb gcd(M':NzNat,d(N':NzNat,M':NzNat)): NzNat
+    if N':NzNat > M':NzNat = true .
+---)
+
