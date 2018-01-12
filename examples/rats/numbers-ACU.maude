@@ -181,4 +181,8 @@ fmod RAT-ACU-1 is
  pr RAT-ACU .
  op - : NzInt -> NzInt .
  op |_| : NzInt -> NzNat .
+ op max : NzNat NzNat -> NzNat [comm] .
+ op max : NzInt NzInt -> NzInt [comm] .
+ op min : NzNat NzNat -> NzNat [comm] .
+ op min : NzInt NzInt -> NzInt [comm] .
 endfm
