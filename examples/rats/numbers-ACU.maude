@@ -16,7 +16,8 @@ fmod BOOL-FVP is
   eq [bool06]: ~(ff) = tt [variant] .
 endfm
 
-fmod NAT-FVP is  protecting BOOL-FVP .
+fmod NAT-FVP is
+  protecting BOOL-FVP .
   sorts Nat NzNat Zero .
   subsorts Zero NzNat < Nat .
   op 0 : -> Zero [ctor] .
@@ -25,18 +26,21 @@ fmod NAT-FVP is  protecting BOOL-FVP .
   op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0] .
   op p : NzNat -> Nat .                *** predecessor
   op max : Nat Nat -> Nat [comm] .
+  op max : NzNat NzNat -> NzNat [comm] .
   op min : Nat Nat -> Nat [comm] .
+  op min : NzNat NzNat -> NzNat [comm] .
   op d : Nat Nat -> Nat [comm] .       *** symmetric difference
   op _\_ : Nat Nat -> Nat .            *** monus
   op _~_ : Nat Nat -> Truth [comm] .   *** equality predicate
   op _>_ : Nat Nat -> Truth .
 
-  vars N M : Nat .   vars N' M' K' : NzNat .
+  vars N M : Nat .
+  vars N' M' K' : NzNat .
 
   eq [nat-fvp01]: p(N + 1) = N [variant] .
-  eq [nat-fvp02]: max(N + M,N) = N + M [variant] .
-  eq [nat-fvp03]: min(N + M,N) = N [variant] .
-  eq [nat-fvp04]: d(N + M,N) = M [variant] .
+  eq [nat-fvp02]: max(N + M, N) = N + M [variant] .
+  eq [nat-fvp03]: min(N + M, N) = N [variant] .
+  eq [nat-fvp04]: d(N + M, N) = M [variant] .
   eq [nat-fvp05]: (N + M) \ N = M [variant] .
   eq [nat-fvp06]: N \ (N + M) = 0 [variant] .
   eq [nat-fvp07]: N ~ N = tt [variant] .
@@ -46,83 +50,99 @@ fmod NAT-FVP is  protecting BOOL-FVP .
 endfm
 
 
-fmod NAT-ACU is  protecting NAT-FVP .
+fmod NAT-ACU is
+  protecting NAT-FVP .
   op quot : Nat NzNat -> Nat .            *** quotient
   op gcd : NzNat NzNat -> NzNat [comm] .  *** greatest common divisor
   op _*_ : Nat Nat -> Nat [assoc comm] .
   op _*_ : NzNat NzNat -> NzNat [assoc comm] .
 
-  vars N M : Nat .   vars N' M' K' : NzNat .  var N? : [Nat] .
+  vars N M : Nat .
+  vars N' M' K' : NzNat .
+  var  N? : [Nat] .
 
-  eq [nat-acu01]: quot((N' + M'),M') = 1 + quot(N',M')  .
-  eq [nat-acu02]: quot(M',M') = 1 .
-  eq [nat-acu03]: quot(M,(N' + M)) = 0 .
-  eq [nat-acu04]: gcd(N',N') = N' .
-  eq [nat-acu05]: gcd((N' + M'),M') =  gcd(N',M') .
+  eq [nat-acu01]: quot(N' + M', M') = 1 + quot(N', M')  .
+  eq [nat-acu02]: quot(M', M') = 1 .
+  eq [nat-acu03]: quot(M, N' + M) = 0 .
+  eq [nat-acu04]: gcd(N', N') = N' .
+  eq [nat-acu05]: gcd(N' + M', M') =  gcd(N', M') .
   eq [nat-acu06]: N? * 0 = 0 .
   eq [nat-acu07]: N? * 1 = N? .
   eq [nat-acu08]: N' * (M' + K') = (N' * M') + (N' * K') .
-----  eq N? * N' * (M' + K') = (N? * N' * M') + (N? * N' * K') .  *** coherence extension
 endfm
+----  eq N? * N' * (M' + K') = (N? * N' * M') + (N? * N' * K') .  *** coherence extension
 
 
-fmod INT-FVP is protecting NAT-FVP .
+fmod INT-FVP is
+  protecting NAT-FVP .
   sorts NzNeg NzInt Int .
   subsorts Nat NzNeg < Int .
   subsorts NzNat NzNeg < NzInt < Int .
-  op - : NzNat -> NzNeg [ctor] .
-  op - : Int -> Int .
+  op -_ : NzNat -> NzNeg [ctor] .
+  op -_ : Int -> Int .
+  op -_ : NzInt -> NzInt .
   op _+_ : Int Int -> Int [assoc comm id: 0] .
   op |_| : Int -> Nat .                *** absolute value
+  op |_| : NzInt -> NzNat .
   op p : Int -> Int .                  *** predecessor
   op max : Int Int -> Int [comm] .
+  op max : NzInt NzInt -> NzInt [comm] .
   op min : Int Int -> Int [comm] .
+  op min : NzInt NzInt -> NzInt [comm] .
   op _~_ : Int Int -> Truth [comm] .   *** equality predicate
   op _>_ : Int Int -> Truth .
 
-  vars I J : Int .   vars I' J' : NzInt .
-  vars N' M' : NzNat .  var N : Nat .  var I? : [Int] .
+  vars I J : Int .
+  vars I' J' : NzInt .
+  vars N' M' : NzNat .
+  var  N : Nat .
+  var  I? : [Int] .
 
+  eq [int-fvp01]: - 0 = 0 [variant] .
+  eq [int-fvp02]: - - N' = N' [variant] .
+  eq [int-fvp03]: | N | = N [variant] .
+  eq [int-fvp04]: | - N' | = N' [variant] .
+  eq [int-fvp05]: p(0) = - 1 [variant] .
+  eq [int-fvp06]: p(- N') = -(N' + 1) [variant] .
+  eq [int-fvp07]: max(- N', - M') = - min(N', M') [variant] .
+  eq [int-fvp08]: max(- N', N) = N [variant] .
+  eq [int-fvp09]: min(- N', - M') = - max(N', M') [variant] .
+  eq [int-fvp10]: min(- N', N) = - N' [variant] .
+  eq [int-fvp11]: - N' ~ - M' = N' ~ M' [variant] .
+  eq [int-fvp12]: - N' ~ N = ff [variant] .
+  eq [int-fvp13]: - N' > - M' = M' > N' [variant] .
+  eq [int-fvp14]: - N' > N = ff [variant] .
+  eq [int-fvp15]: N > - N' = tt [variant] .
+endfm
 ----  eq I? + N' + -(N') = I? [variant] .                  *** coherence extension
 ----  eq I? + -(N') + -(M') = I? + -(N' + M') [variant] .  *** coherence extension
 ----  eq I? + N' + -(N' + M') = I? + -(M') [variant] .     *** coherence extension
-  eq [int-fvp01]: -(0) = 0 [variant] .
-  eq [int-fvp02]: -(-(N')) = N' [variant] .
-  eq [int-fvp03]: | N | = N [variant] .
-  eq [int-fvp04]: | -(N') | = N' [variant] .
-  eq [int-fvp05]: p(0) = -(1) [variant] .
-  eq [int-fvp06]: p(-(N')) = -(N' + 1) [variant] .
-  eq [int-fvp07]: max(-(N'),-(M')) = -(min(N',M')) [variant] .
-  eq [int-fvp08]: max(-(N'),N) = N [variant] .
-  eq [int-fvp09]: min(-(N'),-(M')) = -(max(N',M')) [variant] .
-  eq [int-fvp10]: min(-(N'),N) = -(N') [variant] .
-  eq [int-fvp11]: -(N') ~ -(M') = N' ~ M' [variant] .
-  eq [int-fvp12]: -(N') ~ N = ff [variant] .
-  eq [int-fvp13]: -(N') > -(M') = M' > N' [variant] .
-  eq [int-fvp14]: -(N') > N = ff [variant] .
-  eq [int-fvp15]: N > -(N') = tt [variant] .
-endfm
 
 
-fmod INT-ACU is protecting INT-FVP .  protecting NAT-ACU .
+fmod INT-ACU is
+  protecting INT-FVP .
+  protecting NAT-ACU .
   op quot : Int NzInt -> Int .
   op gcd : NzInt NzInt -> NzNat [comm] .
   op _*_ : Int Int -> Int [assoc comm] .
   op _*_ : NzInt NzInt -> NzInt [assoc comm] .
 
-  vars I J : Int .   vars I' J' : NzInt .
-  vars N' M' K' : NzNat .  var Q : NzNeg .  var I? : [Int] .
+  vars I J : Int .
+  vars I' J' : NzInt .
+  vars N' M' K' : NzNat .
+  var  Q : NzNeg .
+  var  I? : [Int] .
 
-  eq [int-acu01]: quot(0,Q) = 0 .
-  eq [int-acu02]: quot(-(N'),M') = -(quot(N',M')) .
-  eq [int-acu03]: quot(N',-(M')) = -(quot(N',M')) .
-  eq [int-acu04]: quot(-(N'),-(M')) = quot(N',M') .
-  eq [int-acu05]: gcd(-(N'),I') = gcd(N',I') .
-  eq [int-acu06]: -(M') * -(N') = N' * M' .
-----  eq I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
-  eq [int-acu07]: M' * -(N') = -(N' * M') .
-----  eq I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
+  eq [int-acu01]: quot(0, Q) = 0 .
+  eq [int-acu02]: quot(- N', M') = - quot(N', M') .
+  eq [int-acu03]: quot(N', - M') = - quot(N', M') .
+  eq [int-acu04]: quot(- N', - M') = quot(N', M') .
+  eq [int-acu05]: gcd(- N', I') = gcd(N', I') .
+  eq [int-acu06]: - M' * - N' = N' * M' .
+  eq [int-acu07]: M' * - N' = - (N' * M') .
 endfm
+----  eq I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
+----  eq I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
 
 fmod RAT-ACU is
   protecting INT-ACU .
@@ -134,7 +154,7 @@ fmod RAT-ACU is
   op _/_ : NzRat NzRat -> NzRat .       *** division
   op _/_ : NzInt NzNat -> NzRat [ctor] .
   op _/_ : NzNat NzNat -> NzPosRat [ctor] .
-  op - : Rat -> Rat .
+  op -_ : Rat -> Rat .
   op _+_ : Rat Rat -> Rat [assoc comm id: 0] .
   op _+_ : PosRat PosRat -> PosRat [assoc comm id: 0] .
   op _*_ : Rat Rat -> Rat [assoc comm] .
@@ -145,44 +165,37 @@ fmod RAT-ACU is
   op _~_ : Rat Rat -> Truth [comm] .   *** equality predicate
   op _>_ : Rat Rat -> Truth .
 
-  vars I' J' : NzInt .   vars R S : Rat .    var R? : [Rat] .
-  vars R' S' : NzRat .   vars N' M' K' : NzNat .
+  vars I' J' : NzInt .
+  vars R S : Rat .
+  var  R? : [Rat] .
+  vars R' S' : NzRat .
+  vars N' M' K' : NzNat .
 
- ceq [int-acu01]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
-     if gcd(J',M') > 1 = tt .                           *** canonical form of fraction
-  eq [int-acu02]: R' / 1 = R' .
-  eq [int-acu03]: I' / -(N') = -(I') / N' .
-  eq [int-acu04]: I' / (J' / M') = (I' * M') / J' .
-  eq [int-acu05]: (I' / N') / J' = I' / (N' * J') .
-  eq [int-acu06]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
+ ceq [rat-acu01]: J' / M' = quot(J', gcd(J', M')) / quot(M', gcd(J', M'))
+     if gcd(J', M') > 1 = tt .                   *** canonical form of fraction
+  eq [rat-acu02]: R' / 1 = R' .
+  eq [rat-acu03]: I' / - N' = - I' / N' .
+  eq [rat-acu04]: I' / (J' / M') = (I' * M') / J' .
+  eq [rat-acu05]: (I' / N') / J' = I' / (N' * J') .
+  eq [rat-acu06]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
+  eq [rat-acu07]: - (I' / N') = - I' / N' .
+  eq [rat-acu08]: (I' / N') * 0 = 0 .
+  eq [rat-acu09]: (I' / N') * J' = (I' * J') / N' .
+  eq [rat-acu10]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
+  eq [rat-acu11]: | I' / N' | = | I' | / N' .
+  eq [rat-acu12]: max(I' / N', J') = max(I', J' * N') / N' .
+  eq [rat-acu13]: max(I' / N', J' / M') = max(I' * M', J' * N') / (N' * M') .
+  eq [rat-acu14]: min(I' / N', J') = min(I', J' * N') / N' .
+  eq [rat-acu15]: min(I' / N', J' / M') = min(I' * M', J' * N') / (N' * M') .
+  eq [rat-acu16]: (I' / N') ~ J' = I' ~ (J' * N') .
+  eq [rat-acu17]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
+  eq [rat-acu18]: I' > (J' / M') = (I' * M') > J' .
+  eq [rat-acu19]: (I' / N') > J' = I' > (J' * N') .
+  eq [rat-acu20]: (I' / N') > J' = I' > (J' * N') .
+  eq [rat-acu21]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+endfm
 ----  eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
 ----  eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
-  eq [int-acu07]: -(I' / N') = -(I') / N' .
-  eq [int-acu08]: (I' / N') * 0 = 0 .
 ----  eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
-  eq [int-acu09]: (I' / N') * J' = (I' * J') / N' .
 ----  eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
-  eq [int-acu10]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
 ----  eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
-  eq [int-acu11]: | I' / N' | = | I' | / N' .
-  eq [int-acu12]: max(I' / N',J') = max(I',(J' * N')) / N' .
-  eq [int-acu13]: max(I' / N',J' / M') = max((I' * M'),(J' * N')) / (N' * M') .
-  eq [int-acu14]: min(I' / N',J') = min(I',(J' * N')) / N' .
-  eq [int-acu15]: min(I' / N',J' / M') = min((I' * M'),(J' * N')) / (N' * M') .
-  eq [int-acu16]: (I' / N') ~ J' = I' ~ (J' * N') .
-  eq [int-acu17]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
-  eq [int-acu18]: I' > (J' / M') = (I' * M') > J' .
-  eq [int-acu19]: (I' / N') > J' = I' > (J' * N') .
-  eq [int-acu20]: (I' / N') > J' = I' > (J' * N') .
-  eq [int-acu21]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
-endfm
-
-fmod RAT-ACU-1 is
- pr RAT-ACU .
- op - : NzInt -> NzInt .
- op |_| : NzInt -> NzNat .
- op max : NzNat NzNat -> NzNat [comm] .
- op max : NzInt NzInt -> NzInt [comm] .
- op min : NzNat NzNat -> NzNat [comm] .
- op min : NzInt NzInt -> NzInt [comm] .
-endfm
