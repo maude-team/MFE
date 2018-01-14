@@ -1,0 +1,56 @@
+(select tool MTT .)
+(select external tool aprove .)
+(ct BOOL-FVP .)
+(ct NAT-FVP .)
+(ct INT-FVP .)
+(ct NAT-ACU .)
+(ct INT-ACU .)
+(ct RAT-ACU .)
+
+---(
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/rats/numbers-ACU.maude src/mfe.maude examples/rats/numbers-ACU-check-mtt.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Sun Jan 14 23:55:52 2018
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (1ms real) (~ rewrites/second)
+The MTT has been set as current tool.
+
+rewrites: 39 in 4ms cpu (5ms real) (7848 rewrites/second)
+aprove is now the current external tool.
+
+rewrites: 5941 in 9ms cpu (462ms real) (596366 rewrites/second)
+Success: The module BOOL-FVP is terminating.
+
+rewrites: 77162 in 140ms cpu (803ms real) (547691 rewrites/second)
+Success: The module NAT-FVP is terminating.
+
+rewrites: 163039 in 468ms cpu (3558ms real) (347728 rewrites/second)
+Success: The module INT-FVP is terminating.
+
+rewrites: 128575 in 250ms cpu (1109ms real) (513402 rewrites/second)
+Success: The module NAT-ACU is terminating.
+
+rewrites: 642229 in 77748ms cpu (109594ms real) (8260 rewrites/second)
+Warning: A proof of the termination of module INT-ACU has not been found.
+
+rewrites: 1156500 in 259894ms cpu (293143ms real) (4449 rewrites/second)
+Warning: A proof of the termination of module RAT-ACU has not been found.
+---)

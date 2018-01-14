@@ -62,7 +62,7 @@ fmod NAT-ACU is  protecting NAT-FVP .
   eq N? * 0 = 0 .
   eq N? * 1 = N? .
   eq N' * (M' + K') = (N' * M') + (N' * K') .
-  eq N? * N' * (M' + K') = (N? * N' * M') + (N? * N' * K') .  *** coherence extension
+----  eq N? * N' * (M' + K') = (N? * N' * M') + (N? * N' * K') .  *** coherence extension
 endfm
 
 
@@ -83,9 +83,9 @@ fmod INT-FVP is protecting NAT-FVP .
   vars I J : Int .   vars I' J' : NzInt .
   vars N' M' : NzNat .  var N : Nat .  var I? : [Int] .
 
-  eq I? + N' + -(N') = I? [variant] .                  *** coherence extension
-  eq I? + -(N') + -(M') = I? + -(N' + M') [variant] .  *** coherence extension
-  eq I? + N' + -(N' + M') = I? + -(M') [variant] .     *** coherence extension
+----  eq I? + N' + -(N') = I? [variant] .                  *** coherence extension
+----  eq I? + -(N') + -(M') = I? + -(N' + M') [variant] .  *** coherence extension
+----  eq I? + N' + -(N' + M') = I? + -(M') [variant] .     *** coherence extension
   eq -(0) = 0 [variant] .
   eq -(-(N')) = N' [variant] .
   eq | N | = N [variant] .
@@ -119,9 +119,9 @@ fmod INT-ACU is protecting INT-FVP .  protecting NAT-ACU .
   eq quot(-(N'),-(M')) = quot(N',M') .
   eq gcd(-(N'),I') = gcd(N',I') .
   eq -(M') * -(N') = N' * M' .
-  eq I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
+----  eq I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
   eq M' * -(N') = -(N' * M') .
-  eq I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
+----  eq I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
 endfm
 
 fmod RAT-ACU is
@@ -155,15 +155,15 @@ fmod RAT-ACU is
   eq I' / (J' / M') = (I' * M') / J' .
   eq (I' / N') / J' = I' / (N' * J') .
   eq (I' / N') / (J' / M') = (I' * M') / (N' * J') .
-  eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
-  eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
+----  eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
+----  eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
   eq -(I' / N') = -(I') / N' .
   eq (I' / N') * 0 = 0 .
-  eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
+----  eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
   eq (I' / N') * J' = (I' * J') / N' .
-  eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
+----  eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
   eq (I' / N') * (J' / M') = (I' * J') / (N' * M') .
-  eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
+----  eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
   eq | I' / N' | = | I' | / N' .
   eq max(I' / N',J') = max(I',(J' * N')) / N' .
   eq max(I' / N',J' / M') = max((I' * M'),(J' * N')) / (N' * M') .
