@@ -1,0 +1,122 @@
+(set include BOOL off .)
+(set include TRUTH-VALUE on .)
+
+(fmod MBOOL is
+   op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+   op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+   op not_ : Bool -> Bool [prec 53] .
+   vars A B C : Bool .
+   eq true and A = A .
+   eq false and A = false .
+   eq not true = false .
+   eq not false = true .
+   eq not not A = A .
+   eq A or B = not (not A and not B) .
+ endfm)
+
+(fmod MNAT-4 is
+   pr MBOOL .
+   sorts Nat NzNat Zero .
+   subsorts Zero NzNat < Nat .
+   op 0 : -> Zero .
+   op s_ : Nat -> NzNat .
+   op p_ : NzNat -> Nat .
+   op _+_ : Nat Nat -> Nat [assoc comm id: 0] .
+   op _*_ : Nat Nat -> Nat [assoc comm] .
+   op _*_ : NzNat NzNat -> NzNat [ditto] .
+   ops _>_ : Nat Nat -> Bool .
+   op d : Nat Nat -> Nat [comm] .
+   op quot : Nat NzNat -> Nat .
+   op gcd : NzNat NzNat -> NzNat [comm] .
+   vars N M : Nat .
+   vars N' M' : NzNat .
+   eq  [nat01] : p s N = N .
+   eq  [nat03-1] : s N + s M = s s (N + M) .
+   eq  [nat04] : N * 0 = 0 .
+   eq  [nat05] : 0 * N = 0 .
+   eq  [nat06] : (s N) * (s M) = s (N + (M + (N * M))) .
+   eq  [nat07] : 0 > M = false .
+   eq  [nat08] : N' > 0 = true .
+   eq  [nat09] : s N > s M = N > M .
+   eq  [nat09-1] : N > N = false .
+   eq  [nat10] : d(0, N) = N .
+   eq  [nat11] : d(s N, s M) = d(N, M) .
+   ceq [nat12] : quot(N, M') = s quot(d(N, M'), M') if N > M' = true .
+   eq  [nat13] : quot(M', M') = s 0 .
+   ceq [nat14] : quot(N, M') = 0 if M' > N = true .
+   eq  [nat15] : gcd(N', N') = N' .
+   ceq [nat16] : gcd(N', M') =  gcd(d(N', M'), M') if N' > M' = true .
+ endfm)
+
+(fmod MINT-2 is
+   protecting MNAT-4 .
+   sorts Int NzInt .
+   subsort Nat < Int .
+   subsorts NzNat < NzInt < Int .
+   op -_ : Int -> Int .
+   op -_ : NzInt -> NzInt .
+   op _+_ : Int Int -> Int [assoc comm id: 0] .
+   op _*_ : Int Int -> Int [assoc comm] .
+   op _*_ : NzInt NzInt -> NzInt [assoc comm] .
+   op quot : Int NzInt -> Int .
+   op gcd : NzInt NzInt -> NzNat [comm] .
+   vars I J : Int .
+   vars I' J' : NzInt .
+   vars N' M' : NzNat .
+   eq  [int01] : - - I = I .
+   eq  [int02] : - 0 = 0 .
+   eq  [int04] : M' + (- M') = 0 .
+   ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
+   ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .
+   eq  [int07] : (- I) + (- J) = - (I + J) .
+   eq  [int08] : I * 0 = 0 .
+   eq  [int10] : I * (- J) = - (I * J) .
+   eq  [int12] : quot(0, I') = 0 .
+   eq  [int13] : quot(- I', J') = - quot(I', J') .
+   eq  [int14] : quot(I', - J') = - quot(I', J') .
+   eq  [int15] : gcd(- I', J') = gcd(I', J') .
+ endfm)
+
+(fmod RAT is
+   sorts Rat NzRat .
+   protecting MINT-2 .
+   subsort Int < Rat .
+   subsorts NzInt < NzRat < Rat .
+   op _/_ : Rat NzRat -> Rat .
+   op _/_ : NzRat NzRat -> NzRat .
+   op -_  : Rat -> Rat .
+   op -_  : NzRat -> NzRat .
+   op _+_ : Rat Rat -> Rat [ditto] .
+   op _*_ : Rat Rat -> Rat [ditto] .
+   op _*_ : NzRat NzRat -> NzRat [ditto] .
+   vars I' J' : NzInt .
+   vars R S : Rat .
+   vars R' S' : NzRat .
+   eq  [rat01] : R / (R' / S') = (R * S') / R' .
+   eq  [rat02] : (R / R') / S' = R / (R' * S') .
+   ceq [rat03] : J' / I'
+     = quot(J', gcd(J', I')) / quot(I', gcd(J', I'))
+     if gcd(J', I') > s 0 = true .
+   eq  [rat04-1] : R' / s 0 = R' .
+   eq  [rat05] : 0 / R' = 0 .
+   eq  [rat06] : R / (- R') = (- R) / R' .
+   eq  [rat07] : - (R / R') = (- R) / R' .
+   eq  [rat08] : R' + (S / S') = ((R' * S') + S) / S' .
+   eq  [rat09] : R * (S / R') = (R * S) / R' .
+   eq  [rat10] : R * 0 = 0 .
+   eq  [rat11] : R * s 0 = R .
+   eq  [rat12] : R * - S = - (R * S) .
+   eq  [rat13] : - - R = R .
+   eq  [rat14] : (S' * R) / S' = R .
+   eq  [rat15] : R' / R' = s 0 .
+   eq  [rat16] : R / s 0 = R .
+ endfm)
+
+(select tool CRC .)
+(check Church-Rosser .)
+(select tool MTT .)
+(select external tool aprove .)
+(ct MBOOL .)
+(ct MNAT-4 .)
+(ct MINT-2 .)
+(ct RAT .)
