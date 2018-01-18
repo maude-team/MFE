@@ -1,0 +1,23 @@
+
+set include BOOL off .
+
+fmod IDEMPOTENT-SEMIGROUP is
+  sort Semigroup Set .
+  op __  : Semigroup Semigroup -> Semigroup [assoc] . --- changing this operator to be non-associative makes the MTT work just fine...
+  op _,_ : Set Set             -> Set  [assoc comm] .
+  op {_} : Semigroup           -> Set .
+
+  var S : Set . vars L P Q : Semigroup .
+
+  eq L L    = L .
+ ceq L (P Q) = L Q if {L} = {Q}  /\ {L P} = {L} .
+  eq S , S = S .
+  eq {L P} = {L} , {P} .
+endfm
+
+eof
+load mfe.maude
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct IDEMPOTENT-SEMIGROUP .)

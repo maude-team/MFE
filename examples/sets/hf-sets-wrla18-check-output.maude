@@ -1,0 +1,73 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/sets/hf-sets-wrla18.maude src/mfe.maude examples/sets/hf-sets-wrla18-check.maude
+        	     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Tue Jan 16 19:46:23 2018
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 33 in 0ms cpu (0ms real) (~ rewrites/second)
+set include BOOL off
+
+rewrites: 76 in 0ms cpu (0ms real) (96202 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 13743346 in 13372ms cpu (13816ms real) (1027746 rewrites/second)
+Church-Rosser check for HF-SETS
+The following critical pairs must be proved joinable:
+  cp HF-SETS100 for 01 and 53
+    P({#5:Magma})U augment(P({#5:Magma}),S:Set)
+    = P({#5:Magma})U augment(P({#5:Magma}),S:Set)U augment(P({#5:Magma})U
+    augment(P({#5:Magma}),S:Set),S:Set).
+  cp HF-SETS121 for 01 and 63
+    augment({M':Magma},T:Set)U augment({#5:Magma},T:Set)
+    = augment({M':Magma},T:Set)U augment({M':Magma},T:Set)U augment({#5:Magma},
+    T:Set).
+  cp HF-SETS125 for 01 and 63
+    augment({#4:Magma},T:Set)U augment({#5:Magma},T:Set)U augment({#6:Magma},
+    T:Set)
+    = augment({#4:Magma},T:Set)U augment({#4:Magma},T:Set)U augment({#5:Magma},
+    T:Set)U augment({#6:Magma},T:Set).
+  cp HF-SETS133 for 01 and 63
+    augment({#4:Magma},T:Set)U augment({#5:Magma},T:Set)U augment({#6:Magma},
+    T:Set)U augment({#7:Magma},T:Set)
+    = augment({#4:Magma},T:Set)U augment({#4:Magma},T:Set)U augment({#5:Magma},
+    T:Set)U augment({#6:Magma},T:Set)U augment({#7:Magma},T:Set).
+  cp HF-SETS138 for 01 and 63
+    augment({#4:Magma},T:Set)U augment({#5:Magma},T:Set)U augment({#6:Magma},
+    T:Set)U augment({#7:Magma},T:Set)U augment({#8:Magma},T:Set)
+    = augment({#4:Magma},T:Set)U augment({#5:Magma},T:Set)U augment({#5:Magma},
+    T:Set)U augment({#6:Magma},T:Set)U augment({#7:Magma},T:Set)U augment({
+    #8:Magma},T:Set).
+  cp HF-SETS7 for 53 and 53
+    P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma})U
+    augment(P({#6:Magma}),S:Set),#1:Set)
+    = P({#6:Magma})U augment(P({#6:Magma}),#1:Set)U augment(P({#6:Magma})U
+    augment(P({#6:Magma}),#1:Set),S:Set).
+  cp HF-SETS90 for 01 and 63
+    augment({M':Magma},T:Set)
+    = augment({M':Magma},T:Set)U augment({M':Magma},T:Set).
+	The module is sort-decreasing.
+
+rewrites: 76 in 8ms cpu (8ms real) (8654 rewrites/second)
+The MTT has been set as current tool.
+
+rewrites: 39 in 8ms cpu (9ms real) (4342 rewrites/second)
+aprove is now the current external tool.
+
+rewrites: 406959 in 50761ms cpu (82705ms real) (8017 rewrites/second)
+Warning: A proof of the termination of module HF-SETS has not been found.

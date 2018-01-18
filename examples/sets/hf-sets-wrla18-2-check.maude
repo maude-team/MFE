@@ -1,0 +1,16 @@
+(set include BOOL off .)
+
+(select tool CRC .)
+(ccr HF-SETS .)
+(ccr HF-SETS-0 .)
+(ccr HF-SETS-1 .)
+(ccr HF-SETS-2 .)
+(ccr HF-SETS-3 .)
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct HF-SETS .)
+(ct HF-SETS-0 .)
+(ct HF-SETS-1 .)
+(ct HF-SETS-2 .)
+(ct HF-SETS-3 .)
