@@ -8,7 +8,8 @@ fmod HF-SETS is
   op {_} : Magma -> Set [ctor] .
   op {} : -> Set [ctor] .
 
-  vars M M' : Magma .              vars S S' T : Set .
+  vars M M' : Magma .
+  vars S S' : Set .
 
   eq [01]: M, M = M .
 
@@ -23,6 +24,7 @@ fmod HF-SETS is
   eq [14]: {M} in {{M'}} = M in {M'} and M' in {M} .
   eq [15]: S in {S', M} = S in {S'} or S in {M} .
   eq [16]: (S, M) in S' = (S in S') and (M in S') .
+  eq [17]: {M} in {{}} = false .
 
   op _~_ : Set Set -> Bool .      *** set equality
   eq [21]: S ~ S' = (S <= S') and (S' <= S) .
@@ -42,9 +44,9 @@ fmod HF-SETS is
   eq [53]: P({S, M}) = P({M}) U augment(P({M}), S) .
 
   op augment : Set Set -> Set .
-  eq [61]: augment({}, T) = {} .
-  eq [62]: augment({S}, T) = {{T} U S} .
-  eq [63]: augment({M, M'}, T) = augment({M}, T) U augment({M'}, T) .
+  eq [61]: augment({}, S) = {} .
+  eq [62]: augment({S}, S') = {{S'} U S} .
+  eq [63]: augment({M, M'}, S) = augment({M}, S) U augment({M'}, S) .
 
   op _&_ : Set Set -> Set .       *** intersection
   eq [71]: {} & S = {} .
@@ -57,9 +59,8 @@ endfm
 fmod HF-SETS-0 is
   protecting HF-SETS .
   vars M M' : Magma .
-  vars S S' T : Set .
-  eq [17]: M in {M} = true .
-  eq [18]: M in {M', M} = true .
+  eq [18]: M in {M} = true .
+  eq [19]: M in {M', M} = true .
 endfm
 
 fmod HF-SETS-1 is

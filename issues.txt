@@ -1,0 +1,3 @@
+- Error reported by S. Skeirik.
+The MTT cannot handle assoc-only operators. The __ operator is breaking it. An error message should be reported, but for some reason it gets blocked. To be honest, I don't remember why the restriction, I suppose AProVE cannot handle that case, but I have to check it.
+MFE/examples/other/idem-semigroup-mtt.maude

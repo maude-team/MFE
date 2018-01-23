@@ -1,0 +1,68 @@
+set include BOOL off .
+
+fmod HF-SETS is
+  protecting BOOL-OPS .
+  sorts Magma Set .
+  subsort Set < Magma .
+  op _,_ : Magma Magma -> Magma [ctor assoc comm] .
+  op {_} : Magma -> Set [ctor] .
+  op {} : -> Set [ctor] .
+  vars M M' : Magma .  vars S S' : Set .
+  eq [01]: M, M = M .
+  op _in_ : Magma Set -> Bool .            *** set membership for several elements
+    eq [11]: S in {S} = true .
+    eq [12]: S in {} = false .
+    eq [13]: {} in {{M}} = false .
+    eq [14]: {M} in {{}} = false .
+    eq [15]: {M} in {{M'}} = M in {M'} and M' in {M} .
+    eq [16]: S in {S', M} = S in {S'} or S in {M} .
+    eq [17]: (S, M) in S' = (S in S') and (M in S') .
+  op _~_ : Set Set -> Bool .               *** set equality
+    eq [21]: S ~ S' = (S <= S') and (S' <= S) .
+  op _<=_ : Set Set -> Bool .              *** set containment
+    eq [31]: {} <= S = true .
+    eq [32]: {M} <= S = M in S .
+  op _U_ : Set Set -> Set [assoc comm] .   *** union
+    eq [41]: S U {} = S .
+    eq [42]: {M} U {M'} = {M, M'} .
+    eq [43]: S U {M} U {M'} = S U {M, M'} .
+  op P : Set -> Set .                      *** powerset
+    eq [51]: P({}) = {{}} .
+    eq [52]: P({S}) = {{},{S}} .
+    eq [53]: P({S, M}) = P({M}) U augment(P({M}), S) .
+  op augment : Set Set -> Set .
+    eq [61]: augment({}, S) = {} .
+    eq [62]: augment({S}, S') = {{S'} U S} .
+    eq [63]: augment({M, M'}, S) = augment({M}, S) U augment({M'}, S) .
+  op _&_ : Set Set -> Set .                *** intersection
+    eq [71]: {} & S = {} .
+   ceq [72]: {S} & S' = {S} if S in S' = true .
+   ceq [73]: {S} & S' = {} if S in S' = false .
+   ceq [74]: {S, M} & S' = {S} U ({M} & S') if S in S' = true .
+   ceq [75]: {S, M} & S' = {M} & S' if S in S' = false .
+endfm
+
+fmod HF-SETS-0 is
+  protecting HF-SETS .
+  vars M M' : Magma .
+  eq [18]: M in {M} = true .
+  eq [19]: M in {M', M} = true .
+endfm
+
+fmod HF-SETS-1 is
+  pr HF-SETS-0 .
+  var S : Set .
+  eq [44]: S U S = S .
+endfm
+
+fmod HF-SETS-2 is
+  pr HF-SETS-1 .
+  vars S S' T : Set .
+  eq [64]: augment(S U S', T) = augment(S, T) U augment(S', T) .
+endfm
+
+fmod HF-SETS-3 is
+  pr HF-SETS-2 .
+  vars S T : Set .
+  eq [65]: augment(augment(S, T), T) = augment(S, T) .
+endfm

@@ -1,11 +1,11 @@
-MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/sets/hf-sets-wrla18-2.maude src/mfe.maude examples/sets/hf-sets-wrla18-2-check.maude
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/sets/hf-sets-wrla18-3.maude src/mfe.maude examples/sets/hf-sets-wrla18-2-check.maude
 		     \||||||||||||||||||/
 		   --- Welcome to Maude ---
 		     /||||||||||||||||||\
 	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
 	     With termination checker extension
 	    Copyright 1997-2014 SRI International
-		   Thu Jan 18 18:55:33 2018
+		   Mon Jan 22 14:03:21 2018
 
 	    Full Maude 2.7 March 10th 2015
 
@@ -20,16 +20,16 @@ set include BOOL off
 
 set include TRUTH-VALUE on
 
-rewrites: 33 in 0ms cpu (0ms real) (70063 rewrites/second)
+rewrites: 33 in 0ms cpu (0ms real) (~ rewrites/second)
 set include BOOL off
 
-rewrites: 76 in 0ms cpu (0ms real) (92009 rewrites/second)
+rewrites: 76 in 1ms cpu (1ms real) (68345 rewrites/second)
 The CRC has been set as current tool.
 
-rewrites: 14530655 in 14410ms cpu (14883ms real) (1008363 rewrites/second)
+rewrites: 14530655 in 17432ms cpu (20000ms real) (833542 rewrites/second)
 Church-Rosser check for HF-SETS
 The following critical pairs must be proved joinable:
-  cp HF-SETS1123 for 11 and 14
+  cp HF-SETS1123 for 11 and 15
     true
     = M':Magma in{M':Magma}.
   cp HF-SETS119 for 01 and 63
@@ -66,7 +66,7 @@ The following critical pairs must be proved joinable:
     = augment({M':Magma},S:Set)U augment({M':Magma},S:Set).
 	The module is sort-decreasing.
 
-rewrites: 14944931 in 15817ms cpu (16302ms real) (944856 rewrites/second)
+rewrites: 14944931 in 19319ms cpu (22399ms real) (773567 rewrites/second)
 Church-Rosser check for HF-SETS-0
 The following critical pairs must be proved joinable:
   cp HF-SETS-0105 for 01 and 53
@@ -103,7 +103,7 @@ The following critical pairs must be proved joinable:
     = augment({M':Magma},S:Set)U augment({M':Magma},S:Set).
 	The module is sort-decreasing.
 
-rewrites: 16134529 in 17649ms cpu (18166ms real) (914150 rewrites/second)
+rewrites: 16134529 in 20665ms cpu (23236ms real) (780741 rewrites/second)
 Church-Rosser check for HF-SETS-1
 The following critical pairs must be proved joinable:
   cp HF-SETS-1299 for 01 and 53
@@ -117,7 +117,7 @@ The following critical pairs must be proved joinable:
     augment(P({#6:Magma}),#1:Set),S:Set).
 	The module is sort-decreasing.
 
-rewrites: 16759193 in 18962ms cpu (19495ms real) (883787 rewrites/second)
+rewrites: 16759193 in 21934ms cpu (24382ms real) (764044 rewrites/second)
 Church-Rosser check for HF-SETS-2
 The following critical pairs must be proved joinable:
   cp HF-SETS-2355 for 01 and 53
@@ -131,7 +131,7 @@ The following critical pairs must be proved joinable:
     #1:Set)U augment(augment(P({#6:Magma}),#1:Set),S:Set).
 	The module is sort-decreasing.
 
-rewrites: 17061281 in 19550ms cpu (20093ms real) (872697 rewrites/second)
+rewrites: 17061281 in 23124ms cpu (25660ms real) (737786 rewrites/second)
 Church-Rosser check for HF-SETS-3
 The following critical pairs must be proved joinable:
   cp HF-SETS-36 for 53 and 53
@@ -141,25 +141,25 @@ The following critical pairs must be proved joinable:
     #1:Set)U augment(augment(P({#6:Magma}),#1:Set),S:Set).
 	The module is sort-decreasing.
 
-rewrites: 76 in 30ms cpu (30ms real) (2509 rewrites/second)
+rewrites: 76 in 36ms cpu (41ms real) (2072 rewrites/second)
 The MTT has been set as current tool.
 
-rewrites: 39 in 36ms cpu (39ms real) (1065 rewrites/second)
+rewrites: 39 in 39ms cpu (42ms real) (992 rewrites/second)
 aprove is now the current external tool.
 
-rewrites: 246282 in 10627ms cpu (26371ms real) (23174 rewrites/second)
+rewrites: 246282 in 13041ms cpu (34758ms real) (18884 rewrites/second)
 Success: The module HF-SETS is terminating.
 
-rewrites: 259780 in 9831ms cpu (24190ms real) (26422 rewrites/second)
+rewrites: 259780 in 12184ms cpu (30975ms real) (21321 rewrites/second)
 Success: The module HF-SETS-0 is terminating.
 
-rewrites: 272724 in 11478ms cpu (26165ms real) (23759 rewrites/second)
+rewrites: 272724 in 14683ms cpu (38068ms real) (18573 rewrites/second)
 Success: The module HF-SETS-1 is terminating.
 
-rewrites: 290161 in 14010ms cpu (28415ms real) (20710 rewrites/second)
+rewrites: 290161 in 17688ms cpu (40174ms real) (16403 rewrites/second)
 Success: The module HF-SETS-2 is terminating.
 
-rewrites: 305282 in 17145ms cpu (32698ms real) (17805 rewrites/second)
+rewrites: 305282 in 23086ms cpu (45265ms real) (13223 rewrites/second)
 Success: The module HF-SETS-3 is terminating.
 
 Maude>
