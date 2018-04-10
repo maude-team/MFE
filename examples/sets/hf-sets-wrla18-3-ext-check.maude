@@ -1,0 +1,10 @@
+load hf-sets-wrla18-3-ext.maude
+select MFE .
+loop init .
+
+(select tool CRC .)
+(ccr HF-SETS-EXT .)
+
+(select tool MTT .)
+(select external tool aprove .)
+(ct HF-SETS-EXT .)

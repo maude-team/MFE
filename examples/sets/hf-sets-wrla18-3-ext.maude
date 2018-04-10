@@ -1,0 +1,21 @@
+load hf-sets-wrla18-3.maude
+
+fmod HF-SETS-EXT is
+  protecting HF-SETS-3 .
+
+  vars S S' : Set .
+  vars M M' : Magma .
+
+  op <_;_> : Set Set -> Set .                     *** ordered pairs
+  op <_;_> : Magma Magma -> Magma .               *** extension to magmas
+
+  eq [91]: < S ; S' > = {S, {S, S'}} .
+  eq [92]: < S ; S', M > = {S, {S, S'}}, < S ; M > .
+  eq [93]: < S, M ; M' > = < S ; M' >, < M ; M' > .
+
+  op _X_ : Set Set -> Set .                       *** cartesian product
+
+  eq [101]: {} X S = {} .
+  eq [102]: S X S = {} .
+  eq [103]: {M} X {M'} = {< M ; M' >} .
+endfm
