@@ -16,6 +16,6 @@ fmod HF-SETS-EXT is
   op _X_ : Set Set -> Set .                       *** cartesian product
 
   eq [101]: {} X S = {} .
-  eq [102]: S X S = {} .
+  eq [102]: S X {} = {} .
   eq [103]: {M} X {M'} = {< M ; M' >} .
 endfm

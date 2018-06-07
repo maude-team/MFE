@@ -1,11 +1,11 @@
-MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ src/mfe.maude examples/sets/hf-sets-check-ext.maude
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ src/mfe.maude examples/sets/hf-sets-wrla18-3-ext-check.maude
 		     \||||||||||||||||||/
 		   --- Welcome to Maude ---
 		     /||||||||||||||||||\
 	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
 	     With termination checker extension
 	    Copyright 1997-2014 SRI International
-		   Tue Apr 10 20:24:00 2018
+		   Wed Apr 11 09:48:55 2018
 
 	    Full Maude 2.7 March 10th 2015
 
@@ -20,36 +20,24 @@ set include BOOL off
 
 set include TRUTH-VALUE on
 
-rewrites: 3272 in 1ms cpu (3ms real) (1977039 rewrites/second)
-The Maude Formal Environment 1.0c
-    Inductive Theorem Prover - July 20th 2010
-    Sufficient Completeness Checker 2a - August 2010
-    Church-Rosser Checker 3n - December 17th 2012
-    Coherence Checker 3n - December 17th 2012
-    Maude Termination Tool 1.5j - August 11th 2014
-
-rewrites: 80 in 4ms cpu (4ms real) (17361 rewrites/second)
 The CRC has been set as current tool.
 
-rewrites: 19130354 in 20435ms cpu (21315ms real) (936143 rewrites/second)
+rewrites: 19126129 in 19293ms cpu (19972ms real) (991350 rewrites/second)
 Church-Rosser check for HF-SETS-EXT
 The following critical pairs must be proved joinable:
   cp HF-SETS-EXT13 for 53 and 53
     P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),#1:Set)U augment(augment(P({#6:Magma}),S:Set),#1:Set)
     = P({#6:Magma})U augment(P({#6:Magma}),S:Set)U augment(P({#6:Magma}),#1:Set)U augment(augment(P({#6:Magma}),#1:Set),
     S:Set).
-  cp HF-SETS-EXT369 for 102 and 103
-    {}
-    ={< M':Magma ; M':Magma >}.
 	The module is sort-decreasing.
 
-rewrites: 76 in 12ms cpu (12ms real) (6315 rewrites/second)
+rewrites: 76 in 10ms cpu (10ms real) (7219 rewrites/second)
 The MTT has been set as current tool.
 
-rewrites: 39 in 12ms cpu (12ms real) (3130 rewrites/second)
+rewrites: 39 in 11ms cpu (12ms real) (3321 rewrites/second)
 aprove is now the current external tool.
 
-rewrites: 388278 in 24220ms cpu (39745ms real) (16030 rewrites/second)
+rewrites: 388271 in 24440ms cpu (39650ms real) (15886 rewrites/second)
 Success: The module HF-SETS-EXT is terminating.
 
 Maude>
