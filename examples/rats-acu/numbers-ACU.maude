@@ -175,4 +175,12 @@ fmod RAT-ACU is
   eq (I' / N') > J' = I' > (J' * N') .
   eq (I' / N') > J' = I' > (J' * N') .
   eq (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+
+---(
+  eq [lemma1] : gcd(J':NzInt,1) = 1 .
+  eq [lemma2] : quot(X:Int, 1) = X:Int .
+  eq [lemma3] : quot(X1:NzInt, gcd(X1:NzInt, X2:NzInt)) = X1:NzInt .
+  eq [lemma4] : gcd(quot(X1:NzInt, gcd(X1:NzInt, X2:NzInt)),
+                    quot(X2:NzInt, gcd(X1:NzInt, X2:NzInt))) = 1 .
+---)
 endfm

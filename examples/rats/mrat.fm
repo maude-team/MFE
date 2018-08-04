@@ -26,12 +26,20 @@
     eq  [rat07] : - (R / R') = (- R) / R' .
     eq  [rat08] : R' + (S / S') = ((R' * S') + S) / S' .
     eq  [rat09] : R * (S / R') = (R * S) / R' .
+----    eq  [lemma] : gcd(J':NzInt,s 0) = s 0 .
   endfm)
 
 (select tool CRC .)
 (check Church-Rosser .)
-
+eof
 ---(
+rewrites: 43610402 in 431167ms cpu (435953ms real) (101144 rewrites/second)
+ccp RAT2539 for rat04 and rat03
+  X@@@:[Rat]+ J':NzInt
+  = X@@@:[Rat]+(quot(J':NzInt,gcd(J':NzInt,s 0))/ quot(s 0,gcd(J':NzInt,s 0)))
+  if gcd(J':NzInt,s 0)> s 0 = true .
+
+
 Church-Rosser checking of RAT
 Checking solution:
 The following critical pairs cannot be joined:

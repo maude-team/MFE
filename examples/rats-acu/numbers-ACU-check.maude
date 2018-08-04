@@ -1,23 +1,4 @@
 (select tool CRC .)
-set trace off .
-set trace select on .
-trace select ----prepNarrowingSols
-             ----getLabel
-             ----getCts
-             ----metaNarrowSearch
-             ----confluenceCheck
-             ----crcContextJoinableAndUnfeasibleCPs
-             ----maximalCPSet
-             ----delete
-             ----simplify
-             ----delete
-             ----crcCritPairs
-             metaNarrowingSearch
-             .
-set print conceal off .
-print conceal mod_is_sorts_._____endm
-              fmod_is_sorts_.____endfm
-              .
 ---(ccr BOOL-FVP .)
 ---(
 rewrites: 3965 in 13ms cpu (15ms real) (287589 rewrites/second)
@@ -46,7 +27,7 @@ Church-Rosser check for INT-FVP
 	The module is sort-decreasing.
 ---)
 ---(show all critical pairs .)
-(ccr NAT-ACU .)
+---(ccr NAT-ACU .)
 ---(
 2'34 mins
 37 critical pairs (all non-conditional)
@@ -363,7 +344,7 @@ The following proof obligations must be checked for sort-decreasingness:
     X@@@@NzInt:NzInt *(N':NzNat * M':NzNat * N?@NzInt:NzInt)+ N':NzNat * K':NzNat * N?@NzInt:NzInt : NzInt .
 ---)
 ---(show all critical pairs .)
----(ccr RAT-ACU .)
+(ccr RAT-ACU .)
 ---(
 120 non-joinable critical pairs, 28 conditional ones (out of 9840 critical pairs)
 45 ma (30 conditional)
