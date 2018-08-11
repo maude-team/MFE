@@ -147,7 +147,7 @@ The following proof obligations must be checked:
 
 ---(
 26e
-rewrites: 22181425 in 207911ms cpu (217937ms real) (106687 rewrites/second)
+rewrites:  22181425 in 207911ms cpu (217937ms real) (106687 rewrites/second)
 previous
 rewrites: 179182687 in 434669ms cpu (468457ms real) (412227 rewrites/second)
 
