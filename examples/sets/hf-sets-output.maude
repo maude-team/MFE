@@ -1,0 +1,96 @@
+MacBook-Pro-de-Paco:MFE duran$ ~/Maude/Alpha115/maude-Yices2.darwin64 examples/sets/hf-sets.maude src/mfe.maude examples/sets/hf-sets-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha115 built: Aug 11 2017 19:57:09
+	    Copyright 1997-2017 SRI International
+		   Tue Dec 12 11:59:50 2017
+
+	    Full Maude 2.7f November 20th 2017
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3r - December 12th 2017
+    Coherence Checker 3r - December 12th 2017
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 879463 in 2570ms cpu (2633ms real) (342193 rewrites/second)
+Church-Rosser check for HF-SETS
+The following critical pairs must be proved joinable:
+  cp HF-SETS100 for 01 and 63
+    augment({@1:Magma},@6:Set)U augment({@2:Magma},@6:Set)U augment({@3:Magma},@6:Set)U augment({
+    @4:Magma},@6:Set)U augment({@5:Magma},@6:Set)
+    = augment({@1:Magma},@6:Set)U augment({@2:Magma},@6:Set)U augment({@2:Magma},@6:Set)U augment({
+    @3:Magma},@6:Set)U augment({@4:Magma},@6:Set)U augment({@5:Magma},@6:Set).
+  cp HF-SETS4 for 53 and 53
+    P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma})U augment(P({@3:Magma}),@1:Set),
+    @2:Set)
+    = P({@3:Magma})U augment(P({@3:Magma}),@2:Set)U augment(P({@3:Magma})U augment(P({@3:Magma}),
+    @2:Set),@1:Set).
+  cp HF-SETS46 for 01 and 53
+    P({@1:Magma})U augment(P({@1:Magma}),@2:Set)
+    = P({@1:Magma})U augment(P({@1:Magma}),@2:Set)U augment(P({@1:Magma})U augment(P({@1:Magma}),
+    @2:Set),@2:Set).
+  cp HF-SETS53 for 01 and 63
+    augment({@1:Magma},@2:Set)
+    = augment({@1:Magma},@2:Set)U augment({@1:Magma},@2:Set).
+  cp HF-SETS54 for 01 and 63
+    augment({@1:Magma},@3:Set)U augment({@2:Magma},@3:Set)
+    = augment({@1:Magma},@3:Set)U augment({@1:Magma},@3:Set)U augment({@2:Magma},@3:Set).
+  cp HF-SETS57 for 01 and 63
+    augment({@1:Magma},@4:Set)U augment({@2:Magma},@4:Set)U augment({@3:Magma},@4:Set)
+    = augment({@1:Magma},@4:Set)U augment({@2:Magma},@4:Set)U augment({@2:Magma},@4:Set)U augment({
+    @3:Magma},@4:Set).
+  cp HF-SETS95 for 01 and 63
+    augment({@1:Magma},@5:Set)U augment({@2:Magma},@5:Set)U augment({@3:Magma},@5:Set)U augment({
+    @4:Magma},@5:Set)
+    = augment({@1:Magma},@5:Set)U augment({@1:Magma},@5:Set)U augment({@2:Magma},@5:Set)U augment({
+    @3:Magma},@5:Set)U augment({@4:Magma},@5:Set).
+	The module is sort-decreasing.
+
+rewrites: 914745 in 2728ms cpu (2798ms real) (335203 rewrites/second)
+Church-Rosser check for HF-SETS-1
+The following critical pairs must be proved joinable:
+  cp HF-SETS-1211 for 01 and 53
+    P({@1:Magma})U augment(P({@1:Magma}),@2:Set)
+    = P({@1:Magma})U augment(P({@1:Magma}),@2:Set)U augment(P({@1:Magma})U augment(P({@1:Magma}),
+    @2:Set),@2:Set).
+  cp HF-SETS-14 for 53 and 53
+    P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma})U augment(P({@3:Magma}),@1:Set),
+    @2:Set)
+    = P({@3:Magma})U augment(P({@3:Magma}),@2:Set)U augment(P({@3:Magma})U augment(P({@3:Magma}),
+    @2:Set),@1:Set).
+	The module is sort-decreasing.
+
+rewrites: 947322 in 2950ms cpu (3031ms real) (321035 rewrites/second)
+Church-Rosser check for HF-SETS-2
+The following critical pairs must be proved joinable:
+  cp HF-SETS-2261 for 01 and 53
+    P({@1:Magma})U augment(P({@1:Magma}),@2:Set)
+    = P({@1:Magma})U augment(P({@1:Magma}),@2:Set)U augment(augment(P({@1:Magma}),@2:Set),@2:Set).
+  cp HF-SETS-24 for 53 and 53
+    P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma}),@2:Set)U augment(augment(P({
+    @3:Magma}),@1:Set),@2:Set)
+    = P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma}),@2:Set)U augment(augment(P({
+    @3:Magma}),@2:Set),@1:Set).
+	The module is sort-decreasing.
+
+rewrites: 951601 in 2996ms cpu (3083ms real) (317614 rewrites/second)
+Church-Rosser check for HF-SETS-3
+The following critical pairs must be proved joinable:
+  cp HF-SETS-34 for 53 and 53
+    P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma}),@2:Set)U augment(augment(P({
+    @3:Magma}),@1:Set),@2:Set)
+    = P({@3:Magma})U augment(P({@3:Magma}),@1:Set)U augment(P({@3:Magma}),@2:Set)U augment(augment(P({
+    @3:Magma}),@2:Set),@1:Set).
+	The module is sort-decreasing.
+
+Maude>

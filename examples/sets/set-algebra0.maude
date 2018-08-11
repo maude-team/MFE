@@ -1,0 +1,88 @@
+set include BOOL off .
+set include BOOL-OPS on .
+
+fmod SET-ALGEBRA is
+  ---- protecting NAT .
+  sort Nat .
+  op 0 : -> Nat .
+  op s : Nat -> Nat .
+  op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
+  vars N M K : Nat .
+  eq [set00]: N ~ N = true .
+  eq [set01]: 0 ~ s(N) = false .
+  eq [set02]: s(N) ~ s(M) = N ~ M .
+  ---- protecting NAT .
+
+  ---- BOOL ops
+  op if_then_else_fi : Bool Set Set -> Set [strat (1 0 2 3 0)].
+  eq [set04]: if true then U else V fi = U .
+  eq [set05]: if false then U else V fi = V .
+  ---- BOOL ops
+
+  sort Set .
+  subsort Nat < Set .
+  op mt : -> Set [ctor] .                              *** empty set
+  op _,_ : Set Set -> Set [ctor assoc comm id: mt] . *** set union
+  op _C=_ : Set Set -> Bool .             *** set containment
+  op _in_ : Nat Set -> Bool .             *** set membership
+  op _~_  : Set Set -> Bool [comm] .      *** equality predicate on sets
+
+  vars U V W : Set .
+
+  eq [set06]: N,N = N .
+
+  eq [set12]: N in U = N C= U .
+
+  eq [set07]: U C= (U,V) = true .
+  eq [set08]: N C= mt = false .
+  ----eq N C= (M,V) =  N ~ M or (N C= V) .
+  eq [set09]: N C= M = N ~ M .
+  eq [set10]: N C= (M, K, V) =  N ~ M or (N C= K, V) .
+  eq [set11]: (N,M,U) C= V = N C= V and (M,U) C= V .
+
+  ---- eq U ~ V = (U C= V) and (V C= U) .
+  eq [set17]: mt ~ U = U C= mt .
+  eq [set18]: N, K, U ~ V = ((N, K, U) C= V) and (V C= (N, K, U)) .
+endfm
+
+fmod SET-ALGEBRA-2 is
+  pr SET-ALGEBRA .
+  op _\_  : Set Set -> Set .              *** set difference
+  op _/\_ : Set Set -> Set .              *** set intersection
+  op |_| : Set -> Nat .                   *** set cardinality
+
+  vars U V W : Set .
+  vars N M K : Nat .
+
+  eq [set13]: mt \ U = mt .
+  eq [set14]: U \ mt = U .
+  eq [set15]: (M,U) \ N = if N ~ M then (U \ N) else M,(U \ N) fi .
+  eq [set16]: U \ (N,M,V) = ((U \ N) \ M) \ V .
+
+  eq [set19]: mt /\ V = mt .
+  eq [set20]: (N,U) /\ V = if (N in V) then N,(U /\ V) else U /\ V fi .
+
+  eq [set21]: | mt | = 0 .
+  eq [set22]: | N,U | = s(| (U \ N) |) .
+endfm
+
+eof
+
+red 5 ~ 12 .                  *** should be false
+red 15 ~ 15 .                 *** should be true
+
+red (3,3,4,4,4,2,2,9) \ (3,3,3,4,2,7) .  *** should be 9
+
+red (3,3,4,4,4,2,2,9) C= (3,3,3,4,2,7) .  *** should be false
+
+red (3,3,4,4,2,2,9) C= (3,4,2,7,9) .  *** should be true
+
+red 3 in (3,3,4,4,7) .                      *** should be true
+
+red 9 in (3,3,4,4,7) .                      *** should be false
+
+red (3,3,4,4,4,2,2,7) ~ (3,3,3,4,2,7) .  *** should be true
+
+red (3,3,3,4,4,4,2,2,7,9) /\ (3,3,3,3,4,4,2,7,7,10) . *** should be 2,3,4,7
+
+red | 3,3,4,4,4,2,2,9 | .       *** should be 4

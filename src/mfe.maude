@@ -1,5 +1,5 @@
-----                                          The Maude Formal Environment 1.0c
-----                                                   To be run on Maude 2.7.1
+----                                          The Maude Formal Environment 1.0d
+----                                          To be run on Maude 2.8 (alpha115)
 ----                                                   authors: Francisco Duran
 ----                                                               Camilo Rocha
 
@@ -22,6 +22,8 @@
 ---- - Add support for rechability properties
 
 ---- Latest changes
+---- - Dec 12th, 2017
+----   - MFE is adapted to the new FM28 and Alpha115
 ---- - May 19th, 2016
 ----   - MFE is adapted to the new FM27d and Alpha110a
 ---- - August 12th, 2014

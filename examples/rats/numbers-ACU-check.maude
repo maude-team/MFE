@@ -1,4 +1,5 @@
 (select tool CRC .)
+<<<<<<< HEAD
 ---(ccr BOOL-FVP .)
 ---(
 rewrites: 3965 in 13ms cpu (15ms real) (287589 rewrites/second)
@@ -982,3 +983,20 @@ The following proof obligations must be checked for sort-decreasingness:
     if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = tt .
 ---)
 ---(show all critical pairs .)
+=======
+(ccr BOOL-FVP .)
+----(show all critical pairs .)
+(ccr NAT-FVP .)
+----(show all critical pairs .)
+(ccr INT-FVP .)
+----(show all critical pairs .)
+(ccr NAT-ACU .)
+----(show all critical pairs .)
+(ccr INT-ACU .)
+----(show all critical pairs .)
+(ccr RAT-ACU .)
+----(show all critical pairs .)
+
+----(select tool MTT .)
+----(check termination .)
+>>>>>>> d6571a5ca066e1baccd40a4e25097bdce44b6655

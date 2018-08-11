@@ -1,0 +1,30 @@
+load numbers-ACU.maude
+
+fmod PROOFS is
+  pr BOOL .
+  pr RAT-ACU .
+  vars N' M' : NzNat .
+  eq gcd(1, N') = 1 .
+  eq quot(N', 1) = N' .
+  eq - (I:Int / J:Int) = - I:Int / J:Int .
+  eq - - I:Int = I:Int .
+  eq gcd(N', M') > 1 = tt .
+endfm
+
+---(
+red -(quot(1, gcd(@2:NzNat, 1)) / quot(@2:NzNat, gcd(@2:NzNat, 1))) == - 1 / @2:NzNat .
+---(
+rewrites: 13 in 0ms cpu (0ms real) (270833 rewrites/second)
+result Bool: true
+---)
+
+red -(quot(N':NzNat + M':NzNat, gcd(@2:NzNat, N':NzNat + M':NzNat)) / quot(@2:NzNat, gcd(@2:NzNat, N':NzNat + M':NzNat))) == - (N':NzNat + M':NzNat) / @2:NzNat .
+---(
+rewrites: 6 in 0ms cpu (0ms real) (93750 rewrites/second)
+result Bool: true
+
+red -(quot(- N':NzNat, gcd(@2:NzNat, - N':NzNat)) / quot(@2:NzNat, gcd(@2:NzNat, - N':NzNat))) == - - N':NzNat / @2:NzNat .
+---(
+rewrites: 8 in 0ms cpu (0ms real) (8000000 rewrites/second)
+result Bool: true
+---)
