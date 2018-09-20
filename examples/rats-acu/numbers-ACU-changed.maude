@@ -7,12 +7,12 @@ fmod BOOL-FVP is
   op _\/_ : Truth Truth -> Truth .
   op ~ : Truth -> Truth .
   vars B X Y Z : Truth .
-  eq [BOOL-01]: tt /\ B = B  [variant] .
-  eq [BOOL-02]: ff /\ B = ff [variant] .
-  eq [BOOL-03]: ff \/ B = B  [variant] .
-  eq [BOOL-04]: tt \/ B = tt [variant] .
-  eq [BOOL-05]: ~(tt) = ff [variant] .
-  eq [BOOL-06]: ~(ff) = tt [variant] .
+  eq [BOOL-FVP-01]: tt /\ B = B  [variant] .
+  eq [BOOL-FVP-02]: ff /\ B = ff [variant] .
+  eq [BOOL-FVP-03]: ff \/ B = B  [variant] .
+  eq [BOOL-FVP-04]: tt \/ B = tt [variant] .
+  eq [BOOL-FVP-05]: ~(tt) = ff [variant] .
+  eq [BOOL-FVP-06]: ~(ff) = tt [variant] .
 endfm
 
 fmod NAT-FVP is
@@ -63,7 +63,7 @@ fmod NAT-ACU is
   eq [NAT-ACU-02]: quot(M', M') = 1 .
   eq [NAT-ACU-03]: quot(M, N' + M) = 0 .
   eq [NAT-ACU-04]: gcd(N', N') = N' .
-  eq [NAT-ACU-05]: gcd(N' + M', M') =  gcd(N', M') .
+  eq [NAT-ACU-05]: gcd(N' + M', M') = gcd(N', M') .
   eq [NAT-ACU-06]: N? * 0 = 0 .
   eq [NAT-ACU-07]: N? * 1 = N? .
   eq [NAT-ACU-08]: N' * (M' + K') = (N' * M') + (N' * K') .
@@ -95,7 +95,8 @@ fmod INT-FVP is
   var  I? : [Int] .
 
   eq [INT-FVP-01]: - 0 = 0 [variant] .
-  eq [INT-FVP-02]: - - N' = N' [variant] .
+----  eq [INT-FVP-02]: - - N' = N' [variant] .
+  eq [INT-FVP-02]: - - I = I [variant] .
   eq [INT-FVP-03]: | N | = N [variant] .
   eq [INT-FVP-04]: | - N' | = N' [variant] .
   eq [INT-FVP-05]: p(0) = - 1 [variant] .
@@ -126,12 +127,21 @@ fmod INT-ACU is
   var  I? : [Int] .
 
   eq [INT-ACU-01]: quot(0, Q) = 0 .
-  eq [INT-ACU-02]: quot(- N', M') = - quot(N', M') .
-  eq [INT-ACU-03]: quot(N', - M') = - quot(N', M') .
-  eq [INT-ACU-04]: quot(- N', - M') = quot(N', M') .
-  eq [INT-ACU-05]: gcd(- N', I') = gcd(N', I') .
+  eq [INT-ACU-02]: quot(- I', J') = - quot(I', J') .
+----  eq [INT-ACU-02]: quot(- N', M') = - quot(N', M') .
+  eq [INT-ACU-03]: quot(I', - J') = - quot(I', J') .
+----  eq [INT-ACU-03]: quot(N', - M') = - quot(N', M') .
+  eq [INT-ACU-04]: quot(- I', - J') = quot(I', J') .
+----  eq [INT-ACU-04]: quot(- N', - M') = quot(N', M') .
+  eq [INT-ACU-05]: gcd(- J', I') = gcd(J', I') .
+----  eq [INT-ACU-05]: gcd(- N', I') = gcd(N', I') .
   eq [INT-ACU-06]: - M' * - N' = N' * M' .
   eq [INT-ACU-07]: M' * - N' = - (N' * M') .
+
+----  eq [lemma1] : gcd(J':NzInt,1) = 1 .
+----  eq [lemma2] : quot(X:Int, 1) = X:Int .
+----  eq [lemma4] : gcd(quot(X1:NzInt, gcd(X1:NzInt, X2:NzInt)),
+----                    quot(X2:NzInt, gcd(X1:NzInt, X2:NzInt))) = 1 .
 endfm
 
 fmod RAT-ACU is
@@ -155,6 +165,7 @@ fmod RAT-ACU is
   op _~_ : Rat Rat -> Truth [comm] .   *** equality predicate
   op _>_ : Rat Rat -> Truth .
 
+  vars I J : Int .
   vars I' J' : NzInt .
   vars R S : Rat .
   var  R? : [Rat] .
@@ -168,9 +179,11 @@ fmod RAT-ACU is
   eq [RAT-ACU-04]: I' / (J' / M') = (I' * M') / J' .
   eq [RAT-ACU-05]: (I' / N') / J' = I' / (N' * J') .
   eq [RAT-ACU-06]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
-  eq [RAT-ACU-07]: - (I' / N') = - I' / N' .
+----  eq [RAT-ACU-07]: - (I' / N') = - I' / N' .
+  eq [RAT-ACU-07]: - (I / J) = - I / J .
   eq [RAT-ACU-08]: (I' / N') * 0 = 0 .
-  eq [RAT-ACU-09]: (I' / N') * J' = (I' * J') / N' .
+----  eq [RAT-ACU-09]: (I' / N') * J' = (I' * J') / N' .
+  eq [RAT-ACU-09]: (I / N') * J = (I * J) / N' .
   eq [RAT-ACU-10]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
   eq [RAT-ACU-11]: | I' / N' | = | I' | / N' .
   eq [RAT-ACU-12]: max(I' / N', J') = max(I', J' * N') / N' .
