@@ -1,5 +1,5 @@
   load mbool.fm
-
+  
  (fmod MNAT is
     pr MBOOL .
     sorts Nat NzNat Zero .
@@ -14,7 +14,7 @@
     op d : Nat Nat -> Nat [comm] .
     op quot : Nat NzNat -> Nat .
     op gcd : NzNat NzNat -> NzNat [comm] .
-    vars N M : Nat .
+    vars N M : Nat . 
     vars N' M' : NzNat .
     eq  [nat01] : p s N = N .
     eq  [nat02] : N + 0 = N .
@@ -34,9 +34,8 @@
     ceq [nat16] : gcd(N', M') =  gcd(d(N', M'), M') if N' > M' = true .
   endfm)
 
----- (select tool CRC .)
----- (check Church-Rosser .)
-
+ (check Church-Rosser .)
+eof
 ---(
 crchc3f: rewrites: 4385595 in 8984ms cpu (9375ms real) (488129 rewrites/second)
 crchc3g: rewrites: 1691305 in 3793ms cpu (4254ms real) (445844 rewrites/second)
@@ -95,7 +94,7 @@ The following proof obligations must be checked:
     op d : Nat Nat -> Nat [comm] .
     op quot : Nat NzNat -> Nat .
     op gcd : NzNat NzNat -> NzNat [comm] .
-    vars N M : Nat .
+    vars N M : Nat . 
     vars N' M' : NzNat .
     eq  [nat01] : p s N = N .
     eq  [nat02] : N + 0 = N .
@@ -156,9 +155,9 @@ The following proof obligations must be checked:
  (fmod MNAT-3 is
     pr MNAT-2 .
     var  N : Nat .
-    eq [nat09-1] : N > N = false .
+    eq [nat09-1] : N > N = false . 
   endfm)
-
+   
 ---- (check Church-Rosser .)
 
 ---(
@@ -199,7 +198,7 @@ The following proof obligations must be checked:
     op d : Nat Nat -> Nat [comm] .
     op quot : Nat NzNat -> Nat .
     op gcd : NzNat NzNat -> NzNat [comm] .
-    vars N M : Nat .
+    vars N M : Nat . 
     vars N' M' : NzNat .
     eq  [nat01] : p s N = N .
     eq  [nat03-1] : s N + s M = s s (N + M) .
@@ -209,7 +208,7 @@ The following proof obligations must be checked:
     eq  [nat07] : 0 > M = false .
     eq  [nat08] : N' > 0 = true .
     eq  [nat09] : s N > s M = N > M .
-    eq  [nat09-1] : N > N = false .
+    eq  [nat09-1] : N > N = false . 
     eq  [nat10] : d(0, N) = N .
     eq  [nat11] : d(s N, s M) = d(N, M) .
     ceq [nat12] : quot(N, M') = s quot(d(N, M'), M') if N > M' = true .

@@ -1,4 +1,4 @@
-load mnat.fm
+  load mnat.fm
 
  (fmod MINT is
     protecting MNAT-3 .
@@ -12,7 +12,7 @@ load mnat.fm
     op _*_ : NzInt NzInt -> NzInt .
     op quot : Int NzInt -> Int .
     op gcd : NzInt NzInt -> NzNat [comm] .
-    vars I J : Int .
+    vars I J : Int . 
     vars I' J' : NzInt .
     vars N' M' : NzNat .
     eq  [int01] : - - I = I .
@@ -20,7 +20,7 @@ load mnat.fm
     eq  [int03] : I + 0 = I .
     eq  [int04] : M' + (- M') = 0 .
     ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
-    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .
+    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .         
     eq  [int07] : (- I) + (- J) = - (I + J) .
     eq  [int08] : I * 0 = 0 .
     eq  [int09] : 0 * I = 0 .
@@ -31,7 +31,7 @@ load mnat.fm
     eq  [int14] : quot(I', - J') = - quot(I', J') .
     eq  [int15] : gcd(- I', J') = gcd(I', J') .
   endfm)
-
+ 
 ---- (check Church-Rosser .)
 
 ---(
@@ -213,7 +213,7 @@ The following proof obligations must be checked:
     op _*_ : NzInt NzInt -> NzInt [assoc comm] .
     op quot : Int NzInt -> Int .
     op gcd : NzInt NzInt -> NzNat [comm] .
-    vars I J : Int .
+    vars I J : Int . 
     vars I' J' : NzInt .
     vars N' M' : NzNat .
     eq  [int01] : - - I = I .
@@ -221,7 +221,7 @@ The following proof obligations must be checked:
     ----eq  [int03] : I + 0 = I .
     eq  [int04] : M' + (- M') = 0 .
     ceq [int05] : M' + (- N') = - d(N', M') if N' > M' = true .
-    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .
+    ceq [int06] : M' + (- N') = d(N', M') if M' > N' = true .         
     eq  [int07] : (- I) + (- J) = - (I + J) .
     eq  [int08] : I * 0 = 0 .
     ----eq  [int09] : 0 * I = 0 .
@@ -232,6 +232,16 @@ The following proof obligations must be checked:
     eq  [int14] : quot(I', - J') = - quot(I', J') .
     eq  [int15] : gcd(- I', J') = gcd(I', J') .
   endfm)
+
+---(
+set trace on .
+set trace select on .
+trace select ---- acuCohComplete
+             ---- crcCritPairs 
+             removeIds
+             getVariants 
+             .
+---)
 
 ---- (check Church-Rosser .)
 
@@ -394,3 +404,4 @@ The following proof obligations must be checked:
   cmb gcd(M':NzNat,d(N':NzNat,M':NzNat)): NzNat
     if N':NzNat > M':NzNat = true .
 ---)
+

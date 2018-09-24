@@ -1184,12 +1184,8 @@ mod MFE-CRC is
                 if CRCCT == Church-Rosser
                 then requester : (OS, O'), confluence-requester : OS', sort-decreasingness-requester : OS''
                 else if CRCCT == confluence
-                     then requester : OS,
-                          confluence-requester : (OS', O'),
-                          sort-decreasingness-requester : OS''
-                     else requester : OS,
-                          confluence-requester : OS',
-                          sort-decreasingness-requester : (OS'', O')
+                     then requester : OS, confluence-requester : (OS', O'), sort-decreasingness-requester : OS''
+                     else requester : OS, confluence-requester : OS', sort-decreasingness-requester : (OS'', O')
                      fi
                 fi,
                 cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
@@ -1203,18 +1199,13 @@ mod MFE-CRC is
                      makeCRCmessage(< O : X@CRC | module : M', requester : OS, confluence-requester : OS', sort-decreasingness-requester : OS'', cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >,
                        CRCCT))
        else ---- The CRC object is removed
-            (to TS["MFE"] from OCRC :
-               output('The 'CRC 'for eMetaPrettyPrint(getName(M)) 'has 'been 'reset. '\n))
+            (to TS["MFE"] from OCRC : output('The 'CRC 'for eMetaPrettyPrint(getName(M)) 'has 'been 'reset. '\n))
             ---- all the proofs in the ITP must be removed (open and not open proofs)
             unregisterProofs(TS["ITP"], OCRC, CPS, CPReg)
             unregisterProofs(TS["ITP"], OCRC, MAS, MAReg)
             ---- the association of module name in the reg map is removed, the applyCRCResult
             ---- will add it again if the check goes fine
-            applyCRCResult(O',
-              < OCRC : X@CRCBroker | tools : TS, reg : MNReg, Atts >,
-              CRCCT,
-              $processCRCcheck(M),
-              M)
+            applyCRCResult(O', < OCRC : X@CRCBroker | tools : TS, reg : MNReg, Atts >, CRCCT, $processCRCcheck(M), M)
        fi
     if MN = getName(M) .
   crl [crc-check] :
@@ -1226,40 +1217,51 @@ mod MFE-CRC is
 
   op applyCRCResult : Oid Object CRCcheckType CRCProcessResult Module -> Configuration .
   ---- generates the same object, the only difference being the requester kind to which the requester is added
- ceq applyCRCResult(O,
-       < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >,
-       CRCCT,
-       (M, CPS, MAS),
-       M')
+ ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, Church-Rosser, (M, CPS, MAS), M')
     ---- the index is increased, the new CRC becomes the current one, and the module name is registered
-    = < O' : X@CRCBroker |
-        index : s N,
-        current : CRC(N),
-        reg : ((getName(M') |-> CRC(N)), MNReg),
-        tools : TS,
-        Atts >
+    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
       Obj
       if O =/= TS["MFE"]
-      then makeCRCmessage(O, Obj, CRCCT)
+      then makeCRCmessage(O, Obj, Church-Rosser)
       else to TS["MFE"] from CRC(N) :
-             output(if CRCCT == Church-Rosser then 'Church-Rosser
-                    else if CRCCT == confluence then 'Concluence
-                         else if CRCCT == sort-decreasingness then 'Sort-decreasingness
-                              else nil
-                              fi
-                         fi
-                    fi
-                    'check 'for eMetaPrettyPrint(getName(M')) '\n
-               makeCRCmessage(Obj, CRCCT))
+             output('Church-Rosser 'check 'for eMetaPrettyPrint(getName(M')) '\n
+               makeCRCmessage(Obj, Church-Rosser))
       fi
-    if Obj := < CRC(N) : CRC |
-                requester : if CRCCT == Church-Rosser then O else empty fi,
-                confluence-requester : if CRCCT == confluence then O else empty fi,
-                sort-decreasingness-requester : if CRCCT == sort-decreasingness then O else empty fi,
-                original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
-                terminating : maybe,
-                locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
-                sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
+    if Obj := < CRC(N) : CRC | requester : O, confluence-requester : empty, sort-decreasingness-requester : empty,
+                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
+                       terminating : maybe,
+                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
+                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
+ ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, confluence, (M, CPS, MAS), M')
+    ---- the index is increased, the new CRC becomes the current one, and the module name is registered
+    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
+      Obj
+      if O == TS["MFE"]
+      then to TS["MFE"] from CRC(N) :
+             output('Confluence 'check 'for eMetaPrettyPrint(getName(M')) '\n
+               makeCRCmessage(Obj, confluence))
+      else makeCRCmessage(O, Obj, confluence)
+      fi
+    if Obj := < CRC(N) : CRC | requester : empty, confluence-requester : O, sort-decreasingness-requester : empty,
+                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
+                       terminating : maybe,
+                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
+                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
+ ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, sort-decreasingness, (M, CPS, MAS), M')
+    ---- the index is increased, the new CRC becomes the current one, and the module name is registered
+    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
+      Obj
+      if O == TS["MFE"]
+      then to TS["MFE"] from CRC(N) :
+             output('Sort-decreasingness 'check 'for eMetaPrettyPrint(getName(M')) '\n
+               makeCRCmessage(Obj, sort-decreasingness))
+      else makeCRCmessage(O, Obj, sort-decreasingness)
+      fi
+    if Obj := < CRC(N) : CRC | requester : empty, confluence-requester : empty, sort-decreasingness-requester : O,
+                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
+                       terminating : maybe,
+                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
+                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
   eq applyCRCResult(O, < O' : X@CRCBroker | tools : TS, Atts >, CRCCT, unsupported(St), M')
     = < O' : X@CRCBroker | tools : TS, Atts >
       to O from O' : output(mfe-error(string2qidList(St))) .
