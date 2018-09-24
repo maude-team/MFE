@@ -67,6 +67,8 @@ fmod NAT-ACU is
   eq [NAT-ACU-06]: N? * 0 = 0 .
   eq [NAT-ACU-07]: N? * 1 = N? .
   eq [NAT-ACU-08]: N' * (M' + K') = (N' * M') + (N' * K') .
+  eq [NAT-ACU-09]: N? * N' * (M' + K')
+    = (N? * N' * M') + (N? * N' * K') .               *** coherence extension
 endfm
 
 fmod INT-FVP is
@@ -109,6 +111,9 @@ fmod INT-FVP is
   eq [INT-FVP-13]: - N' > - M' = M' > N' [variant] .
   eq [INT-FVP-14]: - N' > N = ff [variant] .
   eq [INT-FVP-15]: N > - N' = tt [variant] .
+  eq [INT-FVP-16]: I? + N' + -(N') = I? [variant] .                  *** coherence extension
+  eq [INT-FVP-17]: I? + -(N') + -(M') = I? + -(N' + M') [variant] .  *** coherence extension
+  eq [INT-FVP-18]: I? + N' + -(N' + M') = I? + -(M') [variant] .     *** coherence extension
 endfm
 
 fmod INT-ACU is
@@ -132,6 +137,8 @@ fmod INT-ACU is
   eq [INT-ACU-05]: gcd(- N', I') = gcd(N', I') .
   eq [INT-ACU-06]: - M' * - N' = N' * M' .
   eq [INT-ACU-07]: M' * - N' = - (N' * M') .
+  eq [INT-ACU-08]: I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
+  eq [INT-ACU-09]: I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
 endfm
 
 fmod RAT-ACU is
@@ -183,6 +190,15 @@ fmod RAT-ACU is
   eq [RAT-ACU-19]: (I' / N') > J' = I' > (J' * N') .
   eq [RAT-ACU-20]: (I' / N') > J' = I' > (J' * N') .
   eq [RAT-ACU-21]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+
+  eq [RAT-ACU-22]: R? + I' + (J' / M')
+    = R? + (((I' * M') + J') / M') .                              *** coherence extension
+  eq [RAT-ACU-23]: R? + (I' / N') + (J' / M')
+    = R? + (((I' * M') + (J' * N')) / (N' * M')) .                *** coherence extension
+  eq [RAT-ACU-24]: R? * (I' / N') * 0 = 0 .                       *** coherence extension
+  eq [RAT-ACU-25]: R? * (I' / N') * J' = R? * ((I' * J') / N') .  *** coherence extension
+  eq [RAT-ACU-26]: R? * (I' / N') * (J' / M')
+    = R? * ((I' * J') / (N' * M')) .                              *** coherence extension
 endfm
 
 set include BOOL on .
