@@ -1,11 +1,12 @@
 ----                                                        file: crchc3r.maude
-----                                         To be run on Maude 2.8 (alpha 115)
+----                                       To be run on Maude 2.7.1 (alpha 115)
 ----                                                    author: Francisco Duran
-----                    last modified by Francisco Duran on December 12th, 2017
+----                       last modified by Francisco Duran on August 6th, 2019
 ----
 ----                                                  use: invoked from the MFE
 ----
 
+set include BOOL on .
 set show loop stats off .
 set show loop timing off .
 set show advisories off .
@@ -145,12 +146,10 @@ set show advisories off .
 ----   with specified labels (see notes Murcia 26-27/12/08)
 ---- - for conditional case, a manual search is required
 
-----load ../FM24/full-maude24l.maude
-
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3r - December 12th 2017" .
+  eq crc-banner = "Church-Rosser Checker 3r - August 6th 2018" .
 endfm
 
 fmod ChC-BANNER is
@@ -555,7 +554,6 @@ fmod CRITICAL-PAIR-SET is
   op maximalCPSet : CritPairSet Module -> CritPairSet .
   op maximalCPSetAux : CritPair CritPairSet CritPairSet Module -> CritPairSet .
   op moreGeneralCP : CritPair CritPair Module -> Bool .
-
   ceq maximalCPSet(CP CPS, M)
     = maximalCPSetAux(CP, CPS, none, M)
     if getStatus(CP) == pending .
@@ -566,7 +564,7 @@ fmod CRITICAL-PAIR-SET is
       then if moreGeneralCP(CP, CP', M)
            then maximalCPSetAux(CP, CPS, setStatus(CP', non-maximal) CPS', M)
            else if moreGeneralCP(CP', CP, M)
-                then maximalCPSetAux(CP', CPS CPS', setStatus(CP, non-maximal), M)
+                then maximalCPSetAux(CP', CPS, setStatus(CP, non-maximal) CPS', M)
                 else maximalCPSetAux(CP, CPS, CP' CPS', M)
                 fi
            fi
@@ -969,8 +967,9 @@ fmod CONFLUENCE-CHECK is
   var  ODS : OpDeclSet .
   var  VS : QidSet .
   var  Status : CPStatus .
-  vars Id Id' : String .
+  vars Id Id' St1 St2 : String .
   var  QIL : QidList .
+  var  Atts : AttrSet .
 
 **** We declare sorts for critical pairs (\texttt{CritPair}) and for sets of
 **** critical pairs (\texttt{CritPairSet}), and constructors for them.  The
@@ -1036,7 +1035,8 @@ fmod CONFLUENCE-CHECK is
 ----    ---- we could look the trivial one and discard it, but we don't do this in that case.
   ceq crcCritPairs(M, Eq EqS, Eq' EqS', N)
     = (CPS CPS' CPS'', N''')
-    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Eq'), getCts(makeNarrowingModule(M, Eq, Eq')),
+    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Eq'),
+                      getCts(makeNarrowingModule(M, Eq, Eq')),
                       metaNarrowSearch(
                         getModule(makeNarrowingModule(M, Eq, Eq')),
                         ---- makeNarrowingModule removes frozen attributes from M, removes eqs
@@ -1276,14 +1276,14 @@ fmod DESCENT-CHECK is
   op maximalMASetAux : MembAssert MembAssertSet MembAssertSet Module -> MembAssertSet .
   op moreGeneralMA? : MembAssert MembAssert Module -> Bool .
 
-  eq maximalMASet((MA MAS), M) = maximalMASetAux(MA, MAS, none, M) .
+  eq maximalMASet(MA MAS, M) = maximalMASetAux(MA, MAS, none, M) .
   eq maximalMASet(none, M) = none .
 
   eq maximalMASetAux(MA, (MA' MAS), MAS', M)
     = if moreGeneralMA?(MA, MA', M)
       then maximalMASetAux(MA, MAS, MAS', M)
       else if moreGeneralMA?(MA', MA, M)
-           then maximalMASetAux(MA', (MAS MAS'), none, M)
+           then maximalMASetAux(MA', MAS, MAS', M)
            else maximalMASetAux(MA, MAS, (MA' MAS'), M)
            fi
       fi .
@@ -1965,7 +1965,8 @@ mod CRChC-TOOLS is
   op $prepareModule : Module Bool -> Module .
   ---- The 2nd arg. indicates whether we are in the ground case or not
   eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
-  eq $prepareModule(M, false) = removeIds(axCohComplete(removeNonExecs(M)), all) .
+----  eq $prepareModule(M, false) = removeIds(axCohComplete(removeNonExecs(M)), all) .
+  eq $prepareModule(M, false) = removeIds(M, all) .
 
   op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
   op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .

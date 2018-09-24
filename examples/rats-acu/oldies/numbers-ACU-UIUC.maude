@@ -1,4 +1,3 @@
-
 set include BOOL off .
 
 fmod BOOL-FVP is
@@ -49,7 +48,6 @@ fmod NAT-FVP is
   eq [nat-fvp10]: N > N + M = ff [variant] .
 endfm
 
-
 fmod NAT-ACU is
   protecting NAT-FVP .
   op quot : Nat NzNat -> Nat .            *** quotient
@@ -70,8 +68,6 @@ fmod NAT-ACU is
   eq [nat-acu07]: N? * 1 = N? .
   eq [nat-acu08]: N' * (M' + K') = (N' * M') + (N' * K') .
 endfm
-----  eq N? * N' * (M' + K') = (N? * N' * M') + (N? * N' * K') .  *** coherence extension
-
 
 fmod INT-FVP is
   protecting NAT-FVP .
@@ -114,10 +110,6 @@ fmod INT-FVP is
   eq [int-fvp14]: - N' > N = ff [variant] .
   eq [int-fvp15]: N > - N' = tt [variant] .
 endfm
-----  eq I? + N' + -(N') = I? [variant] .                  *** coherence extension
-----  eq I? + -(N') + -(M') = I? + -(N' + M') [variant] .  *** coherence extension
-----  eq I? + N' + -(N' + M') = I? + -(M') [variant] .     *** coherence extension
-
 
 fmod INT-ACU is
   protecting INT-FVP .
@@ -141,8 +133,6 @@ fmod INT-ACU is
   eq [int-acu06]: - M' * - N' = N' * M' .
   eq [int-acu07]: M' * - N' = - (N' * M') .
 endfm
-----  eq I? * -(M') * -(N') = I? * N' * M' .  *** coherence extension
-----  eq I? * M' * -(N') = I? * -(N' * M') .  *** coherence extension
 
 fmod RAT-ACU is
   protecting INT-ACU .
@@ -165,46 +155,6 @@ fmod RAT-ACU is
   op _~_ : Rat Rat -> Truth [comm] .   *** equality predicate
   op _>_ : Rat Rat -> Truth .
 
-<<<<<<< HEAD
-  vars I' J' : NzInt .   vars R S : Rat .    var R? : [Rat] .
-  vars R' S' : NzRat .   vars N' M' K' : NzNat .
-
-  ceq J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
-     if gcd(J',M') > 1 = tt .                           *** canonical form of fraction
-  eq R' / 1 = R' .
-  eq I' / -(N') = -(I') / N' .
-  eq I' / (J' / M') = (I' * M') / J' .
-  eq (I' / N') / J' = I' / (N' * J') .
-  eq (I' / N') / (J' / M') = (I' * M') / (N' * J') .
-  eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
-  eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
-  eq -(I' / N') = -(I') / N' .
-  eq (I' / N') * 0 = 0 .
-  eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
-  eq (I' / N') * J' = (I' * J') / N' .
-  eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
-  eq (I' / N') * (J' / M') = (I' * J') / (N' * M') .
-  eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
-  eq | I' / N' | = | I' | / N' .
-  eq max(I' / N',J') = max(I',(J' * N')) / N' .
-  eq max(I' / N',J' / M') = max((I' * M'),(J' * N')) / (N' * M') .
-  eq min(I' / N',J') = min(I',(J' * N')) / N' .
-  eq min(I' / N',J' / M') = min((I' * M'),(J' * N')) / (N' * M') .
-  eq (I' / N') ~ J' = I' ~ (J' * N') .
-  eq (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
-  eq I' > (J' / M') = (I' * M') > J' .
-  eq (I' / N') > J' = I' > (J' * N') .
-  eq (I' / N') > J' = I' > (J' * N') .
-  eq (I' / N') > (J' / M') = (I' * M') > (J' * N') .
-
----(
-  eq [lemma1] : gcd(J':NzInt,1) = 1 .
-  eq [lemma2] : quot(X:Int, 1) = X:Int .
-  eq [lemma3] : quot(X1:NzInt, gcd(X1:NzInt, X2:NzInt)) = X1:NzInt .
-  eq [lemma4] : gcd(quot(X1:NzInt, gcd(X1:NzInt, X2:NzInt)),
-                    quot(X2:NzInt, gcd(X1:NzInt, X2:NzInt))) = 1 .
----)
-=======
   vars I' J' : NzInt .
   vars R S : Rat .
   var  R? : [Rat] .
@@ -233,10 +183,6 @@ fmod RAT-ACU is
   eq [rat-acu19]: (I' / N') > J' = I' > (J' * N') .
   eq [rat-acu20]: (I' / N') > J' = I' > (J' * N') .
   eq [rat-acu21]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
->>>>>>> d6571a5ca066e1baccd40a4e25097bdce44b6655
 endfm
-----  eq R? + I' + (J' / M') = R? + (((I' * M') + J') / M') .                      *** coherence extension
-----  eq R? + (I' / N') + (J' / M') = R? + (((I' * M') + (J' * N')) / (N' * M')) . *** coherence extension
-----  eq R? * (I' / N') * 0 = 0 .                                     *** coherence extension
-----  eq R? * (I' / N') * J' = R? * ((I' * J') / N') .                *** coherence extension
-----  eq R? * (I' / N') * (J' / M') = R? * ((I' * J') / (N' * M')) .  *** coherence extension
+
+set include BOOL on .
