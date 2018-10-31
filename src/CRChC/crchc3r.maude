@@ -1,11 +1,12 @@
-----                                                        file: crchc3o.maude
-----                      To be run on Maude 2.7 (alpha 103) and Full Maude 27c
+----                                                        file: crchc3r.maude
+----                                       To be run on Maude 2.7.1 (alpha 115)
 ----                                                    author: Francisco Duran
-----                        last modified by Francisco Duran on June 18th, 2014
+----                       last modified by Francisco Duran on August 6th, 2019
 ----
 ----                                                  use: invoked from the MFE
 ----
 
+set include BOOL on .
 set show loop stats off .
 set show loop timing off .
 set show advisories off .
@@ -57,6 +58,10 @@ set show advisories off .
 ----
 ---- main changes and bugs fixed since last release:
 ----
+---- - December 12th, 2018: variants used to remove id attributes, then built-in
+----   (all combinations of) AC narrowing (alpha115) is used to generate overlaps.
+---- - August 30th, 2016: Updated to use unification modulo associativity available in
+----   Maude Alpha 110b (Maude 2.7.1).
 ---- - November 26th, 2012: Bug fixed in the nonOverlapping check. Reported by Fan Yang.
 ---- - July 10th, 2011: rewrites in conditions are now supported. Bug reported by
 ----   Musab Alturki.
@@ -141,18 +146,16 @@ set show advisories off .
 ----   with specified labels (see notes Murcia 26-27/12/08)
 ---- - for conditional case, a manual search is required
 
-----load ../FM24/full-maude24l.maude
-
 fmod CRC-BANNER is
   pr STRING .
   op crc-banner : -> String .
-  eq crc-banner = "Church-Rosser Checker 3n - December 17th 2012" .
+  eq crc-banner = "Church-Rosser Checker 3r - August 6th 2018" .
 endfm
 
 fmod ChC-BANNER is
   pr STRING .
   op chc-banner : -> String .
-  eq chc-banner = "Coherence Checker 3n - December 17th 2012" .
+  eq chc-banner = "Coherence Checker 3r - December 12th 2017" .
 endfm
 
 fmod CRC-HELP is
@@ -527,14 +530,12 @@ fmod CRITICAL-PAIR-SET is
   op delete : CritPairSet -> CritPairSet .
 
   eq delete(cp(Id, L, L', T, T', pending) CPS)
-    = ----if getTerm(metaReduce(M, '_==_[T, T'])) == 'true.Bool
-      if T == T'
+    = if T == T'
       then cp(Id, L, L', T, T', joined) delete(CPS)
       else cp(Id, L, L', T, T', pending) delete(CPS)
       fi .
   eq delete(ccp(Id, L, L', T, T', Cd, pending) CPS)
-    = ----if getTerm(metaReduce(M, '_==_[T, T'])) == 'true.Bool
-      if T == T'
+    = if T == T'
       then ccp(Id, L, L', T, T', Cd, joined) delete(CPS)
       else ccp(Id, L, L', T, T', Cd, pending) delete(CPS)
       fi .
@@ -553,7 +554,6 @@ fmod CRITICAL-PAIR-SET is
   op maximalCPSet : CritPairSet Module -> CritPairSet .
   op maximalCPSetAux : CritPair CritPairSet CritPairSet Module -> CritPairSet .
   op moreGeneralCP : CritPair CritPair Module -> Bool .
-
   ceq maximalCPSet(CP CPS, M)
     = maximalCPSetAux(CP, CPS, none, M)
     if getStatus(CP) == pending .
@@ -564,7 +564,7 @@ fmod CRITICAL-PAIR-SET is
       then if moreGeneralCP(CP, CP', M)
            then maximalCPSetAux(CP, CPS, setStatus(CP', non-maximal) CPS', M)
            else if moreGeneralCP(CP', CP, M)
-                then maximalCPSetAux(CP', CPS CPS', setStatus(CP, non-maximal), M)
+                then maximalCPSetAux(CP', CPS, setStatus(CP, non-maximal) CPS', M)
                 else maximalCPSetAux(CP, CPS, CP' CPS', M)
                 fi
            fi
@@ -827,13 +827,7 @@ fmod CRC-CONTEXT-JOINABILITY-UNFEASIBILITY is
 
   op strongly-irreducible : Module Term -> Bool .
   eq strongly-irreducible(M, T)
-    = metaNarrowSearch(M, T, qid("X:" + string(leastSort(M, T))), none, '+, 1, 1, unbounded) == empty .
-  ----eq strongly-irreducible(M, T)
-  ----  = metaNarrowSearchGenAll(
-  ----           M,
-  ----           T,
-  ----           qid("X:" + string(leastSort(M, T))),
-  ----           none, '+, 1, 1, full E-ACU-unify noStrategy) == empty .
+    = metaNarrowingSearch(M, T, qid("X:" + string(leastSort(M, T))), '+, unbounded, 'none, 0) == failure .
 
   op groundRls : Condition -> Tuple{RuleSet, OpDeclSet} .
   op groundRls : Condition RuleSet OpDeclSet -> Tuple{RuleSet, OpDeclSet} .
@@ -973,7 +967,9 @@ fmod CONFLUENCE-CHECK is
   var  ODS : OpDeclSet .
   var  VS : QidSet .
   var  Status : CPStatus .
-  vars Id Id' : String .
+  vars Id Id' St1 St2 : String .
+  var  QIL : QidList .
+  var  Atts : AttrSet .
 
 **** We declare sorts for critical pairs (\texttt{CritPair}) and for sets of
 **** critical pairs (\texttt{CritPairSet}), and constructors for them.  The
@@ -1039,7 +1035,8 @@ fmod CONFLUENCE-CHECK is
 ----    ---- we could look the trivial one and discard it, but we don't do this in that case.
   ceq crcCritPairs(M, Eq EqS, Eq' EqS', N)
     = (CPS CPS' CPS'', N''')
-    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Eq'), getCts(makeNarrowingModule(M, Eq, Eq')),
+    if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Eq'),
+                      getCts(makeNarrowingModule(M, Eq, Eq')),
                       metaNarrowSearch(
                         getModule(makeNarrowingModule(M, Eq, Eq')),
                         ---- makeNarrowingModule removes frozen attributes from M, removes eqs
@@ -1068,7 +1065,7 @@ fmod CONFLUENCE-CHECK is
               opNewCts(VS)),
              addSorts('#Condition ; '#ConditionList, removeFrozen(M))),
            none),
-         rl T' => '#_#_#[vars2narrowCts(T'', VS), vars2narrowCts(T, VS)] [none] .),
+         rl T' => '#_#_#[vars2narrowCts(T'', VS), vars2narrowCts(T, VS)] [narrowing] .),
        vars2narrowCts(VS))
      if T := makeNarrowingCond(cond(Eq))
      /\ T' := getTerm(metaNormalize(M, lhs(Eq)))
@@ -1188,8 +1185,10 @@ fmod CONFLUENCE-CHECK is
     = op F : TpL -> Tp [AtS] . removeFrozen(ODS) .
   eq removeFrozen(ODS) = ODS .
 
-  op confluenceCheck : Module -> CritPairSet .
+  op confluenceCheck : Module ~> CritPairSet .
+  op cpsError : QidList -> [CritPairSet] .
 
+  eq confluenceCheck(unitError(QIL)) = cpsError(QIL) .
   eq confluenceCheck(M)
     = crcContextJoinableAndUnfeasibleCPs(M,
         maximalCPSet(
@@ -1233,6 +1232,7 @@ fmod DESCENT-CHECK is
   var  N : Nat .
   vars Id1 Id2 : String .
   vars Status1 Status2 : MAStatus .
+  var  QIL : QidList .
 
   op eqInstanceSet : Module EquationSet -> EquationSet .
 
@@ -1276,14 +1276,14 @@ fmod DESCENT-CHECK is
   op maximalMASetAux : MembAssert MembAssertSet MembAssertSet Module -> MembAssertSet .
   op moreGeneralMA? : MembAssert MembAssert Module -> Bool .
 
-  eq maximalMASet((MA MAS), M) = maximalMASetAux(MA, MAS, none, M) .
+  eq maximalMASet(MA MAS, M) = maximalMASetAux(MA, MAS, none, M) .
   eq maximalMASet(none, M) = none .
 
   eq maximalMASetAux(MA, (MA' MAS), MAS', M)
     = if moreGeneralMA?(MA, MA', M)
       then maximalMASetAux(MA, MAS, MAS', M)
       else if moreGeneralMA?(MA', MA, M)
-           then maximalMASetAux(MA', (MAS MAS'), none, M)
+           then maximalMASetAux(MA', MAS, MAS', M)
            else maximalMASetAux(MA, MAS, (MA' MAS'), M)
            fi
       fi .
@@ -1311,9 +1311,11 @@ fmod DESCENT-CHECK is
        and-then
        metaMatch(M, ((eq T1 = T2 [none].) (eq T1' = T2 [none].)))) .
 
-  op descentCheck : Module -> MembAssertSet .
+  op descentCheck : Module ~> MembAssertSet .
   op descentCheck1 : Module EquationSet Nat -> MembAssertSet .
+  op mbsError : QidList -> [MembAssertSet] .
 
+  eq descentCheck(unitError(QIL)) = mbsError(QIL) .
   eq descentCheck(M)
     = maximalMASet(descentCheck1(M, eqInstanceSet(M, getEqs(M)), 0), M) .
 
@@ -1349,12 +1351,6 @@ fmod CHURCH-ROSSER-CHECK is
   pr CONFLUENCE-CHECK .
   pr DESCENT-CHECK .
   pr 3TUPLE{Module, CritPairSet, MembAssertSet} .
-
-  var  M : Module .
-
-  ---- op CRCcheck : Module -> Tuple{Module, CritPairSet, MembAssertSet} .
-  ---- directly in $processCRCcheck
-  ---- eq CRCcheck(M) = (M, confluenceCheck($prepareModule(M, false)), descentCheck($prepareModuleNoIds(M, false))) .
 endfm
 
 -------------------------------------------------------------------------------
@@ -1503,7 +1499,7 @@ mod COHERENCE-CHECK is
   ceq chcCritPairs(M, Eq EqS, Rl RlS, N)
     = (CPS CPS' CPS'', N)
     if (CPS, N') := prepNarrowingSols(M, getLabel(Eq), getLabel(Rl), getCts(makeNarrowingModule(M, Eq, Rl)),
-                      metaNarrowSearch( ---- no ids and no lonely assocs
+                      metaNarrowSearch(
                         getModule(makeNarrowingModule(M, Eq, Rl)),
                         '#_#_#_#[lhs(Rl), rhs(Rl), makeNarrowingCond(cond(Rl))],
                         qid("#V:" + string(getKind(M, leastSort(M, lhs(Rl))))),
@@ -1550,45 +1546,13 @@ mod COHERENCE-CHECK is
      /\ T' := getTerm(metaNormalize(M, rhs(Rl)))
      /\ VS := (vars(T') ; vars(makeNarrowingCond(cond(Rl)))) \ vars(T) . ---- vars to be made constants
 
-  op prepNarrowingSols : Module Equation Rule QidSet ResultContextSet Nat -> Tuple{CritPairSet, Nat} .
-  op prepNarrowingSols : Module Rule Equation QidSet ResultContextSet Nat -> Tuple{CritPairSet, Nat} .
-  eq prepNarrowingSols(M, Eq, Rl, VS,
-       {
-        T, Tp,
-        Sb, Sb', --- computed subs and applied subst
-        Cx, Cx', --- Original and WithSubst
-        '#_#_#_#[T', T'', T'''], T'''', --- TermWithSubst and ContextWithTermAndSubt
-        N, --- highest index of variable
-        TN:TraceNarrow,
-        Fgs
-       } | RCS, N')
-    = (ccp(name(getName(M), N'), getLabel(Eq), getLabel(Rl), getCPTerm(T', VS), T'', makeCond(T''') /\ makeCond(getCPCond(T', VS)), pending)
-       getCPs(prepNarrowingSols(M, Eq, Rl, VS, RCS, s N')),
-       getIndex(prepNarrowingSols(M, Eq, Rl, VS, RCS, s N'))) .
-  eq prepNarrowingSols(M, Rl, Eq, VS,
-       {
-        T, Tp,
-        Sb, Sb', --- computed subs and applied subst
-        Cx, Cx', --- Original and WithSubst
-        '#_#_#_#[T', T'', T'''], T'''', --- TermWithSubst and ContextWithTermAndSubt
-        N, --- highest index of variable
-        TN:TraceNarrow,
-        Fgs
-       } | RCS, N')
-    = (ccp(name(getName(M), N'), getLabel(Eq), getLabel(Rl), T'', getCPTerm(T', VS), makeCond(T''') /\ makeCond(getCPCond(T', VS)), pending)
-       getCPs(prepNarrowingSols(M, Rl, Eq, VS, RCS, s N')),
-       getIndex(prepNarrowingSols(M, Rl, Eq, VS, RCS, s N'))) .
-  eq prepNarrowingSols(M, Rl, Eq, VS, empty, N) = (none, N) .
-
   op rewriteCPs : Module CritPairSet -> CritPairSet .
   eq rewriteCPs(M, ccp(Id, L, L', T, T', Cd, pending) CPS)
-----    = if metaSearch(M, lhs(CP), getTerm(metaReduce(M, rhs(CP))), nil, '+, 1, 0) == (failure).ResultTriple?
     = if metaSearch(addOps(getOps(vars2cts((T, T'))), M), getTerms(vars2cts(T)), getTerms(vars2cts(T')), nil, '+, 1, 0) == (failure).ResultTriple?
       then ccp(Id, L, L', T, T', Cd, pending) rewriteCPs(M, CPS)
       else ccp(Id, L, L', T, T', Cd, joined) rewriteCPs(M, CPS)
       fi .
   eq rewriteCPs(M, cp(Id, L, L', T, T', pending) CPS)
-----    = if metaSearch(M, lhs(CP), getTerm(metaReduce(M, rhs(CP))), nil, '+, 1, 0) == (failure).ResultTriple?
     = if metaSearch(addOps(getOps(vars2cts((T, T'))), M), getTerms(vars2cts(T)), getTerms(vars2cts(T')), nil, '+, 1, 0) == (failure).ResultTriple?
       then cp(Id, L, L', T, T', pending) rewriteCPs(M, CPS)
       else cp(Id, L, L', T, T', joined) rewriteCPs(M, CPS)
@@ -1998,16 +1962,11 @@ mod CRChC-TOOLS is
   subsorts Error Tuple{Module, CritPairSet, MembAssertSet} < CRCProcessResult .
   subsorts Error Tuple{Module, CritPairSet} < ChCProcessResult .
 
-  ---- TODO: What happen with only commutative or commutative and identity atributes ?
   op $prepareModule : Module Bool -> Module .
   ---- The 2nd arg. indicates whether we are in the ground case or not
   eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
-  eq $prepareModule(M, false) = removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), non-handled)) .
-
-----  op $prepareModuleNoIds : Module Bool -> Module .
-----  ---- The 2nd arg. indicates whether we are in the ground case or not
-----  eq $prepareModuleNoIds(M, true) = $prepareModuleNoIds(freezeNonCtors(M), false) .
-----  eq $prepareModuleNoIds(M, false) = removeLonelyAssocs(removeIds(axCohComplete(removeNonExecs(M)), all)) .
+----  eq $prepareModule(M, false) = removeIds(axCohComplete(removeNonExecs(M)), all) .
+  eq $prepareModule(M, false) = removeIds(M, all) .
 
   op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
   op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .

@@ -1,0 +1,141 @@
+2'34 mins
+37 critical pairs (all non-conditional)
+
+rewrites: 8038384 in 140758ms cpu (144069ms real) (57107 rewrites/second)
+Church-Rosser check for NAT-ACU
+The following critical pairs must be proved joinable:
+  cp NAT-ACU1009
+    @1:[Nat]*(@2:NzNat * @3:NzNat * @4:NzNat)+(@2:NzNat * @3:NzNat * @5:NzNat)+ @2:NzNat * @3:NzNat * @6:NzNat
+    = @2:NzNat *(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @3:NzNat * @5:NzNat .
+  cp NAT-ACU1013
+    @1:[Nat]*(@2:NzNat * @3:NzNat * @4:NzNat)+(@2:NzNat * @3:NzNat * @5:NzNat)+(@2:NzNat * @3:NzNat * @6:NzNat)+ @2:NzNat *
+    @3:NzNat * @7:NzNat
+    = @2:NzNat *(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @7:NzNat
+    .
+  cp NAT-ACU1074
+    @1:[Nat]*(@2:NzNat * @3:NzNat * @5:NzNat)+(@2:NzNat * @3:NzNat * @6:NzNat)+(@2:NzNat * @4:NzNat * @5:NzNat)+ @2:NzNat *
+    @4:NzNat * @6:NzNat
+    = @2:NzNat *(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @4:NzNat * @5:NzNat)+ @1:[Nat]*(@3:NzNat * @6:NzNat)+ @4:NzNat * @6:NzNat
+    .
+  cp NAT-ACU1075
+    @1:[Nat]*(@2:NzNat * @3:NzNat * @5:NzNat)+(@2:NzNat * @3:NzNat * @6:NzNat)+(@2:NzNat * @4:NzNat * @5:NzNat)+ @2:NzNat *
+    @4:NzNat * @6:NzNat
+    =(@3:NzNat + @4:NzNat)*(@1:[Nat]* @2:NzNat * @5:NzNat)+ @1:[Nat]* @2:NzNat * @6:NzNat .
+  cp NAT-ACU1302
+    @2:[Nat]*(@1:[Nat]* @3:NzNat)+ @1:[Nat]* @4:NzNat
+    = @1:[Nat]* @2:[Nat]* @3:NzNat + @4:NzNat .
+  cp NAT-ACU1489
+    @2:NzNat *(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @3:NzNat * @4:NzNat
+    =(@1:[Nat]*(@2:NzNat * @3:NzNat * @4:NzNat)+ @2:NzNat * @3:NzNat * @6:NzNat)+ @1:[Nat]* @2:NzNat * @3:NzNat * @5:NzNat
+    .
+  cp NAT-ACU1493
+    @2:NzNat *(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat)+ @1:[Nat]*(@3:NzNat * @6:NzNat)+ @3:NzNat * @7:NzNat
+    =(@1:[Nat]*(@2:NzNat * @3:NzNat * @4:NzNat)+ @2:NzNat * @3:NzNat * @6:NzNat)+ @1:[Nat]*(@2:NzNat * @3:NzNat *
+    @5:NzNat)+ @2:NzNat * @3:NzNat * @7:NzNat .
+  cp NAT-ACU1494
+    @2:NzNat *(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]*(@4:NzNat * @5:NzNat)+ @4:NzNat * @6:NzNat
+    =(@1:[Nat]*(@2:NzNat * @3:NzNat * @5:NzNat)+ @2:NzNat * @4:NzNat * @5:NzNat)+ @1:[Nat]*(@2:NzNat * @3:NzNat *
+    @6:NzNat)+ @2:NzNat * @4:NzNat * @6:NzNat .
+  cp NAT-ACU1501
+    @2:[Nat]*(@1:[Nat]* @3:NzNat * @4:NzNat)+ @1:[Nat]* @3:NzNat * @5:NzNat
+    =(@1:[Nat]* @2:[Nat]* @3:NzNat * @4:NzNat)+ @1:[Nat]* @2:[Nat]* @3:NzNat * @5:NzNat .
+  cp NAT-ACU1503
+    @2:[Nat]*(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @3:NzNat * @4:NzNat
+    =(@1:[Nat]* @2:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @2:[Nat]* @3:NzNat * @5:NzNat .
+  cp NAT-ACU1507
+    @2:[Nat]*(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat)+ @1:[Nat]*(@3:NzNat * @6:NzNat)+ @3:NzNat * @7:NzNat
+    =(@1:[Nat]* @2:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @2:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat *
+    @7:NzNat .
+  cp NAT-ACU1508
+    @2:[Nat]*(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]*(@4:NzNat * @5:NzNat)+ @4:NzNat * @6:NzNat
+    =(@1:[Nat]* @2:[Nat]*(@3:NzNat * @5:NzNat)+ @4:NzNat * @5:NzNat)+ @1:[Nat]* @2:[Nat]*(@3:NzNat * @6:NzNat)+ @4:NzNat *
+    @6:NzNat .
+  cp NAT-ACU2079
+    @1:[Nat]*(@2:[Nat]* @3:NzNat * @4:NzNat)+ @2:[Nat]* @3:NzNat * @5:NzNat
+    = @2:[Nat]*(@1:[Nat]* @3:NzNat * @4:NzNat)+ @1:[Nat]* @3:NzNat * @5:NzNat .
+  cp NAT-ACU2081
+    @1:[Nat]*(@2:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @2:[Nat]* @3:NzNat * @4:NzNat
+    = @2:[Nat]*(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]* @3:NzNat * @5:NzNat .
+  cp NAT-ACU2085
+    @1:[Nat]*(@2:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat)+ @2:[Nat]*(@3:NzNat * @6:NzNat)+ @3:NzNat * @7:NzNat
+    = @2:[Nat]*(@1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @7:NzNat .
+  cp NAT-ACU2086
+    @1:[Nat]*(@2:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @2:[Nat]*(@4:NzNat * @5:NzNat)+ @4:NzNat * @6:NzNat
+    = @2:[Nat]*(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @4:NzNat * @5:NzNat)+ @1:[Nat]*(@3:NzNat * @6:NzNat)+ @4:NzNat * @6:NzNat .
+  cp NAT-ACU2206
+    @2:NzNat *(@1:[Nat]*(@3:NzNat * @5:NzNat)+ @3:NzNat * @6:NzNat)+ @1:[Nat]*(@4:NzNat * @5:NzNat)+ @4:NzNat * @6:NzNat
+    =(@3:NzNat + @4:NzNat)*(@1:[Nat]* @2:NzNat * @5:NzNat)+ @1:[Nat]* @2:NzNat * @6:NzNat .
+  cp NAT-ACU2269
+    @2:[Nat]*(@1:[Nat]*(@3:NzNat * @4:NzNat * @6:NzNat)+ @3:NzNat * @4:NzNat * @7:NzNat)+ @1:[Nat]*(@3:NzNat * @5:NzNat *
+    @6:NzNat)+ @3:NzNat * @5:NzNat * @7:NzNat
+    =(@4:NzNat + @5:NzNat)*(@1:[Nat]* @2:[Nat]* @3:NzNat * @6:NzNat)+ @1:[Nat]* @2:[Nat]* @3:NzNat * @7:NzNat .
+  cp NAT-ACU2966
+    (@6:NzNat + @7:NzNat)*(@1:[Nat]* @2:[Nat]* @3:NzNat * @4:NzNat)+ @1:[Nat]* @2:[Nat]* @3:NzNat * @5:NzNat
+    = @2:[Nat]* @3:NzNat *(@1:[Nat]*(@4:NzNat * @6:NzNat)+ @5:NzNat * @6:NzNat)+ @1:[Nat]*(@4:NzNat * @7:NzNat)+ @5:NzNat *
+    @7:NzNat .
+  cp NAT-ACU324
+    (@1:[Nat]* @2:NzNat)+ @1:[Nat]* @3:NzNat
+    = @1:[Nat]* @2:NzNat + @3:NzNat .
+  cp NAT-ACU366
+    (@1:[Nat]*(@2:NzNat * @4:NzNat)+ @2:NzNat * @5:NzNat)+ @1:[Nat]* @2:NzNat * @3:NzNat
+    =(@1:[Nat]*(@2:NzNat * @3:NzNat)+ @2:NzNat * @5:NzNat)+ @1:[Nat]* @2:NzNat * @4:NzNat .
+  cp NAT-ACU370
+    (@1:[Nat]*(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat)+ @1:[Nat]*(@2:NzNat * @5:NzNat)+ @2:NzNat * @6:NzNat
+    =(@1:[Nat]*(@2:NzNat * @3:NzNat)+ @2:NzNat * @5:NzNat)+ @1:[Nat]*(@2:NzNat * @4:NzNat)+ @2:NzNat * @6:NzNat .
+  cp NAT-ACU371
+    (@1:[Nat]*(@2:NzNat * @4:NzNat)+ @2:NzNat * @5:NzNat)+ @1:[Nat]*(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat
+    =(@1:[Nat]*(@2:NzNat * @4:NzNat)+ @3:NzNat * @4:NzNat)+ @1:[Nat]*(@2:NzNat * @5:NzNat)+ @3:NzNat * @5:NzNat .
+  cp NAT-ACU5550
+    @6:[Nat]+((@1:Nat * @2:Nat *(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat)\ @2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+
+    @3:NzNat * @5:NzNat * @1:Nat)
+    = @6:[Nat].
+  cp NAT-ACU5551
+    @6:[Nat]+ @2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat * @5:NzNat * @1:Nat
+    = @6:[Nat]+ @1:Nat * @2:Nat *(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat .
+  cp NAT-ACU5552
+    @6:[Nat]+((@2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat * @5:NzNat * @1:Nat)\ @1:Nat * @2:Nat *(@3:NzNat *
+    @4:NzNat)+ @3:NzNat * @5:NzNat)
+    = @6:[Nat].
+  cp NAT-ACU5554
+    @6:[Nat]+ d(@2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat * @5:NzNat * @1:Nat,@1:Nat * @2:Nat *(@3:NzNat *
+    @4:NzNat)+ @3:NzNat * @5:NzNat)
+    = @6:[Nat].
+  cp NAT-ACU5556
+    @6:[Nat]+ max(@2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat * @5:NzNat * @1:Nat,@1:Nat * @2:Nat *(@3:NzNat *
+    @4:NzNat)+ @3:NzNat * @5:NzNat)
+    = @6:[Nat]+ @1:Nat * @2:Nat *(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat .
+  cp NAT-ACU5558
+    @6:[Nat]+ min(@2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat * @5:NzNat * @1:Nat,@1:Nat * @2:Nat *(@3:NzNat *
+    @4:NzNat)+ @3:NzNat * @5:NzNat)
+    = @6:[Nat]+ @1:Nat * @2:Nat *(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat .
+  cp NAT-ACU5561
+    (@1:Nat * @2:Nat *(@3:NzNat * @4:NzNat)+ @3:NzNat * @5:NzNat)> @2:Nat *(@3:NzNat * @4:NzNat * @1:Nat)+ @3:NzNat *
+    @5:NzNat * @1:Nat
+    = ff .
+  cp NAT-ACU675
+    @5:[Nat]+((@1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat)\(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat *
+    @1:Nat)
+    = @5:[Nat].
+  cp NAT-ACU676
+    @5:[Nat]+(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat * @1:Nat
+    = @5:[Nat]+ @1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat .
+  cp NAT-ACU677
+    @5:[Nat]+(((@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat * @1:Nat)\ @1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat *
+    @4:NzNat)
+    = @5:[Nat].
+  cp NAT-ACU679
+    @5:[Nat]+ d(@1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat,(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat *
+    @1:Nat)
+    = @5:[Nat].
+  cp NAT-ACU681
+    @5:[Nat]+ max(@1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat,(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat *
+    @1:Nat)
+    = @5:[Nat]+ @1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat .
+  cp NAT-ACU683
+    @5:[Nat]+ min(@1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat,(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat *
+    @1:Nat)
+    = @5:[Nat]+ @1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat .
+  cp NAT-ACU686
+    (@1:Nat *(@2:NzNat * @3:NzNat)+ @2:NzNat * @4:NzNat)>(@2:NzNat * @3:NzNat * @1:Nat)+ @2:NzNat * @4:NzNat * @1:Nat
+    = ff .
+	The module is sort-decreasing.
