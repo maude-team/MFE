@@ -1,0 +1,387 @@
+set include BOOL off .
+
+fmod RAT-ACU is
+  sorts Bool Int Nat NzInt NzNat NzNeg NzPosRat NzRat PosRat Rat Zero .
+  subsort Int < Rat .
+  subsort Nat < Int .
+  subsort Nat < PosRat .
+  subsort NzInt < Int .
+  subsort NzInt < NzRat .
+  subsort NzNat < Nat .
+  subsort NzNat < NzInt .
+  subsort NzNat < NzPosRat .
+  subsort NzNeg < Int .
+  subsort NzNeg < NzInt .
+  subsort NzPosRat < NzRat .
+  subsort NzPosRat < PosRat .
+  subsort NzRat < Rat .
+  subsort PosRat < Rat .
+  subsort Zero < Nat .
+  op -_ : Int -> Int .
+  op -_ : NzInt -> NzInt .
+  op -_ : Rat -> Rat .
+  op _>_ : Int Int -> Bool .
+  op _>_ : Nat Nat -> Bool .
+  op _>_ : Rat Rat -> Bool .
+  op _\_ : Nat Nat -> Nat .
+  op p : Int -> Int .
+  op p : NzNat -> Nat .
+  op quot : Int NzInt -> Int .
+  op quot : Nat NzNat -> Nat .
+  op |_| : Int -> Nat .
+  op |_| : NzInt -> NzNat .
+  op |_| : Rat -> PosRat .
+  op -_ : NzNat -> NzNeg
+    [ctor] .
+  op 0 : -> Zero
+    [ctor] .
+  op 1 : -> NzNat
+    [ctor] .
+  op _*_ : Int Int -> Int
+    [assoc comm prec 31] .
+  op _*_ : Nat Nat -> Nat
+    [assoc comm prec 31] .
+  op _*_ : NzInt NzInt -> NzInt
+    [assoc comm prec 31] .
+  op _*_ : NzNat NzNat -> NzNat
+    [assoc comm prec 31] .
+  op _*_ : NzRat NzRat -> NzRat
+    [assoc comm prec 31] .
+  op _*_ : Rat Rat -> Rat
+    [assoc comm prec 31] .
+  op _+_ : Int Int -> Int
+    [assoc comm prec 33] .
+  op _+_ : Nat Nat -> Nat
+    [assoc comm prec 33 ctor] .
+  op _+_ : NzInt NzInt -> NzInt
+    [assoc comm prec 33] .
+  op _+_ : NzNat NzNat -> NzNat
+    [assoc comm prec 33 ctor] .
+  op _+_ : PosRat PosRat -> PosRat
+    [assoc comm prec 33] .
+  op _+_ : Rat Rat -> Rat
+    [assoc comm prec 33] .
+  op _/_ : NzInt NzNat -> NzRat
+    [prec 31 ctor] .
+  op _/_ : NzNat NzNat -> NzPosRat
+    [prec 31 ctor] .
+  op _/_ : NzRat NzRat -> NzRat
+    [prec 31] .
+  op _~_ : Int Int -> Bool
+    [comm] .
+  op _~_ : Nat Nat -> Bool
+    [comm] .
+  op _~_ : Rat Rat -> Bool
+    [comm] .
+  op d : Nat Nat -> Nat
+    [comm] .
+  op false : -> Bool
+    [ctor special(id-hook SystemFalse)] .
+  op gcd : NzInt NzInt -> NzNat
+    [comm] .
+  op gcd : NzNat NzNat -> NzNat
+    [comm] .
+  op max : Int Int -> Int
+    [comm] .
+  op max : Nat Nat -> Nat
+    [comm] .
+  op max : NzInt NzInt -> NzInt
+    [comm] .
+  op max : NzNat NzNat -> NzNat
+    [comm] .
+  op max : Rat Rat -> Rat
+    [comm] .
+  op min : Int Int -> Int
+    [comm] .
+  op min : Nat Nat -> Nat
+    [comm] .
+  op min : NzInt NzInt -> NzInt
+    [comm] .
+  op min : NzNat NzNat -> NzNat
+    [comm] .
+  op min : Rat Rat -> Rat
+    [comm] .
+  op true : -> Bool
+    [ctor special(id-hook SystemTrue)] .
+  eq - 0
+    = 0 [label INT-FVP-01 variant] .
+  eq - - I':NzInt
+    = I':NzInt [label INT-ACU-07] .
+  eq -(I':NzInt / N':NzNat)
+    = - I':NzInt / N':NzNat [label RAT-ACU-07] .
+  eq 0 * N?:[Rat]
+    = 0 [label NAT-ACU-06] .
+  eq 1 * N?:[Rat]
+    = N?:[Rat] [label NAT-ACU-07] .
+  eq I':NzInt * - J':NzInt
+    = -(I':NzInt * J':NzInt) [label INT-ACU-06] .
+  eq I':NzInt *(J':NzInt + H':NzInt)
+    = I':NzInt * J':NzInt + I':NzInt * H':NzInt [label INT-ACU-08] .
+  eq J':NzInt *(I':NzInt / N':NzNat)
+    = (I':NzInt * J':NzInt)/ N':NzNat [label RAT-ACU-11] .
+  eq (I':NzInt / N':NzNat)*(J':NzInt / M':NzNat)
+    = (I':NzInt * J':NzInt)/ N':NzNat * M':NzNat [label RAT-ACU-12] .
+  eq 0 * N?:[Rat]* X@@@:[Rat]
+    = 0 * X@@@:[Rat] [label NAT-ACU-06] .
+  eq X@@@:[Rat]* I':NzInt * - J':NzInt
+    = X@@@:[Rat]* -(I':NzInt * J':NzInt) [label INT-ACU-06] .
+  eq X@@@:[Rat]* I':NzInt *(J':NzInt + H':NzInt)
+    = X@@@:[Rat]*(I':NzInt * J':NzInt + I':NzInt * H':NzInt) [label INT-ACU-08] .
+  eq X@@@:[Rat]* J':NzInt *(I':NzInt / N':NzNat)
+    = X@@@:[Rat]*((I':NzInt * J':NzInt)/ N':NzNat) [label RAT-ACU-11] .
+  eq X@@@:[Rat]*(I':NzInt / N':NzNat)*(J':NzInt / M':NzNat)
+    = X@@@:[Rat]*((I':NzInt * J':NzInt)/ N':NzNat * M':NzNat) [label RAT-ACU-12] .
+  eq 0 + X:[Rat]
+    = X:[Rat] [variant] .
+  eq J':NzInt + I':NzInt / N':NzNat
+    = (I':NzInt + J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-08] .
+  eq X@@@:[Rat]+ - 0
+    = X@@@:[Rat] [label INT-FVP-01 variant] .
+  eq X@@@:[Rat]+ - - I':NzInt
+    = X@@@:[Rat]+ I':NzInt [label INT-ACU-07] .
+  eq X@@@:[Rat]+ -(I':NzInt / N':NzNat)
+    = X@@@:[Rat]+ - I':NzInt / N':NzNat [label RAT-ACU-07] .
+  eq X@@@:[Rat]+ I':NzInt / - N':NzNat
+    = X@@@:[Rat]+ - I':NzInt / N':NzNat [label RAT-ACU-03] .
+  eq X@@@:[Rat]+ I':NzInt /(J':NzInt / M':NzNat)
+    = X@@@:[Rat]+(I':NzInt * M':NzNat)/ J':NzInt [label RAT-ACU-04] .
+  eq X@@@:[Rat]+ R':NzRat / 1
+    = X@@@:[Rat]+ R':NzRat [label RAT-ACU-02] .
+  eq X@@@:[Rat]+(I':NzInt / N':NzNat)/ J':NzInt
+    = X@@@:[Rat]+ I':NzInt / J':NzInt * N':NzNat [label RAT-ACU-05] .
+  eq X@@@:[Rat]+(I':NzInt / N':NzNat)/(J':NzInt / M':NzNat)
+    = X@@@:[Rat]+(I':NzInt * M':NzNat)/ J':NzInt * N':NzNat [label RAT-ACU-06] .
+  eq X@@@:[Rat]+(0 \ M:Nat)
+    = X@@@:[Rat] [label NAT-FVP-06 variant] .
+  eq X@@@:[Rat]+(M:Nat \ 0)
+    = X@@@:[Rat]+ M:Nat [label NAT-FVP-05 variant] .
+  eq X@@@:[Rat]+(N:Nat \ N:Nat)
+    = X@@@:[Rat] [label NAT-FVP-06 variant] .
+  eq X@@@:[Rat]+(N:Nat \ N:Nat + M:Nat)
+    = X@@@:[Rat] [label NAT-FVP-06 variant] .
+  eq X@@@:[Rat]+(N:Nat + M:Nat \ N:Nat)
+    = X@@@:[Rat]+ M:Nat [label NAT-FVP-05 variant] .
+  eq X@@@:[Rat]+ d(0,M:Nat)
+    = X@@@:[Rat]+ M:Nat [label NAT-FVP-04 variant] .
+  eq X@@@:[Rat]+ d(N:Nat,N:Nat)
+    = X@@@:[Rat] [label NAT-FVP-04 variant] .
+  eq X@@@:[Rat]+ d(N:Nat,N:Nat + M:Nat)
+    = X@@@:[Rat]+ M:Nat [label NAT-FVP-04 variant] .
+  eq X@@@:[Rat]+ gcd(I':NzInt,- N':NzNat)
+    = X@@@:[Rat]+ gcd(I':NzInt,N':NzNat) [label INT-ACU-05] .
+  eq X@@@:[Rat]+ gcd(M':NzNat,N':NzNat + M':NzNat)
+    = X@@@:[Rat]+ gcd(N':NzNat,M':NzNat) [label NAT-ACU-05] .
+  eq X@@@:[Rat]+ gcd(N':NzNat,N':NzNat)
+    = X@@@:[Rat]+ N':NzNat [label NAT-ACU-04] .
+  eq X@@@:[Rat]+ max(0,M:Nat)
+    = X@@@:[Rat]+ M:Nat [label NAT-FVP-02 variant] .
+  eq X@@@:[Rat]+ max(J':NzInt,I':NzInt / N':NzNat)
+    = X@@@:[Rat]+ max(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-14] .
+  eq X@@@:[Rat]+ max(N:Nat,N:Nat)
+    = X@@@:[Rat]+ N:Nat [label NAT-FVP-02 variant] .
+  eq X@@@:[Rat]+ max(N:Nat,- N':NzNat)
+    = X@@@:[Rat]+ N:Nat [label INT-FVP-08 variant] .
+  eq X@@@:[Rat]+ max(N:Nat,N:Nat + M:Nat)
+    = X@@@:[Rat]+ N:Nat + M:Nat [label NAT-FVP-02 variant] .
+  eq X@@@:[Rat]+ max(- N':NzNat,- M':NzNat)
+    = X@@@:[Rat]+ - min(N':NzNat,M':NzNat) [label INT-FVP-07 variant] .
+  eq X@@@:[Rat]+ max(I':NzInt / N':NzNat,J':NzInt / M':NzNat)
+    = X@@@:[Rat]+ max(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label
+    RAT-ACU-15] .
+  eq X@@@:[Rat]+ min(0,M:Nat)
+    = X@@@:[Rat] [label NAT-FVP-03 variant] .
+  eq X@@@:[Rat]+ min(J':NzInt,I':NzInt / N':NzNat)
+    = X@@@:[Rat]+ min(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-16] .
+  eq X@@@:[Rat]+ min(N:Nat,N:Nat)
+    = X@@@:[Rat]+ N:Nat [label NAT-FVP-03 variant] .
+  eq X@@@:[Rat]+ min(N:Nat,- N':NzNat)
+    = X@@@:[Rat]+ - N':NzNat [label INT-FVP-10 variant] .
+  eq X@@@:[Rat]+ min(N:Nat,N:Nat + M:Nat)
+    = X@@@:[Rat]+ N:Nat [label NAT-FVP-03 variant] .
+  eq X@@@:[Rat]+ min(- N':NzNat,- M':NzNat)
+    = X@@@:[Rat]+ - max(N':NzNat,M':NzNat) [label INT-FVP-09 variant] .
+  eq X@@@:[Rat]+ min(I':NzInt / N':NzNat,J':NzInt / M':NzNat)
+    = X@@@:[Rat]+ min(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label
+    RAT-ACU-17] .
+  eq X@@@:[Rat]+ p(0)
+    = X@@@:[Rat]+ - 1 [label INT-FVP-05 variant] .
+  eq X@@@:[Rat]+ p(1)
+    = X@@@:[Rat] [label NAT-FVP-01 variant] .
+  eq X@@@:[Rat]+ p(- N':NzNat)
+    = X@@@:[Rat]+ -(1 + N':NzNat) [label INT-FVP-06 variant] .
+  eq X@@@:[Rat]+ p(1 + N:Nat)
+    = X@@@:[Rat]+ N:Nat [label NAT-FVP-01 variant] .
+  eq X@@@:[Rat]+ quot(0,N':NzNat)
+    = X@@@:[Rat] [label NAT-ACU-03] .
+  eq X@@@:[Rat]+ quot(0,Q:NzNeg)
+    = X@@@:[Rat] [label INT-ACU-01] .
+  eq X@@@:[Rat]+ quot(M':NzNat,M':NzNat)
+    = 1 + X@@@:[Rat] [label NAT-ACU-02] .
+  eq X@@@:[Rat]+ quot(M:Nat,N':NzNat + M:Nat)
+    = X@@@:[Rat] [label NAT-ACU-03] .
+  eq X@@@:[Rat]+ quot(N':NzNat,- M':NzNat)
+    = X@@@:[Rat]+ - quot(N':NzNat,M':NzNat) [label INT-ACU-03] .
+  eq X@@@:[Rat]+ quot(- N':NzNat,M':NzNat)
+    = X@@@:[Rat]+ - quot(N':NzNat,M':NzNat) [label INT-ACU-02] .
+  eq X@@@:[Rat]+ quot(- N':NzNat,- M':NzNat)
+    = X@@@:[Rat]+ quot(N':NzNat,M':NzNat) [label INT-ACU-04] .
+  eq X@@@:[Rat]+ quot(N':NzNat + M':NzNat,M':NzNat)
+    = 1 + X@@@:[Rat]+ quot(N':NzNat,M':NzNat) [label NAT-ACU-01] .
+  eq X@@@:[Rat]+ | N:Nat |
+    = X@@@:[Rat]+ N:Nat [label INT-FVP-03 variant] .
+  eq X@@@:[Rat]+ | - N':NzNat |
+    = X@@@:[Rat]+ N':NzNat [label INT-FVP-04 variant] .
+  eq X@@@:[Rat]+ | I':NzInt / N':NzNat |
+    = X@@@:[Rat]+ | I':NzInt | / N':NzNat [label RAT-ACU-13] .
+  eq - I':NzInt + - J':NzInt
+    = -(I':NzInt + J':NzInt) [label INT-ACU-09] .
+  eq I':NzInt / N':NzNat + J':NzInt / M':NzNat
+    = (I':NzInt * M':NzNat + J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label RAT-ACU-09]
+    .
+  eq X@@@:[Rat]+ J':NzInt + I':NzInt / N':NzNat
+    = X@@@:[Rat]+(I':NzInt + J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-08] .
+  eq X@@@:[Rat]+ - I':NzInt + - J':NzInt
+    = X@@@:[Rat]+ -(I':NzInt + J':NzInt) [label INT-ACU-09] .
+  eq X@@@:[Rat]+ I':NzInt / N':NzNat + J':NzInt / M':NzNat
+    = X@@@:[Rat]+(I':NzInt * M':NzNat + J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label
+    RAT-ACU-09] .
+  eq I':NzInt / - N':NzNat
+    = - I':NzInt / N':NzNat [label RAT-ACU-03] .
+  eq I':NzInt /(J':NzInt / M':NzNat)
+    = (I':NzInt * M':NzNat)/ J':NzInt [label RAT-ACU-04] .
+  eq R':NzRat / 1
+    = R':NzRat [label RAT-ACU-02] .
+  eq (I':NzInt / N':NzNat)/ J':NzInt
+    = I':NzInt / J':NzInt * N':NzNat [label RAT-ACU-05] .
+  eq (I':NzInt / N':NzNat)/(J':NzInt / M':NzNat)
+    = (I':NzInt * M':NzNat)/ J':NzInt * N':NzNat [label RAT-ACU-06] .
+  eq 0 > M:Nat
+    = false [label NAT-FVP-10 variant] .
+  eq 1 > 0
+    = true [label NAT-FVP-09 variant] .
+  eq I':NzInt > J':NzInt / M':NzNat
+    = I':NzInt * M':NzNat > J':NzInt [label RAT-ACU-20] .
+  eq N:Nat > N:Nat
+    = false [label NAT-FVP-10 variant] .
+  eq N:Nat > - N':NzNat
+    = true [label INT-FVP-15 variant] .
+  eq N:Nat > N:Nat + M:Nat
+    = false [label NAT-FVP-10 variant] .
+  eq - N':NzNat > N:Nat
+    = false [label INT-FVP-14 variant] .
+  eq - N':NzNat > - M':NzNat
+    = M':NzNat > N':NzNat [label INT-FVP-13 variant] .
+  eq 1 + M:Nat > 0
+    = true [label NAT-FVP-09 variant] .
+  eq 1 + N:Nat > N:Nat
+    = true [label NAT-FVP-09 variant] .
+  eq 1 + N:Nat + M:Nat > N:Nat
+    = true [label NAT-FVP-09 variant] .
+  eq I':NzInt / N':NzNat > J':NzInt
+    = I':NzInt > J':NzInt * N':NzNat [label RAT-ACU-22] .
+  eq I':NzInt / N':NzNat > J':NzInt / M':NzNat
+    = I':NzInt * M':NzNat > J':NzInt * N':NzNat [label RAT-ACU-23] .
+  eq 0 \ M:Nat
+    = 0 [label NAT-FVP-06 variant] .
+  eq M:Nat \ 0
+    = M:Nat [label NAT-FVP-05 variant] .
+  eq N:Nat \ N:Nat
+    = 0 [label NAT-FVP-06 variant] .
+  eq N:Nat \ N:Nat + M:Nat
+    = 0 [label NAT-FVP-06 variant] .
+  eq N:Nat + M:Nat \ N:Nat
+    = M:Nat [label NAT-FVP-05 variant] .
+  eq 0 ~ M':NzNat
+    = false [label NAT-FVP-08 variant] .
+  eq J':NzInt ~ I':NzInt / N':NzNat
+    = I':NzInt ~ J':NzInt * N':NzNat [label RAT-ACU-18] .
+  eq N:Nat ~ N:Nat
+    = true [label NAT-FVP-07 variant] .
+  eq N:Nat ~ - N':NzNat
+    = false [label INT-FVP-12 variant] .
+  eq N:Nat ~ M':NzNat + N:Nat
+    = false [label NAT-FVP-08 variant] .
+  eq - N':NzNat ~ - M':NzNat
+    = N':NzNat ~ M':NzNat [label INT-FVP-11 variant] .
+  eq I':NzInt / N':NzNat ~ J':NzInt / M':NzNat
+    = I':NzInt * M':NzNat ~ J':NzInt * N':NzNat [label RAT-ACU-19] .
+  eq d(0,M:Nat)
+    = M:Nat [label NAT-FVP-04 variant] .
+  eq d(N:Nat,N:Nat)
+    = 0 [label NAT-FVP-04 variant] .
+  eq d(N:Nat,N:Nat + M:Nat)
+    = M:Nat [label NAT-FVP-04 variant] .
+  eq gcd(I':NzInt,- N':NzNat)
+    = gcd(I':NzInt,N':NzNat) [label INT-ACU-05] .
+  eq gcd(M':NzNat,N':NzNat + M':NzNat)
+    = gcd(N':NzNat,M':NzNat) [label NAT-ACU-05] .
+  eq gcd(N':NzNat,N':NzNat)
+    = N':NzNat [label NAT-ACU-04] .
+  eq max(0,M:Nat)
+    = M:Nat [label NAT-FVP-02 variant] .
+  eq max(J':NzInt,I':NzInt / N':NzNat)
+    = max(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-14] .
+  eq max(N:Nat,N:Nat)
+    = N:Nat [label NAT-FVP-02 variant] .
+  eq max(N:Nat,- N':NzNat)
+    = N:Nat [label INT-FVP-08 variant] .
+  eq max(N:Nat,N:Nat + M:Nat)
+    = N:Nat + M:Nat [label NAT-FVP-02 variant] .
+  eq max(- N':NzNat,- M':NzNat)
+    = - min(N':NzNat,M':NzNat) [label INT-FVP-07 variant] .
+  eq max(I':NzInt / N':NzNat,J':NzInt / M':NzNat)
+    = max(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label RAT-ACU-15]
+    .
+  eq min(0,M:Nat)
+    = 0 [label NAT-FVP-03 variant] .
+  eq min(J':NzInt,I':NzInt / N':NzNat)
+    = min(I':NzInt,J':NzInt * N':NzNat)/ N':NzNat [label RAT-ACU-16] .
+  eq min(N:Nat,N:Nat)
+    = N:Nat [label NAT-FVP-03 variant] .
+  eq min(N:Nat,- N':NzNat)
+    = - N':NzNat [label INT-FVP-10 variant] .
+  eq min(N:Nat,N:Nat + M:Nat)
+    = N:Nat [label NAT-FVP-03 variant] .
+  eq min(- N':NzNat,- M':NzNat)
+    = - max(N':NzNat,M':NzNat) [label INT-FVP-09 variant] .
+  eq min(I':NzInt / N':NzNat,J':NzInt / M':NzNat)
+    = min(I':NzInt * M':NzNat,J':NzInt * N':NzNat)/ N':NzNat * M':NzNat [label RAT-ACU-17]
+    .
+  eq p(0)
+    = - 1 [label INT-FVP-05 variant] .
+  eq p(1)
+    = 0 [label NAT-FVP-01 variant] .
+  eq p(- N':NzNat)
+    = -(1 + N':NzNat) [label INT-FVP-06 variant] .
+  eq p(1 + N:Nat)
+    = N:Nat [label NAT-FVP-01 variant] .
+  eq quot(0,N':NzNat)
+    = 0 [label NAT-ACU-03] .
+  eq quot(0,Q:NzNeg)
+    = 0 [label INT-ACU-01] .
+  eq quot(M':NzNat,M':NzNat)
+    = 1 [label NAT-ACU-02] .
+  eq quot(M:Nat,N':NzNat + M:Nat)
+    = 0 [label NAT-ACU-03] .
+  eq quot(N':NzNat,- M':NzNat)
+    = - quot(N':NzNat,M':NzNat) [label INT-ACU-03] .
+  eq quot(- N':NzNat,M':NzNat)
+    = - quot(N':NzNat,M':NzNat) [label INT-ACU-02] .
+  eq quot(- N':NzNat,- M':NzNat)
+    = quot(N':NzNat,M':NzNat) [label INT-ACU-04] .
+  eq quot(N':NzNat + M':NzNat,M':NzNat)
+    = 1 + quot(N':NzNat,M':NzNat) [label NAT-ACU-01] .
+  eq | N:Nat |
+    = N:Nat [label INT-FVP-03 variant] .
+  eq | - N':NzNat |
+    = N':NzNat [label INT-FVP-04 variant] .
+  eq | I':NzInt / N':NzNat |
+    = | I':NzInt | / N':NzNat [label RAT-ACU-13] .
+  ceq X@@@:[Rat]+ J':NzInt / M':NzNat
+    = X@@@:[Rat]+ quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,
+    M':NzNat))
+    if gcd(J':NzInt,M':NzNat)> 1 = true [label RAT-ACU-01] .
+  ceq J':NzInt / M':NzNat
+    = quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))
+    if gcd(J':NzInt,M':NzNat)> 1 = true [label RAT-ACU-01] .
+endfm

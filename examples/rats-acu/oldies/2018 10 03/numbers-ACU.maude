@@ -77,7 +77,7 @@ fmod INT-FVP is
   op -_ : NzNat -> NzNeg [ctor] .
   op -_ : Int -> Int .
   op -_ : NzInt -> NzInt .
-  op _+_ : Int Int -> Int [assoc comm id: 0] .
+  op _+_ : NzInt NzInt -> NzInt [assoc comm id: 0] .
   op |_| : Int -> Nat .                *** absolute value
   op |_| : NzInt -> NzNat .
   op p : Int -> Int .                  *** predecessor
