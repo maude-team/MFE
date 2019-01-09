@@ -149,12 +149,11 @@ fmod RAT-ACU is
   eq [RAT-ACU-16]: (I' / N') ~ J' = I' ~ (J' * N') .
   eq [RAT-ACU-17]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
   eq [RAT-ACU-18]: 0 > N' / M' = false .
-  eq [RAT-ACU-19]: 0 > - N' / M' = true .
-  eq [RAT-ACU-20]: N' / M' > 0 = true .
-  eq [RAT-ACU-21]: - N' / M' > 0 = false .
-  eq [RAT-ACU-22]: I' > (J' / M') = (I' * M') > J' .
-  eq [RAT-ACU-23]: (I' / N') > J' = I' > (J' * N') .
-  eq [RAT-ACU-24]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+  eq [RAT-ACU-19]: N' / M' > 0 = true .
+  eq [RAT-ACU-20]: - N' / M' > 0 = false .
+  eq [RAT-ACU-21]: I' > (J' / M') = (I' * M') > J' .
+  eq [RAT-ACU-22]: (I' / N') > J' = I' > (J' * N') .
+  eq [RAT-ACU-23]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
 endfm
 
 set include BOOL on .

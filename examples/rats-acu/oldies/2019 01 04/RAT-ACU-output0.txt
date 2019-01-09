@@ -5,7 +5,7 @@ examples/rats-acu/run: line 2: fg: no job control
 		     /||||||||||||||||||\
 	   Maude alpha115 built: Aug 11 2017 19:57:09
 	    Copyright 1997-2017 SRI International
-		   Fri Jan  4 13:01:17 2019
+		   Fri Jan  4 11:44:34 2019
 
 	    Full Maude 2.7f November 20th 2017
 
@@ -23,13 +23,13 @@ set include TRUTH-VALUE on
 rewrites: 76 in 0ms cpu (1ms real) (~ rewrites/second)
 The CRC has been set as current tool.
 
-rewrites: 1955595 in 5305ms cpu (5828ms real) (368591 rewrites/second)
+rewrites: 1955595 in 5368ms cpu (5895ms real) (364292 rewrites/second)
 Church-Rosser check for INT-ACU
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
 
-rewrites: 5603267 in 69252ms cpu (75870ms real) (80911 rewrites/second)
+rewrites: 5544359 in 65165ms cpu (68945ms real) (85080 rewrites/second)
 Church-Rosser check for RAT-ACU
 The following critical pairs must be proved joinable:
   ccp RAT-ACU1000 for INT-FVP-02 and RAT-ACU-02
@@ -40,11 +40,11 @@ The following critical pairs must be proved joinable:
     (-(@1:NzInt * @4:NzNat)+ @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat
     = - @1:NzInt / @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
     if gcd(@3:NzInt,@4:NzNat)> 1 = true .
-  ccp RAT-ACU1191 for RAT-ACU-08 and RAT-ACU-02 ---- context 1190
+  ccp RAT-ACU1191 for RAT-ACU-08 and RAT-ACU-02
     @5:[Rat]+(-(@1:NzInt * @4:NzNat)+ @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat
     = @5:[Rat]+ - @1:NzInt / @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
     if gcd(@3:NzInt,@4:NzNat)> 1 = true .
-  ccp RAT-ACU1530 for RAT-ACU-03 and RAT-ACU-02 ---- unsatisfiable condition
+  ccp RAT-ACU1530 for RAT-ACU-03 and RAT-ACU-02
     @1:NzInt + @2:[Rat]
     = @2:[Rat]+ quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
     if gcd(1,@1:NzInt)> 1 = true .
@@ -76,103 +76,103 @@ The following critical pairs must be proved joinable:
     (@1:NzInt * @4:NzNat * @6:NzNat + @3:NzInt * @2:NzNat * @6:NzNat + @5:NzInt * @2:NzNat * @4:NzNat)/ @2:NzNat * @4:NzNat * @6:NzNat
     =(@1:NzInt * @4:NzNat + @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat + quot(@5:NzInt,gcd(@5:NzInt,@6:NzNat))/ quot(@6:NzNat,gcd(@5:NzInt,@6:NzNat))
     if gcd(@5:NzInt,@6:NzNat)> 1 = true .
-  ccp RAT-ACU5336 for RAT-ACU-03 and RAT-ACU-02 ---- unsatisfiable condition
+  ccp RAT-ACU5335 for RAT-ACU-03 and RAT-ACU-02
     @1:NzInt
     = quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
     if gcd(1,@1:NzInt)> 1 = true .
-  ccp RAT-ACU5551 for RAT-ACU-02 and RAT-ACU-08
+  ccp RAT-ACU5549 for RAT-ACU-02 and RAT-ACU-08
     -(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = - @1:NzInt / @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5552 for RAT-ACU-02 and RAT-ACU-12
+  ccp RAT-ACU5550 for RAT-ACU-02 and RAT-ACU-12
     @3:NzInt *(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     =(@1:NzInt * @3:NzInt)/ @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5553 for RAT-ACU-02 and RAT-ACU-13
+  ccp RAT-ACU5551 for RAT-ACU-02 and RAT-ACU-13
     (@3:NzInt / @4:NzNat)*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     =(@1:NzInt * @3:NzInt)/ @2:NzNat * @4:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5555 for RAT-ACU-02 and RAT-ACU-12
+  ccp RAT-ACU5553 for RAT-ACU-02 and RAT-ACU-12
     @3:NzInt * @4:[Rat]*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = @4:[Rat]*((@1:NzInt * @3:NzInt)/ @2:NzNat)
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5556 for RAT-ACU-02 and RAT-ACU-13
+  ccp RAT-ACU5554 for RAT-ACU-02 and RAT-ACU-13
     @3:[Rat]*(@4:NzInt / @5:NzNat)*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = @3:[Rat]*((@1:NzInt * @4:NzInt)/ @2:NzNat * @5:NzNat)
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5559 for RAT-ACU-02 and RAT-ACU-08
+  ccp RAT-ACU5557 for RAT-ACU-02 and RAT-ACU-08
     @3:[Rat]+ -(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = @3:[Rat]+ - @1:NzInt / @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5560 for RAT-ACU-02 and RAT-ACU-05
+  ccp RAT-ACU5558 for RAT-ACU-02 and RAT-ACU-05
     @3:[Rat]+ @4:NzInt /(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = @3:[Rat]+(@4:NzInt * @2:NzNat)/ @1:NzInt
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5562 for RAT-ACU-02 and RAT-ACU-06
+  ccp RAT-ACU5560 for RAT-ACU-02 and RAT-ACU-06
     @3:[Rat]+(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/ @4:NzInt
     = @3:[Rat]+ @1:NzInt / @4:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5563 for RAT-ACU-02 and RAT-ACU-07
+  ccp RAT-ACU5561 for RAT-ACU-02 and RAT-ACU-07
     @3:[Rat]+(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/(@4:NzInt / @5:NzNat)
     = @3:[Rat]+(@1:NzInt * @5:NzNat)/ @4:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5564 for RAT-ACU-02 and RAT-ACU-07
+  ccp RAT-ACU5562 for RAT-ACU-02 and RAT-ACU-07
     @3:[Rat]+(@4:NzInt / @5:NzNat)/(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     = @3:[Rat]+(@4:NzInt * @2:NzNat)/ @1:NzInt * @5:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5565 for RAT-ACU-02 and RAT-ACU-14
+  ccp RAT-ACU5563 for RAT-ACU-02 and RAT-ACU-14
     @3:[Rat]+ | quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))|
     = @3:[Rat]+ | @1:NzInt | / @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5571 for RAT-ACU-02 and RAT-ACU-05
+  ccp RAT-ACU5569 for RAT-ACU-02 and RAT-ACU-05
     @3:NzInt /(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     =(@3:NzInt * @2:NzNat)/ @1:NzInt
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5573 for RAT-ACU-02 and RAT-ACU-06
+  ccp RAT-ACU5571 for RAT-ACU-02 and RAT-ACU-06
     (quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/ @3:NzInt
     = @1:NzInt / @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5574 for RAT-ACU-02 and RAT-ACU-07
+  ccp RAT-ACU5572 for RAT-ACU-02 and RAT-ACU-07
     (quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/(@3:NzInt / @4:NzNat)
     =(@1:NzInt * @4:NzNat)/ @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5575 for RAT-ACU-02 and RAT-ACU-07
+  ccp RAT-ACU5573 for RAT-ACU-02 and RAT-ACU-07
     (@3:NzInt / @4:NzNat)/(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
     =(@3:NzInt * @2:NzNat)/ @1:NzInt * @4:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5576 for RAT-ACU-02 and RAT-ACU-18
+  ccp RAT-ACU5574 for RAT-ACU-02 and RAT-ACU-18
     0 > quot(@1:NzNat,gcd(@1:NzNat,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzNat,@2:NzNat))
     = false
     if gcd(@1:NzNat,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5578 for RAT-ACU-02 and RAT-ACU-22
+  ccp RAT-ACU5575 for RAT-ACU-02 and RAT-ACU-21
     @3:NzInt > quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
     = @3:NzInt * @2:NzNat > @1:NzInt
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5579 for RAT-ACU-02 and RAT-ACU-23
+  ccp RAT-ACU5576 for RAT-ACU-02 and RAT-ACU-22
     quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))> @3:NzInt
     = @1:NzInt > @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5580 for RAT-ACU-02 and RAT-ACU-24
+  ccp RAT-ACU5577 for RAT-ACU-02 and RAT-ACU-23
     quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))> @3:NzInt / @4:NzNat
     = @1:NzInt * @4:NzNat > @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5581 for RAT-ACU-02 and RAT-ACU-24
+  ccp RAT-ACU5578 for RAT-ACU-02 and RAT-ACU-23
     @3:NzInt / @4:NzNat > quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
     = @3:NzInt * @2:NzNat > @1:NzInt * @4:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5582 for RAT-ACU-02 and RAT-ACU-20
+  ccp RAT-ACU5579 for RAT-ACU-02 and RAT-ACU-19
     quot(@1:NzNat,gcd(@1:NzNat,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzNat,@2:NzNat))> 0
     = true
     if gcd(@1:NzNat,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5584 for RAT-ACU-02 and RAT-ACU-16
+  ccp RAT-ACU5581 for RAT-ACU-02 and RAT-ACU-16
     @3:NzInt ~ quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
     = @1:NzInt ~ @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5585 for RAT-ACU-02 and RAT-ACU-17
+  ccp RAT-ACU5582 for RAT-ACU-02 and RAT-ACU-17
     @3:NzInt / @4:NzNat ~ quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
     = @1:NzInt * @4:NzNat ~ @3:NzInt * @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
-  ccp RAT-ACU5587 for RAT-ACU-02 and RAT-ACU-14
+  ccp RAT-ACU5584 for RAT-ACU-02 and RAT-ACU-14
     | quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))|
     = | @1:NzInt | / @2:NzNat
     if gcd(@1:NzInt,@2:NzNat)> 1 = true .
