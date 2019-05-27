@@ -18,7 +18,7 @@
 (ccr INT-ACU .)
 ---(show all critical pairs .)
 
-(ccr RAT-ACU .)
+---(ccr RAT-ACU .)
 ---(show all critical pairs .)
 
 ---(ccr CJ .)

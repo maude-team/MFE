@@ -1,3 +1,8 @@
+load multiset-algebra.maude
+
+select MFE .
+loop init .
+
 (select tool CRC .)
 set trace off .
 set trace select off .

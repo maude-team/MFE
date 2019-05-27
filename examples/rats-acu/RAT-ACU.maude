@@ -61,6 +61,7 @@ fmod INT-FVP is
   op -_ : NzInt -> NzInt .
   op _+_ : Int Int -> Int [assoc comm id: 0 prec 33] .
   op _+_ : NzInt NzInt -> NzInt [assoc comm id: 0 prec 33] .
+----  op _+_ : NzNeg NzNeg -> NzNeg [assoc comm id: 0 prec 33] .
   op |_| : Int -> Nat .                             *** absolute value
   op |_| : NzInt -> NzNat .
   op p : Int -> Int .                               *** predecessor
@@ -70,9 +71,11 @@ fmod INT-FVP is
   vars N' M' : NzNat .
   var  N : Nat .
   var  I' : NzInt .
+  var  I : Int .
 
   eq [INT-FVP-01]: - 0 = 0 [variant] .
   eq [INT-FVP-02]: - - I' = I' [variant] .
+----  eq [INT-FVP-02]: - - I = I [variant] .
   eq [INT-FVP-03]: | N | = N [variant] .
   eq [INT-FVP-04]: | - N' | = N' [variant] .
   eq [INT-FVP-05]: p(0) = - 1 [variant] .
@@ -92,9 +95,11 @@ fmod INT-ACU is
   op _*_ : Int Int -> Int [assoc comm prec 31] .
   op _*_ : NzInt NzInt -> NzInt [assoc comm prec 31] .
 
+  vars I J H : Int .
   vars I' J' H' : NzInt .
   vars N' M' : NzNat .
   var  Q : NzNeg .
+  vars N M : Nat .
 
   eq [INT-ACU-01]: quot(0, Q) = 0 .
   eq [INT-ACU-02]: quot(- N', M') = - quot(N', M') .
@@ -102,9 +107,16 @@ fmod INT-ACU is
   eq [INT-ACU-04]: quot(- N', - M') = quot(N', M') .
   eq [INT-ACU-05]: gcd(- N', I') = gcd(N', I') .
   eq [INT-ACU-06]: I' * - J' = - (I' * J') .
+----  eq [INT-ACU-06]: I * - J = - (I * J) .
   eq [INT-ACU-07]: I' * (J' + H') = (I' * J') + (I' * H') .
+----  eq [INT-ACU-07]: I * (J' + H') = (I * J') + (I * H') .
   eq [INT-ACU-08]: - I' + - J' = - (I' + J') .
+----  eq [INT-ACU-08]: - I + - J = - (I + J) .
   eq [INT-ACU-09]: - (I' + - J') = - I' + J' .
+----  eq [INT-ACU-09]: - (I' + - J) = - I' + J .
+----  eq [INT-ACU-10]: -(N + 1) + M + 1 = - N + M .
+  eq [INT-ACU-10]: -(I' + J') + J' = - I' .
+  eq [INT-ACU-11]: I' + - I' = 0 .
 endfm
 
 fmod RAT-ACU is
@@ -129,6 +141,7 @@ fmod RAT-ACU is
   vars I' J' : NzInt .
   vars R' S' : NzRat .
   vars N' M' : NzNat .
+  vars R : Rat .
 
   eq [RAT-ACU-01]: 0 / N' = 0 .
  ceq [RAT-ACU-02]: J' / M' = quot(J', gcd(J', M')) / quot(M', gcd(J', M'))

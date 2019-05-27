@@ -125,11 +125,7 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-<<<<<<< HEAD
 load FM/full-maude27f.maude
-=======
-load FM/full-maude27e.maude
->>>>>>> 0a35eaaa3bc69e0405fd63a4935e6efd9bd0e4f5
 load GLOT/glot.maude
 set show advisories off .
 load ITP/itp.maude
