@@ -1,0 +1,95 @@
+----  cp RAT-ACU1285 for RAT-ACU-01 and RAT-ACU-25
+----    @2:NzInt
+----    =(@1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  We have to prove I':NzInt \|/ (N':NzNat * I':NzInt) / N':NzNat.
+----  Let us assume variables
+----    I' J' : NzInt
+----    N' M' : NzNat
+----  And let write such proof obligation as
+----    I' \|/ (N' * I') / N'
+----
+----  This proof obligation can be dealt with by using the CtorCases rule on I',
+----  with generating set {N':NzNat, - N':NzNat}.
+----
+----  a) M' \|/ (N' * M') / N'
+----  b) - M' \|/ (N' * - M') / N'
+----
+----  Let us consider a) M' \|/ (N' * M') / N'
+----  Let us use the CtorCases rule on M', with generating set {1, 1 + N':NzNat}.
+
+search in RAT-ACU-R : join (M', (1 * M') / 1) =>* tt .
+
+----  Maude> search in RAT-ACU-R : join (M', (1 * M') / 1) =>* tt .
+----  search in RAT-ACU-R : join(M', (1 * M') / 1) =>* tt .
+----
+----  Solution 1 (state 4)
+----  states: 5  rewrites: 8 in 0ms cpu (0ms real) (80808 rewrites/second)
+----  empty substitution
+----
+----  No more solutions.
+----  states: 5  rewrites: 8 in 0ms cpu (0ms real) (71428 rewrites/second)
+
+search in RAT-ACU-R : join (M', ((1 + N') * M') / (1 + N')) =>* tt .
+
+----  Maude> search in RAT-ACU-R : join (M', ((1 + N') * M') / (1 + N')) =>* tt .
+----  search in RAT-ACU-R : join(M', (M' * (1 + N')) / (1 + N')) =>* tt .
+----
+----  Solution 1 (state 69)
+----  states: 70  rewrites: 303 in 1ms cpu (1ms real) (212036 rewrites/second)
+----  empty substitution
+----
+----  No more solutions.
+----  states: 70  rewrites: 303 in 1ms cpu (1ms real) (209254 rewrites/second)
+
+----  b) - M' \|/ (N' * - M') / N'
+----  Let us use the CtorCases rule on N', with generating set {1, 1 + N':NzNat}.
+
+search in RAT-ACU-R : join (- M', (1 * - M') / 1) =>* tt .
+
+----  Maude> search in RAT-ACU-R : join (- M', (1 * - M') / 1) =>* tt .
+----  search in RAT-ACU-R : join(- M', (1 * - M') / 1) =>* tt .
+----
+----  Solution 1 (state 6)
+----  states: 7  rewrites: 25 in 0ms cpu (0ms real) (145348 rewrites/second)
+----  empty substitution
+----
+----  No more solutions.
+----  states: 7  rewrites: 26 in 0ms cpu (0ms real) (127450 rewrites/second)
+
+search in RAT-ACU-R : join (- M', ((1 + N') * - M') / (1 + N')) =>* tt .
+
+----  Maude> search in RAT-ACU-R : join (- M', ((1 + N') * - M') / (1 + N')) =>* tt .
+----  search in RAT-ACU-R : join(- M', (- M' * (1 + N')) / (1 + N')) =>* tt .
+----
+----  Solution 1 (state 2351)
+----  states: 2352  rewrites: 13601 in 56ms cpu (57ms real) (240879 rewrites/second)
+----  empty substitution
+----
+----  No more solutions.
+----  states: 2757  rewrites: 17816 in 73ms cpu (74ms real) (241628 rewrites/second)
+
+
+
+eof
+For rule
+ceq [RAT-ACU-05]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
+    if gcd(J',M') > 1 = true .                           *** canonical form of fraction
+to be applied on the right side, we must have gcd(N' * M', N') > 1.
+
+We have proven that INT-ACU is sufficiently complete, and therefore that
+gcd(N' * M', N') reduces to either 1 or a term of the form 1 + N':NzNat,
+and that gcd(N' * M', N') > 1 reduces to either true or false.
+Indeed, by Lemma INT-ACU |- gcd(N', N' * I') = N'
+we have that we have two possible cases:
+a.1) N' = 1, in which case gcd(N', N' * I') = N' = 1 > 1 is false
+b.2) N' = 1 + M', i.e. N' > 1, in which case gcd(N', N' * I') = N' = 1 + M' > 1 is true
+In case a.1), (N' * M') / N' is already simplified
+  M'   \|/   (1 * M') / 1 = M' / 1 = M'
+In case a.2), the condition is satisfied and therefore RAT-ACU-05 can be applied:
+  M' \|/ (N' * M') / N'
+          --> quot(N' * M', gcd(N' * M', N')) / quot(N', gcd(N' * M', N')) (by RAT-ACU-05)
+          = quot(N' * M', N') / quot(N', N')   (by Lemma INT-ACU |- gcd(N', N' * I') = N')
+          = M' / quot(N', N')                  (by Lemma INT-ACU |- quot(N' * M', N') = M')
+          = M' / 1                                                         (by NAT-ACU-02)
+          --> M'                                                           (by RAT-ACU-04)

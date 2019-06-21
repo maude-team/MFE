@@ -1,0 +1,22 @@
+----  cp RAT-ACU1746 for RAT-ACU-04 and RAT-ACU-26
+----    @1:Int + @2:Int / @3:NzNat
+----    =(@2:Int + @3:NzNat * @1:Int)/ @3:NzNat .
+----
+----search [1] in RAT-ACU-R :
+----  join(I + J / N', (J + N' * I) / N') =>* tt .
+----
+---- CtorCases on I, of sort Int, with generating set {0, I':NzInt}
+
+search [1] in RAT-ACU-R :
+  join(0 + J / N', (J + N' * 0) / N') =>* tt .
+
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 4 in 0ms cpu (0ms real) (34188 rewrites/second)
+----  empty substitution
+
+search [1] in RAT-ACU-R :
+  join(I' + J / N', (J + N' * I') / N') =>* tt .
+
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 3 in 0ms cpu (0ms real) (28037 rewrites/second)
+----  empty substitution

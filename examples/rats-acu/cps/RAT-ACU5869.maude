@@ -1,0 +1,25 @@
+----  cp RAT-ACU5869 for INT-ACU-10 and RAT-ACU-26
+----    (@2:NzNat * @3:Int + @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat)))/ @2:NzNat
+----    * @4:NzNat
+----    =(-(@2:NzNat * @4:NzNat * @5:NzNat)+ @2:NzNat * @3:Int + @4:NzNat *
+----    @1:Int)/ @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat))
+----    =-(@2:NzNat * @4:NzNat * @5:NzNat)+ @4:NzNat * @1:Int
+
+---- search [1] join(N' * (I + - (M' * I')), - (N' * M' * I') + N' * I) =>* tt .
+
+----  We apply CtorCases on variable I, of sort Int, with generating set {0, I':NzInt}.
+
+search [1] join(N' * (0 + - (M' * I')), - (N' * M' * I') + N' * 0) =>* tt .
+
+---- Solution 1 (state 4)
+---- states: 5  rewrites: 5 in 0ms cpu (0ms real) (37313 rewrites/second)
+---- empty substitution
+
+search [1] join(N' * (J' + - (M' * I')), - (N' * M' * I') + N' * J') =>* tt .
+
+---- Solution 1 (state 3)
+---- states: 4  rewrites: 6 in 0ms cpu (0ms real) (38961 rewrites/second)
+---- empty substitution

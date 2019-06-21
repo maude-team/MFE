@@ -1,0 +1,47 @@
+--------------------------------------------------------------------------------
+Lemma                      INT-ACU |- gcd(N', N' * I') = N'
+--------------------------------------------------------------------------------
+
+Let us use CtorCases on I', with generating set {N':NzNat, - N':NzNat}.
+We have two cases:
+a) gcd(N', N' * M') = N'
+
+We do induction on M'
+
+B.C. M' = 1
+    gcd(N', N' * 1) = N'
+    gcd(N', N' * 1) = gcd(N', N')                          (by NAT-ACU-07)
+                     = N'                                  (by NAT-ACU-04)
+I.H. gcd(N', N' * M') = N'
+I.S. gcd(N', N' * (1 + M')) = N'
+    gcd(N', N' * (1 + M')) = gcd(N', N' * 1 + N' * M')     (by NAT-ACU-08)
+                           = gcd(N', N' + N' * M')         (by NAT-ACU-07)
+                           (N' * M' : NzNat)
+                           = gcd(N', N' * M')              (by NAT-ACU-05)
+                           = N'                            (by I.H.)
+
+b) gcd(N', N' * - M') = N'
+   gcd(N', N' * - M') = gcd(N', - (N' * M'))               (by INT-ACU-06)
+                      = gcd(N', N' * M')                   (by NAT-ACU-05)
+                      = N'                                 (by a))
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Lemma                      INT-ACU |- quot(N' * M', N') = M'
+--------------------------------------------------------------------------------
+
+We do induction on M'
+
+B.C. M' = 1
+    quot(N' * 1, N') = 1
+    quot(N' * 1, N') = quot(N', N')                        (by NAT-ACU-07)
+                     = 1                                   (by NAT-ACU-02)
+I.H. quot(N' * M', N') = M'
+I.S. quot(N' * (1 + M'), N') = 1 + M'
+    quot(N' * (1 + M'), N') = quot(N' * 1 + N' * M'), N')  (by NAT-ACU-08)
+                            = quot(N' + N' * M', N')       (by NAT-ACU-07)
+                            (N' * M' : NzNat)
+                            = 1 + quot(N' * M', N')        (by NAT-ACU-01)
+                            = 1 + M'                       (by I.H.)
+
+--------------------------------------------------------------------------------

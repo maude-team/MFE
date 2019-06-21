@@ -1,0 +1,49 @@
+----  cp RAT-ACU1565 for RAT-ACU-02 and RAT-ACU-25
+----    1 + @2:NzInt
+----    =(@1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
+
+----  We have to prove 1 + I' \|/ (N' + N' * I') / N'
+----
+----  This proof obligation can be dealt with by using the CtorCases rule on I',
+----  with generating set {N':NzNat, - N':NzNat}.
+----
+----  a) 1 + M' \|/ (N' + N' * M') / N'
+----  b) 1 + - M' \|/ (N' + N' * - M') / N'
+
+----  a) search in RAT-ACU-R : join(1 + M', (N' + N' * M') / N') =>* tt .
+
+----  cases on N'
+
+search [1] in RAT-ACU-R : join(1 + M', (1 + 1 * M') / 1) =>* tt .
+
+----  search [1] in RAT-ACU-R : join(1 + M', (1 + 1 * M') / 1) =>* tt .
+----
+----  Solution 1 (state 8)
+----  states: 9  rewrites: 102 in 1ms cpu (1ms real) (70539 rewrites/second)
+----  empty substitution
+
+search [1] in RAT-ACU-R : join(1 + M', (1 + N' + (1 + N') * M') / (1 + N')) =>* tt .
+
+----  search [1] in RAT-ACU-R : join(1 + M', (1 + N' + M' * (1 + N')) / (1 + N')) =>* tt .
+----
+----  Solution 1 (state 11412)
+----  states: 11413  rewrites: 1180071 in 6545ms cpu (6578ms real) (180277 rewrites/second)
+----  empty substitution
+
+----  b) search in RAT-ACU-R : join(1 + - M', (N' + N' * - M') / N') =>* tt .
+
+search [1] in RAT-ACU-R : join(1 + - M', (1 + 1 * - M') / 1) =>* tt .
+
+----  search [1] in RAT-ACU-R : join(1 + - M', (1 + 1 * - M') / 1) =>* tt .
+----
+----  Solution 1 (state 10)
+----  states: 11  rewrites: 83 in 0ms cpu (0ms real) (139028 rewrites/second)
+----  empty substitution
+
+search [1] in RAT-ACU-R : join(1 + - M', (1 + N' + (1 + N') * - M') / (1 + N')) =>* tt .
+
+----  search [1] in RAT-ACU-R : join(1 + - M', (1 + N' + - M' * (1 + N')) / (1 + N')) =>* tt .
+----
+----  Solution 1 (state 356164)
+----  states: 356165  rewrites: 5226343 in 80292ms cpu (81988ms real) (65091 rewrites/second)
+----  empty substitution

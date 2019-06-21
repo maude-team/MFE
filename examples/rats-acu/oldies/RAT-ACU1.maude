@@ -138,37 +138,41 @@ fmod RAT-ACU is
   vars I J : Int .
 
   eq [RAT-ACU-01]: 0 / N' = 0 .
-  eq [RAT-ACU-02]: N' / N' = 1 .
-  eq [RAT-ACU-03]: - N' / N' = - 1 .
-  eq [RAT-ACU-04]: R / 1 = R .
- ceq [RAT-ACU-05]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
+
+  ceq [RAT-ACU-02]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
      if gcd(J',M') > 1 = true .                           *** canonical form of fraction
-  eq [RAT-ACU-06]: I' / -(N') = -(I') / N' .
-  eq [RAT-ACU-07]: I' / (J' / M') = (I' * M') / J' .
-  eq [RAT-ACU-08]: (I' / N') / J' = I' / (N' * J') .
-  eq [RAT-ACU-09]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
-  eq [RAT-ACU-10]: -(I' / N') = -(I') / N' .
+  eq [RAT-ACU-03]: R' / 1 = R' .
+  eq [RAT-ACU-04]: I' / -(N') = -(I') / N' .
+  eq [RAT-ACU-05]: I' / (J' / M') = (I' * M') / J' .
+  eq [RAT-ACU-06]: (I' / N') / J' = I' / (N' * J') .
+  eq [RAT-ACU-07]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
+  eq [RAT-ACU-08]: -(I' / N') = -(I') / N' .
 
-  eq [RAT-ACU-11]: (I' / N') * 0 = 0 .
-  eq [RAT-ACU-12]: (I' / N') * J' = (I' * J') / N' .
-  eq [RAT-ACU-13]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
+  eq [RAT-ACU-09]: (I' / N') * 0 = 0 .
+  eq [RAT-ACU-10]: (I' / N') * J' = (I' * J') / N' .
+  eq [RAT-ACU-11]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
 
-  eq [RAT-ACU-14]: | I' / N' | = | I' | / N' .
+  eq [RAT-ACU-12]: | I' / N' | = | I' | / N' .
 
-  eq [RAT-ACU-15]: (I' / N') ~ J' = I' ~ (J' * N') .
-  eq [RAT-ACU-16]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
-  eq [RAT-ACU-17]: 0 ~ R' = false .
+  eq [RAT-ACU-13]: (I' / N') ~ J' = I' ~ (J' * N') .
+  eq [RAT-ACU-14]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
+  eq [RAT-ACU-15]: 0 ~ R' = false .
 
-  eq [RAT-ACU-18]: I' > (J' / M') = (I' * M') > J' .
-  eq [RAT-ACU-19]: (I' / N') > J' = I' > (J' * N') .
-  eq [RAT-ACU-20]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
-  eq [RAT-ACU-21]: N' / M' > 0 = true .
-  eq [RAT-ACU-22]: - N' / M' > 0 = false .
-  eq [RAT-ACU-23]: 0 > N' / M' = false .
-  eq [RAT-ACU-24]: 0 > - N' / M' = true .
+  eq [RAT-ACU-16]: I' > (J' / M') = (I' * M') > J' .
+  eq [RAT-ACU-17]: (I' / N') > J' = I' > (J' * N') .
+  eq [RAT-ACU-18]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+  eq [RAT-ACU-19]: N' / M' > 0 = true .
+  eq [RAT-ACU-20]: - N' / M' > 0 = false .
+  eq [RAT-ACU-21]: 0 > N' / M' = false .
+  eq [RAT-ACU-22]: 0 > - N' / M' = true .
 
-  eq [RAT-ACU-25]: J' + (I / N') = ((J' * N') + I) / N' .
-  eq [RAT-ACU-26]: (I / N') + (J / M') = ((I * M') + (J * N')) / (N' * M') .
+  eq [RAT-ACU-23]: J' + (I / N') = ((J' * N') + I) / N' .
+  eq [RAT-ACU-24]: (I / N') + (J / M') = ((I * M') + (J * N')) / (N' * M') .
+
+  eq [RAT-ACU-25]: N' / N' = 1 .
+  eq [RAT-ACU-26]: - N' / N' = - 1 .
+  eq [RAT-ACU-27]: (N' * M') / N' = M' .
+  eq [RAT-ACU-27]: (N' * I + N' * M') / (N' * O') = (I + M') / O' .
 endfm
 
 set include BOOL on .

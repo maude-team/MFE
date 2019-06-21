@@ -1,5 +1,4 @@
-
-% to be run from the MFE root directory
+# to be run from the MFE root
 
 ulimit -s 65532
-~/Maude/Alpha115/maude-Yices2.darwin64 examples/rats-acu/RAT-ACU.maude src/mfe.maude examples/rats-acu/RAT-ACU-check.maude
+~/Maude/Alpha121/maude-Yices2.darwin64 examples/rats-acu/RAT-ACU.maude src/mfe.maude examples/rats-acu/RAT-ACU-check.maude | tee examples/rats-acu/RAT-ACU-output.txt

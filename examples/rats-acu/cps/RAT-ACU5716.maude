@@ -1,0 +1,15 @@
+----  cp RAT-ACU5716 for RAT-ACU-25 and RAT-ACU-26
+----    (@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/ @2:NzNat *
+----    @4:NzNat
+----    =(@2:NzNat * @3:Int + @4:NzNat * @1:Int + @2:NzNat * @4:NzNat * @5:NzInt)/
+----    @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)
+----    =@2:NzNat * @3:Int + @2:NzNat * @4:NzNat * @5:NzInt
+
+search [1] join(N' * (I + M' * I'), N' * I + N' * M' * I') =>* tt .
+
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 3 in 0ms cpu (0ms real) (25210 rewrites/second)
+----  empty substitution

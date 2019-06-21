@@ -1,0 +1,23 @@
+----  cp RAT-ACU6238 for RAT-ACU-02 and RAT-ACU-08
+----    @2:[Rat]+ 1 / @3:NzInt
+----    = @2:[Rat]+ @1:NzNat / @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----   1 / @3:NzInt
+----    = @1:NzNat / @1:NzNat * @3:NzInt
+
+----  search [1] in RAT-ACU-R : join(1 / I', N' / N' * I') =>* tt .
+
+----  We apply CtorCases on N', of sort NzNat, with generating set {1, 1 + NzNat}.
+
+search [1] in RAT-ACU-R : join(1 / I', 1 / 1 * I') =>* tt .
+
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 15 in 0ms cpu (0ms real) (88757 rewrites/second)
+----  empty substitution
+
+search [1] in RAT-ACU-R : join(1 / I', (1 + N') / (1 + N') * I') =>* tt .
+
+----  Solution 1 (state 90)
+----  states: 91  rewrites: 396 in 2ms cpu (2ms real) (144525 rewrites/second)
+----  empty substitution

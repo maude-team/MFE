@@ -1,0 +1,79 @@
+----  cp RAT-ACU1766 for RAT-ACU-03 and RAT-ACU-25
+----    @2:NzInt + - 1
+----    =(- @1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
+
+----  search [1] in RAT-ACU-R : join(I' + - 1, (- N' + N' * I') / N') =>* tt .
+
+search [1] in RAT-ACU-R : join(I' + - 1, (- 1 + 1 * I') / 1) =>* tt .
+
+search [1] in RAT-ACU : (- 1 + 1 * I') / 1 =>* I' + - 1 .
+search [1] in RAT-ACU-R : (- 1 + 1 * I') / 1 =>* I' + - 1 .
+
+
+rew gcd ()
+
+search [1] in RAT-ACU-R : join(I' + - 1, (- N' + N' * I') / N') =>* tt .
+
+
+search (- N' + N' * I') / N' =>* quot(I,I') / quot(J,J') .
+
+search gcd(- N' + N' * I', N') .
+----  we need to consider two cases: b.1) N' = 1 and b.2) N' > 1
+----
+----  1) N' = 1
+
+mod RAT-ACU-R-1 is
+  pr RAT-ACU-R .
+  ops n' : -> NzNat .
+  rl n' => 1 .
+
+  vars R : Rat .
+  vars R' : NzRat .
+  vars I J K : Int .
+  vars I' J' : NzInt .
+  vars N' M' O' : NzNat .
+endm
+
+search [1] in RAT-ACU-R-1 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+
+search [1] (- n' + n' * I') / n' =>* quot(I,I')/ quot(J,J') .
+rew gcd(- N' + N' * I', N') .
+----  search [1] in RAT-ACU-R-1 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+----
+----  Solution 1 (state 60)
+----  states: 61  rewrites: 1308 in 11ms cpu (11ms real) (112545 rewrites/second)
+----  empty substitution
+
+----  2) N' > 1
+
+mod RAT-ACU-R-2 is
+  pr RAT-ACU-R .
+  ops n' : -> NzNat .
+  rl n' > 1 => true .
+
+  vars R : Rat .
+  vars R' : NzRat .
+  vars I J K : Int .
+  vars I' J' : NzInt .
+  vars N' M' O' : NzNat .
+endm
+
+----  search [1] in RAT-ACU-R-2 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+
+----  We need to apply CtorCases on I', of sort NzInt, with generator set {N':NzNat, - N':NzNat}.
+
+search [1] in RAT-ACU-R-2 : join(N' + - 1, (- n' + n' * N') / n') =>* tt .
+
+----  search [1] in RAT-ACU-R-2 : join(N' + - 1, (- n' + n' * N') / n') =>* tt .
+----
+----  Solution 1 (state 2780)
+----  states: 2781  rewrites: 14235 in 105ms cpu (106ms real) (135260 rewrites/second)
+----  empty substitution
+
+search [1] in RAT-ACU-R-2 : join(- N' + - 1, (- n' + n' * - N') / n') =>* tt .
+
+----  search [1] in RAT-ACU-R-2 : join(- 1 + - N', (- n' + n' * - N') / n') =>* tt .
+----
+----  Solution 1 (state 16728)
+----  states: 16729  rewrites: 206092 in 1404ms cpu (1541ms real) (146711 rewrites/second)
+----  empty substitution

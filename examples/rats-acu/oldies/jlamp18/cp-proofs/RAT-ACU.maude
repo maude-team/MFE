@@ -1,0 +1,182 @@
+*** version of October 31 2018
+
+set include BOOL off .
+
+mod NAT-FVP is
+  protecting TRUTH-VALUE .
+  sorts Nat NzNat Zero .
+  subsorts Zero NzNat < Nat .
+  op 0 : -> Zero [ctor] .
+  op 1 : -> NzNat [ctor] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0 prec 33] .
+  op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0 prec 33] .
+  op p : NzNat -> Nat .                             *** predecessor
+  op d : Nat Nat -> Nat [comm] .                    *** symmetric difference
+  op _\_ : Nat Nat -> Nat .                         *** monus
+  op _~_ : Nat Nat -> Bool [comm] .                 *** equality predicate
+  op _>_ : Nat Nat -> Bool .
+
+  vars N M : Nat .
+  vars N' M' : NzNat .
+
+  rl [NAT-FVP-01]: p(N + 1) => N [variant] .
+  rl [NAT-FVP-02]: d(N + M, N) => M [variant] .
+  rl [NAT-FVP-03]: (N + M) \ N => M [variant] .
+  rl [NAT-FVP-04]: N \ (N + M) => 0 [variant] .
+  rl [NAT-FVP-05]: N ~ N => true [variant] .
+  rl [NAT-FVP-06]: (N + M') ~ N => false [variant] .
+  rl [NAT-FVP-07]: M + N + 1 > N => true [variant] .
+  rl [NAT-FVP-08]: N > N + M => false [variant] .
+  rl [NAT-FVP-09]: N' > 0 => true [variant] .
+endm
+
+mod NAT-ACU is
+  protecting NAT-FVP .
+  op quot : Nat NzNat -> Nat .                      *** quotient
+  op gcd : NzNat NzNat -> NzNat [comm] .            *** greatest common divisor
+  op _*_ : Nat Nat -> Nat [assoc comm prec 31] .
+  op _*_ : NzNat NzNat -> NzNat [assoc comm prec 31] .
+
+  vars N M : Nat .
+  vars N' M' K' : NzNat .
+  var  N? : [Nat] .
+
+  rl [NAT-ACU-01]: quot(N' + M', M') => 1 + quot(N', M')  .
+  rl [NAT-ACU-02]: quot(M', M') => 1 .
+  rl [NAT-ACU-03]: quot(M, N' + M) => 0 .
+  rl [NAT-ACU-04]: gcd(N', N') => N' .
+  rl [NAT-ACU-05]: gcd(N' + M', M') => gcd(N', M') .
+  rl [NAT-ACU-06]: N? * 0 => 0 .
+  rl [NAT-ACU-07]: N? * 1 => N? .
+  rl [NAT-ACU-08]: N' * (M' + K') => (N' * M') + (N' * K') .
+endm
+
+mod INT-FVP is
+  protecting NAT-FVP .
+  sorts NzNeg NzInt Int .
+  subsorts Nat NzNeg < Int .
+  subsorts NzNat NzNeg < NzInt < Int .
+  op -_ : NzNat -> NzNeg [ctor] .
+  op -_ : NzNeg -> NzNat [ctor] .
+  op -_ : Int -> Int .
+  op -_ : NzInt -> NzInt .
+  op _+_ : Int Int -> Int [assoc comm id: 0 prec 33] .
+  op _+_ : NzNeg NzNeg -> NzNeg [assoc comm id: 0 prec 33] .
+  op |_| : Int -> Nat .                             *** absolute value
+  op |_| : NzInt -> NzNat .
+  op p : Int -> Int .                               *** predecessor
+  op _~_ : Int Int -> Bool [comm] .                 *** equality predicate
+  op _>_ : Int Int -> Bool .
+
+  vars N' M' : NzNat .
+  var  N : Nat .
+  var  I' : NzInt .
+  var  I : Int .
+
+  rl [INT-FVP-01]: - 0 => 0 [variant] .
+  rl [INT-FVP-02]: - - N' => N' [variant] .
+  rl [INT-FVP-03]: | N | => N [variant] .
+  rl [INT-FVP-04]: | - N' | => N' [variant] .
+  rl [INT-FVP-05]: p(0) => - 1 [variant] .
+  rl [INT-FVP-06]: p(- N') => -(N' + 1) [variant] .
+  rl [INT-FVP-07]: - N' ~ - M' => N' ~ M' [variant] .
+  rl [INT-FVP-08]: - N' ~ N => false [variant] .
+  rl [INT-FVP-09]: - N' > - M' => M' > N' [variant] .
+  rl [INT-FVP-10]: - N' > N => false [variant] .
+  rl [INT-FVP-11]: N > - N' => true [variant] .
+endm
+
+mod INT-ACU is
+  protecting INT-FVP .
+  protecting NAT-ACU .
+  op quot : Int NzInt -> Int .
+  op gcd : NzInt NzInt -> NzNat [comm] .
+  op _*_ : Int Int -> Int [assoc comm prec 31] .
+  op _*_ : NzInt NzInt -> NzInt [assoc comm prec 31] .
+
+  vars I J H : Int .
+  vars I' J' H' : NzInt .
+  vars N' M' : NzNat .
+  var  Q : NzNeg .
+----  vars N M : Nat .
+
+  rl [INT-ACU-01]: quot(0, Q) => 0 .
+  rl [INT-ACU-02]: quot(- N', M') => - quot(N', M') .
+  rl [INT-ACU-03]: quot(N', - M') => - quot(N', M') .
+  rl [INT-ACU-04]: quot(- N', - M') => quot(N', M') .
+  rl [INT-ACU-05]: gcd(- N', I') => gcd(N', I') .
+  rl [INT-ACU-06]: N' * - M' => - (N' * M') .
+  rl [INT-ACU-07]: - N' * - M' => N' * M' .
+  rl [INT-ACU-08]: - N' + - M' => - (N' + M') .
+  rl [INT-ACU-09]: - (N' + - M') => - N' + M' .
+  rl [INT-ACU-10]: - (N' + M') + M' => - N' .
+  rl [INT-ACU-11]: N' + - N' => 0 .
+endm
+
+mod RAT-ACU is
+  protecting INT-ACU .
+  sorts Rat NzRat PosRat NzPosRat .
+  subsort Int < Rat .
+  subsorts Nat NzPosRat < PosRat < Rat .
+  subsorts NzInt < NzRat < Rat .
+  subsorts NzNat < NzPosRat < NzRat PosRat .
+  op _/_ : NzRat NzRat -> NzRat [prec 31] .         *** division
+  op _/_ : NzInt NzNat -> NzRat [ctor prec 31] .
+  op _/_ : NzNat NzNat -> NzPosRat [ctor prec 31] .
+  op -_ : Rat -> Rat .
+  op _+_ : Rat Rat -> Rat [assoc comm id: 0 prec 33] .
+  op _+_ : PosRat PosRat -> PosRat [assoc comm id: 0 prec 33] .
+  op _*_ : Rat Rat -> Rat [assoc comm prec 31] .
+  op _*_ : NzRat NzRat -> NzRat [assoc comm prec 31] .
+  op |_| : Rat -> PosRat .                          *** absolute value
+  op _~_ : Rat Rat -> Bool [comm] .                 *** equality predicate
+  op _>_ : Rat Rat -> Bool .
+
+  vars I' J' : NzInt .
+  vars R' S' : NzRat .
+  vars N' M' O' P' : NzNat .
+  vars R : Rat .
+  vars I J : Int .
+
+  rl [RAT-ACU-01]: 0 / N' => 0 .
+  crl [RAT-ACU-02]: J' / M' => quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
+     if gcd(J',M') > 1 => true .                           *** canonical form of fraction
+  rl [RAT-ACU-03]: R' / 1 => R' .
+  rl [RAT-ACU-04]: I' / -(N') => -(I') / N' .
+  rl [RAT-ACU-05]: I' / (J' / M') => (I' * M') / J' .
+  rl [RAT-ACU-06]: (I' / N') / J' => I' / (N' * J') .
+  rl [RAT-ACU-07]: (I' / N') / (J' / M') => (I' * M') / (N' * J') .
+  rl [RAT-ACU-08]: -(I' / N') => -(I') / N' .
+
+  rl [RAT-ACU-09]: (I' / N') * 0 => 0 .
+  rl [RAT-ACU-10]: (I' / N') * J' => (I' * J') / N' .
+  rl [RAT-ACU-11]: (I' / N') * (J' / M') => (I' * J') / (N' * M') .
+
+  rl [RAT-ACU-12]: | I' / N' | => | I' | / N' .
+  rl [RAT-ACU-13]: (I' / N') ~ J' => I' ~ (J' * N') .
+  rl [RAT-ACU-14]: (I' / N') ~ (J' / M') => (I' * M') ~ (J' * N') .
+  rl [RAT-ACU-15]: I' > (J' / M') => (I' * M') > J' .
+  rl [RAT-ACU-16]: (I' / N') > J' => I' > (J' * N') .
+  rl [RAT-ACU-17]: (I' / N') > (J' / M') => (I' * M') > (J' * N') .
+
+----  rl [RAT-ACU-18]: J' + (I' / N') => ((J' * N') + I') / N' .
+  rl [RAT-ACU-18]: J' + (I / N') => ((J' * N') + I) / N' .
+----  rl [RAT-ACU-18-1]: N' + (O' / M') => ((N' * M') + O') / M' .
+----  rl [RAT-ACU-18-1]: N' + (- O' / M') => ((N' * M') + - O') / M' .
+----  rl [RAT-ACU-18-2]: - N' + (O' / M') => (- (N' * M') + O') / M' .
+----  rl [RAT-ACU-18-2]: - N' + (- O' / M') => - ((N' * M') + O') / M' .
+
+----  rl [RAT-ACU-19]: (I' / N') + (J' / M') => ((I' * M') + (J' * N')) / (N' * M') .
+  rl [RAT-ACU-19]: (I / N') + (J / M') => ((I * M') + (J * N')) / (N' * M') .
+----  rl [RAT-ACU-19-1]: (O' / N') + (P' / M') => ((O' * M') + (P' * N')) / (N' * M') .
+----  rl [RAT-ACU-19-2]: (- O' / N') + (P' / M') => ((- O' * M') + (P' * N')) / (N' * M') .
+----  rl [RAT-ACU-19-3]: (- O' / N') + (- P' / M') => ((- O' * M') + (- P' * N')) / (N' * M') .
+
+  rl [RAT-ACU-20]: 0 ~ R' => false .
+  rl [RAT-ACU-21]: 0 > N' / M' => false .
+  rl [RAT-ACU-22]: 0 > - N' / M' => true .
+  rl [RAT-ACU-23]: N' / M' > 0 => true .
+  rl [RAT-ACU-24]: - N' / M' > 0 => false .
+endm
+
+set include BOOL on .
