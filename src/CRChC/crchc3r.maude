@@ -1966,7 +1966,7 @@ mod CRChC-TOOLS is
   ---- The 2nd arg. indicates whether we are in the ground case or not
   eq $prepareModule(M, true) = $prepareModule(freezeNonCtors(M), false) .
   eq $prepareModule(M, false) = removeIds(axCohComplete(removeNonExecs(M)), all) .
-  eq $prepareModule(M, false) = removeIds(M, all) .
+  ---- eq $prepareModule(M, false) = removeIds(M, all) .
 
   op processCRCcheck : ModuleExpression Database -> CRCProcessResult .
   op $processCRCcheck : Tuple{Database, ModuleExpression} -> CRCProcessResult .
