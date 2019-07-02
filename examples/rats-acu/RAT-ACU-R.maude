@@ -153,7 +153,7 @@ mod RAT-ACU is
   rl [RAT-ACU-03]: - N' / N' => - 1 .
   rl [RAT-ACU-04]: R / 1 => R .
   crl [RAT-ACU-05]: J' / M' => quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
-     if gcd(J',M') > 1 => true            .        *** canonical form of fraction
+     if join(gcd(J',M') > 1, true) => tt .        *** canonical form of fraction
   rl [RAT-ACU-06]: I' / - N' => - I' / N' .
   rl [RAT-ACU-07]: I' / (J' / M') => (I' * M') / J' .
   rl [RAT-ACU-08]: (I' / N') / M' => I' / (N' * M') .
@@ -223,7 +223,8 @@ mod RAT-ACU-R is
   rl I' * N' ~ N' => I' ~ 1 .
   rl N' ~ J' * N' => 1 ~ J' .
   crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
-     if | gcd(J, J') | > 1 => true .
+     if join(gcd(J, J') > 1, true) => tt .
+
   rl I / - N' => - I / N' .
 
   rl gcd(- J', I') => gcd(J', I') .

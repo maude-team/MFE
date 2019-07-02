@@ -3,7 +3,7 @@
 		     /||||||||||||||||||\
 	   Maude alpha121 built: May 29 2019 18:03:55
 	    Copyright 1997-2019 SRI International
-		   Fri Jun 21 09:25:55 2019
+		   Tue Jul  2 13:02:16 2019
 
 	    Full Maude 2.7f November 20th 2017
 
@@ -18,10 +18,10 @@ set include BOOL off
 
 set include TRUTH-VALUE on
 
-rewrites: 76 in 1ms cpu (1ms real) (57794 rewrites/second)
+rewrites: 76 in 1ms cpu (1ms real) (65124 rewrites/second)
 The CRC has been set as current tool.
 
-rewrites: 8970699 in 192600ms cpu (202870ms real) (46576 rewrites/second)
+rewrites: 8970699 in 175704ms cpu (191457ms real) (51055 rewrites/second)
 Church-Rosser check for RAT-ACU
 The following critical pairs must be proved joinable:
   cp RAT-ACU1188 for INT-ACU-09 and RAT-ACU-26
@@ -675,3 +675,4 @@ The following proof obligations must be checked for sort-decreasingness:
     J'@NzNeg:NzNeg,M':NzNat)) : NzRat
     if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
 
+Bye.
