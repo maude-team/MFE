@@ -163,13 +163,13 @@ fmod ITP-COMMANDS{X :: ITP-USER-THEORY} is
 ---- Commands added when integrating the ITP with Maude's Formal Environment
 
   --- new-goal added to support multiple goals and having the
-  --- following idea on mind: start a new proof in parallel, if there 
+  --- following idea on mind: start a new proof in parallel, if there
   --- is one already running; otherwise is just the same as goal...
   op new-goal_:_|-_. : X$UserToken X$UserModule X$UserSentence -> Input [ctor] .
 
   --- show-itp-state shows the state of the itp with the information on all
   --- goals that have been registered in it
-  op ITP show state`. : -> Input [ctor] . 
+  op ITP show state`. : -> Input [ctor] .
 
   --- command for switching among proofs
   op sel-proof_. : X$UserToken -> Input [ctor] .
@@ -202,7 +202,7 @@ fmod ITP-PARSER-ATOMS is
      [ctor special (id-hook Bubble (1 1)
                     op-hook qidSymbol (<Qids> : ~> Qid))] .
   op _;_ : CtorDefSet CtorDefSet -> CtorDefSet
-           [ctor assoc comm id: none].
+           [ctor assoc comm]. ----  id: (none).CtorDefSet].
 
   sort UserVar .
   op var : QidList -> UserVar
@@ -649,7 +649,7 @@ fmod ITP-MODULE-PARSER is
   pr ITP-EXT-TERM .
   pr ITP-EXT-MOD .
   pr ITP-LOGIC .
-  pr DATABASE .           ---- Full Maude  
+  pr DATABASE .           ---- Full Maude
   pr MOD-EXP-PARSING .    ---- Full Maude
 
   --- Parses a module.
@@ -965,7 +965,7 @@ fmod ITP-MODULE-PARSER is
 
   --- Attempts to parse a Maude module.
   --- Returns an error message if we can not load the Maude module.
-  ---- TODO parseModExp(T) should be used instead of $downQid, but for that 
+  ---- TODO parseModExp(T) should be used instead of $downQid, but for that
   ---- TODO module names must be parsed as module expressions.
   op parseModule : Term Database ~> ParseModuleResult .
   eq parseModule('module[T], DB) = $parseModule(evalModExp($downQid(T), DB)) .
@@ -982,7 +982,7 @@ fmod ITP-MODULE-PARSER is
   --- * Check that user does not declare sort "Universal"
   op $parseModule : Tuple{Database, ModuleExpression} ~> ParseModuleResult .
   op $parseModule : Module ~> ParseModuleResult .
-  
+
   eq $parseModule(< DB ; ME >) = $parseModule(getFlatModule(ME, DB)) .
   eq $parseModule(unitError(QIL)) = parse-module-error(QIL) .
 
@@ -996,7 +996,7 @@ fmod ITP-MODULE-PARSER is
                        'like '_==_ 'or 'many 'of 'the 'builtin 'arithmetic 'operators '.)
                 fi
            else parse-module-error('The 'module getName(Mod) 'must 'be 'unparameterized '.)
-           fi 
+           fi
       else parse-module-error('The 'module getName(Mod) 'must 'be 'a 'functional 'module '.)
       fi .
  endfm

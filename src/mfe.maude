@@ -181,7 +181,7 @@ fmod MFE-HELP is
       string2qidList("Tools available in the Maude Formal Environment:") '\n '\n
       '\t '\! 'ChC '\o '\t 'Coherence 'Checker '\n
       '\t '\! 'CRC '\o '\t 'Church 'Rosser 'Checker '\n
-      '\t '\! 'ITP '\o '\t 'Inductive 'Theorem 'Prover '\n
+----      '\t '\! 'ITP '\o '\t 'Inductive 'Theorem 'Prover '\n
       '\t '\! 'MFE '\o '\t 'Maude 'Formal 'Environment ' '`( 'Controller '`) '\n
       '\t '\! 'MTT '\o '\t 'Maude 'Termination 'Tool '\n
       '\t '\! 'SCC '\o '\t 'Sufficient 'Completeness 'Checker '\n
@@ -3329,7 +3329,7 @@ endm
 mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   inc LOOP-MODE .
   inc MFE-CONTROLLER .
-  pr MFE-ITP .
+----  pr MFE-ITP .
   pr MFE-SCC .
   pr MFE-CRC .
   pr MFE-ChC .
@@ -3339,8 +3339,8 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   pr MFE-GLOT .
   pr MFE-PUBLIC-MESSAGES .
   pr META-MFE-SIGN .
-  subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due
-  subsort ConstantSet < AtomicITPTermSet .     ---- to declararions coming from SCC and ITP
+----  subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due
+----  subsort ConstantSet < AtomicITPTermSet .     ---- to declarations coming from SCC and ITP
 
   op init : -> System .
 
@@ -3371,7 +3371,7 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
              tools : TOOLS >
           init-crc(TOOLS)
           init-chc(TOOLS)
-          init-itp(TOOLS)
+          ---- init-itp(TOOLS)
           init-scc(TOOLS)
           init-mtt(TOOLS)
           ---- init-eqe(TOOLS)
