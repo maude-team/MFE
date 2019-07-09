@@ -2,141 +2,70 @@
 ----    @1:Int / @2:NzNat
 ----    =(@3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
 
-----  We have to prove @1:Int / @2:NzNat \|/ (@3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat
-----  Let us assume variables
-----    I J : Int
-----    I' J' K' : NzInt
-----    N' M' O' : NzNat
-----  And let write such proof obligation as
-----    I / N' \|/ (M' * I) / (N' * M')
-----
-----  This proof obligation can be dealt with by using the CtorCases rule on I,
+mod RAT-ACU1364 is
+  pr RAT-ACU-R .
+
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl 1 + N' > 1 => true .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  rl quot(I, 1) => I .
+endm
+
+----  This proof obligation can be dealt with by using the CtorCases rule on X1,
 ----  with generating set {0, N':NzNat, - N':NzNat}.
 ----
-----  a) 0 / N' \|/ (M' * 0) / (N' * M')
-----  b) O' / N' \|/ (M' * O') / (N' * M')
-----  c) - O' / N' \|/ (M' * - O') / (N' * M')
-----
-----  a) 0 / N' \|/ (M' * 0) / (N' * M') can be proven automatically:
+----  a) 0 / X2 \|/ (X3 * 0) / (X2 * X3)
+----  b) N' / X2 \|/ (X3 * N') / (X2 * X3)
+----  c) - N' / X2 \|/ (X3 * - N') / (X2 * X3)
 
-search in RAT-ACU-R : join(0 / N':NzNat, (M':NzNat * 0) / (N':NzNat * M':NzNat)) =>* tt .
+----  a) 0 / X2 \|/ (X3 * 0) / (X2 * X3)
 
-----  Maude> search in RAT-ACU-R : join(0 / N':NzNat, (M':NzNat * 0) / (N':NzNat * M':NzNat)) =>* tt .
-----  search in RAT-ACU-R : join(0 / N', (0 * M') / N' * M') =>* tt .
-----
-----  Solution 1 (state 6)
-----  states: 7  rewrites: 8 in 0ms cpu (0ms real) (54421 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 7  rewrites: 8 in 0ms cpu (0ms real) (47904 rewrites/second)
+search in RAT-ACU1364 : join(0 / X2, (X3 * 0) / (X2 * X3)) =>* tt .
 
-----  b) O' / N' \|/ (M' * O') / (N' * M')
-----  we need to consider two cases: b.1) gcd(O', N') = 1 and b.2) gcd(O', N') > 1
-----
-----  b.1) gcd(O', N') = 1
+---- For b) and c), let us use the CtorCases rule on X3, with generating set {1, 1 + N':NzNat}.
 
-mod RAT-ACU-R-1 is
-  pr RAT-ACU-R .
-  ops o' n' : -> NzNat .
-  rl gcd(o', n') => 1 .
+----  b.1) N' / X2 \|/ (1 * N') / (X2 * 1)
+----  b.2) N' / X2 \|/ ((1 + M') * N') / (X2 * (1 + M'))
+----  c.1) - N' / X2 \|/ (1 * - N') / (X2 * 1)
+----  c.2) - N' / X2 \|/ ((1 + M') * - N') / (X2 * (1 + M'))
+
+----  Finally, for each of these four cases, we need to consider two alternatives:
+----  gcd(X2, N') = 1 and gcd(X2, N') > 1
+----  To do so, we apply the constants lemma and consider the following two modules
+
+mod RAT-ACU1364-1 is
+  pr RAT-ACU1364 .
+  ops x2 n' : -> NzNat .
+  var M' : NzNat .
+  rl gcd(x2, n') => 1 .
 endm
 
----- Let us use the CtorCases rule on M', with generating set {1, 1 + N':NzNat}.
-----
-----  o' / n' \|/ (1 * o') / (n' * 1)
-
-search in RAT-ACU-R-1 : join(o' / n', (1 * o') / (n' * 1)) =>* tt .
-
-----  Maude> search in RAT-ACU-R-1 : join(o' / n', (1 * o') / (n' * 1)) =>* tt .
-----  search in RAT-ACU-R-1 : join(o' / n', (1 * o') / 1 * n') =>* tt .
-----
-----  Solution 1 (state 4)
-----  states: 5  rewrites: 28 in 0ms cpu (0ms real) (79772 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 5  rewrites: 28 in 0ms cpu (0ms real) (76502 rewrites/second)
-
-----  o' / n' \|/ ((1 + M') * o') / (n' * (1 + M'))
-
-search in RAT-ACU-R-1 : join(o' / n', ((1 + M':NzNat) * o') / (n' * (1 + M':NzNat))) =>* tt .
-
-----  Maude> search in RAT-ACU-R-1 : join(o' / n', ((1 + M':NzNat) * o') / (n' * (1 + M':NzNat))) =>* tt .
-----  search in RAT-ACU-R-1 : join(o' / n', (o' * (1 + M':NzNat)) / n' * (1 + M':NzNat)) =>* tt .
-----
-----  Solution 1 (state 4342)
-----  states: 4343  rewrites: 35575 in 120ms cpu (121ms real) (295340 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 5194  rewrites: 44069 in 147ms cpu (149ms real) (298027 rewrites/second)
-
-----  b.2) gcd(O', N') > 1
-
-mod RAT-ACU-R-2 is
-  pr RAT-ACU-R .
-  ops o' n' : -> NzNat .
-  rl gcd(o', n') > 1 => true .
+mod RAT-ACU1364-2 is
+  pr RAT-ACU1364 .
+  ops x2 n' : -> NzNat .
+  var M' : NzNat .
+  rl gcd(x2, n') > 1 => true .
 endm
 
-search in RAT-ACU-R-2 : join(o' / n', (M':NzNat * o') / (n' * M':NzNat)) =>* tt .
+search in RAT-ACU1364-1 : join(n' / x2, (1 * n') / (x2 * 1)) =>* tt .
 
-----  Maude> search in RAT-ACU-R-2 : join(o' / n', (M':NzNat * o') / (n' * M':NzNat)) =>* tt .
-----  search in RAT-ACU-R-2 : join(o' / n', (o' * M':NzNat) / n' * M':NzNat) =>* tt .
-----
-----  Solution 1 (state 20)
-----  states: 21  rewrites: 79 in 0ms cpu (0ms real) (121913 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 21  rewrites: 79 in 0ms cpu (0ms real) (119515 rewrites/second)
+search in RAT-ACU1364-2 : join(n' / x2, (1 * n') / (x2 * 1)) =>* tt .
 
-----  c) - O' / N' \|/ (M' * - O') / (N' * M')
-----  as for b), we need to consider two cases: c.1) gcd(O', N') = 1 and c.2) gcd(O', N') > 1
-----
-----  c.1) gcd(O', N') = 1
+search in RAT-ACU1364-1 : join(n' / x2, ((1 + M') * n') / (x2 * (1 + M'))) =>* tt .
 
-----  Let us use the CtorCases rule on M', with generating set {1, 1 + N':NzNat}.
-----
-----  - o' / n' \|/ (1 * - o') / (n' * - 1)
+search in RAT-ACU1364-2 : join(n' / x2, ((1 + M') * n') / (x2 * (1 + M'))) =>* tt .
 
-search in RAT-ACU-R-1 : join(- o' / n', (1 * - o') / (n' * 1)) =>* tt .
+search in RAT-ACU1364-1 : join(- n' / x2, (1 * - n') / (x2 * 1)) =>* tt .
 
-----  Maude> search in RAT-ACU-R-1 : join(- o' / n', (1 * - o') / (n' * 1)) =>* tt .
-----  search in RAT-ACU-R-1 : join(- o' / n', (1 * - o') / 1 * n') =>* tt .
-----  
-----  Solution 1 (state 6)
-----  states: 7  rewrites: 77 in 0ms cpu (0ms real) (131623 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 7  rewrites: 84 in 0ms cpu (0ms real) (121562 rewrites/second)
+search in RAT-ACU1364-2 : join(- n' / x2, (1 * - n') / (x2 * 1)) =>* tt .
 
-----  - o' / n' \|/ ((1 + M') * - o') / (n' * (1 + M'))
+search in RAT-ACU1364-1 : join(- n' / x2, ((1 + M') * - n') / (x2 * (1 + M'))) =>* tt .
 
-search in RAT-ACU-R-1 : join(- o' / n', ((1 + M':NzNat) * - o') / (n' * (1 + M':NzNat))) =>* tt .
-
-----  Maude> search in RAT-ACU-R-1 : join(- o' / n', ((1 + M':NzNat) * - o') / (n' * (1 + M':NzNat))) =>* tt .
-----  search in RAT-ACU-R-1 : join(- o' / n', (- o' * (1 + M':NzNat)) / n' * (1 + M':NzNat)) =>* tt .
-----
-----  Solution 1 (state 101677)
-----  states: 101678  rewrites: 1058589 in 4719ms cpu (4751ms real) (224299 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 112135  rewrites: 1197167 in 6017ms cpu (7112ms real) (198945 rewrites/second)
-
-----  c.2) gcd(O', N') > 1
-
-search in RAT-ACU-R-2 : join(- o' / n', (M':NzNat * - o') / (n' * M':NzNat)) =>* tt .
-
-----  Maude> search in RAT-ACU-R-2 : join(- o' / n', (M':NzNat * - o') / (n' * M':NzNat)) =>* tt .
-----  search in RAT-ACU-R-2 : join(- o' / n', (M':NzNat * - o') / n' * M':NzNat) =>* tt .
-----
-----  Solution 1 (state 603)
-----  states: 604  rewrites: 2747 in 12ms cpu (12ms real) (228668 rewrites/second)
-----  empty substitution
-----
-----  No more solutions.
-----  states: 604  rewrites: 2747 in 12ms cpu (12ms real) (228402 rewrites/second)
+search in RAT-ACU1364-2 : join(- n' / x2, ((1 + M') * - n') / (x2 * (1 + M'))) =>* tt .
