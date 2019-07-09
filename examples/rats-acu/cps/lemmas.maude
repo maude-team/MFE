@@ -45,3 +45,55 @@ I.S. quot(N' * (1 + M'), N') = 1 + M'
                             = 1 + M'                       (by I.H.)
 
 --------------------------------------------------------------------------------
+
+
+mod RAT-ACU-R is
+  pr RAT-ACU .
+
+endm
+
+eof
+
+  vars R : Rat .
+  vars R' : NzRat .
+  vars I J K : Int .
+  vars I' J' K' : NzInt .
+  vars N' M' O' P' : NzNat .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl gcd(N', N' * I') => N' .
+  rl gcd(J + N' * I, N') => gcd(J, N') .
+  rl gcd(I + M', M') => gcd(I, M') .
+
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl quot(I' * I, I') => I .
+  rl quot(I, 1) => I .
+  rl 1 + N' > 1 => true .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  rl gcd(I' + M', M') => gcd(I', M') .
+  rl - (- N' + - M') => N' + M' .
+
+  rl (I * I') + (J * I') => I' * (I + J) .
+  rl (I * I') + I' => I' * (1 + I) .
+  rl (I * I') + - I' => - I' * (- 1 + I) .
+  rl quot(I' + M', M') => 1 + quot(I', M')  .
+  rl quot(- I', N') => - quot(I', N') .
+  rl quot(N', - I') => - quot(N', I') .
+----  rl - N' + M' => - (N' + - M') .
+----  rl - (N' * M') => - N' * M' .
+  rl I * - J => - (I * J) .
+  rl I' * N' > J' * N' => I' > J' .
+  rl I' * N' > N' => I' > 1 .
+  rl N' > J' * N' => 1 > J' .
+  rl I' * N' ~ J' * N' => I' ~ J' .
+  rl I' * N' ~ N' => I' ~ 1 .
+  rl N' ~ J' * N' => 1 ~ J' .
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+
+  rl I / - N' => - I / N' .
+
+  rl gcd(- J', I') => gcd(J', I') .
+search [1] in RAT-ACU : (- 1 + 1 * I') / 1 =>* I' + - 1 .
+search [1] in RAT-ACU-R : (- 1 + 1 * I') / 1 =>* I' + - 1 .
