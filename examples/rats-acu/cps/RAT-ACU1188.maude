@@ -2,200 +2,58 @@
 ----    (@3:NzNat *(@4:Int + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(@2:Int + @1:NzNat * @3:NzNat))/ @3:NzNat * @5:NzNat
 ----    =(-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int + @1:NzNat * @3:NzNat * @5:NzNat)/ @3:NzNat * @5:NzNat .
 
+mod RAT-ACU1188 is
+  pr RAT-ACU-R .
+
+  vars X2 X4 I : Int .
+  vars X1 X3 X5 X6 : NzNat .
+  vars I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
 ---- By the Ctx rule it suffices to prove:
 
 ---(
-search in RAT-ACU-R :
+search in RAT-ACU1188 :
   join(
-	  @3:NzNat *(@4:Int + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(@2:Int + @1:NzNat * @3:NzNat)
+	  X3 *(X4 + -(X5 * X6))+ X5 *(X2 + X1 * X3)
 	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int + @1:NzNat * @3:NzNat * @5:NzNat
+		-(X3 * X5 * X6)+ X3 * X4 + X5 * X2 + X1 * X3 * X5
   )
   =>* tt .
 )
 
----- This proof obligation can be dealt with by using the CtorCases rule on @2 and @4, of sort Int, with generating set {0, N':NzNat, - N':NzNat}.
+---- This proof obligation can be dealt with by using the CtorCases rule on @2 and @4, of sort Int, with generating set {0, I':NzInt}.
 
-search in RAT-ACU-R :
+search in RAT-ACU1188 :
   join(
-	  @3:NzNat *(0 + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(0 + @1:NzNat * @3:NzNat)
+	  X3 *(0 + -(X5 * X6))+ X5 *(0 + X1 * X3)
 	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * 0 + @5:NzNat * 0 + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(0 + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * M':NzNat + @5:NzNat * 0 + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(- M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(0 + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * - M':NzNat + @5:NzNat * 0 + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(0 + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * 0 + @5:NzNat * N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * M':NzNat + @5:NzNat * N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(- M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * - M':NzNat + @5:NzNat * N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(0 + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(- N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * 0 + @5:NzNat * - N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(- N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * M':NzNat + @5:NzNat * - N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
-  )
-  =>* tt .
-search in RAT-ACU-R :
-  join(
-	  @3:NzNat *(- M':NzNat + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(- N':NzNat + @1:NzNat * @3:NzNat)
-	  ,
-		-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * - M':NzNat + @5:NzNat * - N':NzNat + @1:NzNat * @3:NzNat * @5:NzNat
+		-(X3 * X5 * X6)+ X3 * 0 + X5 * 0 + X1 * X3 * X5
   )
   =>* tt .
 
+search in RAT-ACU1188 :
+  join(
+	  X3 *(I' + -(X5 * X6))+ X5 *(0 + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * I' + X5 * 0 + X1 * X3 * X5
+  )
+  =>* tt .
 
+search in RAT-ACU1188 :
+  join(
+	  X3 *(0 + -(X5 * X6))+ X5 *(I' + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * 0 + X5 * I' + X1 * X3 * X5
+  )
+  =>* tt .
 
-
-
-
-
-
-
-
-
-eof
-
-MacBook-Pro-de-Paco:rats-acu duran$ ~/Maude/Alpha120/maude-Yices2.darwin64 RAT-ACU-cps.maude
-		     \||||||||||||||||||/
-		   --- Welcome to Maude ---
-		     /||||||||||||||||||\
-	   Maude alpha120 built: Dec  7 2018 20:37:50
-	    Copyright 1997-2018 SRI International
-		   Tue Jun 18 18:55:35 2019
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * @3:NzNat * @1:NzNat, - (
-    @3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + 0 * @3:NzNat) =>*
-    tt .
-
-Solution 1 (state 8)
-states: 9  rewrites: 13 in 0ms cpu (0ms real) (62801 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 9  rewrites: 13 in 0ms cpu (0ms real) (56768 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * @3:NzNat * @1:NzNat, -
-    (@3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + M' * @3:NzNat)
-    =>* tt .
-
-Solution 1 (state 6)
-states: 7  rewrites: 10 in 0ms cpu (0ms real) (72463 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 7  rewrites: 10 in 0ms cpu (0ms real) (63694 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (- M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * @3:NzNat * @1:NzNat,
-    - (@3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + @3:NzNat * -
-    M') =>* tt .
-
-Solution 1 (state 31)
-states: 32  rewrites: 73 in 0ms cpu (0ms real) (132246 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 49  rewrites: 165 in 1ms cpu (1ms real) (157593 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * (N' + @3:NzNat * @1:NzNat), -
-    (@3:NzNat * @5:NzNat * @6:NzNat) + (N' * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + 0 * @3:NzNat)
-    =>* tt .
-
-Solution 1 (state 8)
-states: 9  rewrites: 25 in 0ms cpu (0ms real) (116822 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 9  rewrites: 25 in 0ms cpu (0ms real) (109170 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (N' + @3:NzNat *
-    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (N' * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + M'
-    * @3:NzNat) =>* tt .
-
-Solution 1 (state 6)
-states: 7  rewrites: 19 in 0ms cpu (0ms real) (118012 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 7  rewrites: 19 in 0ms cpu (0ms real) (105555 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (- M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (N' + @3:NzNat *
-    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (N' * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) +
-    @3:NzNat * - M') =>* tt .
-
-Solution 1 (state 31)
-states: 32  rewrites: 109 in 0ms cpu (0ms real) (186006 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 49  rewrites: 237 in 1ms cpu (1ms real) (193627 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * (- N' + @3:NzNat * @1:NzNat),
-    - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - N' + @1:NzNat * @3:NzNat * @5:NzNat) + 0 *
-    @3:NzNat) =>* tt .
-
-Solution 1 (state 26)
-states: 27  rewrites: 59 in 0ms cpu (0ms real) (124472 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 43  rewrites: 132 in 0ms cpu (0ms real) (147486 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (- N' + @3:NzNat *
-    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - N' + @1:NzNat * @3:NzNat * @5:NzNat) +
-    M' * @3:NzNat) =>* tt .
-
-Solution 1 (state 17)
-states: 18  rewrites: 43 in 0ms cpu (0ms real) (129518 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 31  rewrites: 93 in 0ms cpu (0ms real) (151219 rewrites/second)
-==========================================
-search in RAT-ACU-R : join(@3:NzNat * (- M' + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (- N' + @3:NzNat *
-    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - N' + @1:NzNat * @3:NzNat * @5:NzNat) +
-    @3:NzNat * - M') =>* tt .
-
-Solution 1 (state 61)
-states: 62  rewrites: 168 in 1ms cpu (1ms real) (157450 rewrites/second)
-empty substitution
-
-No more solutions.
-states: 301  rewrites: 1580 in 8ms cpu (8ms real) (189289 rewrites/second)
-Maude>
+search in RAT-ACU1188 :
+  join(
+	  X3 *(J' + -(X5 * X6))+ X5 *(I' + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * J' + X5 * I' + X1 * X3 * X5
+  )
+  =>* tt .

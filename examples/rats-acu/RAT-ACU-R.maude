@@ -2,7 +2,7 @@
 
 set include BOOL off .
 
-mod NAT-FVP is
+mod NAT-FVP-R is
   protecting TRUTH-VALUE .
   sorts Nat NzNat Zero .
   subsorts Zero NzNat < Nat .
@@ -30,8 +30,8 @@ mod NAT-FVP is
   rl [NAT-FVP-09]: N' > 0 => true .
 endm
 
-mod NAT-ACU is
-  protecting NAT-FVP .
+mod NAT-ACU-R is
+  protecting NAT-FVP-R .
   op quot : Nat NzNat -> Nat .                      *** quotient
   op gcd : NzNat NzNat -> NzNat [comm] .            *** greatest common divisor
   op _*_ : Nat Nat -> Nat [assoc comm prec 31] .
@@ -51,8 +51,8 @@ mod NAT-ACU is
   rl [NAT-ACU-08]: N' * (M' + K') => (N' * M') + (N' * K') .
 endm
 
-mod INT-FVP is
-  protecting NAT-FVP .
+mod INT-FVP-R is
+  protecting NAT-FVP-R .
   sorts NzNeg NzInt Int .
   subsorts Nat NzNeg < Int .
   subsorts NzNat NzNeg < NzInt < Int .
@@ -85,9 +85,9 @@ mod INT-FVP is
   rl [INT-FVP-11]: N > - N' => true .
 endm
 
-mod INT-ACU is
-  protecting INT-FVP .
-  protecting NAT-ACU .
+mod INT-ACU-R is
+  protecting INT-FVP-R .
+  protecting NAT-ACU-R .
   op quot : Int NzInt -> Int .
   op gcd : NzInt NzInt -> NzNat [comm] .
   op _*_ : Int Int -> Int [assoc comm prec 31] .
@@ -97,7 +97,6 @@ mod INT-ACU is
   vars I' J' H' : NzInt .
   vars N' M' : NzNat .
   var  Q : NzNeg .
-----  vars N M : Nat .
 
   rl [INT-ACU-01]: quot(0, Q) => 0 .
   rl [INT-ACU-02]: quot(- N', M') => - quot(N', M') .
@@ -112,18 +111,8 @@ mod INT-ACU is
   rl [INT-ACU-11]: N' + - N' => 0 .
 endm
 
-mod RAT-ACU is
-  protecting INT-ACU .
-
-  -----
-  sort Prop .
-  op tt : -> Prop [ctor] .
-  op join : [Rat] [Rat] -> Prop .
-  op join : [Bool] [Bool] -> Prop .
-
-  rl join(R:[Rat], R:[Rat]) => tt .
-  rl join(R:[Bool], R:[Bool]) => tt .
-  -----
+mod RAT-ACU-R is
+  protecting INT-ACU-R .
 
   sorts Rat NzRat PosRat NzPosRat .
   subsort Int < Rat .
@@ -141,6 +130,16 @@ mod RAT-ACU is
   op |_| : Rat -> PosRat .                          *** absolute value
   op _~_ : Rat Rat -> Bool [comm] .                 *** equality predicate
   op _>_ : Rat Rat -> Bool .
+
+  ----
+  sort Prop .
+  op tt : -> Prop [ctor] .
+  op join : [Rat] [Rat] -> Prop .
+  op join : [Bool] [Bool] -> Prop .
+
+  rl join(R:[Rat], R:[Rat]) => tt .
+  rl join(R:[Bool], R:[Bool]) => tt .
+  ----
 
   vars I' J' : NzInt .
   vars R' S' : NzRat .
@@ -183,52 +182,3 @@ mod RAT-ACU is
 endm
 
 set include BOOL on .
-
-mod RAT-ACU-R is
-  pr RAT-ACU .
-
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
-  vars I' J' K' : NzInt .
-  vars N' M' O' P' : NzNat .
-
-  rl I * (I' + J') => (I * I') + (I * J') .
-  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
-  rl gcd(N', N' * I') => N' .
-  rl gcd(J + N' * I, N') => gcd(J, N') .
-  rl gcd(I + M', M') => gcd(I, M') .
-
-  rl quot(I' * I, I' * J') => quot(I, J') .
-  rl quot(I' * I, I') => I .
-  rl quot(I, 1) => I .
-  rl 1 + N' > 1 => true .
- crl N' * M' > 1 => true if N' > 1 => true .
-  rl gcd(I' + M', M') => gcd(I', M') .
-  rl - (- N' + - M') => N' + M' .
-
-  rl (I * I') + (J * I') => I' * (I + J) .
-  rl (I * I') + I' => I' * (1 + I) .
-  rl (I * I') + - I' => - I' * (- 1 + I) .
-  rl quot(I' + M', M') => 1 + quot(I', M')  .
-  rl quot(- I', N') => - quot(I', N') .
-  rl quot(N', - I') => - quot(N', I') .
-----  rl - N' + M' => - (N' + - M') .
-----  rl - (N' * M') => - N' * M' .
-  rl I * - J => - (I * J) .
-  rl I' * N' > J' * N' => I' > J' .
-  rl I' * N' > N' => I' > 1 .
-  rl N' > J' * N' => 1 > J' .
-  rl I' * N' ~ J' * N' => I' ~ J' .
-  rl I' * N' ~ N' => I' ~ 1 .
-  rl N' ~ J' * N' => 1 ~ J' .
-  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
-     if join(gcd(J, J') > 1, true) => tt .
-
-  rl I / - N' => - I / N' .
-
-  rl gcd(- J', I') => gcd(J', I') .
-endm
-
-search [1] in RAT-ACU : (- 1 + 1 * I') / 1 =>* I' + - 1 .
-search [1] in RAT-ACU-R : (- 1 + 1 * I') / 1 =>* I' + - 1 .

@@ -70,7 +70,6 @@ fmod INT-FVP is
   vars N' M' : NzNat .
   var  N : Nat .
   var  I' : NzInt .
-  var  I : Int .
 
   eq [INT-FVP-01]: - 0 = 0 [variant] .
   eq [INT-FVP-02]: - - N' = N' [variant] .
@@ -131,11 +130,11 @@ fmod RAT-ACU is
   op _~_ : Rat Rat -> Bool [comm] .                 *** equality predicate
   op _>_ : Rat Rat -> Bool .
 
+  vars N' M' : NzNat .
   vars I' J' : NzInt .
-  vars R' S' : NzRat .
-  vars N' M' O' P' : NzNat .
-  vars R : Rat .
   vars I J : Int .
+  vars R' : NzRat .
+  vars R : Rat .
 
   eq [RAT-ACU-01]: 0 / N' = 0 .
   eq [RAT-ACU-02]: N' / N' = 1 .
