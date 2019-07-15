@@ -8,8 +8,20 @@
 ----    @2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)
 ----    =@2:NzNat * @3:Int + @2:NzNat * @4:NzNat * @5:NzInt
 
-search [1] join(N' * (I + M' * I'), N' * I + N' * M' * I') =>* tt .
+mod RAT-ACU5716 is
+  pr RAT-ACU-R .
 
-----  Solution 1 (state 2)
-----  states: 3  rewrites: 3 in 0ms cpu (0ms real) (25210 rewrites/second)
-----  empty substitution
+  vars X1 X3 I J : Int .
+  vars X2 X4 N' M' : NzNat .
+  vars X5 I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+----  search [1] join(X2 * (X3 + X4 * X5), X2 * X3 + X2 * X4 * X5) =>* tt .
+
+----  Let us use the CtorCases rule on X3, of sort Int, with generating set {0, I':NzInt}.
+
+search [1] join(X2 * (0 + X4 * X5), X2 * 0 + X2 * X4 * X5) =>* tt .
+
+search [1] join(X2 * (I' + X4 * X5), X2 * I' + X2 * X4 * X5) =>* tt .

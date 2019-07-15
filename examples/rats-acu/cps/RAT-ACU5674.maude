@@ -8,30 +8,21 @@
 ----    @2:NzNat * @3:Int + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt)
 ----    =@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int
 
-----  search [1] join(N' * I + M' * (J + N' * O'), N' * (I + M' * O') + M' * J) =>* tt .
+mod RAT-ACU5674 is
+  pr RAT-ACU-R .
+
+  vars X1 X3 I J : Int .
+  vars X2 X4 X5 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+----  search [1] join(X2 * I + X4 * (J + X2 * X5), X2 * (I + X4 * X5) + X4 * J) =>* tt .
 
 ----  Let us use the CtorCases rule on I and J, of sort Int, with generating set {0, I':NzInt}.
 
-search [1] join(N' * 0 + M' * (0 + N' * O'), N' * (0 + M' * O') + M' * 0) =>* tt .
-
-----  Solution 1 (state 4)
-----  states: 5  rewrites: 13 in 0ms cpu (0ms real) (37356 rewrites/second)
-----  empty substitution
-
-search [1] join(N' * 0 + M' * (J' + N' * O'), N' * (0 + M' * O') + M' * J') =>* tt .
-
-----  Solution 1 (state 7)
-----  states: 8  rewrites: 22 in 0ms cpu (0ms real) (60941 rewrites/second)
-----  empty substitution
-
-search [1] join(N' * I' + M' * (0 + N' * O'), N' * (I' + M' * O') + M' * 0) =>* tt .
-
-----  Solution 1 (state 7)
-----  states: 8  rewrites: 22 in 0ms cpu (0ms real) (51401 rewrites/second)
-----  empty substitution
-
-search [1] join(N' * I' + M' * (J' + N' * O'), N' * (I' + M' * O') + M' * J') =>* tt .
-
-----  Solution 1 (state 6)
-----  states: 7  rewrites: 17 in 0ms cpu (0ms real) (35123 rewrites/second)
-----  empty substitution
+search [1] join(X2 * 0 + X4 * (0 + X2 * X5), X2 * (0 + X4 * X5) + X4 * 0) =>* tt .
+search [1] join(X2 * 0 + X4 * (J' + X2 * X5), X2 * (0 + X4 * X5) + X4 * J') =>* tt .
+search [1] join(X2 * I' + X4 * (0 + X2 * X5), X2 * (I' + X4 * X5) + X4 * 0) =>* tt .
+search [1] join(X2 * I' + X4 * (J' + X2 * X5), X2 * (I' + X4 * X5) + X4 * J') =>* tt .

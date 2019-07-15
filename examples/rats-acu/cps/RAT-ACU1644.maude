@@ -2,79 +2,101 @@
 ----    (@2:NzNat + @1:Int)/ @2:NzNat
 ----    =(@2:NzNat * @3:NzNat + @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
 
-----  We have to prove (N' * M' + N' * I) / (N' * M') \|/ (M' + I) / M'
+----  We have to prove (X3 * X2 + X3 * X1) / (X3 * X2) \|/ (X2 + X1) / X2
 ----
-----  This proof obligation can be dealt with by using the CtorCases rule on I,
+----  This proof obligation can be dealt with by using the CtorCases rule on X1,
 ----  with generating set {0, I':NzInt}.
 
-----  1) (N' * M' + N' * 0) / (N' * M') \|/ (M' + 0) / M'
-----  2) (N' * M' + N' * I') / (N' * M') \|/ (M' + I') / M'
-----
-----  1) (N' * M' + N' * 0) / (N' * M') \|/ (M' + 0) / M'
+----  1) (X3 * X2 + X3 * 0) / (X3 * X2) \|/ (X2 + 0) / X2
+----  2) (X3 * X2 + X3 * I') / (X3 * X2) \|/ (X2 + I') / X2
 
-search [1] in RAT-ACU-R : join((N' * M' + N' * 0) / (N' * M'), (M' + 0) / M') =>* tt .
+mod RAT-ACU1644 is
+  pr RAT-ACU-R .
+
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  rl (I * I') + (J * I') => I' * (I + J) .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl gcd(I + M', M') => gcd(I, M') .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl quot(I' * I, I') => I .
+  rl 1 + N' > 1 => true .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+  rl gcd(I + M', M') => gcd(I, M') .
+---(
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
+  rl (I * I') + I' => I' * (1 + I) .
+  rl 1 + N' > 1 => true .
+  rl gcd(J + N' * I, N') => gcd(J, N') .
+)
+endm
+
+----  1) (X3 * X2 + X3 * 0) / (X3 * X2) \|/ (X2 + 0) / X2
+
+search [1] in RAT-ACU1644 : join((X3 * X2 + X3 * 0) / (X3 * X2), (X2 + 0) / X2) =>* tt .
 
 ----  Solution 1 (state 6)
 ----  states: 7  rewrites: 139 in 1ms cpu (1ms real) (104432 rewrites/second)
 ----  empty substitution
 
-----  2) (N' * M' + N' * I') / (N' * M') \|/ (M' + I') / M'
+----  2) (X3 * X2 + X3 * I') / (X3 * X2) \|/ (X2 + I') / X2
 ----
-----  This proof obligation can be dealt with by using the CtorCases rule on N',
+----  This proof obligation can be dealt with by using the CtorCases rule on X3,
 ----  with generating set {1, 1 + N':NzNat}.
 ----
-----  2.a) (1 * M' + 1 * I') / (1 * M') \|/ (M' + I') / M'
-----  2.b) ((1 + N') * M' + (1 + N') * I') / ((1 + N') * M') \|/ (M' + I') / M'
+----  2.a) (1 * X2 + 1 * I') / (1 * X2) \|/ (X2 + I') / X2
+----  2.b) ((1 + N') * X2 + (1 + N') * I') / ((1 + N') * X2) \|/ (X2 + I') / X2
 
-----  2.a) (1 * M' + 1 * I') / (1 * M') \|/ (M' + I') / M'
+----  2.a) (1 * X2 + 1 * I') / (1 * X2) \|/ (X2 + I') / X2
 
-search [1] in RAT-ACU-R : join((1 * M' + 1 * I') / (1 * M'), (M' + I') / M') =>* tt .
+search [1] in RAT-ACU1644 : join((1 * X2 + 1 * I') / (1 * X2), (X2 + I') / X2) =>* tt .
 
 ----  Solution 1 (state 10)
 ----  states: 11  rewrites: 228 in 2ms cpu (2ms real) (80707 rewrites/second)
 ----  empty substitution
 
-----  2.b) ((1 + N') * M' + (1 + N') * I') / ((1 + N') * M') \|/ (M' + I') / M'
+----  2.b) ((1 + N') * X2 + (1 + N') * I') / ((1 + N') * X2) \|/ (X2 + I') / X2
 ----
-----  we need to consider two cases: 2.b.1) gcd(I', M') = 1 and 2.b.2) gcd(I', M') > 1
+----  we need to consider two cases: 2.b.1) gcd(I', X2) = 1 and 2.b.2) gcd(I', X2) > 1
 ----
-----  2.b.1) gcd(I', M') = 1
+----  2.b.1) gcd(I', X2) = 1
 
-mod RAT-ACU-R-1 is
-  pr RAT-ACU-R .
+mod RAT-ACU1644-1 is
+  pr RAT-ACU1644 .
   op i' : -> NzInt .
-  op m' : -> NzNat .
-  rl gcd(i', m') => 1 .
+  op x2 : -> NzNat .
+  rl gcd(i', x2) => 1 .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
   vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
 endm
 
-search [1] in RAT-ACU-R-1 : join(((1 + N') * m' + (1 + N') * i') / ((1 + N') * m'), (m' + i') / m') =>* tt .
+search [1] in RAT-ACU1644-1 : join(((1 + N') * x2 + (1 + N') * i') / ((1 + N') * x2), (x2 + i') / x2) =>* tt .
 
 ----  Solution 1 (state 230677)
 ----  states: 230678  rewrites: 4869777 in 57027ms cpu (57416ms real) (85393 rewrites/second)
 ----  empty substitution
 
-----  2.b.2) gcd(I', M') > 1
+----  2.b.2) gcd(I', X2) > 1
 
-mod RAT-ACU-R-2 is
-  pr RAT-ACU-R .
+mod RAT-ACU1644-2 is
+  pr RAT-ACU1644 .
   op i' : -> NzInt .
-  op m' : -> NzNat .
-  rl gcd(i', m') > 1 => true .
+  op x2 : -> NzNat .
+  rl gcd(i', x2) > 1 => true .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
   vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
 endm
 
-search [1] in RAT-ACU-R-1 : join(((1 + N') * m' + (1 + N') * i') / ((1 + N') * m'), (m' + i') / m') =>* tt .
+search [1] in RAT-ACU1644-2 : join(((1 + N') * x2 + (1 + N') * i') / ((1 + N') * x2), (x2 + i') / x2) =>* tt .
 
 ----  Solution 1 (state 230677)
 ----  states: 230678  rewrites: 4869777 in 60366ms cpu (60709ms real) (80670 rewrites/second)

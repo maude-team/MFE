@@ -3,20 +3,21 @@
 ----    =(@2:Int + @3:NzNat * @1:Int)/ @3:NzNat .
 ----
 ----search [1] in RAT-ACU-R :
-----  join(I + J / N', (J + N' * I) / N') =>* tt .
+----  join(X1 + X2 / X3, (X2 + X3 * X1) / X3) =>* tt .
 ----
----- CtorCases on I, of sort Int, with generating set {0, I':NzInt}
+---- CtorCases on X1, of sort Int, with generating set {0, I':NzInt}
 
-search [1] in RAT-ACU-R :
-  join(0 + J / N', (J + N' * 0) / N') =>* tt .
+mod RAT-ACU1746 is
+  pr RAT-ACU-R .
 
-----  Solution 1 (state 2)
-----  states: 3  rewrites: 4 in 0ms cpu (0ms real) (34188 rewrites/second)
-----  empty substitution
+  vars X1 X2 I J : Int .
+  vars X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+endm
 
-search [1] in RAT-ACU-R :
-  join(I' + J / N', (J + N' * I') / N') =>* tt .
 
-----  Solution 1 (state 2)
-----  states: 3  rewrites: 3 in 0ms cpu (0ms real) (28037 rewrites/second)
-----  empty substitution
+search [1] in RAT-ACU1746 :
+  join(0 + X2 / X3, (X2 + X3 * 0) / X3) =>* tt .
+
+search [1] in RAT-ACU1746 :
+  join(I' + X2 / X3, (X2 + X3 * I') / X3) =>* tt .

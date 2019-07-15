@@ -2,78 +2,65 @@
 ----    @2:NzInt + - 1
 ----    =(- @1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
 
-----  search [1] in RAT-ACU-R : join(I' + - 1, (- N' + N' * I') / N') =>* tt .
-
-search [1] in RAT-ACU-R : join(I' + - 1, (- 1 + 1 * I') / 1) =>* tt .
-
-search [1] in RAT-ACU : (- 1 + 1 * I') / 1 =>* I' + - 1 .
-search [1] in RAT-ACU-R : (- 1 + 1 * I') / 1 =>* I' + - 1 .
-
-
-rew gcd ()
-
-search [1] in RAT-ACU-R : join(I' + - 1, (- N' + N' * I') / N') =>* tt .
-
-
-search (- N' + N' * I') / N' =>* quot(I,I') / quot(J,J') .
-
-search gcd(- N' + N' * I', N') .
-----  we need to consider two cases: b.1) N' = 1 and b.2) N' > 1
-----
-----  1) N' = 1
-
-mod RAT-ACU-R-1 is
+mod RAT-ACU1766 is
   pr RAT-ACU-R .
-  ops n' : -> NzNat .
-  rl n' => 1 .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
-  vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
+  vars I J : Int .
+  vars X1 N' M' : NzNat .
+  vars X2 I' J' : NzInt .
+
+  rl (I * I') + - I' => I' * (- 1 + I) .
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
 endm
 
-search [1] in RAT-ACU-R-1 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+---- search [1] in RAT-ACU1766 : join(X2 + - 1, (- X1 + X1 * X2) / X1) =>* tt .
 
-search [1] (- n' + n' * I') / n' =>* quot(I,I')/ quot(J,J') .
-rew gcd(- N' + N' * I', N') .
-----  search [1] in RAT-ACU-R-1 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+---- ctor cases on X2: {N':NzNat, - N':NzNat}
+
+---- search [1] in RAT-ACU1766 : join(N' + - 1, (- X1 + X1 * N') / X1) =>* tt .
+---- search [1] in RAT-ACU1766 : join(- N' + - 1, (- X1 + X1 * - N') / X1) =>* tt .
+
+---- ctor cases on N': {1, 1 + N':NzNat}
+
+---- search [1] in RAT-ACU1766 : join(1 + - 1, (- X1 + X1 * 1) / X1) =>* tt .
+---- search [1] in RAT-ACU1766 : join((1 + N') + - 1, (- X1 + X1 * (1 + N')) / X1) =>* tt .
+---- search [1] in RAT-ACU1766 : join(- 1 + - 1, (- X1 + X1 * - 1) / X1) =>* tt .
+---- search [1] in RAT-ACU1766 : join(- (1 + N') + - 1, (- X1 + X1 * - (1 + N')) / X1) =>* tt .
+
+----  the first one can be proven directly,
+
+search [1] in RAT-ACU1766 : join(1 + - 1, (- X1 + X1 * 1) / X1) =>* tt .
+
+----  for the other three we need to consider two cases: X1 = 1 and X1 > 1
 ----
-----  Solution 1 (state 60)
-----  states: 61  rewrites: 1308 in 11ms cpu (11ms real) (112545 rewrites/second)
-----  empty substitution
+----  1) X1 = 1
 
-----  2) N' > 1
+mod RAT-ACU1766-1 is
+  pr RAT-ACU1766 .
 
-mod RAT-ACU-R-2 is
-  pr RAT-ACU-R .
-  ops n' : -> NzNat .
-  rl n' > 1 => true .
+  ops x1 : -> NzNat .
+  rl x1 => 1 .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
-  vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
+  vars N' : NzNat .
 endm
 
-----  search [1] in RAT-ACU-R-2 : join(I' + - 1, (- n' + n' * I') / n') =>* tt .
+search [1] in RAT-ACU1766-1 : join((1 + N') + - 1, (- x1 + x1 * (1 + N')) / x1) =>* tt .
+search [1] in RAT-ACU1766-1 : join(- 1 + - 1, (- x1 + x1 * - 1) / x1) =>* tt .
+search [1] in RAT-ACU1766-1 : join(- (1 + N') + - 1, (- x1 + x1 * - (1 + N')) / x1) =>* tt .
 
-----  We need to apply CtorCases on I', of sort NzInt, with generator set {N':NzNat, - N':NzNat}.
+----  2) X1 > 1
 
-search [1] in RAT-ACU-R-2 : join(N' + - 1, (- n' + n' * N') / n') =>* tt .
+mod RAT-ACU1766-2 is
+  pr RAT-ACU1766 .
 
-----  search [1] in RAT-ACU-R-2 : join(N' + - 1, (- n' + n' * N') / n') =>* tt .
-----
-----  Solution 1 (state 2780)
-----  states: 2781  rewrites: 14235 in 105ms cpu (106ms real) (135260 rewrites/second)
-----  empty substitution
+  ops x1 : -> NzNat .
+  rl x1 > 1 => true .
 
-search [1] in RAT-ACU-R-2 : join(- N' + - 1, (- n' + n' * - N') / n') =>* tt .
+  vars N' : NzNat .
+  vars I J : Int .
+endm
 
-----  search [1] in RAT-ACU-R-2 : join(- 1 + - N', (- n' + n' * - N') / n') =>* tt .
-----
-----  Solution 1 (state 16728)
-----  states: 16729  rewrites: 206092 in 1404ms cpu (1541ms real) (146711 rewrites/second)
-----  empty substitution
+search [1] in RAT-ACU1766-2 : join((1 + N') + - 1, (- x1 + x1 * (1 + N')) / x1) =>* tt .
+search [1] in RAT-ACU1766-2 : join(- 1 + - 1, (- x1 + x1 * - 1) / x1) =>* tt .
+search [1] in RAT-ACU1766-2 : join(- (1 + N') + - 1, (- x1 + x1 * - (1 + N')) / x1) =>* tt .

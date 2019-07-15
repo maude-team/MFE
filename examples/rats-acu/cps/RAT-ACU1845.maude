@@ -2,72 +2,72 @@
 ----    (@1:Int + - @2:NzNat)/ @2:NzNat
 ----    =(-(@2:NzNat * @3:NzNat)+ @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
 
-----  We have to prove (- (N' * M') + N' * I) / (N' * M') \|/ (- M' + I) / M'
+----  We have to prove (- (X3 * X2) + X3 * X1) / (X3 * X2) \|/ (- X2 + X1) / X2
 ----
-----  This proof obligation can be dealt with by using the CtorCases rule on I,
+----  This proof obligation can be dealt with by using the CtorCases rule on X1,
 ----  with generating set {0, I':NzInt}.
 
-----  1) (- (N' * M') + N' * 0) / (N' * M') \|/ (- M' + 0) / M'
-----  2) (- (N' * M') + N' * I') / (N' * M') \|/ (- M' + I') / M'
-----
-----  1) (- (N' * M') + N' * 0) / (N' * M') \|/ (- M' + 0) / M'
+----  1) (- (X3 * X2) + X3 * 0) / (X3 * X2) \|/ (- X2 + 0) / X2
+----  2) (- (X3 * X2) + X3 * I') / (X3 * X2) \|/ (- X2 + I') / X2
 
-search [1] in RAT-ACU-R : join((- (N' * M') + N' * 0) / (N' * M'), (- M' + 0) / M') =>* tt .
-
-
-----  2) (- (N' * M') + N' * I') / (N' * M') \|/ (- M' + I') / M'
-----
-----  This proof obligation can be dealt with by using the CtorCases rule on N',
-----  with generating set {1, 1 + N':NzNat}.
-----
-----  2.a) (- (1 * M') + 1 * I') / (1 * M') \|/ (- M' + I') / M'
-----  2.b) (- ((1 + N') * M') + (1 + N') * I') / ((1 + N') * M') \|/ (- M' + I') / M'
-
-----  2.a) (- (1 * M') + 1 * I') / (1 * M') \|/ (- M' + I') / M'
-
-search [1] in RAT-ACU-R : join((- (1 * M') + 1 * I') / (1 * M'), (- M' + I') / M') =>* tt .
-
-
-----  2.b) (- ((1 + N') * M') + (1 + N') * I') / ((1 + N') * M') \|/ (- M' + I') / M'
-----
-----  we need to consider two cases: 2.b.1) gcd(I', M') = 1 and 2.b.2) gcd(I', M') > 1
-----
-----  2.b.1) gcd(I', M') = 1
-
-mod RAT-ACU-R-1 is
+mod RAT-ACU1845 is
   pr RAT-ACU-R .
-  op i' : -> NzInt .
-  op m' : -> NzNat .
-  rl gcd(i', m') => 1 .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
   vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
+
+  rl - (N' * M') => - N' * M' .
+  rl (I * I') + (J * I') => I' * (I + J) .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl gcd(I + - M', M') => gcd(I, M') .
+ crl N' * M' > 1 => true if N' > 1 => true .
+ crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+    if join(gcd(J, J') > 1, true) => tt .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl 1 + N' > 1 => true .
+  rl quot(I' * I, I') => I .
 endm
 
-search [1] in RAT-ACU-R-1 : join((- ((1 + N') * m') + (1 + N') * i') / ((1 + N') * m'), (- m' + i') / m') =>* tt .
+----  1) (- (X3 * X2) + X3 * 0) / (X3 * X2) \|/ (- X2 + 0) / X2
 
-search [1] in RAT-ACU-R-1 : (- ((1 + N') * m') + (1 + N') * i') / ((1 + N') * m')
-  =>* ((1 + N') * (- m' + i')) / ((1 + N') * m') .
-search [1] in RAT-ACU-R-1 : gcd(((1 + N') * (- m' + i')), ((1 + N') * m')) > 1 =>* true .
-search [1] in RAT-ACU-R-1 : (- ((1 + N') * m') + (1 + N') * i') / ((1 + N') * m')
-  =>* quot((- ((1 + N') * m') + (1 + N') * i'), (1 + N')) / m' .
+search [1] in RAT-ACU1845 : join((- (X3 * X2) + X3 * 0) / (X3 * X2), (- X2 + 0) / X2) =>* tt .
 
-----  2.b.2) gcd(I', M') > 1
+----  2) (- (X3 * X2) + X3 * I') / (X3 * X2) \|/ (- X2 + I') / X2
 
-mod RAT-ACU-R-2 is
-  pr RAT-ACU-R .
+----  search [1] in RAT-ACU1845 : join((- (X3 * X2) + X3 * I') / (X3 * X2), (- X2 + I') / X2) =>* tt .
+
+----  ctor cases on X3: {1, 1 + N':NzNat}
+----  we need to consider two cases: 2.b.1) gcd(I', X2) = 1 and 2.b.2) gcd(I', X2) > 1
+----
+----  2.b.1) gcd(I', X2) = 1
+
+mod RAT-ACU1845-1 is
+  pr RAT-ACU1845 .
   op i' : -> NzInt .
-  op m' : -> NzNat .
-  rl gcd(i', m') > 1 => true .
+  op x2 : -> NzNat .
+  rl gcd(i', x2) => 1 .
 
-  vars R : Rat .
-  vars R' : NzRat .
-  vars I J K : Int .
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
   vars I' J' : NzInt .
-  vars N' M' O' : NzNat .
 endm
 
-search [1] in RAT-ACU-R-1 : join((- ((1 + N') * m') + (1 + N') * i') / ((1 + N') * m'), (- m' + i') / m') =>* tt .
+search [1] in RAT-ACU1845-1 : join((- (1 * x2) + 1 * i') / (1 * x2), (- x2 + i') / x2) =>* tt .
+search [1] in RAT-ACU1845-1 : join((- ((1 + N') * x2) + (1 + N') * i') / ((1 + N') * x2), (- x2 + i') / x2) =>* tt .
+
+----  2.b.2) gcd(I', X2) > 1
+
+mod RAT-ACU1845-2 is
+  pr RAT-ACU1845 .
+  op i' : -> NzInt .
+  op x2 : -> NzNat .
+  rl gcd(i', x2) > 1 => true .
+
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+endm
+
+search [1] in RAT-ACU1845-2 : join((- (1 * x2) + 1 * i') / (1 * x2), (- x2 + i') / x2) =>* tt .
+search [1] in RAT-ACU1845-2 : join((- ((1 + N') * x2) + (1 + N') * i') / ((1 + N') * x2), (- x2 + i') / x2) =>* tt .

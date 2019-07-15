@@ -2,48 +2,43 @@
 ----    1 + @2:NzInt
 ----    =(@1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
 
-----  We have to prove 1 + I' \|/ (N' + N' * I') / N'
+----  We have to prove 1 + X2 \|/ (X1 + X1 * X2) / X1
 ----
-----  This proof obligation can be dealt with by using the CtorCases rule on I',
+----  This proof obligation can be dealt with by using the CtorCases rule on X2,
 ----  with generating set {N':NzNat, - N':NzNat}.
 ----
-----  a) 1 + M' \|/ (N' + N' * M') / N'
-----  b) 1 + - M' \|/ (N' + N' * - M') / N'
+----  a) 1 + N' \|/ (X1 + X1 * N') / X1
+----  b) 1 + - N' \|/ (X1 + X1 * - N') / X1
 
-----  a) search in RAT-ACU-R : join(1 + M', (N' + N' * M') / N') =>* tt .
+mod RAT-ACU1565 is
+  pr RAT-ACU-R .
 
-----  cases on N'
+  vars I J : Int .
+  vars X1 N' M' : NzNat .
+  vars X2 I' J' : NzInt .
 
-search [1] in RAT-ACU-R : join(1 + M', (1 + 1 * M') / 1) =>* tt .
+  rl (I * I') + (J * I') => I' * (I + J) .
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
+  rl (I * I') + I' => I' * (1 + I) .
+  rl 1 + N' > 1 => true .
+  rl gcd(J + N' * I, N') => gcd(J, N') .
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+endm
 
-----  search [1] in RAT-ACU-R : join(1 + M', (1 + 1 * M') / 1) =>* tt .
-----
-----  Solution 1 (state 8)
-----  states: 9  rewrites: 102 in 1ms cpu (1ms real) (70539 rewrites/second)
-----  empty substitution
+----  a) search in RAT-ACU-R : join(1 + N', (X1 + X1 * N') / X1) =>* tt .
 
-search [1] in RAT-ACU-R : join(1 + M', (1 + N' + (1 + N') * M') / (1 + N')) =>* tt .
+----  ctor cases on X1
 
-----  search [1] in RAT-ACU-R : join(1 + M', (1 + N' + M' * (1 + N')) / (1 + N')) =>* tt .
-----
-----  Solution 1 (state 11412)
-----  states: 11413  rewrites: 1180071 in 6545ms cpu (6578ms real) (180277 rewrites/second)
-----  empty substitution
+search [1] join(1 + N', (1 + 1 * N') / 1) =>* tt .
 
-----  b) search in RAT-ACU-R : join(1 + - M', (N' + N' * - M') / N') =>* tt .
+search [1] join(1 + N', (1 + M' + (1 + M') * N') / (1 + M')) =>* tt .
 
-search [1] in RAT-ACU-R : join(1 + - M', (1 + 1 * - M') / 1) =>* tt .
+----  b) search in RAT-ACU-R : join(1 + - N', (M' + M' * - N') / M') =>* tt .
 
-----  search [1] in RAT-ACU-R : join(1 + - M', (1 + 1 * - M') / 1) =>* tt .
-----
-----  Solution 1 (state 10)
-----  states: 11  rewrites: 83 in 0ms cpu (0ms real) (139028 rewrites/second)
-----  empty substitution
+----  ctor cases on M'
 
-search [1] in RAT-ACU-R : join(1 + - M', (1 + N' + (1 + N') * - M') / (1 + N')) =>* tt .
+search [1] join(1 + - N', (1 + 1 * - N') / 1) =>* tt .
 
-----  search [1] in RAT-ACU-R : join(1 + - M', (1 + N' + - M' * (1 + N')) / (1 + N')) =>* tt .
-----
-----  Solution 1 (state 356164)
-----  states: 356165  rewrites: 5226343 in 80292ms cpu (81988ms real) (65091 rewrites/second)
-----  empty substitution
+search [1] join(1 + - N', (1 + M' + (1 + M') * - N') / (1 + M')) =>* tt .

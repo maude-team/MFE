@@ -8,18 +8,19 @@
 ----    @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat))
 ----    =-(@2:NzNat * @4:NzNat * @5:NzNat)+ @4:NzNat * @1:Int
 
----- search [1] join(N' * (I + - (M' * I')), - (N' * M' * I') + N' * I) =>* tt .
+mod RAT-ACU5869 is
+  pr RAT-ACU-R .
 
-----  We apply CtorCases on variable I, of sort Int, with generating set {0, I':NzInt}.
+  vars X1 I J : Int .
+  vars X2 X4 X5 N' M' : NzNat .
+  vars I' J' : NzInt .
 
-search [1] join(N' * (0 + - (M' * I')), - (N' * M' * I') + N' * 0) =>* tt .
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
 
----- Solution 1 (state 4)
----- states: 5  rewrites: 5 in 0ms cpu (0ms real) (37313 rewrites/second)
----- empty substitution
+----  search [1] join(X4 * (X1 + - (X2 * X5)), - (X2 * X4 * X5) + X1 * X4) =>* tt .
 
-search [1] join(N' * (J' + - (M' * I')), - (N' * M' * I') + N' * J') =>* tt .
+----  Let us use the CtorCases rule on X1, of sort Int, with generating set {0, I':NzInt}.
 
----- Solution 1 (state 3)
----- states: 4  rewrites: 6 in 0ms cpu (0ms real) (38961 rewrites/second)
----- empty substitution
+search [1] join(X4 * (0 + - (X2 * X5)), - (X2 * X4 * X5) + 0 * X4) =>* tt .
+search [1] join(X4 * (I' + - (X2 * X5)), - (X2 * X4 * X5) + I' * X4) =>* tt .

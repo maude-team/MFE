@@ -7,7 +7,34 @@
 ----    @5:NzNat *(@3:NzNat + @2:Int)
 ----    =@3:NzNat * @5:NzNat + @5:NzNat * @2:Int
 
-search [1] in RAT-ACU-R :
+mod RAT-ACU1657 is
+  pr RAT-ACU-R .
+
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  rl (I * I') + (J * I') => I' * (I + J) .
+---(
+  rl I * (I' + J') => (I * I') + (I * J') .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl gcd(I + M', M') => gcd(I, M') .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl quot(I' * I, I') => I .
+  rl 1 + N' > 1 => true .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+  rl gcd(I + M', M') => gcd(I, M') .
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
+  rl (I * I') + I' => I' * (1 + I) .
+  rl 1 + N' > 1 => true .
+  rl gcd(J + N' * I, N') => gcd(J, N') .
+)
+endm
+
+search [1] in RAT-ACU1657 :
   join(N' * (M' + I), M' * N' + N' * I) =>* tt .
 
 ----  search [1] in RAT-ACU-R : join(N' * (I + M'), I * N' + N' * M') =>* tt .

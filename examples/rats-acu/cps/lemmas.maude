@@ -62,16 +62,17 @@ eof
 
   rl I * (I' + J') => (I * I') + (I * J') .
   rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
-  rl gcd(N', N' * I') => N' .
+  rl gcd(I', I' * J') => I' .
   rl gcd(J + N' * I, N') => gcd(J, N') .
   rl gcd(I + M', M') => gcd(I, M') .
+  rl gcd(I' + M', M') => gcd(I', M') .
+  rl gcd(I', 1) => 1 .
 
   rl quot(I' * I, I' * J') => quot(I, J') .
   rl quot(I' * I, I') => I .
   rl quot(I, 1) => I .
   rl 1 + N' > 1 => true .
  crl N' * M' > 1 => true if N' > 1 => true .
-  rl gcd(I' + M', M') => gcd(I', M') .
   rl - (- N' + - M') => N' + M' .
 
   rl (I * I') + (J * I') => I' * (I + J) .
@@ -82,6 +83,7 @@ eof
   rl quot(N', - I') => - quot(N', I') .
 ----  rl - N' + M' => - (N' + - M') .
 ----  rl - (N' * M') => - N' * M' .
+  rl - N' => - 1 * N' .
   rl I * - J => - (I * J) .
   rl I' * N' > J' * N' => I' > J' .
   rl I' * N' > N' => I' > 1 .
