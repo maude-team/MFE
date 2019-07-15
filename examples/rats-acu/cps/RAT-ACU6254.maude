@@ -1,0 +1,17 @@
+----  cp RAT-ACU6254 for RAT-ACU-02 and RAT-ACU-18
+----    @2:NzInt > 1
+----    = @1:NzNat * @2:NzInt > @1:NzNat .
+
+mod RAT-ACU6254 is
+  pr RAT-ACU-R .
+
+  vars I J : Int .
+  vars X1 N' M' : NzNat .
+  vars X2 I' J' K' : NzInt .
+
+  rl I' * N' > J' * N' => I' > J' .
+  rl I' * N' > N' => I' > 1 .
+  rl N' > J' * N' => 1 > J' .
+endm
+
+search [1] in RAT-ACU6254 : join(X2 > 1, X1 * X2 > X1) =>* tt .
