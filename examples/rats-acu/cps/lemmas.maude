@@ -47,11 +47,6 @@ I.S. quot(N' * (1 + M'), N') = 1 + M'
 --------------------------------------------------------------------------------
 
 
-mod RAT-ACU-R is
-  pr RAT-ACU .
-
-endm
-
 eof
 
   vars R : Rat .
@@ -61,30 +56,20 @@ eof
   vars N' M' O' P' : NzNat .
 
   rl [l00]: I * (I' + J') => (I * I') + (I * J') .
-  rl [l01]: gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl [l01]: gcd(I' * I, I' * J) => I' * gcd(I, J) .
   rl [l02]: gcd(I', I' * J') => I' .
   rl [l03]: gcd(J + N' * I, N') => gcd(J, N') .
   rl [l04]: gcd(I + M', M') => gcd(I, M') .
-  ----cr rl [l05]: gcd(I' + M', M') => gcd(I', M') .
   rl [l05]: gcd(I', 1) => 1 .
-
   rl [l06]: quot(I' * I, I' * J') => quot(I, J') .
   rl [l07]: quot(I' * I, I') => I .
   rl [l08]: quot(I, 1) => I .
   rl [l09]: 1 + N' > 1 => true .
  crl [l10]: N' * M' > 1 => true if N' > 1 => true .
-  rl [l11]: - (- N' + - M') => N' + M' .
-
   rl [l12]: (I * I') + (J * I') => I' * (I + J) .
   rl [l13]: (I * I') + I' => I' * (1 + I) .
   rl [l14]: (I * I') + - I' => - I' * (- 1 + I) .
-  rl [l15]: quot(I' + M', M') => 1 + quot(I', M')  .
-  rl [l16]: quot(- I', N') => - quot(I', N') .
-  rl [l17]: quot(N', - I') => - quot(N', I') .
-----  rl - N' + M' => - (N' + - M') .
-----  rl - (N' * M') => - N' * M' .
   rl [l18]: - N' => - 1 * N' .
-  rl [l19]: I * - J => - (I * J) .
   rl [l20]: I' * N' > J' * N' => I' > J' .
   rl [l21]: I' * N' > N' => I' > 1 .
   rl [l22]: N' > J' * N' => 1 > J' .
@@ -93,10 +78,6 @@ eof
   rl [l25]: N' ~ J' * N' => 1 ~ J' .
  crl [l26]: J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
      if join(gcd(J, J') > 1, true) => tt .
-
-  rl [l27]: I / - N' => - I / N' .
-
   rl [l28]: gcd(- J', I') => gcd(J', I') .
-
-----cr search [1] in RAT-ACU : (- 1 + 1 * I') / 1 =>* I' + - 1 .
-----cr search [1] in RAT-ACU-R : (- 1 + 1 * I') / 1 =>* I' + - 1 .
+  rl gcd(I + - M', M') => gcd(I, M') .
+  rl - N' => - 1 * N' .
