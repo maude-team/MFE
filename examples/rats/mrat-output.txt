@@ -1,0 +1,72 @@
+rewrites: 43610402 in 431167ms cpu (435953ms real) (101144 rewrites/second)
+ccp RAT2539 for rat04 and rat03
+  X@@@:[Rat]+ J':NzInt
+  = X@@@:[Rat]+(quot(J':NzInt,gcd(J':NzInt,s 0))/ quot(s 0,gcd(J':NzInt,s 0)))
+  if gcd(J':NzInt,s 0)> s 0 = true .
+
+
+Church-Rosser checking of RAT
+Checking solution:
+The following critical pairs cannot be joined:
+  cp for int01 and rat08
+    R':NzRat
+    =(S':NzRat * R':NzRat)/ S':NzRat .
+  cp for rat01 and rat05
+    (0 * #3:NzRat)/ #2:NzRat
+    = 0 .
+  cp for rat01 and rat08
+    ((0 * #3:NzRat)+ R':NzRat * #2:NzRat)/ #2:NzRat
+    =(R':NzRat * #2:NzRat * #3:NzRat)/ #2:NzRat * #3:NzRat .
+  cp for rat01 and rat08
+    ((S:Rat * #3:NzRat)+ R':NzRat * #2:NzRat)/ #2:NzRat
+    =(#3:NzRat * S:Rat +((R':NzRat * #2:NzRat)/ #3:NzRat))/ #2:NzRat .
+  cp for rat02 and rat04
+    #1:Rat / #2:NzRat * s 0
+    = #1:Rat / #2:NzRat .
+  cp for rat02 and rat06
+    #1:Rat / #2:NzRat * - R':NzRat
+    = - #1:Rat / R':NzRat * #2:NzRat .
+  cp for rat04 and rat08
+    S:Rat + R':NzRat
+    = S:Rat + R':NzRat * s 0 .
+  cp for rat05 and rat09
+    0 * R:Rat
+    =(0 * R:Rat)/ R':NzRat .
+  cp for rat06 and rat08
+    R':NzRat
+    = -(R':NzRat * - #2:NzRat)/ #2:NzRat .
+  cp for rat06 and rat08
+    (- S:Rat + R':NzRat * #2:NzRat)/ #2:NzRat
+    = -(S:Rat + R':NzRat * - #2:NzRat)/ #2:NzRat .
+  cp for rat06 and rat09
+    (R:Rat * - S:Rat)/ #2:NzRat
+    = -(R:Rat * S:Rat)/ #2:NzRat .
+  ccp for int05 and int06
+    - d(M':NzNat,N':NzNat)
+    = d(M':NzNat,N':NzNat)
+    if M':NzNat > N':NzNat = true /\ N':NzNat > M':NzNat = true .
+  ccp for nat12 and nat14
+    s quot(d(N:Nat,M':NzNat),M':NzNat)
+    = 0
+    if M':NzNat > N:Nat = true /\ N:Nat > M':NzNat = true .
+  ccp for nat14 and nat12
+    0
+    = s quot(d(N:Nat,M':NzNat),M':NzNat)
+    if N:Nat > M':NzNat = true /\ M':NzNat > N:Nat = true .
+There are non-sort-decreasing equations.
+The following proof obligations must be checked:
+  cmb quot(J':NzInt,gcd(J':NzInt,I':NzInt))/ quot(I':NzInt,gcd(J':NzInt,
+    I':NzInt)): NzRat
+    if gcd(J':NzInt,I':NzInt)> s 0 = true .
+  cmb quot(J':NzInt,gcd(J':NzInt,I'@NzInt:NzInt))/ quot(I'@NzInt:NzInt,gcd(
+    J':NzInt,I'@NzInt:NzInt)): NzRat
+    if gcd(J':NzInt,I'@NzInt:NzInt)> s 0 = true .
+  cmb quot(J'@NzInt:NzInt,gcd(J'@NzInt:NzInt,I':NzInt))/ quot(I':NzInt,gcd(
+    J'@NzInt:NzInt,I':NzInt)): NzRat
+    if gcd(J'@NzInt:NzInt,I':NzInt)> s 0 = true .
+  cmb quot(J'@NzInt:NzInt,gcd(J'@NzInt:NzInt,I'@NzInt:NzInt))/ quot(
+    I'@NzInt:NzInt,gcd(J'@NzInt:NzInt,I'@NzInt:NzInt)): NzRat
+    if gcd(J'@NzInt:NzInt,I'@NzInt:NzInt)> s 0 = true .
+  cmb gcd(d(N':NzNat,M':NzNat),M':NzNat): NzNat
+    if N':NzNat > M':NzNat = true .
+---)

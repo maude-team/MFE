@@ -1,4 +1,3 @@
-MacBook-Pro-de-Paco:MFE duran$ ~/Maude/Alpha115/maude-Yices2.darwin64 examples/rats/numbers-ACU.maude src/mfe.maude examples/rats/numbers-ACU-check.maude
 		     \||||||||||||||||||/
 		   --- Welcome to Maude ---
 		     /||||||||||||||||||\
@@ -382,5 +381,3 @@ The following proof obligations must be checked for sort-decreasingness:
     X@@@@NzNat:NzNat +(quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
     gcd(J':NzInt,M':NzNat))) : Rat
     if gcd(J':NzInt,M':NzNat)> 1 = tt .
-
-Maude>

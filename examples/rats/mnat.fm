@@ -34,8 +34,9 @@
     ceq [nat16] : gcd(N', M') =  gcd(d(N', M'), M') if N' > M' = true .
   endfm)
 
- (check Church-Rosser .)
-eof
+---- (select tool CRC .)
+---- (check Church-Rosser .)
+
 ---(
 crchc3f: rewrites: 4385595 in 8984ms cpu (9375ms real) (488129 rewrites/second)
 crchc3g: rewrites: 1691305 in 3793ms cpu (4254ms real) (445844 rewrites/second)
