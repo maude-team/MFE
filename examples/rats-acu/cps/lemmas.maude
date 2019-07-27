@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+Lemma                      INT-ACU |- gcd(N', N' * I') = N'
+--------------------------------------------------------------------------------
+
+Let us use CtorCases on I', with generating set {N':NzNat, - N':NzNat}.
+We have two cases:
+a) gcd(N', N' * M') = N'
+
+We do induction on M'
+
+B.C. M' = 1
+    gcd(N', N' * 1) = N'
+    gcd(N', N' * 1) = gcd(N', N')                          (by NAT-ACU-07)
+                     = N'                                  (by NAT-ACU-04)
+I.H. gcd(N', N' * M') = N'
+I.S. gcd(N', N' * (1 + M')) = N'
+    gcd(N', N' * (1 + M')) = gcd(N', N' * 1 + N' * M')     (by NAT-ACU-08)
+                           = gcd(N', N' + N' * M')         (by NAT-ACU-07)
+                           (N' * M' : NzNat)
+                           = gcd(N', N' * M')              (by NAT-ACU-05)
+                           = N'                            (by I.H.)
+
+b) gcd(N', N' * - M') = N'
+   gcd(N', N' * - M') = gcd(N', - (N' * M'))               (by INT-ACU-06)
+                      = gcd(N', N' * M')                   (by NAT-ACU-05)
+                      = N'                                 (by a))
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Lemma                      INT-ACU |- quot(N' * M', N') = M'
+--------------------------------------------------------------------------------
+
+We do induction on M'
+
+B.C. M' = 1
+    quot(N' * 1, N') = 1
+    quot(N' * 1, N') = quot(N', N')                        (by NAT-ACU-07)
+                     = 1                                   (by NAT-ACU-02)
+I.H. quot(N' * M', N') = M'
+I.S. quot(N' * (1 + M'), N') = 1 + M'
+    quot(N' * (1 + M'), N') = quot(N' * 1 + N' * M'), N')  (by NAT-ACU-08)
+                            = quot(N' + N' * M', N')       (by NAT-ACU-07)
+                            (N' * M' : NzNat)
+                            = 1 + quot(N' * M', N')        (by NAT-ACU-01)
+                            = 1 + M'                       (by I.H.)
+
+--------------------------------------------------------------------------------
+
+
+eof
+
+  vars R : Rat .
+  vars R' : NzRat .
+  vars I J K : Int .
+  vars I' J' K' : NzInt .
+  vars N' M' O' P' : NzNat .
+
+  rl [l00]: I * (I' + J') => (I * I') + (I * J') .
+  rl [l01]: gcd(I' * I, I' * J) => I' * gcd(I, J) .
+  rl [l02]: gcd(I', I' * J') => I' .
+  rl [l03]: gcd(J + N' * I, N') => gcd(J, N') .
+  rl [l04]: gcd(I + M', M') => gcd(I, M') .
+  rl [l05]: gcd(I', 1) => 1 .
+  rl [l06]: quot(I' * I, I' * J') => quot(I, J') .
+  rl [l07]: quot(I' * I, I') => I .
+  rl [l08]: quot(I, 1) => I .
+  rl [l09]: 1 + N' > 1 => true .
+ crl [l10]: N' * M' > 1 => true if N' > 1 => true .
+  rl [l12]: (I * I') + (J * I') => I' * (I + J) .
+  rl [l13]: (I * I') + I' => I' * (1 + I) .
+  rl [l14]: (I * I') + - I' => - I' * (- 1 + I) .
+  rl [l18]: - N' => - 1 * N' .
+  rl [l20]: I' * N' > J' * N' => I' > J' .
+  rl [l21]: I' * N' > N' => I' > 1 .
+  rl [l22]: N' > J' * N' => 1 > J' .
+  rl [l23]: I' * N' ~ J' * N' => I' ~ J' .
+  rl [l24]: I' * N' ~ N' => I' ~ 1 .
+  rl [l25]: N' ~ J' * N' => 1 ~ J' .
+ crl [l26]: J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+  rl [l28]: gcd(- J', I') => gcd(J', I') .
+  rl gcd(I + - M', M') => gcd(I, M') .
+  rl - N' => - 1 * N' .

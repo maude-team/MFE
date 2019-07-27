@@ -1,0 +1,4 @@
+# to be run from the MFE root
+
+ulimit -s 65532
+~/Maude/Alpha120/maude-Yices2.darwin64 examples/rats-acu/RAT-ACU.maude src/mfe.maude examples/rats-acu/RAT-ACU-check.maude | tee examples/rats-acu/output.txt

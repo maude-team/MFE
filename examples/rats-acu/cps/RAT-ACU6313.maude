@@ -1,0 +1,27 @@
+----  cp RAT-ACU6313 for RAT-ACU-03 and RAT-ACU-12
+----    @2:NzInt * - 1
+----    =(@2:NzInt * - @1:NzNat)/ @1:NzNat .
+
+mod RAT-ACU6313 is
+  pr RAT-ACU-R .
+
+  vars I J : Int .
+  vars X1 N' M' : NzNat .
+  vars X2 I' J' : NzInt .
+
+  rl gcd(I', I' * J') => I' .
+  rl gcd(I', 1) => 1 .
+  rl quot(I' * I, I') => I .
+  rl 1 + N' > 1 => true .
+  rl - (I' * J') => - I' * J' .
+  rl I * - J => - (I * J) .
+ crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+endm
+
+----  search join(X2 * - 1, (X2 * - X1) / X1) =>* tt .
+
+----  Let us use the CtorCases rule on X1, with generating set {1, 1 + N':NzNat}.
+
+search join(X2 * - 1, (X2 * - 1) / 1) =>* tt .
+search join(X2 * - 1, (X2 * - (1 + N')) / (1 + N')) =>* tt .

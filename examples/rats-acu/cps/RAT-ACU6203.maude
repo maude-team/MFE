@@ -1,0 +1,84 @@
+----  cp RAT-ACU6203 for RAT-ACU-26 and RAT-ACU-26
+----    (@4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat * @6:NzNat *
+----    @3:Int)/ @2:NzNat * @4:NzNat * @6:NzNat
+----    =(@2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat * @6:NzNat *
+----    @1:Int)/ @2:NzNat * @4:NzNat * @6:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----   @4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat * @6:NzNat * @3:Int
+----    =@2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat * @6:NzNat * @1:Int
+
+mod RAT-ACU6203 is
+  pr RAT-ACU-R .
+
+  vars X1 X3 X5 I J : Int .
+  vars X2 X4 X6 N' M' : NzNat .
+  vars I' J' K' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+----  search [1] join(X4 *(X2 * X5 + X6 * X1)+ X2 * X6 * X3, X2 *(X4 * X5 + X6 * X3)+ X4 * X6 * X1) =>* tt .
+
+----  Ctor cases on X1, X3, and X5
+
+search [1] join(X4 *(X2 * 0 + X6 * 0)+ X2 * X6 * 0, X2 *(X4 * 0 + X6 * 0)+ X4 * X6 * 0) =>* tt .
+search [1] join(X4 *(X2 * K' + X6 * 0)+ X2 * X6 * 0, X2 *(X4 * K' + X6 * 0)+ X4 * X6 * 0) =>* tt .
+search [1] join(X4 *(X2 * 0 + X6 * 0)+ X2 * X6 * J', X2 *(X4 * 0 + X6 * J')+ X4 * X6 * 0) =>* tt .
+search [1] join(X4 *(X2 * K' + X6 * 0)+ X2 * X6 * J', X2 *(X4 * K' + X6 * J')+ X4 * X6 * 0) =>* tt .
+search [1] join(X4 *(X2 * 0 + X6 * I')+ X2 * X6 * 0, X2 *(X4 * 0 + X6 * 0)+ X4 * X6 * I') =>* tt .
+search [1] join(X4 *(X2 * K' + X6 * I')+ X2 * X6 * 0, X2 *(X4 * K' + X6 * 0)+ X4 * X6 * I') =>* tt .
+search [1] join(X4 *(X2 * 0 + X6 * I')+ X2 * X6 * J', X2 *(X4 * 0 + X6 * J')+ X4 * X6 * I') =>* tt .
+search [1] join(X4 *(X2 * K' + X6 * I')+ X2 * X6 * J', X2 *(X4 * K' + X6 * J')+ X4 * X6 * I') =>* tt .
+
+----  search [1] join(N' * (M' * I + O' * J) + M' * O' * K, M' * (N' * I + O' * K) + N' * O' * J) =>* tt .
+
+----  We apply CtorCases on variables I, J and K, of sort Int, with generating set {0, I':NzInt}.
+
+search [1] join(N' * (M' * 0 + O' * 0) + M' * O' * 0, M' * (N' * 0 + O' * 0) + N' * O' * 0) =>* tt .
+
+----  Solution 1 (state 182)
+----  states: 183  rewrites: 432 in 4ms cpu (4ms real) (103423 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * 0 + O' * 0) + M' * O' * K', M' * (N' * 0 + O' * K') + N' * O' * 0) =>* tt .
+
+----  Solution 1 (state 53)
+----  states: 54  rewrites: 114 in 1ms cpu (1ms real) (76975 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * 0 + O' * J') + M' * O' * 0, M' * (N' * 0 + O' * 0) + N' * O' * J') =>* tt .
+
+----  Solution 1 (state 51)
+----  states: 52  rewrites: 96 in 1ms cpu (1ms real) (79470 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * 0 + O' * J') + M' * O' * K', M' * (N' * 0 + O' * K') + N' * O' * J') =>* tt .
+
+----  Solution 1 (state 7)
+----  states: 8  rewrites: 12 in 0ms cpu (0ms real) (18750 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * I' + O' * 0) + M' * O' * 0, M' * (N' * I' + O' * 0) + N' * O' * 0) =>* tt .
+
+----  Solution 1 (state 69)
+----  states: 70  rewrites: 200 in 2ms cpu (2ms real) (73475 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * I' + O' * 0) + M' * O' * K', M' * (N' * I' + O' * K') + N' * O' * 0) =>* tt .
+
+----  Solution 1 (state 16)
+----  states: 17  rewrites: 35 in 0ms cpu (0ms real) (50578 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * I' + O' * J') + M' * O' * 0, M' * (N' * I' + O' * 0) + N' * O' * J') =>* tt .
+
+----  Solution 1 (state 16)
+----  states: 17  rewrites: 35 in 0ms cpu (0ms real) (75107 rewrites/second)
+----  empty substitution
+
+search [1] join(N' * (M' * I' + O' * J') + M' * O' * K', M' * (N' * I' + O' * K') + N' * O' * J') =>* tt .
+
+----  Solution 1 (state 8)
+----  states: 9  rewrites: 21 in 0ms cpu (0ms real) (41257 rewrites/second)
+----  empty substitution

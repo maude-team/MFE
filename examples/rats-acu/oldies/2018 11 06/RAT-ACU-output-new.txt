@@ -1,0 +1,310 @@
+MacBook-Pro-de-Paco:MFE duran$ examples/rats-acu/run
+examples/rats-acu/run: line 2: fg: no job control
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha115 built: Aug 11 2017 19:57:09
+	    Copyright 1997-2017 SRI International
+		   Fri Nov  2 13:15:27 2018
+
+	    Full Maude 2.7f November 20th 2017
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3r - August 6th 2018
+    Coherence Checker 3r - December 12th 2017
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (~ rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 1910491 in 5215ms cpu (5755ms real) (366305 rewrites/second)
+Church-Rosser check for INT-ACU
+	All critical pairs have been joined.
+	The specification is locally-confluent.
+	The module is sort-decreasing.
+
+rewrites: 5165944 in 57445ms cpu (59435ms real) (89927 rewrites/second)
+Church-Rosser check for RAT-ACU
+The following critical pairs must be proved joinable:
+  ccp RAT-ACU1180 for RAT-ACU-07 and RAT-ACU-01
+    (-(@1:NzInt * @4:NzNat)+ @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat
+    = - @1:NzInt / @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
+    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+  ccp RAT-ACU1181 for RAT-ACU-07 and RAT-ACU-01
+    @5:[Rat]+(-(@1:NzInt * @4:NzNat)+ @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat
+    = @5:[Rat]+ - @1:NzInt / @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
+    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+  ccp RAT-ACU1431 for RAT-ACU-02 and RAT-ACU-01
+    @1:NzInt + @2:[Rat]
+    = @2:[Rat]+ quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
+    if gcd(1,@1:NzInt)> 1 = true .
+  ccp RAT-ACU3120 for NAT-ACU-04 and RAT-ACU-01
+    (@2:NzInt + @1:NzNat * @3:NzNat)/ @3:NzNat
+    = @1:NzNat + quot(@2:NzInt,gcd(@2:NzInt,@3:NzNat))/ quot(@3:NzNat,gcd(@2:NzInt,@3:NzNat))
+    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+  ccp RAT-ACU3199 for INT-FVP-05 and RAT-ACU-01
+    (@1:NzInt + - @2:NzNat)/ @2:NzNat
+    = - 1 + quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU3405 for INT-FVP-06 and RAT-ACU-01
+    (@2:NzInt + -(@3:NzNat + @1:NzNat * @3:NzNat))/ @3:NzNat
+    = -(1 + @1:NzNat)+ quot(@2:NzInt,gcd(@2:NzInt,@3:NzNat))/ quot(@3:NzNat,gcd(@2:NzInt,@3:NzNat))
+    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+  ccp RAT-ACU3867 for NAT-ACU-02 and RAT-ACU-01
+    (@2:NzInt + @3:NzNat)/ @3:NzNat
+    = 1 + quot(@2:NzInt,gcd(@2:NzInt,@3:NzNat))/ quot(@3:NzNat,gcd(@2:NzInt,@3:NzNat))
+    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+  ccp RAT-ACU4788 for RAT-ACU-09 and RAT-ACU-01
+    (@1:NzInt * @4:NzNat + @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat
+    = @1:NzInt / @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
+    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+  ccp RAT-ACU4913 for RAT-ACU-08 and RAT-ACU-01
+    (@1:NzInt * @4:NzNat + @3:NzInt * @2:NzNat + @5:NzInt * @2:NzNat * @4:NzNat)/ @2:NzNat * @4:NzNat
+    =(@1:NzInt + @5:NzInt * @2:NzNat)/ @2:NzNat + quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
+    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+  ccp RAT-ACU5038 for INT-ACU-09 and RAT-ACU-01
+    (@3:NzInt + -(@1:NzInt * @4:NzNat + @2:NzInt * @4:NzNat))/ @4:NzNat
+    = -(@1:NzInt + @2:NzInt)+ quot(@3:NzInt,gcd(@3:NzInt,@4:NzNat))/ quot(@4:NzNat,gcd(@3:NzInt,@4:NzNat))
+    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+  ccp RAT-ACU5127 for RAT-ACU-09 and RAT-ACU-01
+    (@1:NzInt * @4:NzNat * @6:NzNat + @3:NzInt * @2:NzNat * @6:NzNat + @5:NzInt * @2:NzNat * @4:NzNat)/ @2:NzNat * @4:NzNat * @6:NzNat
+    =(@1:NzInt * @4:NzNat + @3:NzInt * @2:NzNat)/ @2:NzNat * @4:NzNat + quot(@5:NzInt,gcd(@5:NzInt,@6:NzNat))/ quot(@6:NzNat,gcd(@5:NzInt,@6:NzNat))
+    if gcd(@5:NzInt,@6:NzNat)> 1 = true .
+  ccp RAT-ACU5169 for RAT-ACU-02 and RAT-ACU-01
+    @1:NzInt
+    = quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
+    if gcd(1,@1:NzInt)> 1 = true .
+  ccp RAT-ACU5288 for RAT-ACU-01 and RAT-ACU-08
+    @3:NzInt + quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    =(@1:NzInt + @3:NzInt * @2:NzNat)/ @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5374 for RAT-ACU-01 and RAT-ACU-07
+    -(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = - @1:NzInt / @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5375 for RAT-ACU-01 and RAT-ACU-11
+    @3:NzInt *(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    =(@1:NzInt * @3:NzInt)/ @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5376 for RAT-ACU-01 and RAT-ACU-12
+    (@3:NzInt / @4:NzNat)*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    =(@1:NzInt * @3:NzInt)/ @2:NzNat * @4:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5378 for RAT-ACU-01 and RAT-ACU-11
+    @3:NzInt * @4:[Rat]*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = @4:[Rat]*((@1:NzInt * @3:NzInt)/ @2:NzNat)
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5379 for RAT-ACU-01 and RAT-ACU-12
+    @3:[Rat]*(@4:NzInt / @5:NzNat)*(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = @3:[Rat]*((@1:NzInt * @4:NzInt)/ @2:NzNat * @5:NzNat)
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5382 for RAT-ACU-01 and RAT-ACU-07
+    @3:[Rat]+ -(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = @3:[Rat]+ - @1:NzInt / @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5383 for RAT-ACU-01 and RAT-ACU-04
+    @3:[Rat]+ @4:NzInt /(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = @3:[Rat]+(@4:NzInt * @2:NzNat)/ @1:NzInt
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5385 for RAT-ACU-01 and RAT-ACU-05
+    @3:[Rat]+(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/ @4:NzInt
+    = @3:[Rat]+ @1:NzInt / @4:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5386 for RAT-ACU-01 and RAT-ACU-06
+    @3:[Rat]+(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/(@4:NzInt / @5:NzNat)
+    = @3:[Rat]+(@1:NzInt * @5:NzNat)/ @4:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5387 for RAT-ACU-01 and RAT-ACU-06
+    @3:[Rat]+(@4:NzInt / @5:NzNat)/(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    = @3:[Rat]+(@4:NzInt * @2:NzNat)/ @1:NzInt * @5:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5388 for RAT-ACU-01 and RAT-ACU-13
+    @3:[Rat]+ | quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))|
+    = @3:[Rat]+ | @1:NzInt | / @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5394 for RAT-ACU-01 and RAT-ACU-04
+    @3:NzInt /(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    =(@3:NzInt * @2:NzNat)/ @1:NzInt
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5396 for RAT-ACU-01 and RAT-ACU-05
+    (quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/ @3:NzInt
+    = @1:NzInt / @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5397 for RAT-ACU-01 and RAT-ACU-06
+    (quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))/(@3:NzInt / @4:NzNat)
+    =(@1:NzInt * @4:NzNat)/ @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5398 for RAT-ACU-01 and RAT-ACU-06
+    (@3:NzInt / @4:NzNat)/(quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat)))
+    =(@3:NzInt * @2:NzNat)/ @1:NzInt * @4:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5399 for RAT-ACU-01 and RAT-ACU-16
+    @3:NzInt > quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    = @3:NzInt * @2:NzNat > @1:NzInt
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5400 for RAT-ACU-01 and RAT-ACU-18
+    quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))> @3:NzInt
+    = @1:NzInt > @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5401 for RAT-ACU-01 and RAT-ACU-19
+    quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))> @3:NzInt / @4:NzNat
+    = @1:NzInt * @4:NzNat > @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5402 for RAT-ACU-01 and RAT-ACU-19
+    @3:NzInt / @4:NzNat > quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    = @3:NzInt * @2:NzNat > @1:NzInt * @4:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5403 for RAT-ACU-01 and RAT-ACU-14
+    @3:NzInt ~ quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    = @1:NzInt ~ @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5404 for RAT-ACU-01 and RAT-ACU-15
+    @3:NzInt / @4:NzNat ~ quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))
+    = @1:NzInt * @4:NzNat ~ @3:NzInt * @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+  ccp RAT-ACU5406 for RAT-ACU-01 and RAT-ACU-13
+    | quot(@1:NzInt,gcd(@1:NzInt,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzInt,@2:NzNat))|
+    = | @1:NzInt | / @2:NzNat
+    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+
+The following proof obligations must be checked for sort-decreasingness:
+
+  cma RAT-ACU0 for equation RAT-ACU-01
+    X@@@@Int:Int + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU1 for equation RAT-ACU-01
+    X@@@@Int:Int + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU10 for equation RAT-ACU-01
+    X@@@@NzNat:NzNat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU11 for equation RAT-ACU-01
+    X@@@@NzNat:NzNat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU12 for equation RAT-ACU-01
+    X@@@@NzNeg:NzNeg + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU13 for equation RAT-ACU-01
+    X@@@@NzNeg:NzNeg + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU14 for equation RAT-ACU-01
+    X@@@@NzNeg:NzNeg + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU15 for equation RAT-ACU-01
+    X@@@@NzPosRat:NzPosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU16 for equation RAT-ACU-01
+    X@@@@NzPosRat:NzPosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU17 for equation RAT-ACU-01
+    X@@@@NzPosRat:NzPosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU18 for equation RAT-ACU-01
+    X@@@@NzRat:NzRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU19 for equation RAT-ACU-01
+    X@@@@NzRat:NzRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU2 for equation RAT-ACU-01
+    X@@@@Int:Int + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU20 for equation RAT-ACU-01
+    X@@@@NzRat:NzRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU21 for equation RAT-ACU-01
+    X@@@@PosRat:PosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU22 for equation RAT-ACU-01
+    X@@@@PosRat:PosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU23 for equation RAT-ACU-01
+    X@@@@PosRat:PosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU24 for equation RAT-ACU-01
+    X@@@@Rat:Rat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU25 for equation RAT-ACU-01
+    X@@@@Rat:Rat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU26 for equation RAT-ACU-01
+    X@@@@Rat:Rat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU27 for equation RAT-ACU-01
+    X@@@@Zero:Zero + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU28 for equation RAT-ACU-01
+    X@@@@Zero:Zero + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU29 for equation RAT-ACU-01
+    X@@@@Zero:Zero + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU3 for equation RAT-ACU-01
+    X@@@@Nat:Nat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU30 for equation RAT-ACU-01
+    quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : NzRat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU31 for equation RAT-ACU-01
+    quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : NzPosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU32 for equation RAT-ACU-01
+    quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : NzRat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU4 for equation RAT-ACU-01
+    X@@@@Nat:Nat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU5 for equation RAT-ACU-01
+    X@@@@Nat:Nat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU6 for equation RAT-ACU-01
+    X@@@@NzInt:NzInt + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+  cma RAT-ACU7 for equation RAT-ACU-01
+    X@@@@NzInt:NzInt + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+    if gcd(J'@NzNat:NzNat,M':NzNat)> 1 = true .
+
+  cma RAT-ACU8 for equation RAT-ACU-01
+    X@@@@NzInt:NzInt + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+    if gcd(J'@NzNeg:NzNeg,M':NzNat)> 1 = true .
+
+  cma RAT-ACU9 for equation RAT-ACU-01
+    X@@@@NzNat:NzNat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+    if gcd(J':NzInt,M':NzNat)> 1 = true .
+
+Maude>
