@@ -1,0 +1,38 @@
+----  cp RAT-ACU1285 for RAT-ACU-01 and RAT-ACU-25
+----    @2:NzInt
+----    =(@1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  We have to prove X2:NzInt \|/ (X1:NzNat * X2:NzInt) / X1:NzNat.
+----
+----  This proof obligation can be dealt with by using the CtorCases rule on X2,
+----  with generating set {N':NzNat, - N':NzNat}.
+----
+----  a) N' \|/ (X1 * N') / X1
+----  b) - N' \|/ (X1 * - N') / X1
+----
+----  Let us consider a) N' \|/ (X1 * N') / X1
+----  Let us use the CtorCases rule on X1, with generating set {1, 1 + N':NzNat}.
+
+mod RAT-ACU1285 is
+  pr RAT-ACU-R .
+
+  vars X2 X4 I J : Int .
+  vars X1 X3 X5 X6 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
+  rl 1 + N' > 1 => true .
+endm
+
+
+search join (N', (1 * N') / 1) =>* tt .
+
+search join (N', ((1 + M') * N') / (1 + M')) =>* tt .
+
+----  b) - N' \|/ (X1 * - N') / X1
+----  Let us use the CtorCases rule on X1, with generating set {1, 1 + N':NzNat}.
+
+search join (- N', (1 * - N') / 1) =>* tt .
+
+search join (- N', ((1 + M') * - N') / (1 + M')) =>* tt .

@@ -1,0 +1,27 @@
+----  cp RAT-ACU5716 for RAT-ACU-25 and RAT-ACU-26
+----    (@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/ @2:NzNat *
+----    @4:NzNat
+----    =(@2:NzNat * @3:Int + @4:NzNat * @1:Int + @2:NzNat * @4:NzNat * @5:NzInt)/
+----    @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)
+----    =@2:NzNat * @3:Int + @2:NzNat * @4:NzNat * @5:NzInt
+
+mod RAT-ACU5716 is
+  pr RAT-ACU-R .
+
+  vars X1 X3 I J : Int .
+  vars X2 X4 N' M' : NzNat .
+  vars X5 I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+----  search [1] join(X2 * (X3 + X4 * X5), X2 * X3 + X2 * X4 * X5) =>* tt .
+
+----  Let us use the CtorCases rule on X3, of sort Int, with generating set {0, I':NzInt}.
+
+search [1] join(X2 * (0 + X4 * X5), X2 * 0 + X2 * X4 * X5) =>* tt .
+
+search [1] join(X2 * (I' + X4 * X5), X2 * I' + X2 * X4 * X5) =>* tt .

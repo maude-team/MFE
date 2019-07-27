@@ -1,0 +1,44 @@
+----  cp RAT-ACU1565 for RAT-ACU-02 and RAT-ACU-25
+----    1 + @2:NzInt
+----    =(@1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
+
+----  We have to prove 1 + X2 \|/ (X1 + X1 * X2) / X1
+----
+----  This proof obligation can be dealt with by using the CtorCases rule on X2,
+----  with generating set {N':NzNat, - N':NzNat}.
+----
+----  a) 1 + N' \|/ (X1 + X1 * N') / X1
+----  b) 1 + - N' \|/ (X1 + X1 * - N') / X1
+
+mod RAT-ACU1565 is
+  pr RAT-ACU-R .
+
+  vars I J : Int .
+  vars X1 N' M' : NzNat .
+  vars X2 I' J' : NzInt .
+
+  rl (I * I') + (J * I') => I' * (I + J) .
+  rl gcd(N', N' * I') => N' .
+  rl quot(I' * I, I') => I .
+  rl (I * I') + I' => I' * (1 + I) .
+  rl 1 + N' > 1 => true .
+  rl gcd(J + N' * I, N') => gcd(J, N') .
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+endm
+
+----  a) search in RAT-ACU-R : join(1 + N', (X1 + X1 * N') / X1) =>* tt .
+
+----  ctor cases on X1
+
+search [1] join(1 + N', (1 + 1 * N') / 1) =>* tt .
+
+search [1] join(1 + N', (1 + M' + (1 + M') * N') / (1 + M')) =>* tt .
+
+----  b) search in RAT-ACU-R : join(1 + - N', (M' + M' * - N') / M') =>* tt .
+
+----  ctor cases on M'
+
+search [1] join(1 + - N', (1 + 1 * - N') / 1) =>* tt .
+
+search [1] join(1 + - N', (1 + M' + (1 + M') * - N') / (1 + M')) =>* tt .

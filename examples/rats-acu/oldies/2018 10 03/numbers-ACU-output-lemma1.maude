@@ -1,5 +1,7 @@
 By adding the lemma
 
+  eq gcd(1, I':NzInt) = 1
+
 the following two ccps disappear:
 
 ccp RAT-ACU1398 for RAT-ACU-02 and RAT-ACU-01
@@ -11,7 +13,7 @@ ccp RAT-ACU7530 for RAT-ACU-02 and RAT-ACU-01
 	= quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
 	if gcd(1,@1:NzInt)> 1 = tt .
 
-The rest of the cps remains as they where /ids change).
+The rest of the cps remains as they where (ids change).
 
 
 

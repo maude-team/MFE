@@ -1,0 +1,27 @@
+----  cp RAT-ACU4041 for INT-FVP-06 and RAT-ACU-26
+----    (@3:NzNat * @4:Int + @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat *
+----    @3:NzNat)))/ @3:NzNat * @5:NzNat
+----    =(-(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+ @3:NzNat *
+----    @4:Int + @5:NzNat * @2:Int)/ @3:NzNat * @5:NzNat .
+
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat * @3:NzNat))
+----    =-(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+ @5:NzNat * @2:Int
+
+mod RAT-ACU4041 is
+  pr RAT-ACU-R .
+
+  vars X2 I J : Int .
+  vars X1 X3 X5 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+---- search [1] in RAT-ACU4041 : join(X5 * (X2 + - (X3 + X1 * X3)), - (X3 * X5 + X1 * X3 * X5) + X5 * X2) =>* tt .
+
+---- ctor cases on X2: {0, I':NzInt}
+
+search [1] in RAT-ACU4041 : join(X5 * (0 + - (X3 + X1 * X3)), - (X3 * X5 + X1 * X3 * X5) + X5 * 0) =>* tt .
+
+search [1] in RAT-ACU4041 : join(X5 * (I' + - (X3 + X1 * X3)), - (X3 * X5 + X1 * X3 * X5) + X5 * I') =>* tt .

@@ -1,0 +1,71 @@
+----  cp RAT-ACU1363 for RAT-ACU-01 and RAT-ACU-26
+----    @1:Int / @2:NzNat
+----    =(@3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+
+mod RAT-ACU1364 is
+  pr RAT-ACU-R .
+
+  vars X1 I J : Int .
+  vars X2 X3 N' M' : NzNat .
+  vars I' J' : NzInt .
+
+  crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+  rl gcd(N' * I, N' * J) => N' * gcd(I, J) .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl 1 + N' > 1 => true .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  rl quot(I, 1) => I .
+endm
+
+----  This proof obligation can be dealt with by using the CtorCases rule on X1,
+----  with generating set {0, N':NzNat, - N':NzNat}.
+----
+----  a) 0 / X2 \|/ (X3 * 0) / (X2 * X3)
+----  b) N' / X2 \|/ (X3 * N') / (X2 * X3)
+----  c) - N' / X2 \|/ (X3 * - N') / (X2 * X3)
+
+----  a) 0 / X2 \|/ (X3 * 0) / (X2 * X3)
+
+search in RAT-ACU1364 : join(0 / X2, (X3 * 0) / (X2 * X3)) =>* tt .
+
+---- For b) and c), let us use the CtorCases rule on X3, with generating set {1, 1 + N':NzNat}.
+
+----  b.1) N' / X2 \|/ (1 * N') / (X2 * 1)
+----  b.2) N' / X2 \|/ ((1 + M') * N') / (X2 * (1 + M'))
+----  c.1) - N' / X2 \|/ (1 * - N') / (X2 * 1)
+----  c.2) - N' / X2 \|/ ((1 + M') * - N') / (X2 * (1 + M'))
+
+----  Finally, for each of these four cases, we need to consider two alternatives:
+----  gcd(X2, N') = 1 and gcd(X2, N') > 1
+----  To do so, we apply the constants lemma and consider the following two modules
+
+mod RAT-ACU1364-1 is
+  pr RAT-ACU1364 .
+  ops x2 n' : -> NzNat .
+  var M' : NzNat .
+  rl gcd(x2, n') => 1 .
+endm
+
+mod RAT-ACU1364-2 is
+  pr RAT-ACU1364 .
+  ops x2 n' : -> NzNat .
+  var M' : NzNat .
+  rl gcd(x2, n') > 1 => true .
+endm
+
+search in RAT-ACU1364-1 : join(n' / x2, (1 * n') / (x2 * 1)) =>* tt .
+
+search in RAT-ACU1364-2 : join(n' / x2, (1 * n') / (x2 * 1)) =>* tt .
+
+search in RAT-ACU1364-1 : join(n' / x2, ((1 + M') * n') / (x2 * (1 + M'))) =>* tt .
+
+search in RAT-ACU1364-2 : join(n' / x2, ((1 + M') * n') / (x2 * (1 + M'))) =>* tt .
+
+search in RAT-ACU1364-1 : join(- n' / x2, (1 * - n') / (x2 * 1)) =>* tt .
+
+search in RAT-ACU1364-2 : join(- n' / x2, (1 * - n') / (x2 * 1)) =>* tt .
+
+search in RAT-ACU1364-1 : join(- n' / x2, ((1 + M') * - n') / (x2 * (1 + M'))) =>* tt .
+
+search in RAT-ACU1364-2 : join(- n' / x2, ((1 + M') * - n') / (x2 * (1 + M'))) =>* tt .

@@ -1,0 +1,1075 @@
+load RAT-ACU-R.maude
+
+----\||||||||||||||||||/
+----		   --- Welcome to Maude ---
+----		     /||||||||||||||||||\
+----	   Maude alpha115 built: Aug 11 2017 19:57:09
+----	    Copyright 1997-2017 SRI International
+----		   Wed Jun 19 14:58:36 2019
+----
+----	    Full Maude 2.7f November 20th 2017
+----
+----The Maude Formal Environment 1.0c
+----    Inductive Theorem Prover - July 20th 2010
+----    Sufficient Completeness Checker 2a - August 2010
+----    Church-Rosser Checker 3r - August 6th 2018
+----    Coherence Checker 3r - December 12th 2017
+----    Maude Termination Tool 1.5j - August 11th 2014
+----
+----set include BOOL off
+----
+----set include TRUTH-VALUE on
+----
+----rewrites: 76 in 1ms cpu (1ms real) (65068 rewrites/second)
+----The CRC has been set as current tool.
+----
+----rewrites: 8970699 in 162132ms cpu (163888ms real) (55329 rewrites/second)
+----Church-Rosser check for RAT-ACU
+----The following critical pairs must be proved joinable:
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1188 for INT-ACU-09 and RAT-ACU-26
+----    (@3:NzNat *(@4:Int + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(@2:Int + @1:NzNat
+----    * @3:NzNat))/ @3:NzNat * @5:NzNat
+----    =(-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int
+----    + @1:NzNat * @3:NzNat * @5:NzNat)/ @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----  N' * (I + - (M' * O')) + M' * (J + P' * N')
+----  \|/
+----	- (N' * M' * O') + N' * I + M' * J + P' * N' * M'
+----
+----  load cps/RAT-ACU1188.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1189 for INT-ACU-09 and RAT-ACU-26
+----    @7:[Rat]+(@3:NzNat *(@4:Int + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(@2:Int +
+----    @1:NzNat * @3:NzNat))/ @3:NzNat * @5:NzNat
+----    = @7:[Rat]+(-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * @4:Int + @5:NzNat
+----    * @2:Int + @1:NzNat * @3:NzNat * @5:NzNat)/ @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----  N' * (I + - (M' * O')) + M' * (J + P' * N')
+----  \|⁄
+----	- (N' * M' * O') + N' * I + M' * J + P' * N' * M'
+----
+----  Proven for RAT-ACU1188
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1285 for RAT-ACU-01 and RAT-ACU-25
+----    @2:NzInt
+----    =(@1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  load cps/RAT-ACU1285.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1364 for RAT-ACU-01 and RAT-ACU-26
+----    @1:Int / @2:NzNat
+----    =(@3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+----
+----  load cps/RAT-ACU1364.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1366 for RAT-ACU-01 and RAT-ACU-25
+----    @3:NzInt + @2:[Rat]
+----    = @2:[Rat]+(@1:NzNat * @3:NzInt)/ @1:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    I'  \|/  (N' * I') / N'
+----
+----  Proven for RAT-ACU1285
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1375 for RAT-ACU-01 and RAT-ACU-26
+----    @4:[Rat]+ @1:Int / @2:NzNat
+----    = @4:[Rat]+(@3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    I / N'  \|/  (M' * I) / N' * M'
+----
+----  Proven for RAT-ACU1364
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1565 for RAT-ACU-02 and RAT-ACU-25
+----    1 + @2:NzInt
+----    =(@1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  load cps/RAT-ACU1565.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1644 for RAT-ACU-02 and RAT-ACU-26
+----    (@2:NzNat + @1:Int)/ @2:NzNat
+----    =(@2:NzNat * @3:NzNat + @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+----
+----  load cps/RAT-ACU1644.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1646 for RAT-ACU-02 and RAT-ACU-25
+----    1 + @3:NzInt + @2:[Rat]
+----    = @2:[Rat]+(@1:NzNat + @1:NzNat * @3:NzInt)/ @1:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    1 + @3:NzInt = (@1:NzNat + @1:NzNat * @3:NzInt)/ @1:NzNat
+----
+----  Proven for RAT-ACU1565
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1655 for RAT-ACU-02 and RAT-ACU-26
+----    @4:[Rat]+(@2:NzNat + @1:Int)/ @2:NzNat
+----    = @4:[Rat]+(@2:NzNat * @3:NzNat + @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    (@2:NzNat + @1:Int)/ @2:NzNat
+----    = (@2:NzNat * @3:NzNat + @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat
+----
+----  Proven for RAT-ACU1644
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1657 for RAT-ACU-02 and RAT-ACU-26
+----    (@3:NzNat * @4:Int + @5:NzNat *(@3:NzNat + @2:Int))/ @3:NzNat * @5:NzNat
+----    =(@3:NzNat * @5:NzNat + @3:NzNat * @4:Int + @5:NzNat * @2:Int)/ @3:NzNat *
+----    @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@3:NzNat + @2:Int)
+----    =@3:NzNat * @5:NzNat + @5:NzNat * @2:Int
+----
+----  load cps/RAT-ACU1657.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1658 for RAT-ACU-02 and RAT-ACU-26
+----    @6:[Rat]+(@3:NzNat * @4:Int + @5:NzNat *(@3:NzNat + @2:Int))/ @3:NzNat *
+----    @5:NzNat
+----    = @6:[Rat]+(@3:NzNat * @5:NzNat + @3:NzNat * @4:Int + @5:NzNat * @2:Int)/
+----    @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@3:NzNat + @2:Int)
+----    = @3:NzNat * @5:NzNat + @5:NzNat * @2:Int
+----
+----  Proven for RAT-ACU1657
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1746 for RAT-ACU-04 and RAT-ACU-26
+----    @1:Int + @2:Int / @3:NzNat
+----    =(@2:Int + @3:NzNat * @1:Int)/ @3:NzNat .
+----
+----  load cps/RAT-ACU1746.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1758 for RAT-ACU-04 and RAT-ACU-26
+----    @4:[Rat]+ @1:Int + @2:Int / @3:NzNat
+----    = @4:[Rat]+(@2:Int + @3:NzNat * @1:Int)/ @3:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----     @1:Int + @2:Int / @3:NzNat = (@2:Int + @3:NzNat * @1:Int)/ @3:NzNat
+----
+----  Proven for RAT-ACU1746
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1766 for RAT-ACU-03 and RAT-ACU-25
+----    @2:NzInt + - 1
+----    =(- @1:NzNat + @1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  load cps/RAT-ACU1766.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1845 for RAT-ACU-03 and RAT-ACU-26
+----    (@1:Int + - @2:NzNat)/ @2:NzNat
+----    =(-(@2:NzNat * @3:NzNat)+ @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat .
+----
+----  load cps/RAT-ACU1845.maude TODO
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1847 for RAT-ACU-03 and RAT-ACU-25
+----    @3:NzInt + @2:[Rat]+ - 1
+----    = @2:[Rat]+(- @1:NzNat + @1:NzNat * @3:NzInt)/ @1:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @3:NzInt + - 1
+----    = (- @1:NzNat + @1:NzNat * @3:NzInt)/ @1:NzNat
+----
+----  Proven for RAT-ACU1766
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1856 for RAT-ACU-03 and RAT-ACU-26
+----    @4:[Rat]+(@1:Int + - @2:NzNat)/ @2:NzNat
+----    = @4:[Rat]+(-(@2:NzNat * @3:NzNat)+ @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat
+----    .
+----
+----  By the Ctx rule it suffices to prove:
+----    (@1:Int + - @2:NzNat)/ @2:NzNat
+----    = (-(@2:NzNat * @3:NzNat)+ @3:NzNat * @1:Int)/ @2:NzNat * @3:NzNat
+----
+----  Proven for RAT-ACU1845
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1858 for RAT-ACU-03 and RAT-ACU-26
+----    (@3:NzNat * @4:Int + @5:NzNat *(@2:Int + - @3:NzNat))/ @3:NzNat * @5:NzNat
+----    =(-(@3:NzNat * @5:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int)/ @3:NzNat
+----    * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@2:Int + - @3:NzNat)
+----    =-(@3:NzNat * @5:NzNat)+ @5:NzNat * @2:Int
+----
+----  load cps/RAT-ACU1858.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU1859 for RAT-ACU-03 and RAT-ACU-26
+----    @6:[Rat]+(@3:NzNat * @4:Int + @5:NzNat *(@2:Int + - @3:NzNat))/ @3:NzNat *
+----    @5:NzNat
+----    = @6:[Rat]+(-(@3:NzNat * @5:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int)/
+----    @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@2:Int + - @3:NzNat)
+----    = -(@3:NzNat * @5:NzNat)+ @5:NzNat * @2:Int
+----
+----  Proven for RAT-ACU1858
+--------------------------------------------------------------------------------
+----  cp RAT-ACU4041 for INT-FVP-06 and RAT-ACU-26
+----    (@3:NzNat * @4:Int + @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat *
+----    @3:NzNat)))/ @3:NzNat * @5:NzNat
+----    =(-(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+ @3:NzNat *
+----    @4:Int + @5:NzNat * @2:Int)/ @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat * @3:NzNat))
+----    =-(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+ @5:NzNat * @2:Int
+----
+----  load cps/RAT-ACU4041.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU4042 for INT-FVP-06 and RAT-ACU-26
+----    @6:[Rat]+(@3:NzNat * @4:Int + @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat *
+----    @3:NzNat)))/ @3:NzNat * @5:NzNat
+----    = @6:[Rat]+(-(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+
+----    @3:NzNat * @4:Int + @5:NzNat * @2:Int)/ @3:NzNat * @5:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @5:NzNat *(@2:Int + -(@3:NzNat + @1:NzNat * @3:NzNat))
+----    = -(@3:NzNat * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat)+ @5:NzNat * @2:Int
+----
+----  Proven for RAT-ACU4041
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5674 for RAT-ACU-25 and RAT-ACU-25
+----    (@2:NzNat * @3:Int + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt))/ @2:NzNat *
+----    @4:NzNat
+----    =(@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/ @2:NzNat *
+----    @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat * @3:Int + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt)
+----    =@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int
+----
+----  load cps/RAT-ACU5674.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5681 for RAT-ACU-25 and RAT-ACU-25
+----    @6:[Rat]+(@2:NzNat * @3:Int + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt))/
+----    @2:NzNat * @4:NzNat
+----    = @6:[Rat]+(@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/
+----    @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat * @3:Int + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt)
+----    =@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int
+----
+----  load cps/RAT-ACU5674.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5716 for RAT-ACU-25 and RAT-ACU-26
+----    (@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/ @2:NzNat *
+----    @4:NzNat
+----    =(@2:NzNat * @3:Int + @4:NzNat * @1:Int + @2:NzNat * @4:NzNat * @5:NzInt)/
+----    @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)
+----    =@2:NzNat * @3:Int + @2:NzNat * @4:NzNat * @5:NzInt
+----
+----  load cps/RAT-ACU5716.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5718 for RAT-ACU-25 and RAT-ACU-26
+----    @6:[Rat]+(@2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)+ @4:NzNat * @1:Int)/
+----    @2:NzNat * @4:NzNat
+----    = @6:[Rat]+(@2:NzNat * @3:Int + @4:NzNat * @1:Int + @2:NzNat * @4:NzNat *
+----    @5:NzInt)/ @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @2:NzNat *(@3:Int + @4:NzNat * @5:NzInt)
+----    = @2:NzNat * @3:Int + @2:NzNat * @4:NzNat * @5:NzInt
+----
+----  Proven for RAT-ACU5716
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5869 for INT-ACU-10 and RAT-ACU-26
+----    (@2:NzNat * @3:Int + @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat)))/ @2:NzNat
+----    * @4:NzNat
+----    =(-(@2:NzNat * @4:NzNat * @5:NzNat)+ @2:NzNat * @3:Int + @4:NzNat *
+----    @1:Int)/ @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat))
+----    =-(@2:NzNat * @4:NzNat * @5:NzNat)+ @4:NzNat * @1:Int
+----
+----  load cps/RAT-ACU5869.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU5870 for INT-ACU-10 and RAT-ACU-26
+----    @7:[Rat]+(@2:NzNat * @3:Int + @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat)))/
+----    @2:NzNat * @4:NzNat
+----    = @7:[Rat]+(-(@2:NzNat * @4:NzNat * @5:NzNat)+ @2:NzNat * @3:Int + @4:NzNat
+----    * @1:Int)/ @2:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @4:NzNat *(@1:Int + -(@2:NzNat * @5:NzNat))
+----    = -(@2:NzNat * @4:NzNat * @5:NzNat)+ @4:NzNat * @1:Int
+----
+----  Proven for RAT-ACU5869
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6106 for INT-ACU-08 and RAT-ACU-26
+----    (@4:NzNat * @5:Int + @6:NzNat *(@3:Int + -(@1:NzNat * @4:NzNat + @2:NzNat *
+----    @4:NzNat)))/ @4:NzNat * @6:NzNat
+----    =(-(@1:NzNat * @4:NzNat * @6:NzNat + @2:NzNat * @4:NzNat * @6:NzNat)+
+----    @4:NzNat * @5:Int + @6:NzNat * @3:Int)/ @4:NzNat * @6:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----    @6:NzNat *(@3:Int + -(@1:NzNat * @4:NzNat + @2:NzNat * @4:NzNat))
+----    =-(@1:NzNat * @4:NzNat * @6:NzNat + @2:NzNat * @4:NzNat * @6:NzNat)+ @6:NzNat * @3:Int
+----
+----  load cps/RAT-ACU6106.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6107 for INT-ACU-08 and RAT-ACU-26
+----    @7:[Rat]+(@4:NzNat * @5:Int + @6:NzNat *(@3:Int + -(@1:NzNat * @4:NzNat +
+----    @2:NzNat * @4:NzNat)))/ @4:NzNat * @6:NzNat
+----    = @7:[Rat]+(-(@1:NzNat * @4:NzNat * @6:NzNat + @2:NzNat * @4:NzNat *
+----    @6:NzNat)+ @4:NzNat * @5:Int + @6:NzNat * @3:Int)/ @4:NzNat * @6:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----   @6:NzNat *(@3:Int + -(@1:NzNat * @4:NzNat + @2:NzNat * @4:NzNat))
+----    = -(@1:NzNat * @4:NzNat * @6:NzNat + @2:NzNat * @4:NzNat * @6:NzNat)+ @6:NzNat * @3:Int
+----
+----  Proven for RAT-ACU6106
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6203 for RAT-ACU-26 and RAT-ACU-26
+----    (@4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat * @6:NzNat *
+----    @3:Int)/ @2:NzNat * @4:NzNat * @6:NzNat
+----    =(@2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat * @6:NzNat *
+----    @1:Int)/ @2:NzNat * @4:NzNat * @6:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----   @4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat * @6:NzNat * @3:Int
+----    =@2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat * @6:NzNat * @1:Int
+----
+----  load cps/RAT-ACU6203.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6205 for RAT-ACU-26 and RAT-ACU-26
+----    @7:[Rat]+(@4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat *
+----    @6:NzNat * @3:Int)/ @2:NzNat * @4:NzNat * @6:NzNat
+----    = @7:[Rat]+(@2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat *
+----    @6:NzNat * @1:Int)/ @2:NzNat * @4:NzNat * @6:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----   @4:NzNat *(@2:NzNat * @5:Int + @6:NzNat * @1:Int)+ @2:NzNat * @6:NzNat * @3:Int
+----    = @2:NzNat *(@4:NzNat * @5:Int + @6:NzNat * @3:Int)+ @4:NzNat * @6:NzNat * @1:Int
+----
+----  Proven for RAT-ACU6203
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6230 for RAT-ACU-02 and RAT-ACU-12
+----    @3:NzInt * @2:[Rat]
+----    = @2:[Rat]*((@1:NzNat * @3:NzInt)/ @1:NzNat).
+----
+----  By the Ctx rule it suffices to prove:
+----   @3:NzInt
+----    = (@1:NzNat * @3:NzInt)/ @1:NzNat
+----
+----  Proven for RAT-ACU1285
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6231 for RAT-ACU-02 and RAT-ACU-13
+----    @2:[Rat]*(@3:NzInt / @4:NzNat)
+----    = @2:[Rat]*((@1:NzNat * @3:NzInt)/ @1:NzNat * @4:NzNat).
+----
+----  By the Ctx rule it suffices to prove:
+----   @3:NzInt / @4:NzNat
+----    = (@1:NzNat * @3:NzInt)/ @1:NzNat * @4:NzNat
+----
+----  Proven for RAT-ACU1364
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6238 for RAT-ACU-02 and RAT-ACU-08
+----    @2:[Rat]+ 1 / @3:NzInt
+----    = @2:[Rat]+ @1:NzNat / @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----   1 / @3:NzInt
+----    = @1:NzNat / @1:NzNat * @3:NzInt
+----
+----  load cps/RAT-ACU6238.maude
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6239 for RAT-ACU-02 and RAT-ACU-09
+----    @2:[Rat]+ @4:NzNat / @3:NzInt
+----    = @2:[Rat]+(@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----   @4:NzNat / @3:NzInt
+----    = (@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt
+----
+----  TODO
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6250 for RAT-ACU-02 and RAT-ACU-08
+----    1 / @2:NzInt
+----    = @1:NzNat / @1:NzNat * @2:NzInt .
+----
+----  Proven for RAT-ACU6238
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6251 for RAT-ACU-02 and RAT-ACU-09
+----    @3:NzNat / @2:NzInt
+----    =(@1:NzNat * @3:NzNat)/ @1:NzNat * @2:NzInt .
+----
+----  Proven for RAT-ACU6239
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6254 for RAT-ACU-02 and RAT-ACU-18
+----    @2:NzInt > 1
+----    = @1:NzNat * @2:NzInt > @1:NzNat .
+----
+----  search join(I' > 1, M' * I' > M') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 2 in 0ms cpu (0ms real) (26315 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6255 for RAT-ACU-02 and RAT-ACU-19
+----    1 > @2:NzInt
+----    = @1:NzNat > @1:NzNat * @2:NzInt .
+----
+----  search join(1 > I', M' > M' * I') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 2 in 0ms cpu (0ms real) (9049 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6256 for RAT-ACU-02 and RAT-ACU-20
+----    @3:NzNat > @2:NzInt
+----    = @1:NzNat * @3:NzNat > @1:NzNat * @2:NzInt .
+----
+----  search join(N' > I', M' * N' > M' * I') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 2 in 0ms cpu (0ms real) (11049 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6257 for RAT-ACU-02 and RAT-ACU-20
+----    @2:NzInt > @3:NzNat
+----    = @1:NzNat * @2:NzInt > @1:NzNat * @3:NzNat .
+----
+----  search join(I' > N', M' * I' > M' * N') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 2 in 0ms cpu (0ms real) (21505 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6259 for RAT-ACU-02 and RAT-ACU-15
+----    1 ~ @2:NzInt
+----    = @1:NzNat ~ @1:NzNat * @2:NzInt .
+----
+----  search join(1 ~ I', M' ~ M' * I') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 2 in 0ms cpu (0ms real) (13422 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6260 for RAT-ACU-02 and RAT-ACU-16
+----    @3:NzNat ~ @2:NzInt
+----    = @1:NzNat * @3:NzNat ~ @1:NzNat * @2:NzInt .
+----
+----  search join(N' ~ I', M' * N' ~ M' * I') =>* tt .
+----
+----  Solution 1 (state 2)
+----  states: 3  rewrites: 3 in 0ms cpu (0ms real) (24193 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6313 for RAT-ACU-03 and RAT-ACU-12
+----    @2:NzInt * - 1
+----    =(@2:NzInt * - @1:NzNat)/ @1:NzNat .
+----
+----  search join(I' * - 1, (I' * - N') / N') =>* tt .
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6314 for RAT-ACU-03 and RAT-ACU-13
+----    (@2:NzInt * - 1)/ @3:NzNat
+----    =(@2:NzInt * - @1:NzNat)/ @1:NzNat * @3:NzNat .
+----
+----  search join((I' * - 1) / N', (I' * - M') / M' * N') =>* tt .
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6316 for RAT-ACU-03 and RAT-ACU-12
+----    @3:NzInt * @2:[Rat]* - 1
+----    = @2:[Rat]*((@3:NzInt * - @1:NzNat)/ @1:NzNat).
+----
+----  By the Ctx rule it suffices to prove:
+----   @3:NzInt * - 1
+----    = (@3:NzInt * - @1:NzNat)/ @1:NzNat
+----
+----  Proven for RAT-ACU6313
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6317 for RAT-ACU-03 and RAT-ACU-13
+----    @2:[Rat]*((@3:NzInt * - 1)/ @4:NzNat)
+----    = @2:[Rat]*((@3:NzInt * - @1:NzNat)/ @1:NzNat * @4:NzNat).
+----
+----  By the Ctx rule it suffices to prove:
+----   (@3:NzInt * - 1)/ @4:NzNat
+----    = (@3:NzInt * - @1:NzNat)/ @1:NzNat * @4:NzNat
+----
+----  Proven for RAT-ACU6314
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6321 for RAT-ACU-03 and RAT-ACU-07
+----    @2:[Rat]+ - @3:NzInt
+----    = @2:[Rat]+ -(@1:NzNat * @3:NzInt)/ @1:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----  - @3:NzInt
+----    = -(@1:NzNat * @3:NzInt)/ @1:NzNat
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6324 for RAT-ACU-03 and RAT-ACU-08
+----    @2:[Rat]+ - 1 / @3:NzInt
+----    = @2:[Rat]+ - @1:NzNat / @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----  - 1 / @3:NzInt
+----    = - @1:NzNat / @1:NzNat * @3:NzInt
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6325 for RAT-ACU-03 and RAT-ACU-09
+----    @2:[Rat]+ - @4:NzNat / @3:NzInt
+----    = @2:[Rat]+ -(@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----  - @4:NzNat / @3:NzInt
+----    = -(@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6326 for RAT-ACU-03 and RAT-ACU-09
+----    @2:[Rat]+ - @3:NzInt / @4:NzNat
+----    = @2:[Rat]+ -(@1:NzNat * @3:NzInt)/ @1:NzNat * @4:NzNat .
+----
+----  By the Ctx rule it suffices to prove:
+----  - @3:NzInt / @4:NzNat
+----    = -(@1:NzNat * @3:NzInt)/ @1:NzNat * @4:NzNat
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6333 for RAT-ACU-03 and RAT-ACU-07
+----    - @2:NzInt
+----    = -(@1:NzNat * @2:NzInt)/ @1:NzNat .
+----
+----  Proven for RAT-ACU6321
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6336 for RAT-ACU-03 and RAT-ACU-08
+----    - 1 / @2:NzInt
+----    = - @1:NzNat / @1:NzNat * @2:NzInt .
+----
+----  Proven for RAT-ACU6324
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6337 for RAT-ACU-03 and RAT-ACU-09
+----    - @3:NzNat / @2:NzInt
+----    = -(@1:NzNat * @3:NzNat)/ @1:NzNat * @2:NzInt .
+----
+----  Proven for RAT-ACU6325
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6338 for RAT-ACU-03 and RAT-ACU-09
+----    - @2:NzInt / @3:NzNat
+----    = -(@1:NzNat * @2:NzInt)/ @1:NzNat * @3:NzNat .
+----
+----  Proven for RAT-ACU6326
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6340 for RAT-ACU-03 and RAT-ACU-18
+----    @2:NzInt > - 1
+----    = @1:NzNat * @2:NzInt > - @1:NzNat .
+----
+----  search join(I' > - 1, N' * I' > - 1) =>* tt .
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6341 for RAT-ACU-03 and RAT-ACU-19
+----    - 1 > @2:NzInt
+----    = - @1:NzNat > @1:NzNat * @2:NzInt .
+----
+----  search join(- 1 > I', - N' > N' * I') =>* tt .
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6342 for RAT-ACU-03 and RAT-ACU-20
+----    - @3:NzNat > @2:NzInt
+----    = -(@1:NzNat * @3:NzNat)> @1:NzNat * @2:NzInt .
+----
+----  search join(- N' > I', - (M' * N') > M' * I') =>* tt .
+----
+----  Solution 1 (state 4)
+----  states: 5  rewrites: 8 in 0ms cpu (0ms real) (33755 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6343 for RAT-ACU-03 and RAT-ACU-20
+----    @2:NzInt > - @3:NzNat
+----    = @1:NzNat * @2:NzInt > -(@1:NzNat * @3:NzNat).
+----
+----  search join(I' > - N', M' * I' > - (M' * N')) =>* tt .
+----
+----  Solution 1 (state 4)
+----  states: 5  rewrites: 8 in 0ms cpu (0ms real) (66115 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6345 for RAT-ACU-03 and RAT-ACU-15
+----    @2:NzInt ~ - 1
+----    = - @1:NzNat ~ @1:NzNat * @2:NzInt .
+----
+----  search join(I' ~ - 1, - N' ~ N' * I') =>* tt .
+----
+----  TODO
+----
+--------------------------------------------------------------------------------
+----  cp RAT-ACU6346 for RAT-ACU-03 and RAT-ACU-16
+----    @2:NzInt ~ - @3:NzNat
+----    = -(@1:NzNat * @3:NzNat)~ @1:NzNat * @2:NzInt .
+----
+----  search join(I' ~ - N', - (M' * N') ~ M' * I') =>* tt .
+----
+----  Solution 1 (state 4)
+----  states: 5  rewrites: 9 in 0ms cpu (0ms real) (35019 rewrites/second)
+----  empty substitution
+----
+--------------------------------------------------------------------------------
+----  ccp RAT-ACU1190 for INT-ACU-09 and RAT-ACU-05
+----    (@2:NzInt + -(@3:NzNat * @4:NzNat)+ @1:NzNat * @3:NzNat)/ @3:NzNat
+----    = @1:NzNat + - @4:NzNat + quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(
+----    @3:NzNat,gcd(@3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU1191 for INT-ACU-09 and RAT-ACU-05
+----    @5:[Rat]+(@2:NzInt + -(@3:NzNat * @4:NzNat)+ @1:NzNat * @3:NzNat)/ @3:NzNat
+----    = @1:NzNat + @5:[Rat]+ - @4:NzNat + quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/
+----    quot(@3:NzNat,gcd(@3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU1660 for RAT-ACU-02 and RAT-ACU-05
+----    (@3:NzNat + @2:NzInt)/ @3:NzNat
+----    = 1 + quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(@3:NzNat,gcd(@3:NzNat,
+----    @2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU1661 for RAT-ACU-02 and RAT-ACU-05
+----    @4:[Rat]+(@3:NzNat + @2:NzInt)/ @3:NzNat
+----    = 1 + @4:[Rat]+ quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(@3:NzNat,gcd(
+----    @3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU1762 for RAT-ACU-04 and RAT-ACU-05
+----    @1:NzInt + @2:[Rat]
+----    = @2:[Rat]+ quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
+----    if gcd(1,@1:NzInt)> 1 = true .
+----  ccp RAT-ACU1861 for RAT-ACU-03 and RAT-ACU-05
+----    (@2:NzInt + - @3:NzNat)/ @3:NzNat
+----    = - 1 + quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(@3:NzNat,gcd(@3:NzNat,
+----    @2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU1862 for RAT-ACU-03 and RAT-ACU-05
+----    @4:[Rat]+(@2:NzInt + - @3:NzNat)/ @3:NzNat
+----    = @4:[Rat]+ - 1 + quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(@3:NzNat,gcd(
+----    @3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU4043 for INT-FVP-06 and RAT-ACU-05
+----    (@2:NzInt + -(@3:NzNat + @1:NzNat * @3:NzNat))/ @3:NzNat
+----    = -(1 + @1:NzNat)+ quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(@3:NzNat,
+----    gcd(@3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU4044 for INT-FVP-06 and RAT-ACU-05
+----    @4:[Rat]+(@2:NzInt + -(@3:NzNat + @1:NzNat * @3:NzNat))/ @3:NzNat
+----    = @4:[Rat]+ -(1 + @1:NzNat)+ quot(@2:NzInt,gcd(@3:NzNat,@2:NzInt))/ quot(
+----    @3:NzNat,gcd(@3:NzNat,@2:NzInt))
+----    if gcd(@3:NzNat,@2:NzInt)> 1 = true .
+----  ccp RAT-ACU5565 for RAT-ACU-14 and RAT-ACU-05
+----    (@2:NzNat * @3:NzInt + @4:NzNat * | @1:NzInt |)/ @2:NzNat * @4:NzNat
+----    = | @1:NzInt | / @2:NzNat + quot(@3:NzInt,gcd(@4:NzNat,@3:NzInt))/ quot(
+----    @4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+----  ccp RAT-ACU5566 for RAT-ACU-14 and RAT-ACU-05
+----    @5:[Rat]+(@2:NzNat * @3:NzInt + @4:NzNat * | @1:NzInt |)/ @2:NzNat *
+----    @4:NzNat
+----    = @5:[Rat]+ | @1:NzInt | / @2:NzNat + quot(@3:NzInt,gcd(@4:NzNat,
+----    @3:NzInt))/ quot(@4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+----  ccp RAT-ACU5573 for RAT-ACU-26 and RAT-ACU-05
+----    (@2:NzNat * @3:NzInt + @4:NzNat * @1:Int)/ @2:NzNat * @4:NzNat
+----    = @1:Int / @2:NzNat + quot(@3:NzInt,gcd(@4:NzNat,@3:NzInt))/ quot(@4:NzNat,
+----    gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@4:NzNat,@3:NzInt)> 1 = true .
+----  ccp RAT-ACU5722 for RAT-ACU-25 and RAT-ACU-05
+----    @4:[Rat]+(@1:NzInt + @2:NzNat * @3:NzInt)/ @2:NzNat
+----    = @3:NzInt + @4:[Rat]+ quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(
+----    @2:NzNat,gcd(@2:NzNat,@1:NzInt))
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU5724 for RAT-ACU-25 and RAT-ACU-05
+----    @6:[Rat]+(@2:NzNat * @3:NzInt + @4:NzNat *(@1:Int + @2:NzNat * @5:NzInt))/
+----    @2:NzNat * @4:NzNat
+----    = @6:[Rat]+(@1:Int + @2:NzNat * @5:NzInt)/ @2:NzNat + quot(@3:NzInt,gcd(
+----    @4:NzNat,@3:NzInt))/ quot(@4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@3:NzInt,@4:NzNat)> 1 = true .
+----  ccp RAT-ACU5871 for INT-ACU-10 and RAT-ACU-05
+----    (@1:NzInt + -(@2:NzNat * @3:NzNat))/ @2:NzNat
+----    = - @3:NzNat + quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt))
+----    if gcd(@2:NzNat,@1:NzInt)> 1 = true .
+----  ccp RAT-ACU5872 for INT-ACU-10 and RAT-ACU-05
+----    @5:[Rat]+(@1:NzInt + -(@2:NzNat * @3:NzNat))/ @2:NzNat
+----    = @5:[Rat]+ - @3:NzNat + quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(
+----    @2:NzNat,gcd(@2:NzNat,@1:NzInt))
+----    if gcd(@2:NzNat,@1:NzInt)> 1 = true .
+----  ccp RAT-ACU6108 for INT-ACU-08 and RAT-ACU-05
+----    (@3:NzInt + -(@1:NzNat * @4:NzNat + @2:NzNat * @4:NzNat))/ @4:NzNat
+----    = -(@1:NzNat + @2:NzNat)+ quot(@3:NzInt,gcd(@4:NzNat,@3:NzInt))/ quot(
+----    @4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@4:NzNat,@3:NzInt)> 1 = true .
+----  ccp RAT-ACU6109 for INT-ACU-08 and RAT-ACU-05
+----    @5:[Rat]+(@3:NzInt + -(@1:NzNat * @4:NzNat + @2:NzNat * @4:NzNat))/
+----    @4:NzNat
+----    = @5:[Rat]+ -(@1:NzNat + @2:NzNat)+ quot(@3:NzInt,gcd(@4:NzNat,@3:NzInt))/
+----    quot(@4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@4:NzNat,@3:NzInt)> 1 = true .
+----  ccp RAT-ACU6209 for RAT-ACU-26 and RAT-ACU-05
+----    @5:[Rat]+(@2:NzNat * @3:NzInt + @4:NzNat * @1:Int)/ @2:NzNat * @4:NzNat
+----    = @5:[Rat]+ @1:Int / @2:NzNat + quot(@3:NzInt,gcd(@4:NzNat,@3:NzInt))/
+----    quot(@4:NzNat,gcd(@4:NzNat,@3:NzInt))
+----    if gcd(@4:NzNat,@3:NzInt)> 1 = true .
+----  ccp RAT-ACU6311 for RAT-ACU-04 and RAT-ACU-05
+----    @1:NzInt
+----    = quot(@1:NzInt,gcd(1,@1:NzInt))/ quot(1,gcd(1,@1:NzInt))
+----    if gcd(1,@1:NzInt)> 1 = true .
+----  ccp RAT-ACU6477 for RAT-ACU-05 and RAT-ACU-25
+----    @3:NzInt + quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt))
+----    =(@1:NzInt + @2:NzNat * @3:NzInt)/ @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6575 for RAT-ACU-05 and RAT-ACU-10
+----    -(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt)))
+----    = - @1:NzInt / @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6576 for RAT-ACU-05 and RAT-ACU-12
+----    @3:NzInt *(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt)))
+----    =(@1:NzInt * @3:NzInt)/ @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6577 for RAT-ACU-05 and RAT-ACU-13
+----    (@3:NzInt / @4:NzNat)*(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(
+----    @2:NzNat,gcd(@2:NzNat,@1:NzInt)))
+----    =(@1:NzInt * @3:NzInt)/ @2:NzNat * @4:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6579 for RAT-ACU-05 and RAT-ACU-12
+----    @3:NzInt * @4:[Rat]*(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,
+----    gcd(@2:NzNat,@1:NzInt)))
+----    = @4:[Rat]*((@1:NzInt * @3:NzInt)/ @2:NzNat)
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6580 for RAT-ACU-05 and RAT-ACU-13
+----    @3:[Rat]*(@4:NzInt / @5:NzNat)*(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/
+----    quot(@2:NzNat,gcd(@2:NzNat,@1:NzInt)))
+----    = @3:[Rat]*((@1:NzInt * @4:NzInt)/ @2:NzNat * @5:NzNat)
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6583 for RAT-ACU-05 and RAT-ACU-10
+----    @3:[Rat]+ -(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt)))
+----    = @3:[Rat]+ - @1:NzInt / @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6584 for RAT-ACU-05 and RAT-ACU-07
+----    @3:[Rat]+ @4:NzInt /(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,
+----    gcd(@2:NzNat,@1:NzInt)))
+----    = @3:[Rat]+(@2:NzNat * @4:NzInt)/ @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6588 for RAT-ACU-05 and RAT-ACU-08
+----    @3:[Rat]+(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt)))/ @4:NzInt
+----    = @3:[Rat]+ @1:NzInt / @2:NzNat * @4:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6589 for RAT-ACU-05 and RAT-ACU-09
+----    @3:[Rat]+(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt)))/(@4:NzInt / @5:NzNat)
+----    = @3:[Rat]+(@5:NzNat * @1:NzInt)/ @2:NzNat * @4:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6590 for RAT-ACU-05 and RAT-ACU-09
+----    @3:[Rat]+(@4:NzInt / @5:NzNat)/(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/
+----    quot(@2:NzNat,gcd(@2:NzNat,@1:NzInt)))
+----    = @3:[Rat]+(@2:NzNat * @4:NzInt)/ @5:NzNat * @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6591 for RAT-ACU-05 and RAT-ACU-14
+----    @3:[Rat]+ | quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt))|
+----    = @3:[Rat]+ | @1:NzInt | / @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6597 for RAT-ACU-05 and RAT-ACU-07
+----    @3:NzInt /(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt)))
+----    =(@2:NzNat * @3:NzInt)/ @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6601 for RAT-ACU-05 and RAT-ACU-08
+----    (quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt)))/ @3:NzInt
+----    = @1:NzInt / @2:NzNat * @3:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6602 for RAT-ACU-05 and RAT-ACU-09
+----    (quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt)))/(@3:NzInt / @4:NzNat)
+----    =(@4:NzNat * @1:NzInt)/ @2:NzNat * @3:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6603 for RAT-ACU-05 and RAT-ACU-09
+----    (@3:NzInt / @4:NzNat)/(quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(
+----    @2:NzNat,gcd(@2:NzNat,@1:NzInt)))
+----    =(@2:NzNat * @3:NzInt)/ @4:NzNat * @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6604 for RAT-ACU-05 and RAT-ACU-23
+----    0 > quot(@1:NzNat,gcd(@1:NzNat,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzNat,
+----    @2:NzNat))
+----    = false
+----    if gcd(@1:NzNat,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6606 for RAT-ACU-05 and RAT-ACU-18
+----    @3:NzInt > quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt))
+----    = @2:NzNat * @3:NzInt > @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6607 for RAT-ACU-05 and RAT-ACU-19
+----    quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt))> @3:NzInt
+----    = @1:NzInt > @2:NzNat * @3:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6608 for RAT-ACU-05 and RAT-ACU-20
+----    quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt))> @3:NzInt / @4:NzNat
+----    = @4:NzNat * @1:NzInt > @2:NzNat * @3:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6609 for RAT-ACU-05 and RAT-ACU-20
+----    @3:NzInt / @4:NzNat > quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,
+----    gcd(@2:NzNat,@1:NzInt))
+----    = @2:NzNat * @3:NzInt > @4:NzNat * @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6610 for RAT-ACU-05 and RAT-ACU-21
+----    quot(@1:NzNat,gcd(@1:NzNat,@2:NzNat))/ quot(@2:NzNat,gcd(@1:NzNat,
+----    @2:NzNat))> 0
+----    = true
+----    if gcd(@1:NzNat,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6612 for RAT-ACU-05 and RAT-ACU-15
+----    @3:NzInt ~ quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(
+----    @2:NzNat,@1:NzInt))
+----    = @1:NzInt ~ @2:NzNat * @3:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6613 for RAT-ACU-05 and RAT-ACU-16
+----    @3:NzInt / @4:NzNat ~ quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,
+----    gcd(@2:NzNat,@1:NzInt))
+----    = @2:NzNat * @3:NzInt ~ @4:NzNat * @1:NzInt
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----  ccp RAT-ACU6615 for RAT-ACU-05 and RAT-ACU-14
+----    | quot(@1:NzInt,gcd(@2:NzNat,@1:NzInt))/ quot(@2:NzNat,gcd(@2:NzNat,
+----    @1:NzInt))|
+----    = | @1:NzInt | / @2:NzNat
+----    if gcd(@1:NzInt,@2:NzNat)> 1 = true .
+----
+----The following proof obligations must be checked for sort-decreasingness:
+----
+----  ma RAT-ACU0 for equation RAT-ACU-25
+----    (I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat : Rat .
+----
+----  ma RAT-ACU11 for equation RAT-ACU-06
+----    X@@@@NzInt:NzInt + - I':NzInt / N':NzNat : Rat .
+----
+----  ma RAT-ACU12 for equation RAT-ACU-07
+----    X@@@@NzInt:NzInt +(I':NzInt * M':NzNat)/ J'@NzNat:NzNat : Rat .
+----
+----  ma RAT-ACU128 for equation RAT-ACU-25
+----    X@@@@NzNeg:NzNeg +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat : Rat .
+----
+----  ma RAT-ACU17 for equation RAT-ACU-08
+----    X@@@@NzInt:NzInt + I':NzInt / J'@NzNat:NzNat * N':NzNat : Rat .
+----
+----  ma RAT-ACU178 for equation RAT-ACU-25
+----    X@@@@PosRat:PosRat +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat : Rat .
+----
+----  ma RAT-ACU186 for equation RAT-ACU-26
+----    X@@@@PosRat:PosRat +(N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/
+----    N':NzNat * M':NzNat : Rat .
+----
+----  ma RAT-ACU194 for equation RAT-ACU-25
+----    X@@@@Rat:Rat +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat : Rat .
+----
+----  ma RAT-ACU202 for equation RAT-ACU-26
+----    X@@@@Rat:Rat +(N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/
+----    N':NzNat * M':NzNat : Rat .
+----
+----  ma RAT-ACU23 for equation RAT-ACU-14
+----    X@@@@NzInt:NzInt + | I':NzInt | / N':NzNat : Rat .
+----
+----  ma RAT-ACU54 for equation RAT-ACU-26
+----    (N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/ N':NzNat * M':NzNat
+----    : Rat .
+----
+----  cma RAT-ACU226 for equation RAT-ACU-05
+----    X@@@@Int:Int + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+----    J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU227 for equation RAT-ACU-05
+----    X@@@@Int:Int + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU228 for equation RAT-ACU-05
+----    X@@@@Int:Int + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU229 for equation RAT-ACU-05
+----    X@@@@Nat:Nat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+----    J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU230 for equation RAT-ACU-05
+----    X@@@@Nat:Nat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU231 for equation RAT-ACU-05
+----    X@@@@Nat:Nat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU232 for equation RAT-ACU-05
+----    X@@@@NzInt:NzInt + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+----    gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU233 for equation RAT-ACU-05
+----    X@@@@NzInt:NzInt + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU234 for equation RAT-ACU-05
+----    X@@@@NzInt:NzInt + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU235 for equation RAT-ACU-05
+----    X@@@@NzNat:NzNat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+----    gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU236 for equation RAT-ACU-05
+----    X@@@@NzNat:NzNat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU237 for equation RAT-ACU-05
+----    X@@@@NzNat:NzNat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU238 for equation RAT-ACU-05
+----    X@@@@NzNeg:NzNeg + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+----    gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU239 for equation RAT-ACU-05
+----    X@@@@NzNeg:NzNeg + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU240 for equation RAT-ACU-05
+----    X@@@@NzNeg:NzNeg + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU241 for equation RAT-ACU-05
+----    X@@@@NzPosRat:NzPosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(
+----    M':NzNat,gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU242 for equation RAT-ACU-05
+----    X@@@@NzPosRat:NzPosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/
+----    quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU243 for equation RAT-ACU-05
+----    X@@@@NzPosRat:NzPosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/
+----    quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU244 for equation RAT-ACU-05
+----    X@@@@NzRat:NzRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+----    gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU245 for equation RAT-ACU-05
+----    X@@@@NzRat:NzRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU246 for equation RAT-ACU-05
+----    X@@@@NzRat:NzRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU247 for equation RAT-ACU-05
+----    X@@@@PosRat:PosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+----    gcd(J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU248 for equation RAT-ACU-05
+----    X@@@@PosRat:PosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/
+----    quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU249 for equation RAT-ACU-05
+----    X@@@@PosRat:PosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/
+----    quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU250 for equation RAT-ACU-05
+----    X@@@@Rat:Rat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+----    J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU251 for equation RAT-ACU-05
+----    X@@@@Rat:Rat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU252 for equation RAT-ACU-05
+----    X@@@@Rat:Rat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU253 for equation RAT-ACU-05
+----    X@@@@Zero:Zero + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+----    J':NzInt,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU254 for equation RAT-ACU-05
+----    X@@@@Zero:Zero + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) : PosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU255 for equation RAT-ACU-05
+----    X@@@@Zero:Zero + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+----    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) : Rat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----  cma RAT-ACU256 for equation RAT-ACU-05
+----    quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,
+----    M':NzNat)) : NzRat
+----    if gcd(M':NzNat,J':NzInt)> 1 = true .
+----
+----  cma RAT-ACU257 for equation RAT-ACU-05
+----    quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(
+----    J'@NzNat:NzNat,M':NzNat)) : NzPosRat
+----    if gcd(M':NzNat,J'@NzNat:NzNat)> 1 = true .
+----
+----  cma RAT-ACU258 for equation RAT-ACU-05
+----    quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(
+----    J'@NzNeg:NzNeg,M':NzNat)) : NzRat
+----    if gcd(M':NzNat,J'@NzNeg:NzNeg)> 1 = true .
+----
+----

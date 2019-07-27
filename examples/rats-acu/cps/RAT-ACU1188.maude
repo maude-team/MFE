@@ -1,0 +1,59 @@
+----  cp RAT-ACU1188 for INT-ACU-09 and RAT-ACU-26
+----    (@3:NzNat *(@4:Int + -(@5:NzNat * @6:NzNat))+ @5:NzNat *(@2:Int + @1:NzNat * @3:NzNat))/ @3:NzNat * @5:NzNat
+----    =(-(@3:NzNat * @5:NzNat * @6:NzNat)+ @3:NzNat * @4:Int + @5:NzNat * @2:Int + @1:NzNat * @3:NzNat * @5:NzNat)/ @3:NzNat * @5:NzNat .
+
+mod RAT-ACU1188 is
+  pr RAT-ACU-R .
+
+  vars X2 X4 I : Int .
+  vars X1 X3 X5 X6 : NzNat .
+  vars I' J' : NzInt .
+
+  rl I * (I' + J') => (I * I') + (I * J') .
+endm
+
+---- By the Ctx rule it suffices to prove:
+
+---(
+search in RAT-ACU1188 :
+  join(
+	  X3 *(X4 + -(X5 * X6))+ X5 *(X2 + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * X4 + X5 * X2 + X1 * X3 * X5
+  )
+  =>* tt .
+)
+
+---- This proof obligation can be dealt with by using the CtorCases rule on @2 and @4, of sort Int, with generating set {0, I':NzInt}.
+
+search in RAT-ACU1188 :
+  join(
+	  X3 *(0 + -(X5 * X6))+ X5 *(0 + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * 0 + X5 * 0 + X1 * X3 * X5
+  )
+  =>* tt .
+
+search in RAT-ACU1188 :
+  join(
+	  X3 *(I' + -(X5 * X6))+ X5 *(0 + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * I' + X5 * 0 + X1 * X3 * X5
+  )
+  =>* tt .
+
+search in RAT-ACU1188 :
+  join(
+	  X3 *(0 + -(X5 * X6))+ X5 *(I' + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * 0 + X5 * I' + X1 * X3 * X5
+  )
+  =>* tt .
+
+search in RAT-ACU1188 :
+  join(
+	  X3 *(J' + -(X5 * X6))+ X5 *(I' + X1 * X3)
+	  ,
+		-(X3 * X5 * X6)+ X3 * J' + X5 * I' + X1 * X3 * X5
+  )
+  =>* tt .
