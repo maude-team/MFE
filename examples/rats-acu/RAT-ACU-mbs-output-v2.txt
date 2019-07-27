@@ -1,0 +1,249 @@
+MacBook-Pro-de-Paco:rats-acu duran$ ~/Maude/Alpha121/maude-Yices2.darwin64 RAT-ACU-mbs-check-v2.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha121 built: May 29 2019 18:03:55
+	    Copyright 1997-2019 SRI International
+		   Fri Jul 26 21:34:16 2019
+==========================================
+reduce in RAT-DECREASINGNESS : ((I@NzInt:NzInt + J':NzInt * N') / N') :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (83333 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + - I' / N') :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (120000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + (I' * M':NzNat) /
+    J'@NzNat:NzNat) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNeg:NzNeg + (I@NzInt:NzInt + J':NzInt *
+    N') / N') :: Rat .
+rewrites: 4 in 0ms cpu (0ms real) (4000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + I' / N' * J'@NzNat:NzNat) ::
+    Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@PosRat:PosRat + (I@NzInt:NzInt + J':NzInt
+    * N') / N') :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (1000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@PosRat:PosRat + (I@NzInt:NzInt * M':NzNat
+    + J@NzInt:NzInt * N') / N' * M':NzNat) :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (2000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Rat:Rat + (I@NzInt:NzInt + J':NzInt * N')
+    / N') :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (222222 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Rat:Rat + (I@NzInt:NzInt * M':NzNat +
+    J@NzInt:NzInt * N') / N' * M':NzNat) :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (2000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + | I' | / N') :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : ((I@NzInt:NzInt * M':NzNat + J@NzInt:NzInt * N')
+    / N' * M':NzNat) :: Rat .
+rewrites: 2 in 0ms cpu (0ms real) (2000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Int:Int + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Int:Int + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Int:Int + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Nat:Nat + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Nat:Nat + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: PosRat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+Warning: "RAT-ACU-mbs-check-v2.maude", line 56: missing space between Rat and
+    period.
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Nat:Nat + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzInt:NzInt + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNat:NzNat + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 4 in 0ms cpu (0ms real) (148148 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNat:NzNat + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: PosRat .
+rewrites: 4 in 0ms cpu (0ms real) (500000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNat:NzNat + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 4 in 0ms cpu (0ms real) (4000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNeg:NzNeg + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNeg:NzNeg + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzNeg:NzNeg + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 5 in 0ms cpu (0ms real) (5000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzPosRat:NzPosRat + quot(J':NzInt, gcd(
+    J':NzInt, M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzPosRat:NzPosRat + quot(J'@NzNat:NzNat,
+    gcd(M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat,
+    J'@NzNat:NzNat))) :: PosRat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzPosRat:NzPosRat + quot(J'@NzNeg:NzNeg,
+    gcd(M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat,
+    J'@NzNeg:NzNeg))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzRat:NzRat + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (300000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzRat:NzRat + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (250000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@NzRat:NzRat + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (1500000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@PosRat:PosRat + quot(J':NzInt, gcd(
+    J':NzInt, M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (375000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@PosRat:PosRat + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: PosRat .
+rewrites: 3 in 0ms cpu (0ms real) (187500 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@PosRat:PosRat + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Rat:Rat + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Rat:Rat + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Rat:Rat + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Zero:Zero + quot(J':NzInt, gcd(J':NzInt,
+    M':NzNat)) / quot(M':NzNat, gcd(J':NzInt, M':NzNat))) :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Zero:Zero + quot(J'@NzNat:NzNat, gcd(
+    M':NzNat, J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat)))
+    :: PosRat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (X@@@@Zero:Zero + quot(J'@NzNeg:NzNeg, gcd(
+    M':NzNat, J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg)))
+    :: Rat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (quot(J':NzInt, gcd(J':NzInt, M':NzNat)) / quot(
+    M':NzNat, gcd(J':NzInt, M':NzNat))) :: NzRat .
+rewrites: 3 in 0ms cpu (0ms real) (3000000 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (quot(J'@NzNat:NzNat, gcd(M':NzNat,
+    J'@NzNat:NzNat)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNat:NzNat))) ::
+    NzPosRat .
+rewrites: 3 in 0ms cpu (0ms real) (41666 rewrites/second)
+result Bool: true
+==========================================
+reduce in RAT-DECREASINGNESS : (quot(J'@NzNeg:NzNeg, gcd(M':NzNat,
+    J'@NzNeg:NzNeg)) / quot(M':NzNat, gcd(M':NzNat, J'@NzNeg:NzNeg))) :: NzRat
+    .
+rewrites: 3 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+Maude>
