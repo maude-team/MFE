@@ -1,0 +1,195 @@
+*** version of October 31 2018
+
+set include BOOL off .
+
+fmod NAT-FVP is
+----  protecting TRUTH-VALUE .
+  sort Bool .
+  ops true false : -> Bool .
+  sorts Nat NzNat Zero .
+  subsorts Zero NzNat < Nat .
+  op 0 : -> Zero [ctor metadata "2"] .
+  op 1 : -> NzNat [ctor metadata "3"] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0 prec 33 metadata "1 1 1"] .
+  op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0 prec 33 metadata "1 1 1"] .
+  ---(
+  op p : NzNat -> Nat [metadata "1 0"] .                             *** predecessor
+  op d : Nat Nat -> Nat [comm metadata "1 0"] .                    *** symmetric difference
+  op _\_ : Nat Nat -> Nat [metadata "1 1 0"] .                         *** monus
+  op _~_ : Nat Nat -> Bool [metadata "1 1 0"] .                 *** equality predicate, comm removed
+  op _>_ : Nat Nat -> Bool [metadata "1 1 0"] .
+)
+  vars N M : Nat .
+  vars N' M' : NzNat .
+
+  ---(
+  eq [NAT-FVP-01]: p(N + 1) = N [variant] .
+  eq [NAT-FVP-02]: d(N + M, N) = M [variant] .
+  eq [NAT-FVP-03]: (N + M) \ N = M [variant] .
+  eq [NAT-FVP-04]: N \ (N + M) = 0 [variant] .
+  eq [NAT-FVP-05]: N ~ N = true [variant] .
+  eq [NAT-FVP-06]: (N + M') ~ N = false [variant] .
+  eq [NAT-FVP-06]: N ~ (N + M') = false [variant] . ---- duplicated, ~ non-comm
+  eq [NAT-FVP-07]: M + N + 1 > N = true [variant] .
+  eq [NAT-FVP-08]: N > N + M = false [variant] .
+  eq [NAT-FVP-09]: N' > 0 = true [variant] .
+)
+endfm
+
+load ~/Maude/mta/mta.maude
+(check-poly NAT-FVP .)
+eof
+
+fmod NAT-ACU is
+  protecting NAT-FVP .
+  op quot : Nat NzNat -> Nat [metadata "1 1 13"] .                      *** quotient
+  op gcd : NzNat NzNat -> NzNat [metadata "1 1 14"] .     *** greatest common divisor, comm removed
+  op _*_ : Nat Nat -> Nat [assoc comm prec 31 metadata "1 1 11"] .
+  op _*_ : NzNat NzNat -> NzNat [assoc comm prec 31 metadata "1 1 11"] .
+
+  vars N M : Nat .
+  vars N' M' K' : NzNat .
+  var  N? : [Nat] .
+
+  eq [NAT-ACU-01]: quot(N' + M', M') = 1 + quot(N', M')  .
+  eq [NAT-ACU-02]: quot(M', M') = 1 .
+  eq [NAT-ACU-03]: quot(M, N' + M) = 0 .
+  eq [NAT-ACU-04]: gcd(N', N') = N' .
+  eq [NAT-ACU-05]: gcd(N' + M', M') = gcd(N', M') .
+  eq [NAT-ACU-05]: gcd(M', N' + M') = gcd(M', N') . ---- duplicated, gcd non-comm
+  eq [NAT-ACU-06]: N? * 0 = 0 .
+  eq [NAT-ACU-07]: N? * 1 = N? .
+  eq [NAT-ACU-08]: N' * (M' + K') = (N' * M') + (N' * K') .
+endfm
+
+fmod INT-FVP is
+  protecting NAT-FVP .
+  sorts NzNeg NzInt Int .
+  subsorts Nat NzNeg < Int .
+  subsorts NzNat NzNeg < NzInt < Int .
+  op -_ : NzNat -> NzNeg [ctor metadata "1 3"] .
+  op -_ : NzNeg -> NzNat [ctor metadata "1 3"] .
+  op -_ : Int -> Int [metadata "1 3"] .
+  op -_ : NzInt -> NzInt [metadata "1 3"] .
+  op _+_ : Int Int -> Int [assoc comm id: 0 prec 33 metadata "1 1 4"] .
+  op |_| : Int -> Nat [metadata "1 8"] .                             *** absolute value
+  op |_| : NzInt -> NzNat [metadata "1 8"] .
+  op p : Int -> Int [metadata "1 5"] .                               *** predecessor
+  op _~_ : Int Int -> Bool [metadata "1 1 15"] .                 *** equality predicate, comm removed
+  op _>_ : Int Int -> Bool [metadata "1 1 17"] .
+
+  vars N' M' : NzNat .
+  var  N : Nat .
+  var  I' : NzInt .
+
+  eq [INT-FVP-01]: - 0 = 0 [variant] .
+  eq [INT-FVP-02]: - - N' = N' [variant] .
+  eq [INT-FVP-03]: | N | = N [variant] .
+  eq [INT-FVP-04]: | - N' | = N' [variant] .
+  eq [INT-FVP-05]: p(0) = - 1 [variant] .
+  eq [INT-FVP-06]: p(- N') = -(N' + 1) [variant] .
+  eq [INT-FVP-07]: - N' ~ - M' = N' ~ M' [variant] .
+  eq [INT-FVP-08]: - N' ~ N = false [variant] .
+  eq [INT-FVP-08]: N' ~ - N = false [variant] . ---- duplicated, ~ non-comm
+  eq [INT-FVP-09]: - N' > - M' = M' > N' [variant] .
+  eq [INT-FVP-10]: - N' > N = false [variant] .
+  eq [INT-FVP-11]: N > - N' = true [variant] .
+endfm
+
+fmod INT-ACU is
+  protecting INT-FVP .
+  protecting NAT-ACU .
+  op quot : Int NzInt -> Int [metadata "1 1 13"] .
+  op gcd : NzInt NzInt -> NzNat [metadata "1 1 14"] . *** greatest common divisor, comm removed
+  op _*_ : Int Int -> Int [assoc comm prec 31 metadata "1 1 11"] .
+  op _*_ : NzInt NzInt -> NzInt [assoc comm prec 31 metadata "1 1 11"] .
+
+  vars I J H : Int .
+  vars I' J' H' : NzInt .
+  vars N' M' : NzNat .
+  var  Q : NzNeg .
+----  vars N M : Nat .
+
+  eq [INT-ACU-01]: quot(0, Q) = 0 .
+  eq [INT-ACU-02]: quot(- N', M') = - quot(N', M') .
+  eq [INT-ACU-03]: quot(N', - M') = - quot(N', M') .
+  eq [INT-ACU-04]: quot(- N', - M') = quot(N', M') .
+  eq [INT-ACU-05]: gcd(- N', I') = gcd(N', I') .
+  eq [INT-ACU-05]: gcd(I', - N') = gcd(I', N') .
+  eq [INT-ACU-06]: N' * - M' = - (N' * M') .
+  eq [INT-ACU-07]: - N' * - M' = N' * M' .
+  eq [INT-ACU-08]: - N' + - M' = - (N' + M') .
+  eq [INT-ACU-09]: - (N' + - M') = - N' + M' .
+  eq [INT-ACU-10]: - (N' + M') + M' = - N' .
+  eq [INT-ACU-11]: N' + - N' = 0 .
+endfm
+
+fmod RAT-ACU is
+  protecting INT-ACU .
+  sorts Rat NzRat PosRat NzPosRat .
+  subsort Int < Rat .
+  subsorts Nat NzPosRat < PosRat < Rat .
+  subsorts NzInt < NzRat < Rat .
+  subsorts NzNat < NzPosRat < NzRat PosRat .
+  op _/_ : NzRat NzRat -> NzRat [prec 31 metadata "1 1 66"] .         *** division
+  op _/_ : NzInt NzNat -> NzRat [ctor prec 31 metadata "1 1 6"] .
+  op _/_ : NzNat NzNat -> NzPosRat [ctor prec 31 metadata "1 1 6"] .
+  op -_ : Rat -> Rat [metadata "1 33"] .
+  op _+_ : Rat Rat -> Rat [assoc comm id: 0 prec 33 metadata "1 1 44"] .
+  op _+_ : PosRat PosRat -> PosRat [assoc comm id: 0 prec 33 metadata "1 1 44"] .
+  op _*_ : Rat Rat -> Rat [assoc comm prec 31 metadata "1 1 11"] .
+  op _*_ : NzRat NzRat -> NzRat [assoc comm prec 31 metadata "1 1 11"] .
+  op |_| : Rat -> PosRat [metadata "1 8"] .                          *** absolute value
+  op _~_ : Rat Rat -> Bool [metadata "1 1 15"] .                 *** equality predicate, comm removed
+  op _>_ : Rat Rat -> Bool [metadata "1 1 18"] .
+
+  vars N' M' : NzNat .
+  vars I' J' : NzInt .
+  vars I J : Int .
+  vars R' : NzRat .
+  vars R : Rat .
+
+  eq [RAT-ACU-01]: 0 / N' = 0 .
+  eq [RAT-ACU-02]: N' / N' = 1 .
+  eq [RAT-ACU-03]: - N' / N' = - 1 .
+  eq [RAT-ACU-04]: R / 1 = R .
+ ceq [RAT-ACU-05]: J' / M' = quot(J',gcd(J',M')) / quot(M',gcd(J',M'))
+     if gcd(J',M') > 1 = true .                           *** canonical form of fraction
+  eq [RAT-ACU-06]: I' / -(N') = -(I') / N' .
+  eq [RAT-ACU-07]: I' / (J' / M') = (I' * M') / J' .
+  eq [RAT-ACU-08]: (I' / N') / J' = I' / (N' * J') .
+  eq [RAT-ACU-09]: (I' / N') / (J' / M') = (I' * M') / (N' * J') .
+  eq [RAT-ACU-10]: -(I' / N') = -(I') / N' .
+
+  eq [RAT-ACU-11]: (I' / N') * 0 = 0 .
+  eq [RAT-ACU-12]: (I' / N') * J' = (I' * J') / N' .
+  eq [RAT-ACU-13]: (I' / N') * (J' / M') = (I' * J') / (N' * M') .
+
+  eq [RAT-ACU-14]: | I' / N' | = | I' | / N' .
+
+  eq [RAT-ACU-15]: (I' / N') ~ J' = I' ~ (J' * N') .
+  eq [RAT-ACU-15]: J' ~ (I' / N') = (J' * N') ~ I' . ---- duplicated, ~ non-comm
+  eq [RAT-ACU-16]: (I' / N') ~ (J' / M') = (I' * M') ~ (J' * N') .
+  eq [RAT-ACU-17]: 0 ~ R' = false .
+  eq [RAT-ACU-17]: R' ~ 0 = false . ---- duplicated, ~ non-comm
+
+  eq [RAT-ACU-18]: I' > (J' / M') = (I' * M') > J' .
+  eq [RAT-ACU-19]: (I' / N') > J' = I' > (J' * N') .
+  eq [RAT-ACU-20]: (I' / N') > (J' / M') = (I' * M') > (J' * N') .
+  eq [RAT-ACU-21]: N' / M' > 0 = true .
+  eq [RAT-ACU-22]: - N' / M' > 0 = false .
+  eq [RAT-ACU-23]: 0 > N' / M' = false .
+  eq [RAT-ACU-24]: 0 > - N' / M' = true .
+
+  eq [RAT-ACU-25]: J' + (I / N') = ((J' * N') + I) / N' .
+  eq [RAT-ACU-26]: (I / N') + (J / M') = ((I * M') + (J * N')) / (N' * M') .
+endfm
+
+load ~/Maude/mta/mta.maude
+(check-poly NAT-FVP .)
+(check-poly NAT-ACU .)
+(check-poly INT-FVP .)
+(check-poly INT-ACU .)
+(check-poly RAT-ACU .)
+
+set include BOOL on .

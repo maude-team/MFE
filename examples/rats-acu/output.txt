@@ -3,7 +3,7 @@
 		     /||||||||||||||||||\
 	   Maude alpha120 built: Dec  7 2018 20:37:50
 	    Copyright 1997-2018 SRI International
-		   Wed Jul 10 11:08:45 2019
+		   Sat Jul 27 11:00:01 2019
 
 	    Full Maude 2.7f November 20th 2017
 
@@ -20,34 +20,34 @@ set include TRUTH-VALUE on
 rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
 The CRC has been set as current tool.
 
-rewrites: 61 in 2ms cpu (2ms real) (23781 rewrites/second)
+rewrites: 61 in 3ms cpu (3ms real) (19414 rewrites/second)
 Error: Module BOOL-FVP not in database.
 
-rewrites: 314696 in 501ms cpu (523ms real) (627733 rewrites/second)
+rewrites: 314696 in 578ms cpu (601ms real) (543539 rewrites/second)
 Church-Rosser check for NAT-FVP
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
 
-rewrites: 765375 in 1389ms cpu (1453ms real) (550709 rewrites/second)
+rewrites: 765375 in 1614ms cpu (1673ms real) (473983 rewrites/second)
 Church-Rosser check for NAT-ACU
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
 
-rewrites: 593339 in 1182ms cpu (1255ms real) (501556 rewrites/second)
+rewrites: 593339 in 1353ms cpu (1413ms real) (438495 rewrites/second)
 Church-Rosser check for INT-FVP
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
 
-rewrites: 2014434 in 5267ms cpu (5609ms real) (382402 rewrites/second)
+rewrites: 2014434 in 6084ms cpu (6381ms real) (331097 rewrites/second)
 Church-Rosser check for INT-ACU
 	All critical pairs have been joined.
 	The specification is locally-confluent.
 	The module is sort-decreasing.
 
-rewrites: 8970703 in 141674ms cpu (144411ms real) (63319 rewrites/second)
+rewrites: 8970703 in 164538ms cpu (165628ms real) (54520 rewrites/second)
 Church-Rosser check for RAT-ACU
 The following critical pairs must be proved joinable:
   cp RAT-ACU1188 for INT-ACU-09 and RAT-ACU-26
