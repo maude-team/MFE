@@ -1,15 +1,13 @@
 fmod NAT-FVP is
-sorts Bool Nat NzNat Zero Natk .
-ops true false : -> Bool .
-subsort NzNat < Nat < Natk .
-subsort Zero < Nat .
+sort Nat  .
 op 0 : -> Nat .
 op 1 : -> Nat .
 op _+_ : Nat Nat -> Nat [assoc comm] .
-op _+_ : NzNat NzNat -> NzNat [assoc comm] .
+var N : Nat .
+eq 0 + N = N .
+endfm
+
 op _>_ : Nat Nat -> Bool .
-vars M N : Nat .
-vars O P : NzNat .
 eq 0 > M = false .
 eq O > 0 = true .
 eq N > N = false .
@@ -17,7 +15,6 @@ eq N > N + M = false .
 eq (1 + M) > 0 = true .
 eq (1 + N) > N = true .
 eq (1 + N + M)> N = true .
-endfm
 
 ops p s : Nat -> Nat .
 op leq : Nat Nat -> Bool .

@@ -9,7 +9,7 @@
 
 
 load termcheck.maude
-load MTT-transformations.1.5j.maude
+load MTT-transformations.1.5k.maude
 
 -------------------------------------------------------------------------------
 ---- file: mtt.maude
@@ -19,7 +19,7 @@ load MTT-transformations.1.5j.maude
 ---- commands available:
 
 fmod MTT-HELP is
-  pr EXT-QID-LIST .
+  pr FM-EXT-QID-LIST .
   op mtt-help : -> QidList .
   eq mtt-help
     = '\t string2qidList("(MTT help .)") '\n
@@ -168,7 +168,7 @@ endfm
 
 fmod META-MTT-SIGN is
   pr META-FULL-MAUDE-SIGN .
-  inc UNIT .
+  inc FM-UNIT .
 
   ops MTT-GRAMMAR : -> FModule .
   eq MTT-GRAMMAR = addImports((including 'MTT-SIGN .), GRAMMAR) .
@@ -176,7 +176,7 @@ endfm
 
 
 mod MTT-TOOL is
-  pr DATABASE-HANDLING .
+  pr FM-DATABASE-HANDLING .
   pr TERMINATION-CHECKER .
   pr MTT-HELP .
   pr MAP{String, String} .

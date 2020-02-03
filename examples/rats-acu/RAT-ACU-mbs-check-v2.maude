@@ -7,7 +7,7 @@ mod RAT-DECREASINGNESS is
   vars I' : NzInt .
   vars I : Int .
 
-  mb quot(I', gcd(I', N')) : NzNat .
+  mb quot(I', gcd(I', N')) : NzInt .
   mb quot(N', gcd(N', I')) : NzNat .
   mb I / N' : Rat .
 endm

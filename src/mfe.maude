@@ -125,15 +125,15 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude27f.maude
-load GLOT/glot.maude
+load FM/full-maude3.maude
+----load GLOT/glot.maude
 set show advisories off .
-load ITP/itp.maude
-load CRChC/crchc3r.maude
+----load ITP/itp.maude
+load CRChC/crchc3s.maude
 load MTT/mtt.maude
 load SCC/scc.maude
-load EqE/eqe.maude
-load ERTP/ertp.maude
+----load EqE/eqe.maude
+----load ERTP/ertp.maude
 
 ***
 *** Maude Formal Environment
@@ -162,12 +162,12 @@ endm
 fmod MFE-BANNER is
   pr STRING .
   op mfe-banner : -> String .
-  eq mfe-banner = "The Maude Formal Environment 1.0c" .
+  eq mfe-banner = "The Maude Formal Environment 1.0d" .
 endfm
 
 
 fmod MFE-HELP is
-  pr EXT-QID-LIST .
+  pr FM-EXT-QID-LIST .
   pr MFE-BANNER .
   ops mfe-help mfe-tools : -> QidList .
   eq mfe-help =
@@ -240,7 +240,7 @@ endfm
 fmod META-MFE-SIGN is
   inc META-LEVEL .
   pr META-FULL-MAUDE-SIGN .
-  pr UNIT .
+  pr FM-UNIT .
 
   ---- The grammar of the MFE extends the grammar of Full Maude.
   op MFE-GRAMMAR : -> FModule [memo] .
@@ -251,7 +251,7 @@ endfm
 *** interacting in the MFE
 
 mod MFE-PUBLIC-MESSAGES is
-  ex CONFIGURATION .
+  ex FM-CONFIGURATION .
   pr META-LEVEL .
   pr MOD-NAME .
   pr SET{Oid} .
@@ -345,7 +345,7 @@ endv
 --- MFE-GOAL
 --------------------------------------------------------------------------------
 mod MFE-GOAL is
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   pr SET{Oid} .
 
   sort Goal .
@@ -366,7 +366,7 @@ endm
 ---- all the tools in the environment.
 --------------------------------------------------------------------------------
 mod MFE-TOOL is
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   inc MFE-PUBLIC-MESSAGES .
   inc MFE-GOAL .
   pr MAP{ModuleName, Oid} .
@@ -489,7 +489,7 @@ endm
 mod MFE-CONTROLLER is
   inc LOOP-MODE .
   inc MFE-PUBLIC-MESSAGES .
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   inc MFE-HELP .
   inc MFE-TOOL .
   pr META-MFE-SIGN .
@@ -1924,6 +1924,7 @@ mod MFE-ChC is
        (to O from O' : output(mfe-success('The 'module eMetaPrettyPrint(MN) 'is 'ground-coherent. '\n))) .
 endm
 
+---(
 --------------------------------------------------------------------------------
 --- MFE-ITP
 --------------------------------------------------------------------------------
@@ -2228,7 +2229,7 @@ mod MFE-ITP is
         (to O' from OITP : input-parsed(NeQIL, false))
      if not metaParse(itp-grammar, NeQIL, 'Input) :: ResultPair .
 endm
-
+)
 ----------------------------
 --- MFE-SCC ----------------
 --- Completeness Checker ---
@@ -2961,6 +2962,7 @@ mod MFE-MTT is
        (to OS from O' : module getName(M) is terminating functional part B) .
 endm
 
+---(
 --------------------------------------------------------------------------------
 --- MFE-GLOT
 --------------------------------------------------------------------------------
@@ -3051,7 +3053,9 @@ mod MFE-GLOT is
      => < O : X@GLOTBroker | tools : TS, Atts >
         (to TS["MFE"] from O : output(genProofJumps('CTRS, getInferenceSystem('CTRS, (T1, T2))))) .
 endm
+---)
 
+---(
 mod MFE-EqE is
   pr 3BOOL .
   pr DATABASE-HANDLING .
@@ -3206,7 +3210,9 @@ mod MFE-EqE is
   eq has==Aux((op '_==_ : 'Universal 'Universal -> 'Bool [AS]. ) OS) = true .
   eq has==Aux(OS) = false [owise] .
 endm
+)
 
+---(
 --------------------------------------------------------------------------------
 ---- MFE-ERTP
 --------------------------------------------------------------------------------
@@ -3319,6 +3325,7 @@ mod MFE-ERTP is
        < O' : X@ERTPBroker | Atts' >
        (to O'' from O' : output('Something 'should 'have 'been 'proved. '\n)) .
 endm
+)
 
 --------------------------------------------------------------------------------
 --- MFE
@@ -3334,9 +3341,9 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   pr MFE-CRC .
   pr MFE-ChC .
   pr MFE-MTT .
-  pr MFE-EqE .
-  pr MFE-ERTP .
-  pr MFE-GLOT .
+  ----pr MFE-EqE .
+  ----pr MFE-ERTP .
+  ----pr MFE-GLOT .
   pr MFE-PUBLIC-MESSAGES .
   pr META-MFE-SIGN .
 ----  subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due

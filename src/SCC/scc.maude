@@ -129,17 +129,21 @@ fmod META-BASICS is
 
   sort NeConstantSet ConstantSet .
   subsort Constant < NeConstantSet < ConstantSet < QidSet .
-  subsort EmptyTypeSet < ConstantSet .
+----  subsort EmptyTypeSet < ConstantSet .
+  subsort EmptyQidSet < ConstantSet .
   subsort NeConstantSet < NeQidSet .
   op _;_ : ConstantSet ConstantSet -> ConstantSet [ctor ditto].
   op _;_ : NeConstantSet ConstantSet -> NeConstantSet [ctor ditto].
 
+---(
+---- NeVariableSet and VariableSet are defined in Maude's prelude
   sort NeVariableSet VariableSet .
   subsort Variable < NeVariableSet < VariableSet < QidSet .
   subsort EmptyTypeSet < VariableSet .
   subsort NeVariableSet < NeQidSet .
   op _;_ : VariableSet VariableSet -> VariableSet [ctor ditto].
   op _;_ : NeVariableSet VariableSet -> NeVariableSet [ctor ditto].
+---)
 
   subsort TermQid < NeQidSet .
 
@@ -2451,7 +2455,7 @@ view CFCResult from TRIV to CC-LOOP is
 endv
 
 mod CC is
-  pr DATABASE-HANDLING .
+  pr FM-DATABASE-HANDLING .
   pr CC-HELP .
   pr SET{Oid} .
   pr 5TUPLE{Module,SCCResult,CFCResult,Bool,Bool} *
