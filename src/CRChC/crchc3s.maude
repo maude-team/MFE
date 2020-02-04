@@ -1703,7 +1703,7 @@ fmod ChC-NON-OVERLAPPING-CHECK is
   var  SSDS : SubsortDeclSet .
   var  ODS : OpDeclSet .
   var  AtS : AttrSet .
-  vars T T' : Term .
+  vars T T' T1 T2 : Term .
   var  Eq : Equation .
   var  EqS : EquationSet .
   var  Rl : Rule .
@@ -1712,7 +1712,7 @@ fmod ChC-NON-OVERLAPPING-CHECK is
   vars VL VL' VL'' : QidList .
   vars V V' : Variable .
   var  C : Constant .
-  var  Ty : Type .
+  var  Ty Ty1 Ty2 Ty3 : Type .
   var  TL : TermList .
   var  Subst : Substitution .
   var  SubstS : SubstitutionSet .
@@ -1824,9 +1824,13 @@ fmod ChC-NON-OVERLAPPING-CHECK is
 
   eq non-frozen(M, T) = non-frozen(M, getOps(M), T) .
 
+ ceq non-frozen(M, op F : Ty1 Ty2 -> Ty3 [frozen(1 2) assoc AtS] . ODS, F[T1, T2, TL])
+    = none
+    if sameKind(M, Ty1 Ty2, eLeastSort(M, (T1, T2)) leastSort(M, F[T1, T2, TL])) .
  ceq non-frozen(M, op F : TyL -> Ty [frozen(NL) AtS] . ODS, F[TL])
     = non-frozen(M, NL, 1, TL)
-    if sameKind(M, TyL Ty, eLeastSort(M, TL) leastSort(M, F[TL])) .
+    if not assoc in AtS
+    /\ sameKind(M, TyL Ty, eLeastSort(M, TL) leastSort(M, F[TL])) .
   eq non-frozen(M, ODS, F[TL]) = non-frozen(M, ODS, TL) [owise] .
  ceq non-frozen(M, ODS, (T, TL)) = non-frozen(M, ODS, T) ; non-frozen(M, ODS, TL) if TL =/= empty .
   eq non-frozen(M, ODS, empty) = none .
