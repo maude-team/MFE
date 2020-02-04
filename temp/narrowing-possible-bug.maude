@@ -1,0 +1,25 @@
+red in META-LEVEL : metaNarrowingSearch(mod 'NAT-ACU is
+      nil
+      sorts 'Nat ; 'NzNat ; 'Zero .
+      subsort 'NzNat < 'Nat .
+      subsort 'Zero < 'Nat .
+      op '0 : nil -> 'Zero [ctor] .
+      op '1 : nil -> 'NzNat [ctor] .
+      op '_*_ : 'Nat 'Nat -> 'Nat [assoc comm] .
+      op '_*_ : 'NzNat 'NzNat -> 'NzNat [assoc comm] .
+      op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Zero)] .
+----      op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+      op '_+_ : 'NzNat 'Nat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+      op '_+_ : 'NzNat 'NzNat -> 'NzNat [assoc comm ctor id('0.Zero)] .
+      none
+      none
+      rl '_*_['N':NzNat, '_+_['M':NzNat, 'K':NzNat]]
+        => '_+_['_*_['N':NzNat, 'M':NzNat], '_*_['N':NzNat, 'K':NzNat]]
+        [narrowing] .
+    endm,
+    '_*_['N':NzNat, '_+_['M':NzNat, 'K':NzNat]],
+    '#V:`[Nat`],
+    '+,
+    1,
+    'none,
+    1)  .

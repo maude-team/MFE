@@ -1,0 +1,137 @@
+load RAT-ACU.maude
+
+mod RAT-DECREASINGNESS is
+  pr RAT-ACU .
+
+  vars N' : NzNat .
+  vars I' : NzInt .
+  vars I : Int .
+
+  mb quot(I', gcd(I', N')) : NzInt .
+  mb quot(N', gcd(N', I')) : NzNat .
+  mb I / N' : Rat .
+endm
+
+  red (I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat :: Rat .
+
+  red X@@@@NzInt:NzInt + - I':NzInt / N':NzNat :: Rat .
+
+  red X@@@@NzInt:NzInt +(I':NzInt * M':NzNat)/ J'@NzNat:NzNat :: Rat .
+
+  red X@@@@NzNeg:NzNeg +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat :: Rat .
+
+  red X@@@@NzInt:NzInt + I':NzInt / J'@NzNat:NzNat * N':NzNat :: Rat .
+
+  red X@@@@PosRat:PosRat +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat :: Rat .
+
+  red X@@@@PosRat:PosRat +(N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/
+    N':NzNat * M':NzNat :: Rat .
+
+  red X@@@@Rat:Rat +(I@NzInt:NzInt + J':NzInt * N':NzNat)/ N':NzNat :: Rat .
+
+  red X@@@@Rat:Rat +(N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/
+    N':NzNat * M':NzNat :: Rat .
+
+  red X@@@@NzInt:NzInt + | I':NzInt | / N':NzNat :: Rat .
+
+  red (N':NzNat * J@NzInt:NzInt + M':NzNat * I@NzInt:NzInt)/ N':NzNat * M':NzNat
+    :: Rat .
+
+  red X@@@@Int:Int + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+    J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@Int:Int + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: Rat .
+
+  red X@@@@Int:Int + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@Nat:Nat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+    J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@Nat:Nat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: PosRat .
+
+  red X@@@@Nat:Nat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat.
+
+  red X@@@@NzInt:NzInt + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+    gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@NzInt:NzInt + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: Rat .
+
+  red X@@@@NzInt:NzInt + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@NzNat:NzNat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+    gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@NzNat:NzNat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: PosRat .
+
+  red X@@@@NzNat:NzNat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@NzNeg:NzNeg + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+    gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@NzNeg:NzNeg + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: Rat .
+
+  red X@@@@NzNeg:NzNeg + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@NzPosRat:NzPosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(
+    M':NzNat,gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@NzPosRat:NzPosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/
+    quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: PosRat .
+
+  red X@@@@NzPosRat:NzPosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/
+    quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@NzRat:NzRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+    gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@NzRat:NzRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: Rat .
+
+  red X@@@@NzRat:NzRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@PosRat:PosRat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,
+    gcd(J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@PosRat:PosRat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/
+    quot(M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: PosRat .
+
+  red X@@@@PosRat:PosRat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/
+    quot(M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@Rat:Rat + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+    J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@Rat:Rat + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: Rat .
+
+  red X@@@@Rat:Rat + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red X@@@@Zero:Zero + quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(
+    J':NzInt,M':NzNat)) :: Rat .
+
+  red X@@@@Zero:Zero + quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNat:NzNat,M':NzNat)) :: PosRat .
+
+  red X@@@@Zero:Zero + quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(
+    M':NzNat,gcd(J'@NzNeg:NzNeg,M':NzNat)) :: Rat .
+
+  red quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,
+    M':NzNat)) :: NzRat .
+
+  red quot(J'@NzNat:NzNat,gcd(J'@NzNat:NzNat,M':NzNat))/ quot(M':NzNat,gcd(
+    J'@NzNat:NzNat,M':NzNat)) :: NzPosRat .
+
+  red quot(J'@NzNeg:NzNeg,gcd(J'@NzNeg:NzNeg,M':NzNat))/ quot(M':NzNat,gcd(
+    J'@NzNeg:NzNeg,M':NzNat)) :: NzRat .

@@ -1,5 +1,5 @@
-----                                          The Maude Formal Environment 1.0c
-----                               To be run on Maude 2.7 (alpha 110a + FM27d)
+----                                          The Maude Formal Environment 1.0d
+----                                          To be run on Maude 2.8 (alpha115)
 ----                                                   authors: Francisco Duran
 ----                                                               Camilo Rocha
 
@@ -22,6 +22,8 @@
 ---- - Add support for rechability properties
 
 ---- Latest changes
+---- - Dec 12th, 2017
+----   - MFE is adapted to the new FM28 and Alpha115
 ---- - May 19th, 2016
 ----   - MFE is adapted to the new FM27d and Alpha110a
 ---- - August 12th, 2014
@@ -123,15 +125,15 @@ mod CONFIGURATION is
   op <> : -> Portal [ctor] .
 endm
 
-load FM/full-maude27e.maude
-load GLOT/glot.maude
+load FM/full-maude3.maude
+----load GLOT/glot.maude
 set show advisories off .
-load ITP/itp.maude
-load CRChC/crchc3p.maude
+----load ITP/itp.maude
+load CRChC/crchc3s.maude
 load MTT/mtt.maude
 load SCC/scc.maude
-load EqE/eqe.maude
-load ERTP/ertp.maude
+----load EqE/eqe.maude
+----load ERTP/ertp.maude
 
 ***
 *** Maude Formal Environment
@@ -160,12 +162,12 @@ endm
 fmod MFE-BANNER is
   pr STRING .
   op mfe-banner : -> String .
-  eq mfe-banner = "The Maude Formal Environment 1.0b" .
+  eq mfe-banner = "The Maude Formal Environment 1.0d" .
 endfm
 
 
 fmod MFE-HELP is
-  pr EXT-QID-LIST .
+  pr FM-EXT-QID-LIST .
   pr MFE-BANNER .
   ops mfe-help mfe-tools : -> QidList .
   eq mfe-help =
@@ -179,7 +181,7 @@ fmod MFE-HELP is
       string2qidList("Tools available in the Maude Formal Environment:") '\n '\n
       '\t '\! 'ChC '\o '\t 'Coherence 'Checker '\n
       '\t '\! 'CRC '\o '\t 'Church 'Rosser 'Checker '\n
-      '\t '\! 'ITP '\o '\t 'Inductive 'Theorem 'Prover '\n
+----      '\t '\! 'ITP '\o '\t 'Inductive 'Theorem 'Prover '\n
       '\t '\! 'MFE '\o '\t 'Maude 'Formal 'Environment ' '`( 'Controller '`) '\n
       '\t '\! 'MTT '\o '\t 'Maude 'Termination 'Tool '\n
       '\t '\! 'SCC '\o '\t 'Sufficient 'Completeness 'Checker '\n
@@ -238,7 +240,7 @@ endfm
 fmod META-MFE-SIGN is
   inc META-LEVEL .
   pr META-FULL-MAUDE-SIGN .
-  pr UNIT .
+  pr FM-UNIT .
 
   ---- The grammar of the MFE extends the grammar of Full Maude.
   op MFE-GRAMMAR : -> FModule [memo] .
@@ -249,7 +251,7 @@ endfm
 *** interacting in the MFE
 
 mod MFE-PUBLIC-MESSAGES is
-  ex CONFIGURATION .
+  ex FM-CONFIGURATION .
   pr META-LEVEL .
   pr MOD-NAME .
   pr SET{Oid} .
@@ -343,7 +345,7 @@ endv
 --- MFE-GOAL
 --------------------------------------------------------------------------------
 mod MFE-GOAL is
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   pr SET{Oid} .
 
   sort Goal .
@@ -364,7 +366,7 @@ endm
 ---- all the tools in the environment.
 --------------------------------------------------------------------------------
 mod MFE-TOOL is
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   inc MFE-PUBLIC-MESSAGES .
   inc MFE-GOAL .
   pr MAP{ModuleName, Oid} .
@@ -487,7 +489,7 @@ endm
 mod MFE-CONTROLLER is
   inc LOOP-MODE .
   inc MFE-PUBLIC-MESSAGES .
-  inc DATABASE-HANDLING .
+  inc FM-DATABASE-HANDLING .
   inc MFE-HELP .
   inc MFE-TOOL .
   pr META-MFE-SIGN .
@@ -880,21 +882,16 @@ mod MFE-CRC is
   ---- CritPairSet (all) cps to show
   ---- Qid '= or '=> depending on whether the cps are from the CRC or from the ChC
   ---- Bool true means only pending cps are to be consider; false means all
-  eq genShowCPsMsg(O''', O', M, CPS, '=, B)
+  eq genShowCPsMsg(O''', O', M, CPS, QI, B)
     = to O''' from O' :
         output(
           if CPS == none or ((not B) and pendingCPs(CPS) == none)
           then 'There 'are 'no 'critical 'pairs. '\n
-          else ('The 'following 'critical 'pairs 'cannot 'be 'joined: '\o '\n
-                eMetaPrettyPrint(M, '=, CPS, B))
-          fi) .
-  eq genShowCPsMsg(O''', O', M, CPS, '=>, B)
-    = to O''' from O' :
-        output(
-          if CPS == none or ((not B) and pendingCPs(CPS) == none)
-          then 'There 'are 'no 'critical 'pairs. '\n
-          else ('The 'following 'critical 'pairs 'cannot 'be 'joined: '\o '\n
-                eMetaPrettyPrint(M, '=>, CPS, B))
+          else (if B
+                then 'These 'are 'all 'the 'critical 'pairs: '\o '\n
+                else 'The 'following 'critical 'pairs 'cannot 'be 'joined: '\o '\n
+                fi
+                eMetaPrettyPrint(M, QI, CPS, B))
           fi) .
 
   ---- show membership assertions
@@ -1187,8 +1184,12 @@ mod MFE-CRC is
                 if CRCCT == Church-Rosser
                 then requester : (OS, O'), confluence-requester : OS', sort-decreasingness-requester : OS''
                 else if CRCCT == confluence
-                     then requester : OS, confluence-requester : (OS', O'), sort-decreasingness-requester : OS''
-                     else requester : OS, confluence-requester : OS', sort-decreasingness-requester : (OS'', O')
+                     then requester : OS,
+                          confluence-requester : (OS', O'),
+                          sort-decreasingness-requester : OS''
+                     else requester : OS,
+                          confluence-requester : OS',
+                          sort-decreasingness-requester : (OS'', O')
                      fi
                 fi,
                 cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >
@@ -1202,13 +1203,18 @@ mod MFE-CRC is
                      makeCRCmessage(< O : X@CRC | module : M', requester : OS, confluence-requester : OS', sort-decreasingness-requester : OS'', cps : CPS, mas : MAS, cp-reg : CPReg, ma-reg : MAReg, Atts' >,
                        CRCCT))
        else ---- The CRC object is removed
-            (to TS["MFE"] from OCRC : output('The 'CRC 'for eMetaPrettyPrint(getName(M)) 'has 'been 'reset. '\n))
+            (to TS["MFE"] from OCRC :
+               output('The 'CRC 'for eMetaPrettyPrint(getName(M)) 'has 'been 'reset. '\n))
             ---- all the proofs in the ITP must be removed (open and not open proofs)
             unregisterProofs(TS["ITP"], OCRC, CPS, CPReg)
             unregisterProofs(TS["ITP"], OCRC, MAS, MAReg)
             ---- the association of module name in the reg map is removed, the applyCRCResult
             ---- will add it again if the check goes fine
-            applyCRCResult(O', < OCRC : X@CRCBroker | tools : TS, reg : MNReg, Atts >, CRCCT, $processCRCcheck(M), M)
+            applyCRCResult(O',
+              < OCRC : X@CRCBroker | tools : TS, reg : MNReg, Atts >,
+              CRCCT,
+              $processCRCcheck(M),
+              M)
        fi
     if MN = getName(M) .
   crl [crc-check] :
@@ -1220,51 +1226,40 @@ mod MFE-CRC is
 
   op applyCRCResult : Oid Object CRCcheckType CRCProcessResult Module -> Configuration .
   ---- generates the same object, the only difference being the requester kind to which the requester is added
- ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, Church-Rosser, (M, CPS, MAS), M')
+ ceq applyCRCResult(O,
+       < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >,
+       CRCCT,
+       (M, CPS, MAS),
+       M')
     ---- the index is increased, the new CRC becomes the current one, and the module name is registered
-    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
+    = < O' : X@CRCBroker |
+        index : s N,
+        current : CRC(N),
+        reg : ((getName(M') |-> CRC(N)), MNReg),
+        tools : TS,
+        Atts >
       Obj
       if O =/= TS["MFE"]
-      then makeCRCmessage(O, Obj, Church-Rosser)
+      then makeCRCmessage(O, Obj, CRCCT)
       else to TS["MFE"] from CRC(N) :
-             output('Church-Rosser 'check 'for eMetaPrettyPrint(getName(M')) '\n
-               makeCRCmessage(Obj, Church-Rosser))
+             output(if CRCCT == Church-Rosser then 'Church-Rosser
+                    else if CRCCT == confluence then 'Concluence
+                         else if CRCCT == sort-decreasingness then 'Sort-decreasingness
+                              else nil
+                              fi
+                         fi
+                    fi
+                    'check 'for eMetaPrettyPrint(getName(M')) '\n
+               makeCRCmessage(Obj, CRCCT))
       fi
-    if Obj := < CRC(N) : CRC | requester : O, confluence-requester : empty, sort-decreasingness-requester : empty,
-                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
-                       terminating : maybe,
-                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
-                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
- ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, confluence, (M, CPS, MAS), M')
-    ---- the index is increased, the new CRC becomes the current one, and the module name is registered
-    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
-      Obj
-      if O == TS["MFE"]
-      then to TS["MFE"] from CRC(N) :
-             output('Confluence 'check 'for eMetaPrettyPrint(getName(M')) '\n
-               makeCRCmessage(Obj, confluence))
-      else makeCRCmessage(O, Obj, confluence)
-      fi
-    if Obj := < CRC(N) : CRC | requester : empty, confluence-requester : O, sort-decreasingness-requester : empty,
-                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
-                       terminating : maybe,
-                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
-                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
- ceq applyCRCResult(O, < O' : X@CRCBroker | index : N, current : O'', reg : MNReg, tools : TS, Atts >, sort-decreasingness, (M, CPS, MAS), M')
-    ---- the index is increased, the new CRC becomes the current one, and the module name is registered
-    = < O' : X@CRCBroker | index : s N, current : CRC(N), reg : ((getName(M') |-> CRC(N)), MNReg), tools : TS, Atts >
-      Obj
-      if O == TS["MFE"]
-      then to TS["MFE"] from CRC(N) :
-             output('Sort-decreasingness 'check 'for eMetaPrettyPrint(getName(M')) '\n
-               makeCRCmessage(Obj, sort-decreasingness))
-      else makeCRCmessage(O, Obj, sort-decreasingness)
-      fi
-    if Obj := < CRC(N) : CRC | requester : empty, confluence-requester : empty, sort-decreasingness-requester : O,
-                       original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
-                       terminating : maybe,
-                       locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
-                       sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
+    if Obj := < CRC(N) : CRC |
+                requester : if CRCCT == Church-Rosser then O else empty fi,
+                confluence-requester : if CRCCT == confluence then O else empty fi,
+                sort-decreasingness-requester : if CRCCT == sort-decreasingness then O else empty fi,
+                original-module : M', module : M, cps : CPS, mas : MAS, cp-reg : empty, ma-reg : empty,
+                terminating : maybe,
+                locally-confluent : if pendingCPs(CPS) == none then true else maybe fi,
+                sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
   eq applyCRCResult(O, < O' : X@CRCBroker | tools : TS, Atts >, CRCCT, unsupported(St), M')
     = < O' : X@CRCBroker | tools : TS, Atts >
       to O from O' : output(mfe-error(string2qidList(St))) .
@@ -1929,6 +1924,7 @@ mod MFE-ChC is
        (to O from O' : output(mfe-success('The 'module eMetaPrettyPrint(MN) 'is 'ground-coherent. '\n))) .
 endm
 
+---(
 --------------------------------------------------------------------------------
 --- MFE-ITP
 --------------------------------------------------------------------------------
@@ -2233,7 +2229,7 @@ mod MFE-ITP is
         (to O' from OITP : input-parsed(NeQIL, false))
      if not metaParse(itp-grammar, NeQIL, 'Input) :: ResultPair .
 endm
-
+)
 ----------------------------
 --- MFE-SCC ----------------
 --- Completeness Checker ---
@@ -2966,6 +2962,7 @@ mod MFE-MTT is
        (to OS from O' : module getName(M) is terminating functional part B) .
 endm
 
+---(
 --------------------------------------------------------------------------------
 --- MFE-GLOT
 --------------------------------------------------------------------------------
@@ -3056,7 +3053,9 @@ mod MFE-GLOT is
      => < O : X@GLOTBroker | tools : TS, Atts >
         (to TS["MFE"] from O : output(genProofJumps('CTRS, getInferenceSystem('CTRS, (T1, T2))))) .
 endm
+---)
 
+---(
 mod MFE-EqE is
   pr 3BOOL .
   pr DATABASE-HANDLING .
@@ -3211,7 +3210,9 @@ mod MFE-EqE is
   eq has==Aux((op '_==_ : 'Universal 'Universal -> 'Bool [AS]. ) OS) = true .
   eq has==Aux(OS) = false [owise] .
 endm
+)
 
+---(
 --------------------------------------------------------------------------------
 ---- MFE-ERTP
 --------------------------------------------------------------------------------
@@ -3324,6 +3325,7 @@ mod MFE-ERTP is
        < O' : X@ERTPBroker | Atts' >
        (to O'' from O' : output('Something 'should 'have 'been 'proved. '\n)) .
 endm
+)
 
 --------------------------------------------------------------------------------
 --- MFE
@@ -3334,18 +3336,18 @@ endm
 mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
   inc LOOP-MODE .
   inc MFE-CONTROLLER .
-  pr MFE-ITP .
+----  pr MFE-ITP .
   pr MFE-SCC .
   pr MFE-CRC .
   pr MFE-ChC .
   pr MFE-MTT .
-  pr MFE-EqE .
-  pr MFE-ERTP .
-  pr MFE-GLOT .
+  ----pr MFE-EqE .
+  ----pr MFE-ERTP .
+  ----pr MFE-GLOT .
   pr MFE-PUBLIC-MESSAGES .
   pr META-MFE-SIGN .
-  subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due
-  subsort ConstantSet < AtomicITPTermSet .     ---- to declararions coming from SCC and ITP
+----  subsort NeConstantSet < NeAtomicITPTermSet . ---- Added to avoid preregularity problems due
+----  subsort ConstantSet < AtomicITPTermSet .     ---- to declarations coming from SCC and ITP
 
   op init : -> System .
 
@@ -3376,7 +3378,7 @@ mod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
              tools : TOOLS >
           init-crc(TOOLS)
           init-chc(TOOLS)
-          init-itp(TOOLS)
+          ---- init-itp(TOOLS)
           init-scc(TOOLS)
           init-mtt(TOOLS)
           ---- init-eqe(TOOLS)

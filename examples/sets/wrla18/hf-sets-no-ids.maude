@@ -1,0 +1,139 @@
+set include BOOL off .
+
+fmod HF-SETS is
+  sorts Bool Magma Set .
+  subsort Set < Magma .
+  op <_;_> : Magma Magma -> Magma .
+  op <_;_> : Set Set -> Set .
+  op P : Set -> Set .
+  op _&_ : Set Set -> Set .
+  op _<=_ : Set Set -> Bool .
+  op _X_ : Set Set -> Set .
+  op _in_ : Magma Set -> Bool .
+  op _~_ : Set Set -> Bool .
+  op augment : Set Set -> Set .
+  op _U_ : Set Set -> Set
+    [assoc comm] .
+  op _`,_ : Magma Magma -> Magma
+    [assoc comm ctor] .
+  op _and_ : Bool Bool -> Bool
+    [assoc comm prec 55] .
+  op _implies_ : Bool Bool -> Bool
+    [prec 61 gather(e E)] .
+  op _or_ : Bool Bool -> Bool
+    [assoc comm prec 59] .
+  op _xor_ : Bool Bool -> Bool
+    [assoc comm prec 57] .
+  op `{_`} : Magma -> Set
+    [ctor] .
+  op `{`} : -> Set
+    [ctor] .
+  op false : -> Bool
+    [ctor special(id-hook SystemFalse)] .
+  op not_ : Bool -> Bool
+    [prec 53] .
+  op true : -> Bool
+    [ctor special(id-hook SystemTrue)] .
+  eq A:Bool and A:Bool
+    = A:Bool .
+  eq A:Bool and(B:Bool xor C:Bool)
+    = A:Bool and B:Bool xor A:Bool and C:Bool .
+  eq false and A:Bool
+    = false .
+  eq true and A:Bool
+    = A:Bool .
+  eq A:Bool and A:Bool and X@@@:[Bool]
+    = A:Bool and X@@@:[Bool] .
+  eq A:Bool and X@@@:[Bool]and(B:Bool xor C:Bool)
+    = X@@@:[Bool]and(A:Bool and B:Bool xor A:Bool and C:Bool) .
+  eq false and A:Bool and X@@@:[Bool]
+    = false and X@@@:[Bool] .
+  eq true and A:Bool and X@@@:[Bool]
+    = A:Bool and X@@@:[Bool] .
+  eq A:Bool implies B:Bool
+    = not(A:Bool xor A:Bool and B:Bool) .
+  eq A:Bool or B:Bool
+    = A:Bool xor B:Bool xor A:Bool and B:Bool .
+  eq A:Bool or B:Bool or X@@@:[Bool]
+    = X@@@:[Bool]or A:Bool xor B:Bool xor A:Bool and B:Bool .
+  eq A:Bool xor A:Bool
+    = false .
+  eq false xor A:Bool
+    = A:Bool .
+  eq A:Bool xor A:Bool xor X@@@:[Bool]
+    = false xor X@@@:[Bool] .
+  eq false xor A:Bool xor X@@@:[Bool]
+    = A:Bool xor X@@@:[Bool] .
+  eq not A:Bool
+    = true xor A:Bool .
+  eq < S:Set ; S':Set >
+    = {S:Set,{S:Set,S':Set}} [label 91] .
+  eq < S:Set ; S':Set,M:Magma >
+    = {S:Set,{S:Set,S':Set}},< S:Set ; M:Magma > [label 92] .
+  eq < S:Set,M:Magma ; M':Magma >
+    = < S:Set ; M':Magma >,< M:Magma ; M':Magma > [label 93] .
+  eq P({})
+    = {{}} [label 51] .
+  eq P({S:Set})
+    = {{},{S:Set}} [label 52] .
+  eq P({S:Set,M:Magma})
+    = P({M:Magma})U augment(P({M:Magma}),S:Set) [label 53] .
+  eq {}& S:Set
+    = {} [label 71] .
+  eq {}<= S:Set
+    = true [label 31] .
+  eq {M:Magma}<= S:Set
+    = M:Magma in S:Set [label 32] .
+  eq {}U S:Set
+    = S:Set [label 41] .
+  eq {M:Magma}U{M':Magma}
+    = {M:Magma,M':Magma} [label 42] .
+  eq X@@@:[Magma]U{M:Magma}U{M':Magma}
+    = X@@@:[Magma]U{M:Magma,M':Magma} [label 42] .
+  eq {}U S:Set U X@@@:[Magma]
+    = S:Set U X@@@:[Magma] [label 41] .
+  eq S:Set X{}
+    = {} [label 102] .
+  eq {}X S:Set
+    = {} [label 101] .
+  eq {M:Magma}X{M':Magma}
+    = {< M:Magma ; M':Magma >} [label 103] .
+  eq M:Magma,M:Magma
+    = M:Magma [label 01] .
+  eq M:Magma,M:Magma,X@@@:[Magma]
+    = M:Magma,X@@@:[Magma] [label 01] .
+  eq S:Set in{}
+    = false [label 12] .
+  eq S:Set in{S:Set}
+    = true [label 11] .
+  eq S:Set in{S':Set,M:Magma}
+    = S:Set in{S':Set}or S:Set in{M:Magma} [label 16] .
+  eq {}in{{M:Magma}}
+    = false [label 13] .
+  eq (S:Set,M:Magma)in S':Set
+    = S:Set in S':Set and M:Magma in S':Set [label 17] .
+  eq {M:Magma}in{{}}
+    = false [label 14] .
+  eq {M:Magma}in{{M':Magma}}
+    = M:Magma in{M':Magma}and M':Magma in{M:Magma} [label 15] .
+  eq S:Set ~ S':Set
+    = S:Set <= S':Set and S':Set <= S:Set [label 21] .
+  eq augment({},S:Set)
+    = {} [label 61] .
+  eq augment({S:Set},S':Set)
+    = {S:Set U{S':Set}} [label 62] .
+  eq augment({M:Magma,M':Magma},S:Set)
+    = augment({M:Magma},S:Set)U augment({M':Magma},S:Set) [label 63] .
+  ceq {S:Set}& S':Set
+    = {}
+    if S:Set in S':Set = false [label 73] .
+  ceq {S:Set}& S':Set
+    = {S:Set}
+    if S:Set in S':Set = true [label 72] .
+  ceq {S:Set,M:Magma}& S':Set
+    = {M:Magma}& S':Set
+    if S:Set in S':Set = false [label 75] .
+  ceq {S:Set,M:Magma}& S':Set
+    = {S:Set}U({M:Magma}& S':Set)
+    if S:Set in S':Set = true [label 74] .
+endfm

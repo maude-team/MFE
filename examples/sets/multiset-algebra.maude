@@ -1,0 +1,107 @@
+set include BOOL off .
+set include BOOL-OPS on .
+
+fmod MULTISET-ALGEBRA is
+  ---- protecting NAT .
+  sort Nat .
+  op 0 : -> Nat .
+  op s : Nat -> Nat .
+  op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
+  vars N M K : Nat .
+  eq [set00]: N ~ N = true .
+  eq [set01]: 0 ~ s(N) = false .
+  eq [set02]: s(N) ~ s(M) = N ~ M .
+  ---- protecting NAT .
+
+  ---- TRUTH
+  op if_then_else_fi : Bool Mult Mult -> Mult [strat (1 0 2 3 0)].
+  eq [set03]: if true then U else V fi = U .
+  eq [set04]: if false then U else V fi = V .
+  ---- TRUTH
+
+  sort Mult .
+  subsort Nat < Mult .
+  op mt : -> Mult [ctor] .                              *** empty multiset
+  op _,_ : Mult Mult -> Mult [ctor assoc comm id: mt] . *** multiset union
+  op _~_ : Nat Nat -> Bool [comm] .       *** equality predicate on naturals
+  op _\_  : Mult Mult -> Mult .           *** multiset difference
+  op _C=_ : Mult Mult -> Bool .           *** multiset containment
+  op _in_ : Nat Mult -> Bool .            *** multiset membership
+  op _/\_ : Mult Mult -> Mult .           *** multiset intersection
+  op rem : Nat Mult -> Mult .             *** removes N everywhere in U
+  op |_| : Mult -> Nat .                  *** cardinality with repetitions
+  op [_] : Mult -> Nat .                  *** number of distinct elements
+
+   vars U V W : Mult .
+
+  eq [set05]: mt \ U = mt .
+  eq [set06]: U \ mt = U .
+  eq [set07]: (M, U) \ N = if N ~ M then U else M, (U \ N) fi .
+  eq [set08]: U \ (N, M, V) = ((U \ N) \ M) \ V .
+
+  eq [set09]: U C= (U,V) = true .
+  eq [set10]: N C= mt = false .
+  eq [set11]: N C= (M,V) = (N ~ M) or (N C= V) .
+  eq [set12]: (N, M, U) C= V = (N C= V) and (M, U) C= (V \ N) .
+
+  eq [set13]: N in U = N C= U .
+
+  ---- eq U ~ V = (U C= V) and (V C= U) .
+  eq [set17]: mt ~ U = U C= mt .
+  eq [set18]: N, K, U ~ V = ((N, K, U) C= V) and (V C= (N, K, U)) .
+
+  eq [set15]: mt /\ V = mt .
+  eq [set16]: (N, U) /\ V = if (N in V) then N, (U /\ (V \ N)) else U /\ V fi .
+
+  eq [set17]: rem(N, mt) = mt .
+  eq [set18]: rem(N, (M, U)) = if (N ~ M) then rem(N, U) else M, (rem(N, U)) fi .
+
+  eq [set19]: | mt | = 0 .
+  eq [set20]: | N, U | = s(| U |) .
+
+  eq [set21]: [ mt ] = 0 .
+  eq [set22]: [ N, U ] = s([ rem(N, U) ]) .
+endfm
+
+---- the use of if-then-else results in a bunch of cps which do not lead to
+---- natural equations, e.g.,
+----   cp MULTISET-ALGEBRA100 for set07 and set07
+----     @4:[Mult],if @1:Nat ~ @3:Nat then @2:Nat else @3:Nat,if @1:Nat ~ @2:Nat then mt else @2:Nat fi fi
+----     = @4:[Mult],if @1:Nat ~ @2:Nat then @3:Nat else @2:Nat,if @1:Nat ~ @3:Nat then mt else @3:Nat fi fi
+----     .
+---- doesn't lead to a useful equation in the context of multisets. Indeed, it cannot
+---- be oriented so that we avoid nonterminating problems.
+---- Something similar happens with
+---- cp MULTISET-ALGEBRA1838
+----   (@3:Mult \ @1:Nat)\ @2:Nat
+----   =(@3:Mult \ @2:Nat)\ @1:Nat .
+---- Nothing can be done but proving its joinability.
+
+
+
+eof
+
+red 5 ~ 12 .                  *** should be false
+red 15 ~ 15 .                 *** should be true
+
+red (3,3,4,4,4,2,2,9) \ (3,3,3,4,2,7) .  *** should be 2,4,4,9
+
+red (3,3,4,4,4,2,2,9) C= (3,3,3,4,2,7) .  *** should be false
+
+red (3,3,4,4,2,2,9) C= (3,3,3,4,4,2,2,2,7,9) .  *** should be true
+
+red 3 in (3,3,4,4,7) .                      *** should be true
+
+red 9 in (3,3,4,4,7) .                      *** should be false
+
+red (3,3,4,4,4,2,2,7) ~ (3,3,3,4,2,7) .  *** should be false
+
+red (3,3,3,4,2,2,7) ~ (3,3,3,4,2,2,7) .  *** should be true
+
+red (3,3,3,4,4,4,2,2,7,9) /\ (3,3,3,3,4,4,2,7,7) . *** should be 2,3,3,3,4,4,7
+
+red rem(2,(3,3,2,2,2,4,4,4)) .  *** should be 3,3,4,4,4
+
+red | 3,3,4,4,4,2,2,9 | .       *** should be 8
+
+red [ 3,3,4,4,4,2,2,9 ] .       *** should be 4

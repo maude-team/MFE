@@ -1,0 +1,153 @@
+eduroamprvnat-172-16-59-243:MFE duran$ ~/Maude/maude-2.7-hooks-darwin/maude++ examples/hf-sets/set-algebra.maude src/mfe.maude examples/hf-sets/set-algebra-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	    Maude-mfe-hooks 2.7 built: Aug  1 2014 18:22:26
+	     With termination checker extension
+	    Copyright 1997-2014 SRI International
+		   Thu Nov 30 17:03:25 2017
+
+	    Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (0ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 28137008 in 41474ms cpu (42356ms real) (678417 rewrites/second)
+Church-Rosser check for SET-ALGEBRA
+The following critical pairs must be proved joinable:
+  cp SET-ALGEBRA1027 for set16 and set13
+    #11:[Set],((#2:Set \ #3:Nat)\ #4:Nat)
+    = #11:[Set],((#2:Set \ #4:Nat)\ #3:Nat).
+  cp SET-ALGEBRA1028 for set16 and set13
+    #12:[Set],(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set)
+    = #12:[Set],(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set).
+  cp SET-ALGEBRA1063 for set16 and set15
+    X@@@:[Set],if N:Nat ~ M:Nat then(#10:Set,((#2:Set \ #3:Nat)\ #4:Nat))\ N:Nat else M:Nat,((#10:Set,((
+    #2:Set \ #3:Nat)\ #4:Nat))\ N:Nat)fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then(#10:Set,((#2:Set \ #4:Nat)\ #3:Nat))\ N:Nat else M:Nat,((#10:Set,(
+    (#2:Set \ #4:Nat)\ #3:Nat))\ N:Nat)fi .
+  cp SET-ALGEBRA1064 for set16 and set15
+    X@@@:[Set],if N:Nat ~ M:Nat then(#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))\ N:Nat else M:Nat,((
+    #11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))\ N:Nat)fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then(#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))\ N:Nat else M:Nat,(
+    (#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))\ N:Nat)fi .
+  cp SET-ALGEBRA1131 for set16 and set22
+    X@@@:[Set],s(|(#10:Set,((#2:Set \ #3:Nat)\ #4:Nat))\ N:Nat |)
+    = X@@@:[Set],s(|(#10:Set,((#2:Set \ #4:Nat)\ #3:Nat))\ N:Nat |).
+  cp SET-ALGEBRA1132 for set16 and set22
+    X@@@:[Set],s(|(#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))\ N:Nat |)
+    = X@@@:[Set],s(|(#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))\ N:Nat |).
+  cp SET-ALGEBRA1154 for set16 and set18
+    N:Nat C= V:Set and V:Set C= N:Nat,K:Nat,#10:Set,((#2:Set \ #3:Nat)\ #4:Nat)and(K:Nat,#10:Set,((#2:Set
+    \ #3:Nat)\ #4:Nat))C= V:Set
+    = N:Nat C= V:Set and V:Set C= N:Nat,K:Nat,#10:Set,((#2:Set \ #4:Nat)\ #3:Nat)and(K:Nat,#10:Set,((
+    #2:Set \ #4:Nat)\ #3:Nat))C= V:Set .
+  cp SET-ALGEBRA1155 for set16 and set18
+    N:Nat C= V:Set and V:Set C= N:Nat,K:Nat,#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set)and(K:Nat,
+    #11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))C= V:Set
+    = N:Nat C= V:Set and V:Set C= N:Nat,K:Nat,#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set)and(K:Nat,
+    #11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))C= V:Set .
+  cp SET-ALGEBRA1417 for set15 and set15
+    X@@@:[Set],if N:Nat ~ #2:Nat then if N:Nat ~ M:Nat then mt else M:Nat fi else #2:Nat,if N:Nat ~ M:Nat
+    then mt else M:Nat fi fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then if N:Nat ~ #2:Nat then mt else #2:Nat fi else M:Nat,if N:Nat ~
+    #2:Nat then mt else #2:Nat fi fi .
+  cp SET-ALGEBRA1419 for set15 and set15
+    X@@@:[Set],if N:Nat ~ #2:Nat then if N:Nat ~ M:Nat then #10:Set \ N:Nat else M:Nat,(#10:Set \
+    N:Nat)fi else #2:Nat,if N:Nat ~ M:Nat then #10:Set \ N:Nat else M:Nat,(#10:Set \ N:Nat)fi fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then if N:Nat ~ #2:Nat then #10:Set \ N:Nat else #2:Nat,(#10:Set \
+    N:Nat)fi else M:Nat,if N:Nat ~ #2:Nat then #10:Set \ N:Nat else #2:Nat,(#10:Set \ N:Nat)fi fi .
+  cp SET-ALGEBRA176 for set11 and set11
+    N:Nat C= V:Set and #1:Nat C= V:Set and(M:Nat,#10:Set)C= V:Set
+    = N:Nat C= V:Set and M:Nat C= V:Set and(#1:Nat,#10:Set)C= V:Set .
+  cp SET-ALGEBRA183 for set11 and set11
+    M:Nat C= V:Set and(N:Nat,U:Set)C= V:Set
+    = N:Nat C= V:Set and(M:Nat,U:Set)C= V:Set .
+  cp SET-ALGEBRA2409 for set22 and set22
+    X@@@:[Set],s(| if N:Nat ~ #2:Nat then mt else N:Nat fi |)
+    = X@@@:[Set],s(| if N:Nat ~ #2:Nat then mt else #2:Nat fi |).
+  cp SET-ALGEBRA2413 for set22 and set22
+    X@@@:[Set],s(| if N:Nat ~ #2:Nat then #8:Set \ #2:Nat else N:Nat,(#8:Set \ #2:Nat)fi |)
+    = X@@@:[Set],s(| if N:Nat ~ #2:Nat then #8:Set \ N:Nat else #2:Nat,(#8:Set \ N:Nat)fi |).
+  cp SET-ALGEBRA2492 for set06 and set10
+    N:Nat C= K:Nat,V:Set
+    = N:Nat C= K:Nat,V:Set xor N:Nat C= K:Nat,V:Set and N:Nat ~ K:Nat xor N:Nat ~ K:Nat .
+  cp SET-ALGEBRA2525 for set06 and set11
+    (M:Nat,U:Set)C= V:Set
+    = M:Nat C= V:Set and(M:Nat,U:Set)C= V:Set .
+  cp SET-ALGEBRA2552 for set06 and set20
+    X@@@:[Set],if N:Nat C= V:Set then N:Nat else mt fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,if N:Nat C= V:Set then N:Nat else mt fi else if N:Nat C=
+    V:Set then N:Nat else mt fi fi .
+  cp SET-ALGEBRA2556 for set06 and set20
+    X@@@:[Set],if N:Nat C= V:Set then N:Nat,(#5:Set /\ V:Set)else #5:Set /\ V:Set fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,if N:Nat C= V:Set then N:Nat,(#5:Set /\ V:Set)else #5:Set
+    /\ V:Set fi else if N:Nat C= V:Set then N:Nat,(#5:Set /\ V:Set)else #5:Set /\ V:Set fi fi .
+  cp SET-ALGEBRA2583 for set06 and set16
+    X@@@:[Set],(U:Set \ M:Nat)
+    = X@@@:[Set],((U:Set \ M:Nat)\ M:Nat).
+  cp SET-ALGEBRA2584 for set06 and set16
+    X@@@:[Set],(U:Set \ M:Nat,V:Set)
+    = X@@@:[Set],(((U:Set \ M:Nat)\ M:Nat)\ V:Set).
+  cp SET-ALGEBRA2611 for set06 and set15
+    X@@@:[Set],if N:Nat ~ M:Nat then mt else M:Nat fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then if N:Nat ~ M:Nat then mt else M:Nat fi else M:Nat,if N:Nat ~ M:Nat
+    then mt else M:Nat fi fi .
+  cp SET-ALGEBRA2615 for set06 and set15
+    X@@@:[Set],if N:Nat ~ M:Nat then #5:Set \ N:Nat else M:Nat,(#5:Set \ N:Nat)fi
+    = X@@@:[Set],if N:Nat ~ M:Nat then if N:Nat ~ M:Nat then #5:Set \ N:Nat else M:Nat,(#5:Set \ N:Nat)fi
+    else M:Nat,if N:Nat ~ M:Nat then #5:Set \ N:Nat else M:Nat,(#5:Set \ N:Nat)fi fi .
+  cp SET-ALGEBRA2664 for set06 and set18
+    V:Set ~ K:Nat,U:Set
+    = V:Set C= K:Nat,U:Set and(K:Nat,U:Set)C= V:Set .
+  cp SET-ALGEBRA376 for set20 and set20
+    X@@@:[Set],if #2:Nat C= V:Set then #2:Nat,if N:Nat C= V:Set then N:Nat else mt fi else if N:Nat C=
+    V:Set then N:Nat else mt fi fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,if #2:Nat C= V:Set then #2:Nat else mt fi else if #2:Nat C=
+    V:Set then #2:Nat else mt fi fi .
+  cp SET-ALGEBRA378 for set20 and set20
+    X@@@:[Set],if #2:Nat C= V:Set then #2:Nat,if N:Nat C= V:Set then N:Nat,(#10:Set /\ V:Set)else #10:Set
+    /\ V:Set fi else if N:Nat C= V:Set then N:Nat,(#10:Set /\ V:Set)else #10:Set /\ V:Set fi fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,if #2:Nat C= V:Set then #2:Nat,(#10:Set /\ V:Set)else
+    #10:Set /\ V:Set fi else if #2:Nat C= V:Set then #2:Nat,(#10:Set /\ V:Set)else #10:Set /\ V:Set fi fi
+    .
+  cp SET-ALGEBRA79 for set10 and set10
+    N:Nat C= M:Nat,V:Set xor N:Nat C= M:Nat,V:Set and N:Nat ~ K:Nat xor N:Nat ~ K:Nat
+    = N:Nat C= K:Nat,V:Set xor N:Nat C= K:Nat,V:Set and N:Nat ~ M:Nat xor N:Nat ~ M:Nat .
+  cp SET-ALGEBRA82 for set10 and set10
+    N:Nat C= K:Nat,#10:Set xor N:Nat C= K:Nat,#10:Set and N:Nat ~ M:Nat xor N:Nat C= K:Nat,#10:Set and
+    N:Nat ~ #2:Nat xor N:Nat ~ M:Nat and N:Nat ~ #2:Nat xor N:Nat C= K:Nat,#10:Set and N:Nat ~ M:Nat and
+    N:Nat ~ #2:Nat xor N:Nat ~ M:Nat xor N:Nat ~ #2:Nat
+    = N:Nat C= #2:Nat,#10:Set xor N:Nat C= #2:Nat,#10:Set and N:Nat ~ M:Nat xor N:Nat C= #2:Nat,#10:Set
+    and N:Nat ~ K:Nat xor N:Nat ~ M:Nat and N:Nat ~ K:Nat xor N:Nat C= #2:Nat,#10:Set and N:Nat ~ M:Nat
+    and N:Nat ~ K:Nat xor N:Nat ~ M:Nat xor N:Nat ~ K:Nat .
+  cp SET-ALGEBRA863 for set16 and set07
+    (#10:Set,((#2:Set \ #4:Nat)\ #3:Nat))C= V:Set,#10:Set,((#2:Set \ #3:Nat)\ #4:Nat)
+    = true .
+  cp SET-ALGEBRA867 for set16 and set07
+    (#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))C= V:Set,#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set)
+    = true .
+  cp SET-ALGEBRA915 for set16 and set20
+    X@@@:[Set],if N:Nat C= V:Set then N:Nat,((#10:Set,((#2:Set \ #3:Nat)\ #4:Nat))/\ V:Set)else(#10:Set,(
+    (#2:Set \ #3:Nat)\ #4:Nat))/\ V:Set fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,((#10:Set,((#2:Set \ #4:Nat)\ #3:Nat))/\ V:Set)else(
+    #10:Set,((#2:Set \ #4:Nat)\ #3:Nat))/\ V:Set fi .
+  cp SET-ALGEBRA916 for set16 and set20
+    X@@@:[Set],if N:Nat C= V:Set then N:Nat,((#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))/\
+    V:Set)else(#11:Set,(((#2:Set \ #3:Nat)\ #4:Nat)\ #5:Set))/\ V:Set fi
+    = X@@@:[Set],if N:Nat C= V:Set then N:Nat,((#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))/\
+    V:Set)else(#11:Set,(((#2:Set \ #4:Nat)\ #3:Nat)\ #5:Set))/\ V:Set fi .
+	The module is sort-decreasing.
+
+Maude> 

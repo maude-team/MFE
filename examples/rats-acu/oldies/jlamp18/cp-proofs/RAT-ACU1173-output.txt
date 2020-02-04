@@ -1,0 +1,114 @@
+MacBook-Pro-de-Paco:cp-proofs duran$ ~/Maude/Alpha120/maude-Yices2.darwin64 RAT-ACU1173
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha120 built: Dec  7 2018 20:37:50
+	    Copyright 1997-2018 SRI International
+		   Mon Jun 10 10:32:47 2019
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (@4:Int + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (@2:Int + @3:NzNat
+    * @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * @2:Int + @1:NzNat * @3:NzNat *
+    @5:NzNat) + @3:NzNat * @4:Int) =>* tt .
+
+No solution.
+states: 1  rewrites: 0 in 0ms cpu (0ms real) (0 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * @3:NzNat * @1:NzNat, - (
+    @3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) + 0 * @3:NzNat) =>*
+    tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (250000 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (125000 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * (N':NzNat + @3:NzNat *
+    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (N':NzNat * @5:NzNat + @1:NzNat * @3:NzNat *
+    @5:NzNat) + 0 * @3:NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (137931 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (78431 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * - (@5:NzNat * @6:NzNat) + @5:NzNat * (- N':NzNat + @3:NzNat *
+    @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - N':NzNat + @1:NzNat * @3:NzNat *
+    @5:NzNat) + 0 * @3:NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 8 in 0ms cpu (0ms real) (615384 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 8 in 0ms cpu (0ms real) (285714 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * @3:NzNat *
+    @1:NzNat, - (@3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) +
+    N':NzNat * @3:NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (210526 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (97560 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (M':NzNat +
+    @3:NzNat * @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (M':NzNat * @5:NzNat + @1:NzNat * @3:NzNat
+    * @5:NzNat) + N':NzNat * @3:NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (200000 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 4 in 0ms cpu (0ms real) (76923 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (- M':NzNat +
+    @3:NzNat * @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - M':NzNat + @1:NzNat *
+    @3:NzNat * @5:NzNat) + N':NzNat * @3:NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 8 in 0ms cpu (0ms real) (421052 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 8 in 0ms cpu (0ms real) (160000 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (- N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * @3:NzNat *
+    @1:NzNat, - (@3:NzNat * @5:NzNat * @6:NzNat) + (0 * @5:NzNat + @1:NzNat * @3:NzNat * @5:NzNat) +
+    @3:NzNat * - N':NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 7 in 0ms cpu (0ms real) (388888 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 7 in 0ms cpu (0ms real) (155555 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (- N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (M':NzNat +
+    @3:NzNat * @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (M':NzNat * @5:NzNat + @1:NzNat * @3:NzNat
+    * @5:NzNat) + @3:NzNat * - N':NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 7 in 0ms cpu (0ms real) (333333 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 7 in 0ms cpu (0ms real) (159090 rewrites/second)
+==========================================
+search in RAT-ACU-R : join(@3:NzNat * (- N':NzNat + - (@5:NzNat * @6:NzNat)) + @5:NzNat * (- M':NzNat +
+    @3:NzNat * @1:NzNat), - (@3:NzNat * @5:NzNat * @6:NzNat) + (@5:NzNat * - M':NzNat + @1:NzNat *
+    @3:NzNat * @5:NzNat) + @3:NzNat * - N':NzNat) =>* tt .
+
+Solution 1 (state 1)
+states: 2  rewrites: 11 in 0ms cpu (0ms real) (611111 rewrites/second)
+empty substitution
+
+No more solutions.
+states: 2  rewrites: 11 in 0ms cpu (0ms real) (229166 rewrites/second)
+Maude>

@@ -1,0 +1,144 @@
+pdi-121-81:MFE duran$ ~/Maude/Alpha115/maude-Yices2.darwin64 examples/sets/multiset-algebra.maude src/mfe.maude examples/sets/multiset-algebra-check.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude alpha115 built: Aug 11 2017 19:57:09
+	    Copyright 1997-2017 SRI International
+		   Tue Dec 12 12:37:26 2017
+
+	    Full Maude 2.7f November 20th 2017
+
+The Maude Formal Environment 1.0c
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3r - December 12th 2017
+    Coherence Checker 3r - December 12th 2017
+    Maude Termination Tool 1.5j - August 11th 2014
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+rewrites: 76 in 0ms cpu (1ms real) (76000000 rewrites/second)
+The CRC has been set as current tool.
+
+rewrites: 2431781 in 12274ms cpu (12486ms real) (198123 rewrites/second)
+Church-Rosser check for MULTISET-ALGEBRA
+The following critical pairs must be proved joinable:
+  cp MULTISET-ALGEBRA100 for set07 and set07
+    @4:[Mult],if @1:Nat ~ @3:Nat then @2:Nat else @3:Nat,if @1:Nat ~ @2:Nat then mt else @2:Nat fi fi
+    = @4:[Mult],if @1:Nat ~ @2:Nat then @3:Nat else @2:Nat,if @1:Nat ~ @3:Nat then mt else @3:Nat fi fi
+    .
+  cp MULTISET-ALGEBRA101 for set07 and set07
+    @5:[Mult],if @1:Nat ~ @3:Nat then @2:Nat,@4:Mult else @3:Nat,if @1:Nat ~ @2:Nat then @4:Mult else
+    @2:Nat,(@4:Mult \ @1:Nat)fi fi
+    = @5:[Mult],if @1:Nat ~ @2:Nat then @3:Nat,@4:Mult else @2:Nat,if @1:Nat ~ @3:Nat then @4:Mult else
+    @3:Nat,(@4:Mult \ @1:Nat)fi fi .
+  cp MULTISET-ALGEBRA1083 for set22 and set22
+    @1:[Mult],s([if @2:Nat ~ @3:Nat then mt else @3:Nat fi])
+    = @1:[Mult],s([if @2:Nat ~ @3:Nat then mt else @2:Nat fi]).
+  cp MULTISET-ALGEBRA1084 for set22 and set22
+    @1:[Mult],s([if @2:Nat ~ @3:Nat then rem(@2:Nat,@4:Mult)else @3:Nat,rem(@2:Nat,@4:Mult)fi])
+    = @1:[Mult],s([if @2:Nat ~ @3:Nat then rem(@3:Nat,@4:Mult)else @2:Nat,rem(@3:Nat,@4:Mult)fi]).
+  cp MULTISET-ALGEBRA1492 for set18 and set18
+    @2:[Mult],if @1:Nat ~ @3:Nat then if @1:Nat ~ @4:Nat then mt else @4:Nat fi else @3:Nat,if @1:Nat ~
+    @4:Nat then mt else @4:Nat fi fi
+    = @2:[Mult],if @1:Nat ~ @4:Nat then if @1:Nat ~ @3:Nat then mt else @3:Nat fi else @4:Nat,if @1:Nat
+    ~ @3:Nat then mt else @3:Nat fi fi .
+  cp MULTISET-ALGEBRA1493 for set18 and set18
+    @2:[Mult],if @1:Nat ~ @3:Nat then if @1:Nat ~ @4:Nat then rem(@1:Nat,@5:Mult)else @4:Nat,rem(@1:Nat,
+    @5:Mult)fi else @3:Nat,if @1:Nat ~ @4:Nat then rem(@1:Nat,@5:Mult)else @4:Nat,rem(@1:Nat,@5:Mult)fi
+    fi
+    = @2:[Mult],if @1:Nat ~ @4:Nat then if @1:Nat ~ @3:Nat then rem(@1:Nat,@5:Mult)else @3:Nat,rem(
+    @1:Nat,@5:Mult)fi else @4:Nat,if @1:Nat ~ @3:Nat then rem(@1:Nat,@5:Mult)else @3:Nat,rem(@1:Nat,
+    @5:Mult)fi fi .
+  cp MULTISET-ALGEBRA1836
+    @1:Nat C= @3:Mult and @2:Nat C=(@3:Mult \ @1:Nat)
+    = @1:Nat C=(@3:Mult \ @2:Nat)and @2:Nat C= @3:Mult .
+  cp MULTISET-ALGEBRA1837
+    @1:Nat C= @4:Mult and(@2:Nat,@3:Mult)C=(@4:Mult \ @1:Nat)
+    = @2:Nat C= @4:Mult and(@1:Nat,@3:Mult)C=(@4:Mult \ @2:Nat).
+  cp MULTISET-ALGEBRA1838
+    (@3:Mult \ @1:Nat)\ @2:Nat
+    =(@3:Mult \ @2:Nat)\ @1:Nat .
+  cp MULTISET-ALGEBRA1839
+    ((@4:Mult \ @1:Nat)\ @2:Nat)\ @3:Mult
+    =((@4:Mult \ @2:Nat)\ @1:Nat)\ @3:Mult .
+  cp MULTISET-ALGEBRA1858
+    @3:[Mult],((@4:Mult \ @1:Nat)\ @2:Nat)
+    = @3:[Mult],((@4:Mult \ @2:Nat)\ @1:Nat).
+  cp MULTISET-ALGEBRA1859
+    @4:[Mult],(((@5:Mult \ @1:Nat)\ @2:Nat)\ @3:Mult)
+    = @4:[Mult],(((@5:Mult \ @2:Nat)\ @1:Nat)\ @3:Mult).
+  cp MULTISET-ALGEBRA22 for set09 and set12
+    true
+    = @1:Nat C= if @1:Nat ~ @2:Nat then @2:Nat else @1:Nat fi .
+  cp MULTISET-ALGEBRA275 for set16 and set16
+    @2:[Mult],if @3:Nat C= @1:Mult then @3:Nat,if @4:Nat C=(@1:Mult \ @3:Nat)then @4:Nat else mt fi else
+    if @4:Nat C= @1:Mult then @4:Nat else mt fi fi
+    = @2:[Mult],if @4:Nat C= @1:Mult then @4:Nat,if @3:Nat C=(@1:Mult \ @4:Nat)then @3:Nat else mt fi
+    else if @3:Nat C= @1:Mult then @3:Nat else mt fi fi .
+  cp MULTISET-ALGEBRA276 for set16 and set16
+    @2:[Mult],if @3:Nat C= @1:Mult then @3:Nat,if @4:Nat C=(@1:Mult \ @3:Nat)then @4:Nat,(@5:Mult /\((
+    @1:Mult \ @3:Nat)\ @4:Nat))else @5:Mult /\(@1:Mult \ @3:Nat)fi else if @4:Nat C= @1:Mult then
+    @4:Nat,(@5:Mult /\(@1:Mult \ @4:Nat))else @5:Mult /\ @1:Mult fi fi
+    = @2:[Mult],if @4:Nat C= @1:Mult then @4:Nat,if @3:Nat C=(@1:Mult \ @4:Nat)then @3:Nat,(@5:Mult /\((
+    @1:Mult \ @4:Nat)\ @3:Nat))else @5:Mult /\(@1:Mult \ @4:Nat)fi else if @3:Nat C= @1:Mult then
+    @3:Nat,(@5:Mult /\(@1:Mult \ @3:Nat))else @5:Mult /\ @1:Mult fi fi .
+  cp MULTISET-ALGEBRA3291 for set22 and set22
+    s([if @1:Nat ~ @2:Nat then mt else @1:Nat fi])
+    = s([if @1:Nat ~ @2:Nat then mt else @2:Nat fi]).
+  cp MULTISET-ALGEBRA3292 for set22 and set22
+    s([if @1:Nat ~ @2:Nat then rem(@2:Nat,@3:Mult)else @1:Nat,rem(@2:Nat,@3:Mult)fi])
+    = s([if @1:Nat ~ @2:Nat then rem(@1:Nat,@3:Mult)else @2:Nat,rem(@1:Nat,@3:Mult)fi]).
+  cp MULTISET-ALGEBRA3306 for set18 and set18
+    if @1:Nat ~ @3:Nat then if @1:Nat ~ @2:Nat then mt else @2:Nat fi else @3:Nat,if @1:Nat ~ @2:Nat
+    then mt else @2:Nat fi fi
+    = if @1:Nat ~ @2:Nat then if @1:Nat ~ @3:Nat then mt else @3:Nat fi else @2:Nat,if @1:Nat ~ @3:Nat
+    then mt else @3:Nat fi fi .
+  cp MULTISET-ALGEBRA3307 for set18 and set18
+    if @1:Nat ~ @3:Nat then if @1:Nat ~ @2:Nat then rem(@1:Nat,@4:Mult)else @2:Nat,rem(@1:Nat,@4:Mult)fi
+    else @3:Nat,if @1:Nat ~ @2:Nat then rem(@1:Nat,@4:Mult)else @2:Nat,rem(@1:Nat,@4:Mult)fi fi
+    = if @1:Nat ~ @2:Nat then if @1:Nat ~ @3:Nat then rem(@1:Nat,@4:Mult)else @3:Nat,rem(@1:Nat,
+    @4:Mult)fi else @2:Nat,if @1:Nat ~ @3:Nat then rem(@1:Nat,@4:Mult)else @3:Nat,rem(@1:Nat,@4:Mult)fi
+    fi .
+  cp MULTISET-ALGEBRA44 for set12 and set12
+    @2:Nat C=(@1:Mult \ @3:Nat)and @3:Nat C= @1:Mult and @4:Nat C=((@1:Mult \ @3:Nat)\ @2:Nat)
+    = @2:Nat C= @1:Mult and @3:Nat C=(@1:Mult \ @2:Nat)and @4:Nat C=((@1:Mult \ @2:Nat)\ @3:Nat).
+  cp MULTISET-ALGEBRA45 for set12 and set12
+    @2:Nat C=(@1:Mult \ @3:Nat)and @3:Nat C= @1:Mult and(@4:Nat,@5:Mult)C=((@1:Mult \ @3:Nat)\ @2:Nat)
+    = @2:Nat C= @1:Mult and @3:Nat C=(@1:Mult \ @2:Nat)and(@4:Nat,@5:Mult)C=((@1:Mult \ @2:Nat)\
+    @3:Nat).
+  cp MULTISET-ALGEBRA48 for set12 and set12
+    @2:Nat C=(@1:Mult \ @4:Nat)and @3:Nat C=((@1:Mult \ @4:Nat)\ @2:Nat)and @4:Nat C= @1:Mult and @5:Nat
+    C=(((@1:Mult \ @4:Nat)\ @2:Nat)\ @3:Nat)
+    = @2:Nat C= @1:Mult and @3:Nat C=(@1:Mult \ @2:Nat)and @4:Nat C=((@1:Mult \ @2:Nat)\ @3:Nat)and
+    @5:Nat C=(((@1:Mult \ @2:Nat)\ @3:Nat)\ @4:Nat).
+  cp MULTISET-ALGEBRA49 for set12 and set12
+    @2:Nat C=(@1:Mult \ @4:Nat)and @3:Nat C=((@1:Mult \ @4:Nat)\ @2:Nat)and @4:Nat C= @1:Mult and(
+    @5:Nat,@6:Mult)C=(((@1:Mult \ @4:Nat)\ @2:Nat)\ @3:Nat)
+    = @2:Nat C= @1:Mult and @3:Nat C=(@1:Mult \ @2:Nat)and @4:Nat C=((@1:Mult \ @2:Nat)\ @3:Nat)and(
+    @5:Nat,@6:Mult)C=(((@1:Mult \ @2:Nat)\ @3:Nat)\ @4:Nat).
+  cp MULTISET-ALGEBRA5 for set16 and set16
+    if @3:Nat C= @1:Mult then @3:Nat,if @2:Nat C=(@1:Mult \ @3:Nat)then @2:Nat else mt fi else if @2:Nat
+    C= @1:Mult then @2:Nat else mt fi fi
+    = if @2:Nat C= @1:Mult then @2:Nat,if @3:Nat C=(@1:Mult \ @2:Nat)then @3:Nat else mt fi else if
+    @3:Nat C= @1:Mult then @3:Nat else mt fi fi .
+  cp MULTISET-ALGEBRA6 for set16 and set16
+    if @3:Nat C= @1:Mult then @3:Nat,if @2:Nat C=(@1:Mult \ @3:Nat)then @2:Nat,(@4:Mult /\((@1:Mult \
+    @3:Nat)\ @2:Nat))else @4:Mult /\(@1:Mult \ @3:Nat)fi else if @2:Nat C= @1:Mult then @2:Nat,(@4:Mult
+    /\(@1:Mult \ @2:Nat))else @4:Mult /\ @1:Mult fi fi
+    = if @2:Nat C= @1:Mult then @2:Nat,if @3:Nat C=(@1:Mult \ @2:Nat)then @3:Nat,(@4:Mult /\((@1:Mult \
+    @2:Nat)\ @3:Nat))else @4:Mult /\(@1:Mult \ @2:Nat)fi else if @3:Nat C= @1:Mult then @3:Nat,(@4:Mult
+    /\(@1:Mult \ @3:Nat))else @4:Mult /\ @1:Mult fi fi .
+  cp MULTISET-ALGEBRA97 for set07 and set07
+    if @1:Nat ~ @3:Nat then @2:Nat else @3:Nat,if @1:Nat ~ @2:Nat then mt else @2:Nat fi fi
+    = if @1:Nat ~ @2:Nat then @3:Nat else @2:Nat,if @1:Nat ~ @3:Nat then mt else @3:Nat fi fi .
+  cp MULTISET-ALGEBRA98 for set07 and set07
+    if @1:Nat ~ @3:Nat then @2:Nat,@4:Mult else @3:Nat,if @1:Nat ~ @2:Nat then @4:Mult else @2:Nat,(
+    @4:Mult \ @1:Nat)fi fi
+    = if @1:Nat ~ @2:Nat then @3:Nat,@4:Mult else @2:Nat,if @1:Nat ~ @3:Nat then @4:Mult else @3:Nat,(
+    @4:Mult \ @1:Nat)fi fi .
+	The module is sort-decreasing.
+
+Maude>

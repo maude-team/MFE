@@ -1,0 +1,26 @@
+set include BOOL off .
+
+mod NAT-ACU is
+  sorts #Condition #ConditionList Nat NzNat Truth Zero .
+  subsort NzNat < Nat .
+  subsort Zero < Nat .
+  op #_#_# : Nat #ConditionList -> Nat .
+  op #_#_#_# : Truth Truth #ConditionList -> Truth [frozen(2 3)] .
+  op 0 : -> Zero [ctor] .
+  op 1 : -> NzNat [ctor] .
+  op _*_ : Nat Nat -> Nat [assoc comm] .
+  op _*_ : NzNat NzNat -> NzNat [assoc comm] .
+  op _+_ : Nat Nat -> Nat [assoc comm ctor id: 0] .
+  op _+_ : NzNat NzNat -> NzNat [assoc comm ctor id: 0] .
+  op _>_ : Nat Nat -> Truth .
+  op ff : -> Truth [ctor] .
+  op nil : -> #ConditionList .
+  op tt : -> Truth [ctor] .
+  rl _*_(N?:Nat, N':NzNat, _+_(M':NzNat, K':NzNat))
+    => #_#_#(_+_(_*_(N?:Nat, N':NzNat, M':NzNat),
+                 _*_(N?:Nat, N':NzNat, K':NzNat)),
+             nil) .
+endm
+
+red in MFE : metaNarrowSearch(upModule('NAT-ACU, true), '#_#_#_#['_>_['N:Nat,'_+_['N:Nat,'M:Nat]],'ff.Truth,
+    'nil.#ConditionList], '#V:`[Truth`], none, '+, 1, unbounded, unbounded) .

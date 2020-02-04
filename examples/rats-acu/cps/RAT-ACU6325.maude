@@ -1,0 +1,58 @@
+----  cp RAT-ACU6325 for RAT-ACU-03 and RAT-ACU-09
+----    @2:[Rat]+ - @4:NzNat / @3:NzInt
+----    = @2:[Rat]+ -(@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt .
+----
+----  By the Ctx rule it suffices to prove:
+----  - @4:NzNat / @3:NzInt
+----    = -(@1:NzNat * @4:NzNat)/ @1:NzNat * @3:NzInt
+----
+----  - X4 / X3 \|/ - (X1 * X4) / (X1 * X3)
+
+mod RAT-ACU6325 is
+  pr RAT-ACU-R .
+
+  vars I J : Int .
+  vars X1 X4 N' M' : NzNat .
+  vars X3 I' J' : NzInt .
+
+  rl gcd(N' * J', N' * I') => N' * gcd(I', J').
+  rl gcd(- J', I') => gcd(J', I') .
+  rl quot(I' * I, I' * J') => quot(I, J') .
+  rl quot(- I', N') => - quot(I', N') .
+  rl quot(I, 1) => I .
+ crl N' * M' > 1 => true if N' > 1 => true .
+  rl 1 + N' > 1 => true .
+  rl - (I' * J') => - I' * J' .
+ crl J / J' => quot(J, gcd(J, J')) / quot(J', gcd(J, J'))
+     if join(gcd(J, J') > 1, true) => tt .
+endm
+
+---- search [1] in RAT-ACU6325 : join(- X4 / X3, - (X1 * X4) / (X1 * X3)) =>* tt .
+
+---- Ctor cases on X1: {1, 1 + N':NzNat}
+
+search [1] in RAT-ACU6325 : join(- X4 / X3, - (1 * X4) / (1 * X3)) =>* tt .
+
+----  search [1] in RAT-ACU6325 : join(- X4 / X3, - ((1 + N') * X4) / ((1 + N') * X3)) =>* tt .
+
+----  Two cases: gcd(X4, X3) = 1 and gcd(X4, X3) > 1
+
+mod RAT-ACU6325-1 is
+  pr RAT-ACU6325 .
+  op x3 : -> NzInt .
+  op x4 : -> NzNat .
+  rl gcd(x3, x4) => 1 .
+  var N' : NzNat .
+endm
+
+mod RAT-ACU6325-2 is
+  pr RAT-ACU6325 .
+  op x3 : -> NzInt .
+  op x4 : -> NzNat .
+  rl gcd(x3, x4) > 1 => true .
+  var N' : NzNat .
+endm
+
+search [1] in RAT-ACU6325-1 : join(- x4 / x3, - ((1 + N') * x4) / ((1 + N') * x3)) =>* tt .
+
+search [1] in RAT-ACU6325-2 : join(- x4 / x3, - ((1 + N') * x4) / ((1 + N') * x3)) =>* tt .

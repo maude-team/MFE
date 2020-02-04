@@ -1,0 +1,267 @@
+
+*** version of Nov. 10 2017 of abstract-bakery
+
+set include BOOL off .
+
+fmod NAT> is
+  sorts Zero NzNat Nat Bool .
+  subsorts Zero NzNat < Nat .
+  op tt : -> Bool [ctor] .  *** true
+  op ff : -> Bool [ctor] .  *** false
+  op 0 : -> Zero [ctor] .
+  op 1 : -> NzNat [ctor] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
+  op _+_ : NzNat Nat -> NzNat [ctor assoc comm id: 0] .
+  op _+_ : Nat NzNat -> NzNat [ctor assoc comm id: 0] .
+  op _+_ : NzNat NzNat -> NzNat [ctor assoc comm id: 0] .  
+  op _>_ : Nat Nat -> Bool .
+
+  vars n m : Nat .  vars n' m' : NzNat .
+
+  eq n + n' > n = tt .
+  eq n > n + m = ff .
+endfm
+
+mod BAKERY is
+  protecting NAT> .
+
+  sorts Mode BState .
+
+  ops sleep wait crit : -> Mode [ctor] .
+  op <_,_,_,_> : Mode Nat Mode Nat -> BState [ctor] .
+  op initial : -> BState .
+
+  vars P Q : Mode .
+  vars X Y : Nat .
+
+  eq initial = < sleep, 0, sleep, 0 > .
+  
+  rl [p1_sleep] : < sleep, X, Q, Y > => < wait, Y + 1, Q, Y > .
+  rl [p1_wait] : < wait, X, Q, 0 > => < crit, X, Q, 0 > .
+  crl [p1_wait] : < wait, X, Q, Y > => < crit, X, Q, Y > if  X > Y = ff .
+  rl [p1_crit] : < crit, X, Q, Y > => < sleep, 0, Q, Y > .
+  
+  rl [p2_sleep] : < P, X, sleep, Y > => < P, X, wait, X + 1  > .
+  rl [p2_wait] : < P, 0, wait, Y > => < P, 0, crit, Y > .
+  crl [p2_wait] : < P, X, wait, Y > => < P, X, crit, Y > if X > Y = tt .
+  rl [p2_crit] : < P, X, crit, Y > => < P, X, sleep, 0 > .
+endm
+
+mod BAKERY-PREDS is
+  protecting BAKERY .
+  sort State Prop .
+  subsort BState < State .
+  ops 1wait 2wait 1crit 2crit : -> Prop [ctor] .
+
+  op _|=_ : State Prop -> Bool [frozen] .
+ 
+  vars P Q : Mode .
+  vars X Y : Nat .
+
+  eq < wait, X, Q, Y > |= 1wait = tt .
+  eq < sleep, X, Q, Y > |= 1wait = ff .
+  eq < crit, X, Q, Y > |= 1wait = ff .
+  eq < P , X, wait, Y > |= 2wait = tt .
+  eq < P , X, sleep, Y > |= 2wait = ff .
+  eq < P , X, crit, Y > |= 2wait = ff .
+  eq < crit , X, Q, Y > |= 1crit = tt .
+  eq < sleep, X, Q, Y > |= 1crit = ff .
+  eq < wait, X, Q, Y > |= 1crit = ff .
+  eq < P , X, crit, Y > |= 2crit = tt .
+  eq < P , X, sleep, Y > |= 2crit = ff .
+  eq < P , X, wait, Y > |= 2crit = ff .
+endm
+
+mod ABSTRACT-BAKERY is
+  including BAKERY-PREDS .
+
+  vars P Q : Mode .  vars X Y : Nat .  vars X' Y' : NzNat .
+
+  eq < P, 0, Q, 1 + Y' > = < P, 0, Q, 1 >  .
+  eq < P, 1 + X', Q, 0 > = < P, 1 , Q, 0 >  .
+  eq < P, 1, Q, 1 + Y' + X' > = < P, 1, Q, 1 + 1 >  .  
+  eq < P, 1 + X' + Y', Q, 1 > = < P, 1 + 1, Q, 1 >  .  
+  eq < P, X' + 1, Q, Y' + X' + 1 > = < P, 1, Q, 1 + 1 > .
+  eq < P, X' + Y' + 1, Q, Y' + 1 > = < P, 1 + 1, Q, 1 >  .
+  eq < P, X' + Y' + 1, Q, X' + Y' + 1 > = < P, 1 + 1, Q, 1 + 1 > .
+endm
+
+load mfe.maude
+(select tool CRC .)
+(ccr ABSTRACT-BAKERY .)
+(select tool ChC .)
+(cch ABSTRACT-BAKERY .)
+(show all critical pairs .)
+
+
+---(                  \||||||||||||||||||/
+                   --- Welcome to Maude ---
+                     /||||||||||||||||||\
+            Maude 2.7++ built: Sep  9 2014 14:55:11
+            With additional hooks
+            Copyright 1997-2014 SRI International
+                   Fri Nov 10 16:06:00 2017
+
+load mfe.maude .
+
+            Full Maude 2.7 March 10th 2015
+
+The Maude Formal Environment 1.0b
+    Inductive Theorem Prover - July 20th 2010
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3n - December 17th 2012
+    Coherence Checker 3n - December 17th 2012
+    Maude Termination Tool 1.5j - August 11th 2014
+    Equality Enrichments 0.999 - July 2nd 2012
+    Equational Resolution Theorem Prover 0 - July 7th 2012
+    General Logics - based Operational Termination 0.0 - July 8th 2014
+
+(select tool CRC .)
+rewrites: 80 in 0ms cpu (10ms real) (~ rewrites/second)
+The CRC has been set as current tool.
+
+(ccr ABSTRACT-BAKERY .)
+rewrites: 2260851 in 0ms cpu (1613ms real) (~ rewrites/second)
+Church-Rosser check for ABSTRACT-BAKERY
+        All critical pairs have been joined.
+        The specification is locally-confluent.
+        The module is sort-decreasing.
+
+(select tool ChC .)
+rewrites: 76 in 0ms cpu (4ms real) (~ rewrites/second)
+The ChC has been set as current tool.
+
+(cch ABSTRACT-BAKERY .)
+rewrites: 919547 in 0ms cpu (675ms real) (~ rewrites/second)
+Coherence checking of ABSTRACT-BAKERY
+        All critical pairs have been rewritten and no rewrite with rules can happen at non-overlapping positions of equations left-hand sides.
+        The sufficient-completeness, termination and Church-Rosser properties must still be checked.
+
+(show all critical pairs .)
+rewrites: 602 in 0ms cpu (11ms real) (~ rewrites/second)
+The following critical pairs cannot be joined:
+  cp ABSTRACT-BAKERY0
+ joined
+    < P:Mode,0,sleep,Y:Nat >
+    => < P:Mode,0,wait,1 > .
+  cp ABSTRACT-BAKERY0
+ joined
+    < P:Mode,0,wait,1 >
+    => < P:Mode,0,crit,1 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < sleep,X:Nat,Q:Mode,0 >
+    => < wait,1,Q:Mode,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,0,crit,1 >
+    => < P:Mode,0,sleep,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,1,crit,0 >
+    => < P:Mode,1,sleep,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,1,crit,1 + 1 >
+    => < P:Mode,1,sleep,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,1 + 1,crit,1 >
+    => < P:Mode,1,sleep,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,1 + 1,crit,1 + 1 >
+    => < P:Mode,1,sleep,0 > .
+  cp ABSTRACT-BAKERY1
+ joined
+    < P:Mode,0,sleep,Y:Nat >
+    => < P:Mode,0,wait,1 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < sleep,X:Nat,Q:Mode,0 >
+    => < wait,1,Q:Mode,0 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < P:Mode,0,sleep,1 >
+    => < P:Mode,0,wait,1 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < P:Mode,1,sleep,0 >
+    => < P:Mode,1,wait,1 + 1 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < P:Mode,1,sleep,1 + 1 >
+    => < P:Mode,1,wait,1 + 1 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < P:Mode,1 + 1,sleep,1 >
+    => < P:Mode,1,wait,1 + 1 > .
+  cp ABSTRACT-BAKERY2
+ joined
+    < P:Mode,1 + 1,sleep,1 + 1 >
+    => < P:Mode,1,wait,1 + 1 > .
+  cp ABSTRACT-BAKERY3
+ joined
+    < crit,0,Q:Mode,1 >
+    => < sleep,0,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY3
+ joined
+    < crit,1,Q:Mode,0 >
+    => < sleep,0,Q:Mode,0 > .
+  cp ABSTRACT-BAKERY3
+ joined
+    < crit,1,Q:Mode,1 + 1 >
+    => < sleep,0,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY3
+ joined
+    < crit,1 + 1,Q:Mode,1 >
+    => < sleep,0,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY3
+ joined
+    < crit,1 + 1,Q:Mode,1 + 1 >
+    => < sleep,0,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY4
+ joined
+    < sleep,0,Q:Mode,1 >
+    => < wait,1 + 1,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY4
+ joined
+    < sleep,1,Q:Mode,0 >
+    => < wait,1,Q:Mode,0 > .
+  cp ABSTRACT-BAKERY4
+ joined
+    < sleep,1,Q:Mode,1 + 1 >
+    => < wait,1 + 1,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY4
+ joined
+    < sleep,1 + 1,Q:Mode,1 >
+    => < wait,1 + 1,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY4
+ joined
+    < sleep,1 + 1,Q:Mode,1 + 1 >
+    => < wait,1 + 1,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY5
+ joined
+    < wait,1,Q:Mode,0 >
+    => < crit,1,Q:Mode,0 > .
+  cp ABSTRACT-BAKERY5
+ joined
+    < P:Mode,1 + 1,wait,1 >
+    => < P:Mode,1 + 1,crit,1 > .
+  cp ABSTRACT-BAKERY6
+ joined
+    < wait,0,Q:Mode,1 >
+    => < crit,0,Q:Mode,1 > .
+  cp ABSTRACT-BAKERY6
+ joined
+    < wait,1,Q:Mode,1 + 1 >
+    => < crit,1,Q:Mode,1 + 1 > .
+  cp ABSTRACT-BAKERY6
+ joined
+    < wait,1 + 1,Q:Mode,1 + 1 >
+    => < crit,1 + 1,Q:Mode,1 + 1 > .
+  cp ABSTRACT-BAKERY6
+ joined
+    < P:Mode,1,wait,0 >
+    => < P:Mode,1,crit,0 > .
+---)

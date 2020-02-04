@@ -1,0 +1,42 @@
+MacBook-Pro-de-Paco:rats-acu duran$ ~/Maude/maude-2.7.1-osx/maude.darwin64 RAT-ACU-mta.maude
+		     \||||||||||||||||||/
+		   --- Welcome to Maude ---
+		     /||||||||||||||||||\
+	   Maude 2.7.1 built: Jun 27 2016 16:43:23
+	    Copyright 1997-2016 SRI International
+		   Sat Jul 27 12:52:47 2019
+
+	    Maude Polynomial AvC-RPO Termination Assistant v0.2 -- Feb. 21st 2018
+
+Module is terminating by AvC-RPO order
+Module is terminating by AvC-RPO order
+The following equations could not be proved terminating:
+  eq - N':NzNat > - M':NzNat
+    = M':NzNat > N':NzNat [label INT-FVP-09 variant] .
+
+The following equations could not be proved terminating:
+  eq - N':NzNat > - M':NzNat
+    = M':NzNat > N':NzNat [label INT-FVP-09 variant] .
+
+The following equations could not be proved terminating:
+  eq I':NzInt / - N':NzNat
+    = - I':NzInt / N':NzNat [label RAT-ACU-06] .
+  eq I':NzInt /(J':NzInt / M':NzNat)
+    = (M':NzNat * I':NzInt)/ J':NzInt [label RAT-ACU-07] .
+  eq (I':NzInt / N':NzNat)/(J':NzInt / M':NzNat)
+    = (M':NzNat * I':NzInt)/ N':NzNat * J':NzInt [label RAT-ACU-09] .
+  eq I':NzInt > J':NzInt / M':NzNat
+    = M':NzNat * I':NzInt > J':NzInt [label RAT-ACU-18] .
+  eq - N':NzNat > - M':NzNat
+    = M':NzNat > N':NzNat [label INT-FVP-09 variant] .
+  eq I':NzInt / N':NzNat > J':NzInt / M':NzNat
+    = M':NzNat * I':NzInt > N':NzNat * J':NzInt [label RAT-ACU-20] .
+  eq J':NzInt ~ I':NzInt / N':NzNat
+    = N':NzNat * J':NzInt ~ I':NzInt [label RAT-ACU-15] .
+  eq I':NzInt / N':NzNat ~ J':NzInt / M':NzNat
+    = M':NzNat * I':NzInt ~ N':NzNat * J':NzInt [label RAT-ACU-16] .
+  ceq J':NzInt / M':NzNat
+    = quot(J':NzInt,gcd(J':NzInt,M':NzNat))/ quot(M':NzNat,gcd(J':NzInt,M':NzNat))
+    if gcd(J':NzInt,M':NzNat)> 1 = true [label RAT-ACU-05] .
+
+Maude>
