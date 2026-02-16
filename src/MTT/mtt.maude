@@ -8,8 +8,8 @@
 ----   not taking into account rules.
 
 
-load termcheck.maude
-load MTT-transformations.1.5k.maude
+---- load termcheck.maude
+load MTT-transformations.1.5l.maude
 
 -------------------------------------------------------------------------------
 ---- file: mtt.maude
@@ -19,122 +19,52 @@ load MTT-transformations.1.5k.maude
 ---- commands available:
 
 fmod MTT-HELP is
-  pr FM-EXT-QID-LIST .
+  pr LEXICAL .
   op mtt-help : -> QidList .
   eq mtt-help
-    = '\t string2qidList("(MTT help .)") '\n
-      '\t '\t string2qidList("shows the commands available for the MTT.") '\n
+    = '\t tokenize("(MTT help .)") '\n
+      '\t '\t tokenize("shows the commands available for the MTT.") '\n
 
-      '\t string2qidList("(ct .) / (check termination .)") '\n
-      '\t '\t string2qidList("checks the termination of the current module. TODO: add path-selection capabilities") '\n
+      '\t tokenize("(ct .) / (check termination .)") '\n
+      '\t '\t tokenize("checks the termination of the current module. TODO: add path-selection capabilities") '\n
 
-      '\t string2qidList("(ct <module> .) / (check termination <module> .)") '\n
-      '\t '\t string2qidList("checks the termination of the specified module. TODO: add path-selection capabilities") '\n
+      '\t tokenize("(ct <module> .) / (check termination <module> .)") '\n
+      '\t '\t tokenize("checks the termination of the specified module. TODO: add path-selection capabilities") '\n
 
-      '\t string2qidList("(ctf .) / (check termination functional part .)") '\n
-      '\t '\t string2qidList("checks the termination of the functional part of the current module.") '\n ----  TODO: add path-selection capabilities
+      '\t tokenize("(ctf .) / (check termination functional part .)") '\n
+      '\t '\t tokenize("checks the termination of the functional part of the current module.") '\n ----  TODO: add path-selection capabilities
 
-      '\t string2qidList("(ctf <module> .) / (check termination functional part <module> .)") '\n
-      '\t '\t string2qidList("checks the termination of the functional part of the specified module.") '\n  ---- TODO: add path-selection capabilities
+      '\t tokenize("(ctf <module> .) / (check termination functional part <module> .)") '\n
+      '\t '\t tokenize("checks the termination of the functional part of the specified module.") '\n  ---- TODO: add path-selection capabilities
 
-      '\t string2qidList("(show state .)") '\n
-      '\t '\t string2qidList("shows the state of the MTT.") '\n
+      '\t tokenize("(show state .)") '\n
+      '\t '\t tokenize("shows the state of the MTT.") '\n
 
-      '\t string2qidList("(show proof .)") '\n
-      '\t '\t string2qidList("shows the termination proof for the last check termination") '\n
-      '\t '\t string2qidList("command.") '\n
+      '\t tokenize("(show proof .)") '\n
+      '\t '\t tokenize("shows the termination proof for the last check termination") '\n
+      '\t '\t tokenize("command.") '\n
 
-      '\t string2qidList("(select proof <module> .)") '\n
-      '\t '\t string2qidList("sets the specified module as the current module of the MTT.") '\n
+      '\t tokenize("(select proof <module> .)") '\n
+      '\t '\t tokenize("sets the specified module as the current module of the MTT.") '\n
 
-      '\t string2qidList("(select external tool <tool> .)") '\n
-      '\t '\t string2qidList("sets the specified external tool as the current backend tool of the MTT") '\n
-      '\t '\t string2qidList("(the specified <tool> must be one of the tools in your mfe.config file).") '\n
+      '\t tokenize("(select external tool <tool> .)") '\n
+      '\t '\t tokenize("sets the specified external tool as the current backend tool of the MTT") '\n
+      '\t '\t tokenize("(the specified <tool> must be one of the tools in your mfe.config file).") '\n
 
-      '\t string2qidList("(show transformation graph .)") '\n
-      '\t '\t string2qidList("shows the transformations available as a graph") '\n
-      '\t '\t string2qidList("(use semicolons to enter paths, e.g., C;A;B, OS;T;B;O-L, ...).") '\n
+      '\t tokenize("(show transformation graph .)") '\n
+      '\t '\t tokenize("shows the transformations available as a graph") '\n
+      '\t '\t tokenize("(use semicolons to enter paths, e.g., C;A;B, OS;T;B;O-L, ...).") '\n
 
-      '\t string2qidList("(show current path .)") '\n
-      '\t '\t string2qidList("shows the current checking path") '\n
+      '\t tokenize("(show current path .)") '\n
+      '\t '\t tokenize("shows the current checking path") '\n
 
-      '\t string2qidList("(select path <path> .)") '\n
-      '\t '\t string2qidList("sets the path to be used in termination checks") '\n
-      '\t '\t string2qidList("(use the show-transformation-graph command for the available transformations).") '\n
+      '\t tokenize("(select path <path> .)") '\n
+      '\t '\t tokenize("sets the path to be used in termination checks") '\n
+      '\t '\t tokenize("(use the show-transformation-graph command for the available transformations).") '\n
 
-      '\t string2qidList("(trust .)") '\n
-      '\t '\t string2qidList("Assumes that the current module has been proved terminating.") '\n .
+      '\t tokenize("(trust .)") '\n
+      '\t '\t tokenize("Assumes that the current module has been proved terminating.") '\n .
 endfm
-
-
-fmod TERMINATION-CHECKER is
-  pr TERMINATION-CHECK .
-  pr PROC-TPDB .
-
-  var  M : Module .
-  var  PP : Path .
-  vars CONDITIONS CONTEXT : Bool .
-  var  Str TOOL : String .
-
-  op terminationCheck : Module Path Bool Bool String -> String .
-  op terminationCheck : String String -> String .
-  op terminationCheck : String -> String .
-  eq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL)
-    = terminationCheck(
-        replace(
-          replace(
-            replace(
-              qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)),
-              "`", ""),
-            "\\n", " "),
-          "\\s", " "), TOOL) .
- ceq terminationCheck(In:String, TOOL)
-    = terminationCheck(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-                        termCheck(TOOL, In:String, 30),
-                        "@osb@", "`["),
-                        "@csb@", "`]"),
-                        "@ocb@", "`{"),
-                        "@ccb@", "`}"),
-                        "@opar@", "`("),
-                        "@cpar@", "`)"),
-                        "@semicolon@", ";"),
-                        "@comma@", "`,"),
-                        "@bq@", "`"),
-                        "@underscore@", "_"),
-                        "@vertical-bar@", "|"))
-    if writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String .
-ceq terminationCheck(Out:String)
-   = Out:String
-   if writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
-
----(
- ceq terminationCheck(M, PP, CONDITIONS, CONTEXT, TOOL)
-    = Out:String
-    if In:String := replace(
-                      replace(
-                        replace(
-                          qidList2string($procTPDB(M, PP, CONDITIONS, CONTEXT)),
-                          "`", ""),
-                        "\\n", " "),
-                      "\\s", " ")
-    /\ writeToFile("log.txt", "MTT -> AProVE: \n" + In:String + "\n", true) : String
-    /\ Out:String := replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-                        termCheck(TOOL, In:String, 30),
-                        "@osb@", "`["),
-                        "@csb@", "`]"),
-                        "@ocb@", "`{"),
-                        "@ccb@", "`}"),
-                        "@opar@", "`("),
-                        "@cpar@", "`)"),
-                        "@semicolon@", ";"),
-                        "@comma@", "`,"),
-                        "@bq@", "`"),
-                        "@underscore@", "_"),
-                        "@vertical-bar@", "|")
-    /\ writeToFile("log.txt", "AProVE -> MTT: \n" + Out:String + "\n", false) : String .
----)
-endfm
-
 
 -------------------
 ------SIGN
@@ -177,7 +107,7 @@ endfm
 
 mod MTT-TOOL is
   pr FM-DATABASE-HANDLING .
-  pr TERMINATION-CHECKER .
+----  pr TERMINATION-CHECKER .
   pr MTT-HELP .
   pr MAP{String, String} .
 endm

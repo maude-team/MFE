@@ -1,0 +1,9 @@
+---- ~/Maude/maude++-3.5.1/maude ~/git/MFE/examples/rats-acu/RAT-ACU.maude ~/git/MFE/src/mfe.maude ~/git/MFE/examples/scc/rats-acu.scc
+
+(set include BOOL off .)
+
+(set include TRUTH-VALUE on .)
+
+(select tool SCC .)
+
+(scc NAT-FVP .)

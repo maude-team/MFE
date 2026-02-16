@@ -1,0 +1,5 @@
+Cannot find out cpu time on external processes, falling back to wall time!
+YICES stderr: yices: invalid option: -e
+YICES stderr: Try 'yices --help' for more information
+YICES stderr: yices: invalid option: -e
+YICES stderr: Try 'yices --help' for more information

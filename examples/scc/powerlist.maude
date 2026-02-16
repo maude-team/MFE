@@ -1,0 +1,33 @@
+(set include BOOL off .)
+
+(set include TRUTH-VALUE on .)
+
+(fmod POWERLIST is 
+  protecting NAT . 
+  sort Pow .
+  op `[_`] : Nat -> Pow [ctor] . 
+  ops _|_ _X_ : [Pow] [Pow] -> [Pow] .
+  op len : Pow -> Nat .
+  vars I J : Nat . 
+  vars P Q R S : Pow .
+  cmb (P | Q) : Pow if len(P) = len(Q) .
+  cmb (P X Q) : Pow if len(P) = len(Q) [metadata "dfn"].
+  eq [I] X [J] = [I] | [J] . 
+  eq (P | Q) X (R | S) = (P X R) | (Q X S) .
+  eq len([I]) = 1 . 
+  eq len(P | Q) = len(P) + len(Q) .
+endfm)
+
+(select tool SCC .)
+
+---- set trace on .
+(scc POWERLIST .)
+
+---(
+Sufficient completeness check for POWERLIST
+	Completeness counter-examples: true xor true with sort Bool
+	Freeness counter-examples: none were found
+	Analysis: it is not complete and it is not sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)

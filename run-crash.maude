@@ -1,0 +1,3 @@
+load src/mfe.maude 
+load examples/scc/hello-world-scc.maude
+quit

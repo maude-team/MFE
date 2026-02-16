@@ -1,0 +1,70 @@
+set include BOOL off .
+
+fmod GILBREATH-ACU is
+    sorts Card NeList List Boolean .
+    subsort Card < NeList < List .
+
+    op True : -> Boolean [ ctor metadata "0" ] .
+    op False : -> Boolean [ ctor metadata "1" ] .
+
+    op nil : -> List [ ctor metadata "2" ] .
+    op black : -> Card [ ctor metadata "3" ] .
+    op red : -> Card [ ctor metadata "4" ] .
+    
+    op __ : List List -> List [ assoc id: nil metadata "5" ] .
+    op __ : NeList NeList -> NeList [ ctor assoc id: nil metadata "5" ] .
+    
+    vars C C1 C2 C3 : Card .
+    vars L L1 L2 L3 : List .
+
+    op paired : Card Card -> Boolean [ metadata "6" ] .
+    eq paired(red, black) = True [ variant ] .
+    eq paired(black, red) = True [ variant ] .
+    eq paired(C, C) = False [ variant ] .
+
+    op opposite : List List -> Boolean [ metadata "7" ] .
+    eq opposite(nil, L) = False [ variant ] .
+    eq opposite(L, nil) = False [ variant ] .
+    eq opposite(C1 L1, C2 L2) = paired(C1, C2) [ variant ] .
+
+    op alter : List -> Boolean [ metadata "8" ] .
+    eq alter(nil) = True .
+    eq alter(C) = True .
+    ceq alter(C1 C2 L) = alter(C2 L) if paired(C1, C2) = True .
+    ceq alter(C1 C2 L) = False if paired(C1, C2) = False .
+
+    op pairedList : List -> Boolean [ metadata "9" ] .
+    eq pairedList(nil) = True .
+    eq pairedList(C) = False .
+    ceq pairedList(C1 C2 L) = pairedList(L) if paired(C1, C2) = True .
+    eq pairedList(C C L) = False .
+
+    op shuffle : List List List -> Boolean [ metadata "10" ] .
+    eq shuffle(nil, nil, nil) = True .
+    eq shuffle(nil, nil, C3 L3) = False .
+    eq shuffle(C1 L1, L2, nil) = False .
+    ceq shuffle(C1 L1, nil, C3 L3) = False if paired(C1, C3) = True .
+    ceq shuffle(C1 L1, nil, C3 L3) = shuffle(L1, nil, L3) if paired(C1, C3) = False .
+    eq shuffle(L1, C2 L2, nil) = False .
+    ceq shuffle(nil, C2 L2, C3 L3) = False if paired(C2, C3) = True .
+    ceq shuffle(nil, C2 L2, C3 L3) = shuffle(nil, L2, L3) if paired(C2, C3) = False .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = True if paired(C1, C3) = False /\ shuffle(L1, C2 L2, L3) = True .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = True if paired(C2, C3) = False /\ shuffle(C1 L1, L2, L3) = True .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = False if paired(C1, C3) = True /\ paired(C2, C3) = True .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = False if shuffle(L1, C2 L2, L3) = False /\ shuffle(C1 L1, L2, L3) = False .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = False if paired(C1, C3) = True /\ shuffle(C1 L1, L2, L3) = False .
+    ceq shuffle(C1 L1, C2 L2, C3 L3) = False if paired(C2, C3) = True /\ shuffle(L1, C2 L2, L3) = False .
+
+    op even : List -> Boolean [ metadata "11" ] .
+    eq even(nil) = True .
+    eq even(C) = False .
+    eq even(L1 C1 L2 C2 L3) = even(L1 L2 L3) .
+
+    op neg : Card -> Card [ metadata "12" ] .
+    eq neg(red) = black [ variant ] .
+    eq neg(black) = red [ variant ] .
+
+    op rotate : List -> List [ metadata "13" ] .
+    eq rotate(nil) = nil [ variant ] .
+    eq rotate(C L) = L C [ variant ] .
+endfm

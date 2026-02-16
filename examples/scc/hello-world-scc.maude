@@ -1,0 +1,137 @@
+(set include BOOL off .)
+
+(set include TRUTH-VALUE on .)
+
+(select tool SCC .)
+
+(fmod MYNAT is
+  sort MyNat .
+  op 0 : -> MyNat [ctor] .
+  op s : MyNat -> MyNat [ctor] .
+  
+  op _+_ : MyNat MyNat -> MyNat [comm] .
+  op _*_ : MyNat MyNat -> MyNat [comm] .
+  
+  vars N M : MyNat .
+  eq 0 + N = N .
+  eq s(N) + M = s(N + M) .
+  
+  eq 0 * N = 0 .
+  eq s(N) * M = M + (N * M) .
+endfm)
+
+(scc MYNAT .)
+---(
+Sufficient completeness check for MYNAT
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
+(fmod MYNAT2 is
+  sort MyNat .
+  op 0 : -> MyNat [ctor] .
+  op s : MyNat -> MyNat [ctor] .
+  
+  op _+_ : MyNat MyNat -> MyNat [comm] .
+  op _*_ : MyNat MyNat -> MyNat [comm] .
+  
+  vars N M : MyNat .
+----  eq 0 + N = N .
+  eq s(N) + M = s(N + M) .
+  
+  eq 0 * N = 0 .
+  eq s(N) * M = M + (N * M) .
+endfm)
+
+(scc MYNAT2 .)
+---(
+Sufficient completeness check for MYNAT2
+	Completeness counter-examples: 0 + 0 with sort MyNat
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
+(fmod MYNAT3 is
+  sort MyNat .
+  op 0 : -> MyNat [ctor] .
+  op s : MyNat -> MyNat [ctor] .
+  
+  op _+_ : MyNat MyNat -> MyNat [comm] .
+  op _*_ : MyNat MyNat -> MyNat [comm] .
+  
+  vars N M : MyNat .
+  eq 0 + N = N .
+  eq s(N) + M = s(N + M) .
+  
+  eq 0 * N = 0 .
+----  eq s(N) * M = M + (N * M) .
+endfm)
+
+(scc MYNAT3 .)
+---(
+Sufficient completeness check for MYNAT3
+	Completeness counter-examples: s(0)* s(0)with sort MyNat
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
+(fmod MYNAT4 is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+op _*_ : MyNat MyNat -> MyNat [comm] .
+
+vars N M : MyNat .
+eq 0 + N = N .
+eq s(N) + M = s(N + M) .
+
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
+endfm)
+
+(scc MYNAT4 .)
+
+---(
+Sufficient completeness check for MYNAT4
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+
+(fmod MYNAT5 is
+sort MyNat .
+op 0 : -> MyNat [ctor] .
+op s : MyNat -> MyNat [ctor] .
+
+op _+_ : MyNat MyNat -> MyNat [comm assoc id: 0] .
+op _*_ : MyNat MyNat -> MyNat [comm assoc] .
+
+vars N M : MyNat .
+eq s(N) + s(M) = s(s(N + M)) .
+
+eq 0 * N = 0 .
+eq s(N) * M = M + (N * M) .
+endfm)
+
+(scc MYNAT5 .)
+
+---(
+Sufficient completeness check for MYNAT5
+	Completeness counter-examples: none were found
+	Freeness counter-examples: none were found
+	Analysis: it is complete and it is sound
+	Ground weak termination: not proved
+	Ground sort-decreasingness: not proved
+---)
+

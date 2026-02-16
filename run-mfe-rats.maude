@@ -1,0 +1,3 @@
+load src/mfe.maude 
+load examples/rats/mrat.fm
+quit

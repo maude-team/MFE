@@ -1,3 +1,4 @@
+---- Originally developed by Joe Hendrix
 ---- May 19th, 2016
 ---- - op none : -> NatSet renamed as noneNS, due to conflict with none of new
 ----   sort Parent (introduced in Alpha 109)
@@ -5,7 +6,7 @@
 fmod CC-BANNER is
   pr STRING .
   op cc-banner : -> String .
-  eq cc-banner = "Sufficient Completeness Checker 2a - August 2010" .
+  eq cc-banner = "Sufficient Completeness Checker 2b - Feb 14 2026" .
 endfm
 
 --- This module defines global parameters for the CC-LOOP
@@ -46,6 +47,7 @@ endfm
 
 fmod CC-HELP is
   pr META-LEVEL .
+  pr LEXICAL .
 
   op cc-help : -> QidList .
   eq cc-help = 'Commands 'available 'from 'the
@@ -79,23 +81,20 @@ fmod CC-HELP is
 .
 
   op mfe-cc-help : -> QidList .
-  eq mfe-cc-help = 'Commands 'available 'from 'the
-     '\n '\n '\t '\s '\s '\s '\s 'Maude 'Sufficient 'and 'Canonical 'Completeness 'Checker.
-     '\n '\n
-     'Let '<module> 'denote 'the 'name 'of 'an 'equational 'theory ' '`( 'Sigma '`, ' 'E 'u 'A '`) ':
-     '\n '\n '\s '\s '`(  'scc '\o '<module> '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'checks 'the 'sufficient 'completeness 'and 'the 'freeness 'of 'constructors 'of ' '`( 'Sigma '`, ' 'E 'u 'A '`)
-     '\n '\n '\s '\s '`(  'select '\o '<module-name> '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'selects 'the 'module 'with 'the 'given 'name
-     '\n '\n '\s '\s '`(  'submit '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'submits 'the 'sort-decreasingness 'assertion 'to 'the 'CRC 'and 'the
-     '\n '\s '\s '\s '\s '\s '\s 'termination 'assertion 'to 'the 'MTT 'for 'the 'selected 'module
-     '\n '\n '\s '\s '`(  'trust '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'trusts 'the 'selected 'module 'to 'be 'suffiently 'complete
-     '\n '\s '\s '\s '\s '\s '\s 'and 'to 'have 'free 'equational 'constructors
-     '\n '\n '\s '\s '`(  'SCC 'help '. '`)
-     '\n '\s '\s '\s '\s '\s '\s 'prints 'the 'list 'of 'available 'commands '\n .
-
+  eq mfe-cc-help 
+   = tokenize("Commands available in the SCC tool:") '\n
+     tokenize(" - scc <module-name> .") '\n
+     '\t tokenize("checks the sufficient completeness and the freeness of constructors of the specified module") '\n
+----     tokenize(" - select <module-name> .") '\n
+----     '\t tokenize("selects the module with the given name") '\n
+----     tokenize(" - submit .") '\n
+----     '\t tokenize("submits the sort-decreasingness assertion to the CRC and the") '\n
+----     '\t tokenize("termination assertion to the MTT for the selected module") '\n
+----     tokenize(" - trust .") '\n
+----     '\t tokenize("trusts the selected module to be suffiently complete") '\n
+----     '\t tokenize("and to have free equational constructors") '\n
+     tokenize(" - SCC help .") '\n
+     '\t tokenize("prints the list of available commands") '\n .
 endfm
 
 --- This module defines many operations using the Maude meta-level.  These
@@ -2104,7 +2103,7 @@ mod CC-LOOP is
   pr CC-GRAMMAR .
   inc LOOP-MODE .
 
-  op scc : -> State [ctor].
+  op scc-state : -> State [ctor].
 
   var B : Bool .
   vars CR CR' : CFCResult .
@@ -2397,25 +2396,25 @@ mod CC-LOOP is
   rl [init] :
      init-cc
      =>
-     [nil, scc, 'Starting 'the 'Maude 'Sufficient 'and 'Canonical
+     [nil, scc-state, 'Starting 'the 'Maude 'Sufficient 'and 'Canonical
        'Completeness 'Checker.] .
 
   crl [exec] :
-      [NeQL, scc, nil]
-   => [nil, scc, exec(downTerm(T, errorCommand))]
+      [NeQL, scc-state, nil]
+   => [nil, scc-state, exec(downTerm(T, errorCommand))]
    if {T, Tp} := metaParse(['CC-GRAMMAR], NeQL, 'Command) .
 
   crl [invalid] :
-      [NeQL, scc, nil]
-   => [nil, scc,
+      [NeQL, scc-state, nil]
+   => [nil, scc-state,
        'The 'command 'could 'not 'be 'parsed '-- 'starting 'with 'the
        'word 'token qid(string(N, 10)) ': at(N, NeQL) '.]
    if noParse(N) := metaParse(['CC-GRAMMAR], NeQL, 'Command)
    /\ N < size(NeQL) .
 
   crl [eol] :
-      [NeQL, scc, nil]
-   => [nil, scc,
+      [NeQL, scc-state, nil]
+   => [nil, scc-state,
        'Unexpected 'end 'of 'command.
        if (size(NeQL) > 0) and last(NeQL) =/= '. then
          'Perhaps 'a 'terminating 'period 'was 'omitted?
@@ -2426,8 +2425,8 @@ mod CC-LOOP is
    /\ N >= size(NeQL) .
 
   crl [ambiguous] :
-      [NeQL, scc, nil]
-   => [nil, scc,
+      [NeQL, scc-state, nil]
+   => [nil, scc-state,
        'The 'command 'is 'ambiguous.  'Two 'possible 'parses 'are
        metaPrettyPrint(['SCC-GRAMMAR], T1) 'and
        metaPrettyPrint(['SCC-GRAMMAR], T2) '.]

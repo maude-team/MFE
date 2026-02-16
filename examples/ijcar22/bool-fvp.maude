@@ -1,0 +1,58 @@
+set include BOOL off .
+
+fmod BOOL-FVP is protecting TRUTH-VALUE .
+op _and_ : Bool Bool -> Bool [assoc comm] .
+op _xor_ : Bool Bool -> Bool [assoc comm] .
+op not_ : Bool -> Bool .
+op _or_ : Bool Bool -> Bool .
+op _<=>_ : Bool Bool -> Bool .
+vars A B C : Bool .
+eq A and true = A [variant] .
+eq A and A = A [variant] .
+eq A and A and B = A and B [variant] . *** AC extension
+eq A xor false = A [variant] .
+eq A xor A = false [variant] .
+eq A xor A xor B = B [variant] . *** AC extension
+eq not A = A xor true [variant] .
+eq A or B = (A and B) xor A xor B [variant] .
+eq A <=> B = true xor A xor B [variant] .
+endfm
+
+set include BOOL on .
+unify true and true and A and C =? B and true .
+irredundant unify true and true and A and C =? B and true .
+unify A and B xor A xor B <=> C =? true .
+filtered variant unify A and B xor A xor B <=> C =? true .
+variant unify A and B xor A xor B <=> C =? true .
+eof
+
+maude src/mfe.maude
+                     \||||||||||||||||||/
+                   --- Welcome to Maude ---
+                     /||||||||||||||||||\
+             Maude 3.2 beta built: Jan 25 2022 19:04:04
+             Copyright 1997-2022 SRI International
+                   Fri Feb  4 17:07:06 2022
+
+                  Full Maude 3.0 Dec 17 2019
+
+The Maude Formal Environment 1.0d
+    Sufficient Completeness Checker 2a - August 2010
+    Church-Rosser Checker 3s - February 3rd 2020
+    Coherence Checker 3s - February 3rd 2020
+    Maude Termination Tool 1.5k - February 3rd 2020
+
+set include BOOL off
+
+set include TRUTH-VALUE on
+
+Maude> load examples/ijcar22/bool-fvp.maude 
+Maude> select MFE .
+Maude> (select tool CRC .)
+Maude> (ccr BOOL-FVP .)
+rewrites: 14327203 in 10718ms cpu (11013ms real) (1336631 rewrites/second)
+Church-Rosser check for BOOL-FVP
+        All critical pairs have been joined.
+        The specification is locally-confluent.
+        The module is sort-decreasing.
+
