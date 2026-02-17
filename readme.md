@@ -4,7 +4,7 @@ The *Maude Formal Environment* (MFE) is an executable and highly extensible soft
 
 ## Where to Start?
 
-The project's documentation is maintained in the [Wiki section](https://github.com/antmordel/MFE/wiki). Please visit:
+The project's documentation is maintained in the [Wiki section](https://github.com/maude-team/MFE/wiki). Please visit:
 
  * [Installation] for installation and configuration instructions.
  * [Use] for use instructions.
