@@ -1,5 +1,0 @@
-The CoCo folder was created to include in it the modules required for the version of 
-the tools for the Confluence Competition (CoCo) 2016. We finally decided to modify 
-other modules in the MFE environment, and decided going for an independent git branch. 
-If interested in recovering any of the developments for it, switch to the coco branch.
-  

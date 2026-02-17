@@ -2,7 +2,7 @@
 ----                                                 To be run on Maude 3.5.1++
 ----                                                   authors: Francisco Duran
 
-set print attribute on .
+set print attribute off .
 
 set show loop stats off .
 set show loop timing off .
@@ -408,11 +408,11 @@ omod MFE-CONTROLLER is
   op processLine : Oid QidList ResultPair -> Msg [ctor] .
 
   rl [in] :
-    < O : MFE | partial-input : QIL, prompt : PROMPT >
+    < O : MFE | partial-input : QIL, incomplete-input-prompt : IIPROMPT >
     gotLine(O, stdin, TEXT)
     =>  if TEXT == "\n" or startsWith(TEXT, "----") then 
           < O : MFE | none >
-          getLine(stdin, O, PROMPT) 
+          getLine(stdin, O, IIPROMPT) 
         else 
           < O : MFE | partial-input : nil >
           processLine(O, QIL tokenize(TEXT), metaParse(MFE-GRAMMAR, QIL tokenize(TEXT), '@Input@))
@@ -829,22 +829,22 @@ omod MFE-CRC is
                        terminating : 3B, locally-confluent : 3B', sort-decreasing : 3B'' >, sort-decreasingness)
       if (CPS == none or (3B' == true and 3B == true)) and 3B'' == true
       then if CPReg == empty
-           then '\t mfe-success('The 'module 'is 'therefore 'Church-Rosser.) '\n
+           then mfe-success('The 'module 'is 'therefore 'Church-Rosser.) '\n
                 ---- (to OS \ TS["MFE"] from O : module M is Church-Rosser)
-           else '\t mfe-success('The 'module 'is 'therefore 'ground-Church-Rosser.) '\n
+           else mfe-success('The 'module 'is 'therefore 'ground-Church-Rosser.) '\n
                 ---- (to OS \ TS["MFE"] from O : module M is ground-Church-Rosser)
            fi
       else nil
       fi .
   eq makeCRCmessage(< O : CRC | module : M, cps : CPS, terminating : 3B, locally-confluent : 3B' >, confluence) ---- confluence-requester : OS,
     = if CPS == none
-      then '\t 'There 'are 'no 'critical 'pairs. '\n
-           '\t '\b 'The 'specification 'is 'confluent. '\o '\n
+      then 'There 'are 'no 'critical 'pairs. '\n
+           '\b 'The 'specification 'is 'confluent. '\o '\n
       else if 3B' == true
-           then '\t 'All 'critical 'pairs 'have 'been 'joined. '\n
-                '\t '\b 'The 'specification 'is 'locally-confluent. '\o '\n
+           then 'All 'critical 'pairs 'have 'been 'joined. '\n
+                '\b 'The 'specification 'is 'locally-confluent. '\o '\n
                 if 3B == true
-                then '\t 'The 'specification 'is 'terminating '`, '\s 'and 'therefore 'confluent. '\o '\n
+                then 'The 'specification 'is 'terminating '`, '\s 'and 'therefore 'confluent. '\o '\n
                      ---- (to OS \ TS["MFE"] from O : module M is confluent)
                 else nil
                 fi
@@ -854,10 +854,10 @@ omod MFE-CRC is
       fi .
   eq makeCRCmessage(< O : CRC | module : M, mas : MAS, sort-decreasing : 3B'' >, sort-decreasingness) ---- , sort-decreasingness-requester : OS
     = if 3B'' == true
-      then '\t 'The 'module 'is 'sort-decreasing. '\n
+      then 'The 'module 'is 'sort-decreasing. '\n
            ---- (to OS \ TS["MFE"] from O : module M is sort-decreasing)
       else if 3B'' == false
-           then '\t 'The 'module 'has 'been 'shown 'non-sort-decreasing. '\n
+           then 'The 'module 'has 'been 'shown 'non-sort-decreasing. '\n
            else '\n 'The 'following 'proof 'obligations 'must 'be 'checked 'for 'sort-decreasingness: '\n
                     eMetaPrettyPrint(M, MAS, false)
            fi
@@ -1126,7 +1126,7 @@ omod MFE-CRC is
                 sort-decreasing : if pendingMAs(MAS) == none then true else maybe fi > .
   eq applyCRCResult(O, < O' : CRCBroker | tools : TS >, CRCCT, unsupported(St), M')
     = < O' : CRCBroker | tools : TS >
-      to O from O' : output(mfe-error(tokenize(St))) .
+      to O from O' : output(mfe-error(tokenize(St) '\n)) .
 
   ---- trust
 
@@ -1433,26 +1433,26 @@ omod MFE-ChC is
          '- 'Coherence 'check 'for eMetaPrettyPrint(getName(M)) ': '\n
            if 3B'' == true
            then if B
-                then '\t 'The 'specification 'is 'ground 'coherent. '\n
-                else '\t 'The 'specification 'is 'coherent. '\n
+                then 'The 'specification 'is 'ground 'coherent. '\n
+                else 'The 'specification 'is 'coherent. '\n
                 fi
            else if 3B'' == false
                 then if B
-                     then '\t 'The 'specification 'is 'not 'ground 'coherent. '\n
-                     else '\t 'The 'specification 'is 'not 'coherent. '\n
+                     then 'The 'specification 'is 'not 'ground 'coherent. '\n
+                     else 'The 'specification 'is 'not 'coherent. '\n
                      fi
-                else '\t 'There 'are qid(string(| pendingCPs(CPS) |, 10)) 'pending 'cps. '\n
+                else 'There 'are qid(string(| pendingCPs(CPS) |, 10)) 'pending 'cps. '\n
                      if 3B == maybe
-                     then '\t 'The 'specification 'has 'not 'been 'proved 'terminating. '\n
-                     else '\t 'The 'specification 'is if 3B == true then nil else 'not fi 'terminating. '\n
+                     then 'The 'specification 'has 'not 'been 'proved 'terminating. '\n
+                     else 'The 'specification 'is if 3B == true then nil else 'not fi 'terminating. '\n
                      fi
                      if 3B' == maybe
-                     then '\t 'The 'Church-Rosser 'property 'has 'not 'been 'proved. '\n
-                     else '\t 'The 'specification 'is if 3B' == true then nil else 'not fi 'Church-Rosser '\n
+                     then 'The 'Church-Rosser 'property 'has 'not 'been 'proved. '\n
+                     else 'The 'specification 'is if 3B' == true then nil else 'not fi 'Church-Rosser '\n
                      fi
                      if 3B''' == maybe
-                     then '\t 'Sufficient 'completeness 'has 'not 'been 'proved. '\n
-                     else '\t 'The 'specification 'is if 3B' == true then nil else 'not fi 'Sufficiently-Complete '\n
+                     then 'Sufficient 'completeness 'has 'not 'been 'proved. '\n
+                     else 'The 'specification 'is if 3B' == true then nil else 'not fi 'Sufficiently-Complete '\n
                      fi
                 fi
            fi) .
@@ -1594,12 +1594,12 @@ omod MFE-ChC is
                else '\b 'Coherence 'checking 'of '\o eMetaPrettyPrint(getName(M)) '\n
                fi
                if pendingCPs(CPS) == none
-               then '\t 'All 'critical 'pairs 'have 'been 'rewritten 'and 'no 'rewrite 'with 'rules
+               then 'All 'critical 'pairs 'have 'been 'rewritten 'and 'no 'rewrite 'with 'rules
                         'can 'happen 'at 'non-overlapping 'positions 'of 'equations 'left-hand 'sides. '\n
-               else '\t 'The 'following 'critical 'pairs 'cannot 'be 'rewritten: '\o '\n
+               else 'The 'following 'critical 'pairs 'cannot 'be 'rewritten: '\o '\n
                     eMetaPrettyPrint(M, '=>, pendingCPs(CPS), false)
                fi
-               '\t 'The 'sufficient-completeness '`, ' 'termination 'and 'Church-Rosser 'properties 'must 'still 'be 'checked. '\n) .
+               'The 'sufficient-completeness '`, ' 'termination 'and 'Church-Rosser 'properties 'must 'still 'be 'checked. '\n) .
   eq applyChCResult(O, < O' : ChCBroker | tools : TS >, unsupported(St), M, B)
     = < O' : ChCBroker | tools : TS >
       to O from O' : output(mfe-error(tokenize(St))) .
@@ -2152,7 +2152,7 @@ omod MFE-SCC is
    = 'Sufficient 'completeness 'check 'for eMetaPrettyPrint(getName(M))
      if B''
      then 'trusted! '\n
-     else '\n '\t 'Completeness 'counter-examples:
+     else '\n 'Completeness 'counter-examples:
           (if SCCRes == complete
            then 'none 'were 'found
            else if SCCRes == invalid-input
@@ -2160,7 +2160,7 @@ omod MFE-SCC is
                 else getCounterExampleTerm(M,SCCRes)
                 fi
            fi)
-          '\n '\t 'Freeness 'counter-examples:
+          '\n 'Freeness 'counter-examples:
           (if CFCRes == free
            then 'none 'were 'found
            else if CFCRes == invalid-input
@@ -2168,10 +2168,10 @@ omod MFE-SCC is
                 else getCounterExampleTerm(M,CFCRes)
                 fi
            fi)
-          '\n '\t 'Analysis:
+          '\n 'Analysis:
           'it 'is (if isComplete then nil else 'not fi) 'complete 'and 'it 'is (if isSound then nil  else 'not fi) 'sound
-          '\n '\t 'Ground 'weak 'termination: (if B then nil else 'not fi) 'proved
-          '\n '\t 'Ground 'sort-decreasingness: (if B' then nil else 'not fi) 'proved '\n
+          '\n 'Ground 'weak 'termination: (if B then nil else 'not fi) 'proved
+          '\n 'Ground 'sort-decreasingness: (if B' then nil else 'not fi) 'proved '\n
     fi .
 
   op getCounterExampleTerm : Module SCCResult -> QidList .
@@ -2829,7 +2829,7 @@ omod MFE-MTT is
     => < O : MTT | module : M, proof : Str, terminating : 3B >
        to O' from O : state(
          '- 'Termination 'check 'for eMetaPrettyPrint(getName(M)) ': '\n
-         '\t if 3B == true
+         if 3B == true
              then 'The 'specification 'has 'been 'proved 'terminating. '\n
              else if 3B == false
                   then 'The 'specification 'has 'been 'proved 'non-terminating. '\n
@@ -3464,6 +3464,9 @@ omod MFE is ---- MAUDE-FORMAL-ENVIRONMENT
        getLine(stdin, mfe, "MFE> ") .
 endom
 
+erew init .
+
+eof
 set print conceal on .
 print conceal fmod_is_sorts_.____endfm
               mod_is_sorts_._____endm
@@ -3481,14 +3484,4 @@ set show command off .
 set trace off .
 set trace select off .
 trace select mtt-response .
-erew init .
 
-eof
-(set include BOOL off .)
-(set include TRUTH-VALUE on .)
-
-set show loop stats on .
-set show loop timing on .
-set show advisories off .
-
------trace exclude CRChC .

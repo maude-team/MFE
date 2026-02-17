@@ -1,6 +1,38 @@
-(set include BOOL off .)
+set include BOOL off .
 
-(fmod MYNAT is
+fmod MYNAT1 is
+  sort MyNat .
+  op 0 : -> MyNat [ctor] .
+  op s : MyNat -> MyNat [ctor] .
+
+  op _+_ : MyNat MyNat -> MyNat [comm] .
+  op _*_ : MyNat MyNat -> MyNat [comm] .
+
+  vars N M : MyNat .
+  eq 0 + N = N .
+  eq s(N) + M = s(N + M) .
+
+  eq 0 * N = 0 .
+  eq s(N) * M = M + (N * M) .
+endfm
+
+fmod MYNAT2 is
+  sort MyNat .
+  op 0 : -> MyNat [ctor] .
+  op s : MyNat -> MyNat [ctor] .
+
+  op _+_ : MyNat MyNat -> MyNat [comm assoc] .
+  op _*_ : MyNat MyNat -> MyNat [comm] .
+
+  vars N M : MyNat .
+  eq 0 + N = N .
+  eq s(N) + M = s(N + M) .
+
+  eq 0 * N = 0 .
+  eq s(N) * M = M + (N * M) .
+endfm
+
+fmod MYNAT3 is
   sort MyNat .
   op 0 : -> MyNat [ctor] .
   op s : MyNat -> MyNat [ctor] .
@@ -14,5 +46,4 @@
 
   eq 0 * N = 0 .
   eq s(N) * s(M) = s((N + M) + (N * M)) .
-
-endfm)
+endfm

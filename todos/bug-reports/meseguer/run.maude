@@ -1,9 +1,0 @@
-load model-checker.maude
-load /Users/duran/workspaceMaude/maude-formal-environment/todos/bug-reports/meseguer/faul-tolerant-comm-modified.maude 
-load /Users/duran/workspaceMaude/maude-formal-environment/src/mfe.maude 
-
-(select tool MTT .)
-(select external tool aprove .)
-(select tool ChC .)
-(check ground coherence FT-COMM-ABS .)
-(submit .)

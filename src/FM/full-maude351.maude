@@ -22000,7 +22000,7 @@ omod FM-DATABASE-HANDLING is
 
   rl [select] :
      < O : FM | db : DB, input : ('select_.[T]), output : QIL, default : ME >
-     => < O : FM | db : DB, input : nilTermList, output : (QIL 'The eMetaPrettyPrint(parseModExp(T)) 'has 'been 'set 'as 'current 'module. '\n), default : parseModExp(T) > .
+     => < O : FM | db : DB, input : nilTermList, output : (QIL 'The eMetaPrettyPrint(parseModExp(T)) 'module 'has 'been 'set 'as 'current 'one. '\n), default : parseModExp(T) > .
 
   rl [show-modules] :
      < O : FM | db : DB,
