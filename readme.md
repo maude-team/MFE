@@ -2,6 +2,8 @@
 
 The *Maude Formal Environment* (MFE) is an executable and highly extensible software infrastructure within which a user can interact with several tools to mechanically verify properties of [Maude](http://maude.cs.illinois.edu) specifications. In MFE, tools can interoperate to discharge proof obligations of different nature without switching between different tool environments. The integration of different tools inside MFE's common environment presents the user with a consistent user interface, a mechanism to keep track of pending proof obligations, and allows the execution of several instances of each tool, among other features.
 
+The tool is under a major refactoring, and its latest version only offers the tools SCC, CRC and ChC. 
+
 ## Where to Start?
 
 The project's documentation is maintained in the [Wiki section](https://github.com/maude-team/MFE/wiki). Please visit:
