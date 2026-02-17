@@ -1,9 +1,0 @@
-fmod NAT2 is
-  sort Nat2 .
-  op 0 : -> Nat2 [ctor] .
-  op s : Nat2 -> Nat2 [ctor] .
-  op _+_ : Nat2 Nat2 -> Nat2 .
-  vars M N : Nat2 .
-  eq M + 0 = M .
-  eq M + s(N) = s(M + N) .
-endfm
